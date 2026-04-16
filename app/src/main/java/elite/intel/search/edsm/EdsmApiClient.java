@@ -8,12 +8,13 @@ import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class EdsmApiClient {
@@ -21,6 +22,10 @@ public class EdsmApiClient {
     private static final String BASE_URL = "https://www.edsm.net";
     private static final long MIN_INTERVAL_MS = 1_000L;
     private static final AtomicLong lastRequestTime = new AtomicLong(0L);
+    private static final HttpClient httpClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(5))
+            .followRedirects(HttpClient.Redirect.NORMAL)
+            .build();
 
     private static StringBuilder publicUrl(String endpoint) {
         return new StringBuilder(BASE_URL + endpoint + "?");
@@ -359,30 +364,30 @@ public class EdsmApiClient {
     private static String callEdsm(StringBuilder query) {
         throttle();
         try {
-            URI uri = URI.create(query.toString());
-            URL url = uri.toURL();
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(5_000);
-            conn.setReadTimeout(10_000);
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
-            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0");
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(query.toString()))
+                    .timeout(Duration.ofSeconds(15))
+                    .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0")
+                    .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                    .header("Accept-Language", "en-US,en;q=0.5")
+                    .GET()
+                    .build();
 
-            int responseCode = conn.getResponseCode();
-            if(responseCode == 429) {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            int status = response.statusCode();
+
+            if (status == 429) {
                 log.warn("EDSM API rate limit exceeded");
                 return "";
             }
-            if (responseCode != 200) {
-                log.warn("EDSM API failed");
+            if (status != 200) {
+                log.warn("EDSM API failed with status {}", status);
                 return "";
             }
 
-            try (Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8)) {
-                String response = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-                log.debug("EDSM API response: {}", response);
-                return response;
-            }
+            String body = response.body();
+            log.debug("EDSM API response: {}", body);
+            return body;
         } catch (Exception e) {
             log.error("Failed to query EDSM API: {}", e.getMessage(), e);
             return "";

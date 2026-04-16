@@ -36,8 +36,7 @@ public class NaturalSpeechIntegrationTest {
         capture = new HandlerCapture();
         // Let any startup noise (connection check etc.) settle
         Thread.sleep(2000);
-        /// this allows LLM to cache the entire prompt without filtering.
-        /// without this call at the start of the session, the failure rate will be higher.
+        /// this allows LLM to cache the prompt header / same request runs on app startup.
         EventBusManager.publish(new UserInputEvent("command_verify_connection"));
         Thread.sleep(4000);
     }

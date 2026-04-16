@@ -364,8 +364,9 @@ public class InputNormalizer {
         m.put("radio transmission on", "toggle radio on");
         m.put("radio transmission off", "toggle radio off");
         m.put("shut up", "interrupt");
-        m.put("display email", "show inbox");
-        m.put("email", "show inbox");
+        m.put("display email", "open or display email inbox panel");
+        m.put("email", "open or display email inbox panel");
+        m.put("inbox", "open or display email inbox panel");
         m.put("optimize", "set optimal speed");
 
         // Cargo / commodities

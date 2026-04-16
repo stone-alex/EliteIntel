@@ -185,7 +185,7 @@ public class AiActionsMap {
         map.put("show, open or display contacts panel", SHOW_CONTACTS.getAction());
         map.put("show, open or display navigation panel", SHOW_NAVIGATION.getAction());
         map.put("show, open or display chat panel, comms panel", SHOW_CHAT_PANEL.getAction());
-        map.put("show, open or display email inbox panel", SHOW_INBOX_PANEL.getAction());
+        map.put("show, open or display email inbox panel, email", SHOW_INBOX_PANEL.getAction());
         map.put("show, open or display social panel", SHOW_SOCIAL_PANEL.getAction());
         map.put("show, open or display history panel", SHOW_HISTORY_PANEL.getAction());
         map.put("show, open or display squadron panel", SHOW_SQUADRON.getAction());

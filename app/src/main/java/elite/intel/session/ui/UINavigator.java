@@ -26,7 +26,7 @@ public class UINavigator {
     private static final int COMMS_PANEL_TAB_COUNT = CommsPanel.values().length;
     private static final int CENTRE_PANEL_TAB_COUNT = CenterPanel.values().length;
     private static final int RIGHT_PANEL_TAB_COUNT = RightPanel.values().length;
-    private static final int SLEEP_BETWEEN_TAPS = 250;
+    public static final int SLEEP_BETWEEN_TAPS = 250;
     private final PanelStateTracker tracker = PanelStateTracker.getInstance();
 
     public UINavigator() {

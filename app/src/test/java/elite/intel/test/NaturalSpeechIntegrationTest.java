@@ -24,8 +24,8 @@ public class NaturalSpeechIntegrationTest {
     /**
      * Pause between each test phrase. Increase if your LLM is slow.
      */
-    private static final int LLM_WAIT_MS = 1000;
-    /// adjust this nob to your LLM. too fast, and the fail rate will be higher.
+    private static final int LLM_WAIT_MS = 3000;
+    /// adjust this knob to your LLM. too fast, and the fail rate will be higher.
 
     private HandlerCapture capture;
 
@@ -813,7 +813,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryPlayerProfile() {
-        return Stream.of("player profile", "player ranks", "player stats", "player progress", "summarize player profile");
+        return Stream.of("player profile", "player profile summarize ranks", "player profile summarize progress", "summarize player profile");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -901,7 +901,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryStationDetails() {
-        return Stream.of("station details", "show station services", "what services here", "station info");
+        return Stream.of("station details", "open services", "what services here", "station info");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -1105,7 +1105,18 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> fighterOpenOrders() {
-        return Stream.of("fighter open orders", "fire at will", "attack");
+        return Stream.of("fighter open orders", "fire at will");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(237)
+    @MethodSource
+    void fighterAttackTarget(String input) throws InterruptedException {
+        assertRouted(input, FIGHTER_REQUEST_FOCUS_TARGET.getAction());
+    }
+
+    static Stream<String> fighterAttackTarget() {
+        return Stream.of("fighter attack my target", "attack", "focus my target");
     }
 
 /*

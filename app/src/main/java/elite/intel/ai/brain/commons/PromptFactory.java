@@ -71,7 +71,7 @@ public class PromptFactory implements AiPromptFactory {
                 Raw JSON only. No text, no markdown, no explanation before or after.
                 
                 CLASSIFICATION:
-                - ABSOLUTE RULE - 'query_player_profile_rank_progress' requires an EXPLICIT player rank/profile request with ≥99% confidence. The input MUST contain 'player ranks', 'player stats', 'player profile', 'player progress', or 'what rank are we' - exact phrasing only. If confidence is below 95%, or the input is ambiguous or tangentially related, fall back to ignore_nonsensical_input (strict mode) or query_general_conversation (conversational mode). This action is NEVER a fallback or closest-match - it must be explicitly requested. Violations are a critical failure.
+                - ABSOLUTE RULE - 'query_player_profile_rank_progress' requires an EXPLICIT player rank/profile request with ≥95% confidence. The input MUST contain 'player profile'  - exact phrasing only. If confidence is below 95%, or the input is ambiguous or tangentially related, fall back to ignore_nonsensical_input (strict mode) or query_general_conversation (conversational mode). This action is NEVER a fallback or closest-match - it must be explicitly requested. Violations are a critical failure.
                 - Default to COMMAND. Only use a QUERY action when the input is clearly interrogative (starts with: what, how, which, why, is, are, does, tell me, how much, how many).
                 """);
 

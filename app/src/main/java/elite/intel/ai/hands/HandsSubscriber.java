@@ -8,10 +8,10 @@ import elite.intel.ai.hands.events.RawKeyEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
+import elite.intel.session.ui.UINavigator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static elite.intel.session.ui.UINavigator.SLEEP_BETWEEN_TAPS;
 import static elite.intel.util.SleepNoThrow.sleep;
 
 /**
@@ -45,7 +45,7 @@ public class HandsSubscriber {
                     "No key binding found for " + event.getBindingId())
             );
         }
-        sleep(SLEEP_BETWEEN_TAPS);
+        sleep(UINavigator.randomDelay());
     }
 
     @Subscribe
@@ -60,7 +60,7 @@ public class HandsSubscriber {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent(
                     "No key binding found for " + event.getBindingId()));
         }
-        sleep(SLEEP_BETWEEN_TAPS);
+        sleep(UINavigator.randomDelay());
     }
 
     @Subscribe

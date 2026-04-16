@@ -26,7 +26,10 @@ public class UINavigator {
     private static final int COMMS_PANEL_TAB_COUNT = CommsPanel.values().length;
     private static final int CENTRE_PANEL_TAB_COUNT = CenterPanel.values().length;
     private static final int RIGHT_PANEL_TAB_COUNT = RightPanel.values().length;
-    public static final int SLEEP_BETWEEN_TAPS = 250;
+
+    private static final int RANDOM_MIN = 99;
+    private static final int RANDOM_MAX = 201;
+
     private final PanelStateTracker tracker = PanelStateTracker.getInstance();
 
     public UINavigator() {
@@ -60,7 +63,7 @@ public class UINavigator {
         // openPanel() is a toggle - sending it when the panel is already open would close it.
         if (status.getGuiFocus() != panel) {
             openPanel(panel);
-            sleep(SLEEP_BETWEEN_TAPS);
+            sleep(RANDOM_MAX);
         }
 
         if (!state.isKnown()) {
@@ -119,7 +122,7 @@ public class UINavigator {
             navigateToDefaultTab(panel, state.getDefault());
         }
         closePanel(panel);
-        sleep(SLEEP_BETWEEN_TAPS);
+        sleep(RANDOM_MAX);
         tracker.notifyEliteIntelClosedPanel();
         state.resetToDefault();
     }
@@ -210,7 +213,7 @@ public class UINavigator {
         if (binding != null) {
             GameControllerBus.publish(new GameInputEvent(binding, 0)); // panel focus keys must be tapped, not held
         }
-        sleep(SLEEP_BETWEEN_TAPS);
+        sleep(RANDOM_MAX);
     }
 
     private void closePanel(GuiFocus panel) {
@@ -226,5 +229,10 @@ public class UINavigator {
             case INTERNAL_PANEL -> RIGHT_PANEL_TAB_COUNT;
             default -> throw new IllegalArgumentException("No tab count for GuiFocus: " + panel);
         };
+    }
+
+
+    public static int randomDelay() {
+        return Math.max((int) (Math.random() * RANDOM_MAX), RANDOM_MIN);
     }
 }

@@ -1,3 +1,10 @@
+## Elite Intel v-0.0358-beta
+
+### bug fixes / features:
+- replacing random timing between key taps for panel navigation to a set value of 250ms.
+- removed lights and night vision from pre-FTL check.
+
+
 ## Elite Intel v-0.0357-beta
 
 ### bug fixes / features:

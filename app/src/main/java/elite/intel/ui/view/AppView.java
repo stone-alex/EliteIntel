@@ -40,8 +40,7 @@ public class AppView extends JFrame implements AppViewInterface {
         installDarkDefaults();
         EventBusManager.register(this);
 
-        setIconImage(Toolkit.getDefaultToolkit().getImage(
-                getClass().getResource("/images/elite-logo.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/elite-logo.png")));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(600, 500));
         setSize(new Dimension(1200, 900));
@@ -87,7 +86,9 @@ public class AppView extends JFrame implements AppViewInterface {
     private ImageIcon scaledIcon(String resource) {
         return new ImageIcon(
                 new ImageIcon(Objects.requireNonNull(getClass().getResource(resource)))
-                        .getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH));
+                        .getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH)
+
+        );
     }
 
     @Override

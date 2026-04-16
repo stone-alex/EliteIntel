@@ -171,7 +171,7 @@ public class TradeProfileManager {
     public boolean setStartingCapitol(Integer startingCapital) {
         final ShipDao.Ship ship = shipManager.getShip();
         if (ship == null) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data availale. Please board a cargo ship."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data available. Please board a cargo ship."));
             return false;
         }
         TradeProfileDao.TradeProfile profile = getProfile(ship);
@@ -185,7 +185,7 @@ public class TradeProfileManager {
     public boolean setDistanceFromSystemEntry(Integer distance) {
         final ShipDao.Ship ship = shipManager.getShip();
         if (ship == null) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data availale. Please board a cargo ship."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data available. Please board a cargo ship."));
             return true;
         }
         TradeProfileDao.TradeProfile profile = getProfile(ship);

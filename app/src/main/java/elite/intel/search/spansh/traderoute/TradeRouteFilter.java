@@ -29,7 +29,7 @@ public class TradeRouteFilter {
 
     public TradeRouteResponse filter(TradeRouteResponse route) {
 
-        if (route == null) return route; // no filter needed
+        if (route == null) return null; // no filter needed
         String pledgedPower = playerSession.getRankAndProgressDto().getPledgedToPower();
         if (pledgedPower == null || pledgedPower.isEmpty()) return route; // no filter needed
 

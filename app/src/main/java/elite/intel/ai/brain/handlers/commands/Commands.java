@@ -104,7 +104,7 @@ public enum Commands {
     ENTER_FLEET_CARRIER_DESTINATION                     ("enter_fleet_carrier_destination", null,  EnterNextCarrierDestinationHandler.class),
 
     CALCULATE_TRADE_ROUTE                               ("calculate_trade_route", null,  CalculateTradeRouteHandler.class),
-    CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET            ("trade_profile_set_budget", null,  ChangeTradeProfileSetStartingBudgetHander.class),
+    CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET            ("trade_profile_set_budget", null,  ChangeTradeProfileSetStartingBudgetHandler.class),
     CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS        ("trade_profile_set_max_stops", null,  ChangeTradeProfileSetMaxStopsHandler.class),
     CHANGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY    ("trade_profile_set_max_distance", null,  ChangeTradeProfileSetMaxDistanceFromEntryHandler.class),
     CHANGE_TRADE_PROFILE_SET_ALLOW_PROHIBITED_CARGO     ("trade_profile_toggle_prohibited_cargo", null, ChangeTradeProfileSetAllowProhibitedCargoHandler.class),

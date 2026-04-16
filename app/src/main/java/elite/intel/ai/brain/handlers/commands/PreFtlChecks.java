@@ -29,13 +29,13 @@ public class PreFtlChecks {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Closing cargo bay."));
             SleepNoThrow.sleep(2000);
         }
-        if (status.isNightVision()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), 0));
-            SleepNoThrow.sleep(250);
-        }
-        if (status.isLightsOn()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_SHIP_LIGHTS_TOGGLE.getGameBinding(), 0));
-            SleepNoThrow.sleep(250);
-        }
+//        if (status.isNightVision()) {
+//            GameControllerBus.publish(new GameInputEvent(BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), 0));
+//            SleepNoThrow.sleep(250);
+//        }
+//        if (status.isLightsOn()) {
+//            GameControllerBus.publish(new GameInputEvent(BINDING_SHIP_LIGHTS_TOGGLE.getGameBinding(), 0));
+//            SleepNoThrow.sleep(250);
+//        }
     }
 }

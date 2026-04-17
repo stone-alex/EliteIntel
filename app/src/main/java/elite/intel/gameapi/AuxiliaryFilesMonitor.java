@@ -10,8 +10,8 @@ import elite.intel.session.PlayerSession;
 import elite.intel.ui.controller.ManagedService;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import java.io.IOException;
 import java.io.Reader;
@@ -109,7 +109,7 @@ public class AuxiliaryFilesMonitor implements Runnable, ManagedService {
             monitorFiles();
         } catch (IOException e) {
             log.error("IOException in AuxiliaryFilesMonitor", e);
-            EventBusManager.publish(new AppLogEvent("Check Journal directory settings."));
+            EventBusManager.publish(new AppLogEvent("Check Journal directory settings. Stopping services."));
         } catch (InterruptedException e) {
             log.info("AuxiliaryFilesMonitor interrupted, shutting down");
             Thread.currentThread().interrupt(); // Restore interrupted status

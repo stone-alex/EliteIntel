@@ -219,7 +219,6 @@ public class AppController implements Runnable {
         this.services.clear();
         EventBusManager.publish(new ServicesStateEvent(false));
         isRunning.set(false);
-        EventBusManager.publish(new ClearConsoleEvent());
         EventBusManager.publish(new AppLogEvent("All services are stopped\n\n"));
     }
 

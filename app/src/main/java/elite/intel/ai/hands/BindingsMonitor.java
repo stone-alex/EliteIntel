@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-
 import static elite.intel.util.StringUtls.humanizeBindingName;
 
 /**
@@ -147,13 +146,12 @@ public class BindingsMonitor {
             }
         } catch (IOException e) {
             log.error("IOException in BindingsMonitor", e);
-            EventBusManager.publish(new AiVoxResponseEvent("Please check the bindings directory"));
+            EventBusManager.publish(new AppLogEvent("Please check the bindings directory. Stopping services."));
         } catch (InterruptedException e) {
             log.info("BindingsMonitor interrupted, shutting down");
             Thread.currentThread().interrupt(); // Restore interrupted status
         } catch (Exception e) {
             log.error("Unexpected error in BindingsMonitor", e);
-            EventBusManager.publish(new AiVoxResponseEvent("Please check the bindings directory"));
         }
     }
 

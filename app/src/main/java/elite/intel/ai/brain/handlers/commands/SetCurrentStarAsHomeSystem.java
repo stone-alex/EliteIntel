@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
@@ -20,6 +19,6 @@ public class SetCurrentStarAsHomeSystem implements CommandHandler {
             return;
         }
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Setting " + coordinates.primaryStar() + " as home system."));
-        playerSession.setHomeSystem(locationManager.findByLocationData(playerSession.getLocationData()));
+        playerSession.setHomeSystem(coordinates.primaryStar());
     }
 }

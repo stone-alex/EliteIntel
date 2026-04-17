@@ -47,6 +47,7 @@ public class PlayerSession {
     private final ReputationManager reputationManager = ReputationManager.getInstance();
     private final TargetLocationManager targetLocationManager = TargetLocationManager.getInstance();
     private final FsdTargetManager fsdTargetManager = FsdTargetManager.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     private PlayerSession() {
         EventBusManager.register(this);
@@ -378,10 +379,11 @@ public class PlayerSession {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getPlayerMissionStatement());
     }
 
-    public void setHomeSystem(LocationDto location) {
+    public void setHomeSystem(String primaryStar) {
+        LocationDto newHome = locationManager.findPrimaryStar(primaryStar);
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
-            player.setHomeSystemId(location.getSystemAddress());
+            player.setHomeSystemId(newHome.getSystemAddress());
             dao.save(player);
             return Void.class;
         });

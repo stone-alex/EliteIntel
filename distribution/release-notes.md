@@ -1,8 +1,10 @@
-## Elite Intel v-0.0360-beta
+## Elite Intel v-0.0362-beta
 
 ### bug fixes / features:
 - Refactoring LLM provider package for DRY - no functional changes
-
+- Warn user to properly setup bindings and journal directory paths. Game is required to run this app.
+- Load beep volume from settings on startup.
+- Theme adjustments
 
 
 

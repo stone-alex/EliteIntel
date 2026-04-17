@@ -7,7 +7,7 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 
-public class NavigateRouteToHomeHandler implements CommandHandler {
+public class NavigateToHomeHandler implements CommandHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
 

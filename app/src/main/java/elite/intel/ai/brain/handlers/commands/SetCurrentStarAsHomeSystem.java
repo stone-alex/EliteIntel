@@ -5,6 +5,7 @@ import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
 public class SetCurrentStarAsHomeSystem implements CommandHandler {
@@ -18,7 +19,12 @@ public class SetCurrentStarAsHomeSystem implements CommandHandler {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Galactic coordinates are not available."));
             return;
         }
+        LocationDto newHome = locationManager.findPrimaryStar(coordinates.primaryStar());
+        if (newHome == null || newHome.getSystemAddress() < 1) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Primary star not found for coordinates: " + coordinates.primaryStar()));
+            return;
+        }
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Setting " + coordinates.primaryStar() + " as home system."));
-        playerSession.setHomeSystem(coordinates.primaryStar());
+        playerSession.setHomeSystem(newHome);
     }
 }

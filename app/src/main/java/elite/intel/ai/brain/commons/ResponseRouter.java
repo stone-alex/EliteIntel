@@ -10,7 +10,6 @@ import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.ChatHistory;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.StringUtls;
@@ -69,7 +68,6 @@ public class ResponseRouter implements AIRouterInterface {
             JsonObject params = getAsObjectOrEmpty(jsonResponse);
 
             if (!responseText.isEmpty() && action.isEmpty()) {
-                systemSession.setChatHistory(new ChatHistory(userInput, responseText));
                 EventBusManager.publish(new AiVoxResponseEvent(responseText));
                 log.info("Response Sent to vocalization: {}", responseText);
                 return;
@@ -124,7 +122,6 @@ public class ResponseRouter implements AIRouterInterface {
             String responseTextToUse = dataJson.has(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE) ? dataJson.get(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE).getAsString() : "";
             if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
                 EventBusManager.publish(new AiVoxResponseEvent(responseTextToUse));
-                systemSession.setChatHistory(new ChatHistory(userInput, responseTextToUse));
                 log.info("Spoke final query response (action: {}): {}", action, responseTextToUse);
             }
         } catch (Exception e) {
@@ -146,7 +143,6 @@ public class ResponseRouter implements AIRouterInterface {
     protected void handleChat(String responseText) {
         if (!responseText.isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent(responseText));
-            systemSession.setChatHistory(new ChatHistory(null, responseText));
             log.info("Sent to VoiceGenerator: {}", responseText);
         }
     }

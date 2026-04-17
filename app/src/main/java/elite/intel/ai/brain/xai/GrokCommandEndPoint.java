@@ -1,7 +1,10 @@
 package elite.intel.ai.brain.xai;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.brain.commons.CommandEndPoint;
@@ -96,34 +99,18 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
     }
 
     private void processVoiceCommand(String userInput) {
-
         if (userInput == null || userInput.isEmpty()) {
-            JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, "Sorry, I couldn't process that.");
-            getRouter().processAiResponse(errorResponse, userInput);
+            getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
             return;
         }
 
         log.info("Sanitized voice userInput:\n{}", userInput);
 
-        JsonArray messages = new JsonArray();
-        JsonObject systemMessage = new JsonObject();
-        systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        String systemPrompt = getContextFactory().generateUserInputSystemPrompt(userInput);
-        systemMessage.addProperty("content", systemPrompt);
-        messages.add(systemMessage);
+        JsonArray messages = buildVoiceCommandMessages(userInput);
 
-        JsonObject userMessage = new JsonObject();
-        userMessage.addProperty("role", AIConstants.ROLE_USER);
-        userMessage.addProperty("content", getContextFactory().normalizeInput(userInput));
-        messages.add(userMessage);
-
-        // Send via GrokChatEndPoint
         JsonObject apiResponse = GrokChatEndPoint.getInstance().processAiPrompt(messages, 0.01f);
         if (apiResponse == null) {
-            JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, "Sorry, I couldn't process that.");
-            getRouter().processAiResponse(errorResponse, userInput);
+            getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
             return;
         }
 
@@ -136,32 +123,8 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         if (trimToNull(event.getSensorData()) == null) return;
 
         EventBusManager.publish(new AppLogEvent("Processing Sensor event"));
-        JsonArray messages = new JsonArray();
-        JsonObject systemMessage = new JsonObject();
-        systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        String systemPrompt = getContextFactory().generateSensorPrompt();
-        systemMessage.addProperty("content", systemPrompt);
-        messages.add(systemMessage);
+        JsonArray messages = buildSensorMessages(event);
 
-
-        JsonObject instructions = new JsonObject();
-        instructions.addProperty("role", AIConstants.ROLE_SYSTEM);
-        instructions.addProperty("content", event.getInstructions());
-        messages.add(instructions);
-
-
-        JsonObject userMessage = new JsonObject();
-        userMessage.addProperty("role", AIConstants.ROLE_USER);
-        userMessage.addProperty("content", event.getSensorData());
-        messages.add(userMessage);
-
-        GrokClient client = GrokClient.getInstance();
-        JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_NON_REASONING, 0.01f);
-        prompt.add("messages", messages);
-
-        Gson gson = GsonFactory.getGson();
-        String jsonString = gson.toJson(prompt);
-        log.debug("JSON prepared for callXaiApi:\n{}", jsonString);
         executor.submit(() -> {
             try {
                 JsonObject apiResponse = callXaiApi(messages);
@@ -171,7 +134,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
                 }
                 getRouter().processAiResponse(apiResponse, null);
             } catch (JsonSyntaxException e) {
-                log.error("JSON parsing failed for input:\n{}", jsonString, e);
+                log.error("JSON parsing failed for sensor event", e);
                 throw e;
             }
         });
@@ -227,52 +190,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             return GrokClient.getInstance().createErrorResponse("Invalid JSON structure from model");
         }
     }
-
-    /**
-     * Extracts the first valid JSON object from the content, handling common wrappers.
-     */
-    private String extractJsonFromContent(String content) {
-        // Remove any leading/trailing whitespace
-        content = content.trim();
-
-        // Common patterns: ```json ... ``` or just { ... }
-        int start = content.indexOf('{');
-        if (start == -1) return null;
-
-        // Look for code fence start
-        int fenceStart = content.indexOf("```json");
-        if (fenceStart != -1) {
-            start = content.indexOf('{', fenceStart + 7);
-        }
-
-        // Find matching closing brace (very basic, assumes no nested strings with })
-        int braceCount = 0;
-        int end = -1;
-        for (int i = start; i < content.length(); i++) {
-            char c = content.charAt(i);
-            if (c == '{') braceCount++;
-            else if (c == '}') {
-                braceCount--;
-                if (braceCount == 0) {
-                    end = i + 1;
-                    break;
-                }
-            }
-        }
-
-        if (end == -1) return null;
-
-        String candidate = content.substring(start, end);
-
-        // Quick validation
-        try {
-            JsonParser.parseString(candidate);
-            return candidate;
-        } catch (JsonSyntaxException ignored) {
-            return null;
-        }
-    }
-
 
     private String serverErrorMessage(Exception e) {
         String aiServerError = e.getMessage();

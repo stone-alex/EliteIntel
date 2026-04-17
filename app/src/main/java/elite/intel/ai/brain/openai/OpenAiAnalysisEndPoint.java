@@ -88,21 +88,12 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
 
             log.debug("API response content:\n{}", content);
 
-            // Extract JSON from content
-            String jsonContent;
-            int jsonStart = content.indexOf("\n\n{");
-            if (jsonStart != -1) {
-                jsonContent = content.substring(jsonStart + 2); // Skip \n\n
-            } else {
-                jsonStart = content.indexOf("{");
-                if (jsonStart == -1) {
-                    log.error("No JSON object found in content:\n{}", content);
-                    return client.createErrorResponse("Analysis error.");
-                }
-                jsonContent = content.substring(jsonStart);
+            String jsonContent = extractJsonFromContent(content);
+            if (jsonContent == null) {
+                log.error("Could not extract JSON from content:\n{}", content);
+                return client.createErrorResponse("Analysis error.");
             }
 
-            // Parse extracted JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {

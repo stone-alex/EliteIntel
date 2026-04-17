@@ -123,9 +123,4 @@ public class LMStudioUserInputProcessor extends CommandEndPoint implements AiCom
         getRouter().processAiResponse(response, "");
     }
 
-    private JsonObject createError(String text) {
-        JsonObject err = new JsonObject();
-        err.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, text);
-        return err;
-    }
 }

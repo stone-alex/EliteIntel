@@ -101,31 +101,17 @@ public class GeminiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
     private void processVoiceCommand(String userInput) {
         if (userInput == null || userInput.isEmpty()) {
-            JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, "Sorry, I couldn't process that.");
-            getRouter().processAiResponse(errorResponse, userInput);
+            getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
             return;
         }
 
         log.info("Sanitized voice userInput:\n{}", userInput);
 
-        JsonArray messages = new JsonArray();
-
-        JsonObject systemMessage = new JsonObject();
-        systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        systemMessage.addProperty("content", getContextFactory().generateUserInputSystemPrompt(userInput));
-        messages.add(systemMessage);
-
-        JsonObject userMessage = new JsonObject();
-        userMessage.addProperty("role", AIConstants.ROLE_USER);
-        userMessage.addProperty("content", getContextFactory().normalizeInput(userInput));
-        messages.add(userMessage);
+        JsonArray messages = buildVoiceCommandMessages(userInput);
 
         JsonObject apiResponse = GeminiChatEndPoint.getInstance().processAiPrompt(messages, 0.01f);
         if (apiResponse == null) {
-            JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, "Sorry, I couldn't process that.");
-            getRouter().processAiResponse(errorResponse, userInput);
+            getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
             return;
         }
 
@@ -141,22 +127,7 @@ public class GeminiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         EventBusManager.publish(new AppLogEvent("Processing Sensor event"));
 
-        JsonArray messages = new JsonArray();
-
-        JsonObject systemMessage = new JsonObject();
-        systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        systemMessage.addProperty("content", getContextFactory().generateSensorPrompt());
-        messages.add(systemMessage);
-
-        JsonObject instructions = new JsonObject();
-        instructions.addProperty("role", AIConstants.ROLE_SYSTEM);
-        instructions.addProperty("content", event.getInstructions());
-        messages.add(instructions);
-
-        JsonObject userMessage = new JsonObject();
-        userMessage.addProperty("role", AIConstants.ROLE_USER);
-        userMessage.addProperty("content", event.getSensorData());
-        messages.add(userMessage);
+        JsonArray messages = buildSensorMessages(event);
 
         executor.submit(() -> {
             try {

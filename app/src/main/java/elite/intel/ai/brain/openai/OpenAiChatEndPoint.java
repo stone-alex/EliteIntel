@@ -60,42 +60,21 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
                 return null;
             }
 
-            // Log content before parsing
             log.debug("API response content:\n\n{}\n\n", content);
 
-            // Extract JSON from content (after double newline or first valid JSON object)
-            String jsonContent;
-            int jsonStart = content.indexOf("\n\n{");
-            if (jsonStart != -1) {
-                jsonContent = content.substring(jsonStart + 2); // Skip \n\n
-            } else {
-                // Fallback: If no JSON, assume chat response
-                jsonStart = content.indexOf("{");
-                if (jsonStart == -1) {
-                    JsonObject result = new JsonObject();
-                    result.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, content);
-                    return result;
-                }
-                jsonContent = content.substring(jsonStart);
-                // Validate JSON
-                try {
-                    JsonParser.parseString(jsonContent);
-                } catch (JsonSyntaxException e) {
-                    log.error("Invalid JSON object in content:\n{}", jsonContent, e);
-                    JsonObject result = new JsonObject();
-                    result.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, content);
-                    return result;
-                }
+            String jsonContent = extractJsonFromContent(content);
+            if (jsonContent == null) {
+                JsonObject result = new JsonObject();
+                result.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, content);
+                return result;
             }
 
-            // Log extracted JSON
-            log.debug("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
+            log.debug("Extracted JSON content:\n\n{}\n\n", jsonContent);
 
-            // Parse JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent), e);
+                log.error("Failed to parse API response content:\n{}", jsonContent, e);
                 JsonObject result = new JsonObject();
                 result.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, content);
                 return result;

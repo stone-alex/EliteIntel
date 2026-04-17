@@ -77,7 +77,7 @@ public enum Commands {
     DISPLAY_RADAR_PANEL                                 ("display_radar_panel", null,  DisplayRadarPanelHandler.class),
     ///
     DISPLAY_CARRIER_MANAGEMENT                          ("display_carrier_management", null,  OpenFleetCarrierManagementHandler.class    ),
-    TOGGLE_CARGO_SCOOP                                    ("toggle_cargo_scoop", null,  CargoScoopHandler.class),
+    TOGGLE_CARGO_SCOOP                                  ("toggle_cargo_scoop", null,  CargoScoopHandler.class),
     RETRACT_HARDPOINTS                                  ("retract_hardpoints", null,  RetractHardpointsHandler.class),
     DEPLOY_HARDPOINTS                                   ("deploy_hardpoints", null,  DeployHardpointsHandler.class),
     DEPLOY_LANDING_GEAR                                 ("deploy_landing_gear", null,  DeployLandingGearHandler.class),

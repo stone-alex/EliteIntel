@@ -1,8 +1,5 @@
 package elite.intel.ai.mouth.subscribers.events;
 
-import elite.intel.session.ChatHistory;
-import elite.intel.session.SystemSession;
-
 public class VocalisationRequestEvent extends BaseVoxEvent {
 
     private final Class<? extends BaseVoxEvent> originType;
@@ -12,7 +9,6 @@ public class VocalisationRequestEvent extends BaseVoxEvent {
 
     public VocalisationRequestEvent(String textToVoice, Class<? extends BaseVoxEvent> originType, boolean canBeInterrupted) {
         this(textToVoice, null, originType, canBeInterrupted, false);
-        SystemSession.getInstance().setChatHistory(new ChatHistory(null, textToVoice));
     }
 
     public VocalisationRequestEvent(String textToVoice, String voiceName, Class<? extends BaseVoxEvent> originType, boolean canBeInterrupted) {

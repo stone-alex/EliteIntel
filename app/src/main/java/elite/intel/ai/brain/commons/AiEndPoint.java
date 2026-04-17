@@ -1,8 +1,6 @@
 package elite.intel.ai.brain.commons;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import elite.intel.ai.brain.Client;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
@@ -69,6 +67,47 @@ public abstract class AiEndPoint {
     }
 
     public record StructuredResponse(JsonArray choices, JsonObject message, String content, boolean isSuccessful) {
+    }
+
+    /**
+     * Extracts the first valid JSON object from a model response string.
+     * Handles ```json code fences, leading preamble, and uses brace-counting
+     * to find the correct closing brace. Returns null if no valid JSON is found.
+     */
+    protected String extractJsonFromContent(String content) {
+        content = content.trim();
+
+        int start = content.indexOf('{');
+        if (start == -1) return null;
+
+        int fenceStart = content.indexOf("```json");
+        if (fenceStart != -1) {
+            start = content.indexOf('{', fenceStart + 7);
+        }
+
+        int braceCount = 0;
+        int end = -1;
+        for (int i = start; i < content.length(); i++) {
+            char c = content.charAt(i);
+            if (c == '{') braceCount++;
+            else if (c == '}') {
+                braceCount--;
+                if (braceCount == 0) {
+                    end = i + 1;
+                    break;
+                }
+            }
+        }
+
+        if (end == -1) return null;
+
+        String candidate = content.substring(start, end);
+        try {
+            JsonParser.parseString(candidate);
+            return candidate;
+        } catch (JsonSyntaxException ignored) {
+            return null;
+        }
     }
 
 }

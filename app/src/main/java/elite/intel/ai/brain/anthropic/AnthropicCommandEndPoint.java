@@ -155,13 +155,4 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
         getRouter().processAiResponse(response, userInput);
     }
 
-    // -----------------------------------------------------------------------
-    // Helpers
-    // -----------------------------------------------------------------------
-
-    private JsonObject createError(String text) {
-        JsonObject err = new JsonObject();
-        err.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, text);
-        return err;
-    }
 }

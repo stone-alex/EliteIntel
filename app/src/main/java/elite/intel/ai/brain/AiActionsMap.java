@@ -76,7 +76,7 @@ public class AiActionsMap {
             map.put("set optimal speed, optimal approach speed, optimize approach speed", SET_OPTIMAL_SPEED.getAction());
             map.put("landing gear, gear down, lower landing gear, extend landing gear", DEPLOY_LANDING_GEAR.getAction());
             map.put("retract landing gear, gear up, raise landing gear, stow landing gear", RETRACT_LANDING_GEAR.getAction());
-            map.put("request docking, dock at station, request landing, docking request, ask for docking, request parking, parking spot, request pad", REQUEST_DOCKING.getAction());
+            map.put("request docking, dock at station, request landing, docking request, ask for docking, request parking, parking spot, request pad, park ship", REQUEST_DOCKING.getAction());
             // UI panels
             map.put("show, open or display fighter panel", SHOW_FIGHTER_PANEL.getAction());
 
@@ -113,7 +113,7 @@ public class AiActionsMap {
             // flight / ship systems
             map.put("switch to combat mode", ACTIVATE_COMBAT_MODE.getAction());
             map.put("switch to analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
-            map.put("open / close cargo scoop, deploy / retract cargo scoop, open / close cargo bay", TOGGLE_CARGO_SCOOP.getAction());
+            map.put("open / close cargo scoop, deploy / retract cargo scoop, open / close cargo bay / deploy cargo scoop", TOGGLE_CARGO_SCOOP.getAction());
             map.put("night vision, nightvision, turn on night vision, turn off night vision ", NIGHT_VISION_ON_OFF.getAction());
             map.put("headlights, lights, turn off lights, turn on lights, ship lights, lights on, lights off ", LIGHTS_ON_OFF.getAction());
             // UI panels

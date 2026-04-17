@@ -12,7 +12,6 @@ import elite.intel.db.managers.ShipManager;
 import elite.intel.db.util.Database;
 import elite.intel.util.AppPaths;
 import elite.intel.util.Cypher;
-import elite.intel.util.json.GsonFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -101,27 +100,6 @@ public class SystemSession {
         if (ship == null) return ShipCadence.IMPERIAL;
         return ShipCadence.valueOf(ship.getCadence());
     }
-
-    public ChatHistory getChatHistory() {
-        return Database.withDao(ChatHistoryDao.class, dao -> {
-            ChatHistoryDao.ChatHistory chats = dao.lastChat();
-            if (chats == null) {
-                return new ChatHistory();
-            }
-            return GsonFactory.getGson().fromJson(chats.getJson(), ChatHistory.class);
-        });
-    }
-
-    public void setChatHistory(ChatHistory chatHistory) {
-        Database.withDao(ChatHistoryDao.class, dao -> {
-            dao.clear();
-            ChatHistoryDao.ChatHistory data = new ChatHistoryDao.ChatHistory();
-            data.setJson(chatHistory.toJson());
-            dao.save(data);
-            return null;
-        });
-    }
-
 
     public boolean isSleepingModeOn() {
         return Database.withDao(GameSessionDao.class, dao -> {

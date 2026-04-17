@@ -10,8 +10,6 @@ import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.HttpURLConnection;
-
 public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterface {
     private static final Logger logger = LogManager.getLogger(GrokAnalysisEndpoint.class);
     private final Gson gson = GsonFactory.getGson();
@@ -71,17 +69,10 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
 
             logger.debug("API response content:\n{}", content);
 
-            String jsonContent;
-            int jsonStart = content.indexOf("\n\n{");
-            if (jsonStart != -1) {
-                jsonContent = content.substring(jsonStart + 2); // Skip \n\n
-            } else {
-                jsonStart = content.indexOf("{");
-                if (jsonStart == -1) {
-                    logger.error("No JSON object found in content:\n{}", content);
-                    return client.createErrorResponse("Analysis error.");
-                }
-                jsonContent = content.substring(jsonStart);
+            String jsonContent = extractJsonFromContent(content);
+            if (jsonContent == null) {
+                logger.error("Could not extract JSON from content:\n{}", content);
+                return client.createErrorResponse("Analysis error.");
             }
 
             logger.info("Extracted JSON content:\n\n{}\n\n", jsonContent);

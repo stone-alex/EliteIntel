@@ -23,9 +23,12 @@ public class NaturalSpeechIntegrationTest {
 
     /**
      * Pause between each test phrase. Increase if your LLM is slow.
+     * 3000 simulates a typical interaction.
+     * 1500 go faster.
+     * 250 you are pushing it.
+     * 150 bro I want your hardware.
      */
     private static final int LLM_WAIT_MS = 3000;
-    /// adjust this knob to your LLM. too fast, and the fail rate will be higher.
 
     private HandlerCapture capture;
 
@@ -47,7 +50,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     // -------------------------------------------------------------------------
-    // Core helper
+    // Core tester
     // -------------------------------------------------------------------------
 
     private void assertRouted(String input, String expectedAction) throws InterruptedException {

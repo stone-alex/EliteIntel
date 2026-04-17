@@ -17,19 +17,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-/**
- * HTTP client for the Anthropic (Claude) Messages API.
- * <p>
- * Key differences from Ollama/OpenAI:
- * - Auth via "x-api-key" header (not Bearer token)
- * - Requires "anthropic-version" header
- * - "system" prompt is a TOP-LEVEL field, NOT a messages[] entry
- * - Response content is at: response.content[0].text
- * <p>
- * The system-prompt extraction from the shared JsonArray is handled in
- * AnthropicCommandEndPoint before calling sendJsonRequest(), so this
- * client receives a body that is already correctly shaped for the API.
- */
 public class AnthropicClient extends BaseAiClient implements Client {
 
 

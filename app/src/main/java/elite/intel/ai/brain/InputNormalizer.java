@@ -391,9 +391,9 @@ public class InputNormalizer {
     private static void loadRouteAndShipQueries(LinkedHashMap<String, String> m) {
         // Plotted route / jump counts
         m.put("how many jumps remaining", "plotted route");
+        m.put("jumps remaining", "plotted route");
         m.put("how many jumps left", "plotted route");
         m.put("jumps to destination", "plotted route");
-        m.put("jumps remaining", "plotted route");
         m.put("jumps left", "plotted route");
         m.put("is next star scoopable", "fuel at next stop");
         m.put("can we scoop next star", "fuel at next stop");

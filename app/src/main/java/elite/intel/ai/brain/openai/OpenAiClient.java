@@ -17,10 +17,8 @@ import java.net.URL;
 
 public class OpenAiClient extends BaseAiClient implements Client {
 
-    //public static final String MODEL_GPT_4_1_MINI = "gpt-4.1-mini";
     public static final String MODEL_GPT = "gpt-5.2";
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
-    //NOTE: Do not use nano LLM. It can't properly map commands or queries.
     private static OpenAiClient instance;
     private final PlayerSession playerSession = PlayerSession.getInstance();
 

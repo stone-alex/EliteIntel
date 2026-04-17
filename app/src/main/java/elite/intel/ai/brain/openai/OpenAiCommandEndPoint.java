@@ -5,7 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.brain.commons.CommandEndPoint;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
@@ -115,35 +114,18 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
     }
 
     private void processVoiceCommand(String userInput) {
-
         if (userInput == null || userInput.isEmpty()) {
-            JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, "Sorry, I couldn't process that.");
-            getRouter().processAiResponse(errorResponse, userInput);
+            getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
             return;
         }
 
         log.info("Sanitized voice userInput:\n{}", userInput);
 
-        JsonArray messages = new JsonArray();
-        JsonObject systemMessage = new JsonObject();
-        systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        String systemPrompt = getContextFactory().generateUserInputSystemPrompt(userInput);
-        systemMessage.addProperty("content", systemPrompt);
-        messages.add(systemMessage);
+        JsonArray messages = buildVoiceCommandMessages(userInput);
 
-        JsonObject userMessage = new JsonObject();
-        userMessage.addProperty("role", AIConstants.ROLE_USER);
-
-        userMessage.addProperty("content", getContextFactory().normalizeInput(userInput));
-        messages.add(userMessage);
-
-        // Send to Open AI
         JsonObject apiResponse = callOpenAiApi(messages);
         if (apiResponse == null) {
-            JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, "Sorry, I couldn't process that.");
-            getRouter().processAiResponse(errorResponse, userInput);
+            getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
             return;
         }
 
@@ -157,31 +139,8 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         if (trimToNull(event.getSensorData()) == null) return;
 
         EventBusManager.publish(new AppLogEvent("Processing Sensor event"));
-        JsonArray messages = new JsonArray();
+        JsonArray messages = buildSensorMessages(event);
 
-        JsonObject systemMessage = new JsonObject();
-        systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        systemMessage.addProperty("content", getContextFactory().generateSensorPrompt());
-        messages.add(systemMessage);
-
-        JsonObject instructions = new JsonObject();
-        instructions.addProperty("role", AIConstants.ROLE_SYSTEM);
-        instructions.addProperty("content", event.getInstructions());
-        messages.add(instructions);
-
-        JsonObject userMessage = new JsonObject();
-        userMessage.addProperty("role", AIConstants.ROLE_USER);
-        userMessage.addProperty("content", event.getSensorData());
-        messages.add(userMessage);
-
-        // Create API request body
-        OpenAiClient client = OpenAiClient.getInstance();
-        JsonObject prompt = client.createPrompt(OpenAiClient.MODEL_GPT, 0.10f);
-        prompt.add("messages", messages);
-
-        // Serialize to JSON string
-        String jsonString = GsonFactory.getGson().toJson(prompt);
-        log.debug("JSON prepared for callOpenAiApi:\n{}", jsonString);
         executor.submit(() -> {
             try {
                 JsonObject apiResponse = callOpenAiApi(messages);
@@ -191,7 +150,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
                 }
                 getRouter().processAiResponse(apiResponse, null);
             } catch (JsonSyntaxException e) {
-                log.error("JSON parsing failed for input:\n{}", jsonString, e);
+                log.error("JSON parsing failed for sensor event", e);
                 throw e;
             }
         });
@@ -227,37 +186,20 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
                 return client.createErrorResponse("No content in API response");
             }
 
-            // Log content before parsing
             log.debug("API response content:\n{}", content);
 
-            // Parse JSON content
-            String jsonContent;
-            int jsonStart = content.indexOf("\n\n{");
-            if (jsonStart != -1) {
-                jsonContent = content.substring(jsonStart + 2); // Skip \n\n
-            } else {
-                jsonStart = content.indexOf("{");
-                if (jsonStart == -1) {
-                    log.error("No JSON object found in content:\n{}", content);
-                    return client.createErrorResponse("No JSON object in content");
-                }
-                jsonContent = content.substring(jsonStart);
-                try {
-                    JsonParser.parseString(jsonContent);
-                } catch (JsonSyntaxException e) {
-                    log.error("Invalid JSON object in content:\n{}", jsonContent, e);
-                    return client.createErrorResponse("Invalid JSON in content");
-                }
+            String jsonContent = extractJsonFromContent(content);
+            if (jsonContent == null) {
+                log.error("Could not extract JSON from content:\n{}", content);
+                return client.createErrorResponse("No JSON object in content");
             }
 
-            // Log extracted JSON
-            log.debug("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
+            log.debug("Extracted JSON content:\n\n{}\n\n", jsonContent);
 
-            // Parse JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent), e);
+                log.error("Failed to parse API response content:\n{}", jsonContent, e);
                 return client.createErrorResponse("Failed to parse API content");
             }
         } catch (IOException e) {

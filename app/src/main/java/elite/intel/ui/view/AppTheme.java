@@ -12,7 +12,7 @@ import java.awt.*;
  */
 public class AppTheme {
 
-    public static final Color BG = new Color(0x141622);
+    public static final Color BG = new Color(0x151519);
     public static final Color LOG_BG = new Color(0x171927);
     public static final Color BG_PANEL = new Color(0x1F2032);
     public static final Color FG = new Color(0xE6E6E6);
@@ -23,8 +23,8 @@ public class AppTheme {
     public static final Color CONSOLE_FG = new Color(0xE0FFEF);
     public static final Color SEL_BG = new Color(0xE0FFEF);
     public static final Color SEL_FG = new Color(0x13181D);
-    public static final Color TAB_UNSELECTED = new Color(0x141622);
-    public static final Color TAB_SELECTED = new Color(0x141622);
+    public static final Color TAB_UNSELECTED = new Color(0x151519);
+    public static final Color TAB_SELECTED = new Color(0x151519);
     public static final Color DISABLED_FG = new Color(0x8B0101);
 
     // -- Button factories ------------------------------------------------------

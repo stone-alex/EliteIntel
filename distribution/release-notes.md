@@ -1,8 +1,9 @@
-## Elite Intel v-0.0359-beta
+## Elite Intel v-0.0360-beta
 
 ### bug fixes / features:
 - Fix for EDSM client. headers and API call limit/timeout
 - Increased wait time for galaxy map to open before we attempt to enter the route.
+- Fix for home system setting. Setting home system from a station/carrier would return incorrect systemAddress (0) and therefore no route could be plotted.
 
 
 ### bug fixes / features:

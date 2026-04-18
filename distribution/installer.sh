@@ -423,7 +423,8 @@ sleep 0.2
 
 cat << EOF
 
-    Thank you for downloading EliteIntel, your new copilot (not microsoft affiliated)!
+    Thank you for downloading EliteIntel, your new side-kick.
+    Bugs? Feature requests? Contact developer at https://matrix.to/#/#krondor:matrix.org
 
     Fly dangerous and explore the galaxy!
 

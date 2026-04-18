@@ -1,7 +1,7 @@
 # Grok Implementation (`elite.intel.ai.brain.xai`)
 
 This package provides the Grok-specific implementation for EliteIntel,
-a TOS-compliant Quality-of-Life (QoL) companion app for *Elite Dangerous*.
+a Quality-of-Life (QoL) companion app for *Elite Dangerous*.
 It connects to xAI's Grok API (`https://api.x.ai/v1/chat/completions`)
 to process user inputs (voice transcribed to text by STT impl) and deliver relevant responses.
 
@@ -56,7 +56,7 @@ To add an alternative LLM (e.g., for users with other LLM accounts):
     - Maintain conversation history for commands, queries, and chats.
     - Integrate with Handlers via `CommandHandler handler = commandHandlers.get(action);` and `QueryHandler handler = queryHandlers.get(action);`
 
-4. **Test Thoroughly**: Validate with *Elite Dangerous* scenarios to ensure TOS compliance and seamless voice/game integration.
+4. **Test Thoroughly**: Validate with *Elite Dangerous* scenarios to ensure seamless voice/game integration.
 
 ## <span style='color: red'>**Warning**:</span>
 
@@ -69,7 +69,7 @@ To add an alternative LLM (e.g., for users with other LLM accounts):
 ## Development Notes
 - **Dependencies**: Built with pure Java (`java.net.http`) and libraries in `app/build.gradle`. No JNI, DLLs, or Python allowed.
 - **Commands and Queries**: Defined in `AiRequestHints` (`COMMANDS`, `QUERIES`) from `GameCommands`, `CustomCommands`, and `QueryActions`. Queries may require follow-ups.
-- **Testing**: Test with *Elite Dangerous* journal data and voice output for stability and TOS compliance.
+- **Testing**: Test with *Elite Dangerous* journal data and voice output for stability.
 
 ## Contact project owner for questions
 Submit a pull request, open an issue on GitHub, or contact me via [Discord](https://discord.gg/3qAqBENsBm).

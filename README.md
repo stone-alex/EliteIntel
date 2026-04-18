@@ -54,7 +54,7 @@ Powered by NVIDIA Parakeet. built-in / included.
 
 ## Overview
 
-Elite Intel is your AI-powered, TOS-compliant sidekick for *Elite Dangerous*.
+Elite Intel is your AI-powered, sidekick for *Elite Dangerous*.
 It's a Quality of Life (QoL) app that enhances gameplay with voice-activated commands 
 **uttered in natural language**,
 real-time journal parsing, and smart AI assistance-all while staying fully compliant
@@ -69,7 +69,7 @@ and auxiliary files, pulls in info from EDSM when needed, and keeps things respo
 
 ## Contributing
 
-Fork it and submit pull requests! Stick to TOS, keep things modular and event-driven, and test your changes. For dev
+Fork it and submit pull requests! Keep things modular and event-driven, and test your changes. For dev
 details, check out `DEVELOPERS.md` in the root. It covers the architecture (decoupled, multithreaded, event registry via
 reflection) and principles like DRY and SRP. All PRs go through review.
 

@@ -9,7 +9,7 @@
 - [elite.intel.ai.ears](app/src/main/java/elite/intel/ai/ears/DEVELOPER.md)
 - [elite.intel.ai.brain](app/src/main/java/elite/intel/ai/brain/DEVELOPER.md)
 
-Welcome to developing for Elite Intel, a Java-based QoL app for *Elite Dangerous*. This guide ensures contributions align with the app’s architecture and Frontier’s TOS. The app uses an event-driven design (`elite.intel.gameapi`), Swing UI (`elite.intel.ui`), and integrates STT/TTS (via
+Welcome to developing for Elite Intel, a Java-based QoL app for *Elite Dangerous*. This guide ensures contributions align with the app’s architecture. The app uses an event-driven design (`elite.intel.gameapi`), Swing UI (`elite.intel.ui`), and integrates STT/TTS (via
 `elite.intel.ai.ears` and `elite.intel.ai.mouth`) and AI (via `elite.intel.ai.brain`).
 
 ### How does the app work?
@@ -90,7 +90,7 @@ java -Djava.library.path=distribution/native/sherpa-onnx -jar distribution/elite
     - Follow MVC in `elite.intel.ui` (controllers, views, models).
     - Use event-driven design in `elite.intel.gameapi` (e.g., `EventBusManager.publish`).
 - **Modularity**: New features should subscribe to journal events (`elite.intel.gameapi.journal.events`) or custom events via `@Subscribe`.
-- **TOS Compliance**: No AFK automation or game file modifications. All actions require user input.
+- **No AFK automation**: No AFK automation or game file modifications. All actions require user input.
 
 ⚠ **Any pull requests that require users setting up external dependencies such as Python environments etc. will be
 rejected.**

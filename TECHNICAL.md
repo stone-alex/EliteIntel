@@ -150,7 +150,7 @@ endpoint, and never leave the user's machine in any other form.
 
 The application does not read game client memory, inject into the game process, or use
 overlays. All data is sourced from the journal file API or EDSM. This is a hard architectural
-constraint, not an implementation choice - it is what makes the application TOS-compliant.
+constraint, no in-game memory reading.
 
 ---
 
@@ -178,7 +178,7 @@ after the fact.
 hardware can run the entire stack - STT, LLM, TTS - with no internet connection and no
 ongoing API cost.
 
-**TOS compliance as a hard constraint.** The architecture was designed around what the
+**No in-game memory reading.** The architecture was designed around what the
 official API exposes, not around what would be technically possible with memory access.
 This is not a limitation - it is what makes the application distributable and trustworthy.
 

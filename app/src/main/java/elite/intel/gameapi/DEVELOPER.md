@@ -190,7 +190,7 @@ This package is the **source** of game state for the whole application:
 
 ---
 
-## TOS Compliance Note
+## Game API
 
 All game data originates from the journal file and
 `status.json` - the officially documented Elite Dangerous third-party API. **No game memory reading, process injection,

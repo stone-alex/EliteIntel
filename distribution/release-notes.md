@@ -1,3 +1,11 @@
+## Elite Intel v-0.0363-beta
+
+### bug fixes / features:
+- Changed installer.sh script to download a known Java 21 JRE and run the app with it. Turns out some setups might have a headless JDK which can't run GUI apps.
+
+
+
+
 ## Elite Intel v-0.0362-beta
 
 ### bug fixes / features:

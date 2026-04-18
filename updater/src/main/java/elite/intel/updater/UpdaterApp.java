@@ -42,7 +42,7 @@ public class UpdaterApp {
 
     private static final String ICON_AI = "/images/update.png";
     // -- Palette (mirrors AppView exactly) ------------------------------------
-    private static final Color BG = new Color(0x141622);
+    private static final Color BG = new Color(0x151519);
     private static final Color BG_PANEL = new Color(0x1F2032);
     private static final Color FG = new Color(0xE6E6E6);
     private static final Color FG_MUTED = new Color(0xB0B0B0);
@@ -494,13 +494,23 @@ public class UpdaterApp {
 
     // -- Step 4 – relaunch main app --------------------------------------------
 
+    private String resolveJavaCommand() {
+        if (System.getProperty("os.name", "").toLowerCase().contains("linux")) {
+            Path bundled = Path.of(installDir, "jre", "bin", "java");
+            if (Files.exists(bundled))
+                return bundled.toAbsolutePath().toString();
+        }
+        return "java";
+    }
+
     private void relaunch() throws IOException {
         Path jar = Path.of(installDir, MAIN_JAR);
         if (!Files.exists(jar))
             throw new IOException("Cannot find " + jar + " after extraction.");
 
+        String javaCmd = resolveJavaCommand();
         ProcessBuilder pb = new ProcessBuilder(
-                "java",
+                javaCmd,
                 "-Djava.library.path=native/sherpa-onnx",
                 "-jar", jar.toAbsolutePath().toString()
         );

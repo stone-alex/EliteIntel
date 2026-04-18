@@ -23,31 +23,42 @@ DEFAULT_INSTALL_LOCATION="$HOME/.var/app/elite.intel.app"
 INSTALL_FOLDER="elite.intel.app"
 STEAM_FOLDER=""
 
+# Temurin 21 LTS JRE - bundled with the app, not dependent on system Java.
+# Using the Adoptium API to always fetch the latest 21 patch release.
+# Full (not headless) JRE is required for Swing/AWT.
+JRE_API="https://api.adoptium.net/v3/binary/latest/21/ga/linux/x64/jre/hotspot/normal/eclipse"
+JRE_DIR="jre"
+
 #
 #	Functions
 #
-check_java_install() {
 
-    echo "Setting up Java..."
-    if command -v java >/dev/null; then
-    	local java=$(java -version 2>&1 | awk -F'"' '/version/ {print $2}' | cut -d '.' -f 1)
-    	if (( $java  >= 21 )); then
-    		echo "Java up-to-date!"
-    		return
-    	fi
+install_jre() {
+    local JRE_PATH="$DEFAULT_INSTALL_LOCATION/$JRE_DIR"
+
+    # Skip download if a bundled JRE is already present from a previous install
+    if [ -x "$JRE_PATH/bin/java" ]; then
+        echo "Bundled JRE already present, skipping download."
+        return
     fi
 
-    if command -v apt >/dev/null 2>&1;			then sudo apt update 		&& sudo apt install -y openjdk-21-jre
-    elif command -v dnf >/dev/null 2>&1;		then sudo dnf update 		&& sudo dnf install -y openjdk-21-jre
-    elif command -v yum >/dev/null 2>&1;		then sudo yum update 		&& sudo yum install -y openjdk-21-jre
-    elif command -v pacman >/dev/null 2>&1;		then sudo pacman update 	&& sudo pacman install -y openjdk-21-jre
-    elif command -v zypper >/dev/null 2>&1;		then sudo zypper update 	&& sudo zypper install -y openjdk-21-jre
-    elif command -v apk >/dev/null 2>&1;		then sudo apk update 		&& sudo apk install -y openjdk-21-jre
-    elif command -v emerge >/dev/null 2>&1;		then sudo emerge update 	&& sudo emerge install -y openjdk-21-jre
-    elif command -v slackpkg >/dev/null 2>&1;	then sudo slackppkg update 	&& sudo slackppkg install -y openjdk-21-jre
+    echo "Downloading bundled JRE (Temurin 21)..."
+    mkdir -p "$JRE_PATH"
+
+    if ! curl -L -o /tmp/ei_jre.tar.gz "$JRE_API"; then
+        echo "ERROR: Failed to download JRE. Check your internet connection."
+        exit 1
     fi
 
-    echo "Java installed!"
+    tar -xzf /tmp/ei_jre.tar.gz -C "$JRE_PATH" --strip-components=1
+    rm -f /tmp/ei_jre.tar.gz
+
+    if [ ! -x "$JRE_PATH/bin/java" ]; then
+        echo "ERROR: JRE extraction failed. Installation cannot continue."
+        exit 1
+    fi
+
+    echo "Bundled JRE installed: $($JRE_PATH/bin/java -version 2>&1 | head -1)"
 }
 
 detect_steam() {
@@ -234,7 +245,9 @@ update_elite_intel() {
         | cut -d '"' -f 4)
 
     local ELITE_ZIP="elite_intel*.zip"
-    # Update all distributed assets - jar, dictionary, models and native libs
+    # Update all distributed assets - jar, dictionary, models and native libs.
+    # The bundled JRE lives in $ELITEINTEL_FOLDER/jre/ and is preserved across updates
+    # unless explicitly replaced.
     unzip -o "$ELITE_ZIP" -d "$ELITEINTEL_FOLDER"
 
     rm $ELITE_ZIP
@@ -314,25 +327,35 @@ create_start_menu() {
     local ICON_PATH="$DEFAULT_INSTALL_LOCATION/elite-logo.png"
     local LAUNCHER="$DEFAULT_INSTALL_LOCATION/elite-intel.sh"
     local NATIVE_DIR="$DEFAULT_INSTALL_LOCATION/native/sherpa-onnx"
+    local JAVA_BIN="$DEFAULT_INSTALL_LOCATION/$JRE_DIR/bin/java"
 
     mkdir -p "$DESKTOP_DIR"
 
     # Download icon only if missing
     [ -f "$ICON_PATH" ] || curl -L -o "$ICON_PATH" https://raw.githubusercontent.com/stone-alex/EliteIntel/master/app/src/main/resources/images/elite-logo.png
 
-    # Launcher script - sets LD_LIBRARY_PATH so sherpa-onnx JNI resolves
-    # libsherpa-onnx-jni.so by name (required by JDK 21, cannot be done post-launch)
+    # Launcher script - uses the bundled JRE so system Java version and
+    # headless/full split are irrelevant. Also sets LD_LIBRARY_PATH so
+    # sherpa-onnx JNI resolves libsherpa-onnx-jni.so by name (required
+    # by JDK 21+, cannot be done post-launch). DISPLAY fallback handles
+    # Wayland desktops where the .desktop launcher may not inherit $DISPLAY.
     cat > "$LAUNCHER" << 'LAUNCHEOF'
 #!/usr/bin/env bash
+INSTALL_DIR="INSTALL_DIR_PLACEHOLDER"
 NATIVE_DIR="NATIVE_DIR_PLACEHOLDER"
+JAVA_BIN="JAVA_BIN_PLACEHOLDER"
+
 export LD_LIBRARY_PATH="$NATIVE_DIR:$LD_LIBRARY_PATH"
-cd "INSTALL_DIR_PLACEHOLDER"
-exec java -Xmx6g -Djava.library.path="$NATIVE_DIR" -jar "INSTALL_DIR_PLACEHOLDER/elite_intel.jar"
+export DISPLAY="${DISPLAY:-:0}"
+
+cd "$INSTALL_DIR"
+exec "$JAVA_BIN" -Xmx6g -Djava.library.path="$NATIVE_DIR" -jar "$INSTALL_DIR/elite_intel.jar"
 LAUNCHEOF
 
     # Substitute actual paths (avoids heredoc variable expansion issues)
-    sed -i "s|NATIVE_DIR_PLACEHOLDER|$NATIVE_DIR|g" "$LAUNCHER"
     sed -i "s|INSTALL_DIR_PLACEHOLDER|$DEFAULT_INSTALL_LOCATION|g" "$LAUNCHER"
+    sed -i "s|NATIVE_DIR_PLACEHOLDER|$NATIVE_DIR|g" "$LAUNCHER"
+    sed -i "s|JAVA_BIN_PLACEHOLDER|$JAVA_BIN|g" "$LAUNCHER"
     chmod +x "$LAUNCHER"
 
     cat > "$DESKTOP_FILE" << EOF
@@ -370,17 +393,20 @@ while getopts ":hud" opt; do
 done
 
 #
-#		Update repositories and install/update Java runtime
-#
-check_java_install
-sleep 0.2
-#       Determine Steam installation
-detect_steam
-sleep 0.2
-#
 #		Install EliteIntel
 #
 set_install_folder
+sleep 0.2
+
+#
+#       Download and install bundled JRE (Temurin 21, full - not headless)
+#       Must run after set_install_folder so DEFAULT_INSTALL_LOCATION is finalised
+#
+install_jre
+sleep 0.2
+
+#       Determine Steam installation
+detect_steam
 sleep 0.2
 
 #
@@ -388,6 +414,7 @@ sleep 0.2
 #
 create_bindings
 sleep 0.2
+
 #
 #       Create Start menu shortcut
 #

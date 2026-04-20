@@ -52,15 +52,10 @@ public class SystemSession {
 
     public KokoroVoices getKokoroVoice() {
         ShipDao.Ship ship = ShipManager.getInstance().getShip();
-        if (ship == null) return KokoroVoices.EMMA;
+        if (ship == null) return KokoroVoices.GEORGE;
         String voice = ship.getVoice();
-        if (voice == null) return KokoroVoices.EMMA;
+        if (voice == null) return KokoroVoices.GEORGE;
         return KokoroVoices.valueOf(voice);
-    }
-
-
-    public void setGoogleVoice(GoogleVoices voice) {
-        setShipVoice(voice.name());
     }
 
     private void setShipVoice(String voice) {
@@ -71,16 +66,6 @@ public class SystemSession {
         shipManager.saveShip(ship);
     }
 
-    public void setKokoroVoice(KokoroVoices voice) {
-        setShipVoice(voice.name());
-    }
-
-    public void setShipPersonality(ShipPersonality personality) {
-        ShipDao.Ship ship = shipManager.getShip();
-        if (ship == null) return;
-        ship.setPersonality(personality.name());
-        shipManager.saveShip(ship);
-    }
 
     public ShipPersonality getAIPersonality() {
         ShipDao.Ship ship = shipManager.getShip();
@@ -88,12 +73,6 @@ public class SystemSession {
         return ShipPersonality.valueOf(ship.getPersonality());
     }
 
-    public void setShipCadence(ShipCadence cadence) {
-        ShipDao.Ship ship = shipManager.getShip();
-        if (ship == null) return;
-        ship.setCadence(cadence.name());
-        shipManager.saveShip(ship);
-    }
 
     public ShipCadence getAICadence() {
         ShipDao.Ship ship = shipManager.getShip();

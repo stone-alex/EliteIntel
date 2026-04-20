@@ -40,9 +40,9 @@ public class LoadoutSubscriber {
 
             ShipDao.Ship ship = shipManager.getShipById(event.getShipId());
             if (ship == null) {
-                String shipDefaultVoice = KokoroVoices.EMMA.name();
+                String shipDefaultVoice = KokoroVoices.GEORGE.name();
                 if (!systemSession.useLocalTTS()) {
-                    shipDefaultVoice = GoogleVoices.EMMA.name();
+                    shipDefaultVoice = GoogleVoices.STEVE.name();
                 }
                 shipManager.save(event.getShipId(), event.getShipName(), event.getCargoCapacity(), event.getShip(), shipDefaultVoice);
             } else {

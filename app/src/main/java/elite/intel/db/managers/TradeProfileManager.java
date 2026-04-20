@@ -53,7 +53,7 @@ public class TradeProfileManager {
         criteria.setMaxLsFromArrival(profile.getMaxDistanceLs());
         criteria.setMaxJumps(profile.getMaxJumps());
         criteria.setAllowStrongHold(profile.isAllowStrongHold());
-        criteria.setRequiresLargePad("L".equals(ShipPadSizes.getPadSize(ship.getShipIdentifier())));
+        criteria.setRequiresLargePad(shipManager.requireLargePad());
         criteria.setStartingCapital(profile.getStartingBudget());
 
         if (withStationStartingStation) {

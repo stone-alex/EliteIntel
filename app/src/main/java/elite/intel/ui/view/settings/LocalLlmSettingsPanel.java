@@ -87,11 +87,7 @@ public class LocalLlmSettingsPanel extends JPanel {
 
         JButton restoreButton = makeButton("Restore Defaults");
         restoreButton.addActionListener(e -> SwingUtilities.invokeLater(() -> {
-            ollamaRadio.setSelected(true);
-            localLlmAddressField.setText(LocalLlmProvider.OLLAMA.getDefaultUrl());
-            localLlmModelCommandField.setText("tulu3:8b");
-            localLlmModelQueryField.setText("tulu3:8b");
-            save();
+            setDefaults();
         }));
 
         buttons.add(saveButton);
@@ -107,6 +103,16 @@ public class LocalLlmSettingsPanel extends JPanel {
         content.add(buttons);
 
         add(content, BorderLayout.NORTH);
+    }
+
+    private void setDefaults() {
+        lmStudioRadio.setSelected(true);
+        useLocalCommandLLMCheck.setSelected(true);
+        useLocalQueryLLMCheck.setSelected(true);
+        localLlmAddressField.setText(LocalLlmProvider.LMSTUDIO.getDefaultUrl());
+        localLlmModelCommandField.setText("matrixportalx/tulu-3.1-8b-supernova");
+        localLlmModelQueryField.setText("matrixportalx/tulu-3.1-8b-supernova");
+        save();
     }
 
     public void initData() {

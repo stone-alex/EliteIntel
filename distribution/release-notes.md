@@ -1,3 +1,10 @@
+## Elite Intel v-0.0367-beta
+
+### bug fixes / features:
+- Fixing on-boarding. Default to LMStudio tulu3.1:8b-supernova etc
+
+
+
 ## Elite Intel v-0.0366-beta
 
 ### bug fixes / features:

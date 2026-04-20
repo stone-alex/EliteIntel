@@ -13,9 +13,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static elite.intel.util.StringUtls.humanizeBindingName;
@@ -118,17 +116,18 @@ public class BindingsMonitor {
                     }
                     continue;
                 }
-                keyBindingManager.clear();
 
                 for (WatchEvent<?> event : key.pollEvents()) {
                     WatchEvent.Kind<?> kind = event.kind();
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY || kind == StandardWatchEventKinds.ENTRY_CREATE) {
                         Path changed = (Path) event.context();
                         if (changed.toString().endsWith(".binds")) {
-                            File latestFile = new BindingsLoader().getLatestBindsFile();
-                            if (!latestFile.equals(currentBindsFile) ||
-                                    Files.getLastModifiedTime(latestFile.toPath()).toMillis() > currentBindsFile.lastModified()) {
-                                currentBindsFile = latestFile;
+                            File activeFile = new BindingsLoader().getLatestBindsFile();
+                            boolean activeFileWasModified = activeFile.getName().equals(changed.toString());
+                            boolean activeFileChanged = !activeFile.equals(currentBindsFile);
+                            if (activeFileWasModified || activeFileChanged) {
+                                currentBindsFile = activeFile;
+                                Thread.sleep(300); // wait for the game to finish writing
                                 parseAndUpdateBindings();
                                 log.info("Reloaded bindings from: {}", currentBindsFile.getName());
                             }
@@ -180,25 +179,28 @@ public class BindingsMonitor {
      */
     public List<String> checkForMissingBindingsAndPersist() {
         List<String> result = new ArrayList<>();
-        BindingsMonitor monitor = BindingsMonitor.getInstance();
-        Bindings.GameCommand[] values = Bindings.GameCommand.values();
+        Map<String, KeyBindingsParser.KeyBinding> currentBindings = getBindings();
+        if (currentBindings == null) {
+            log.warn("Bindings not yet loaded, skipping missing binding check");
+            return result;
+        }
+
         List<String> oldMissingBindings = keyBindingManager
                 .getMissingBindings()
                 .stream()
                 .map(KeyBinding::getKeyBinding)
                 .toList();
 
-        for (Bindings.GameCommand command : values) {
-            KeyBindingsParser.KeyBinding binding = monitor
-                    .getBindings()
-                    .get(command.getGameBinding());
+        Set<String> checkedGameBindings = new HashSet<>();
+        for (Bindings.GameCommand command : Bindings.GameCommand.values()) {
+            String gameBinding = command.getGameBinding();
+            if (!checkedGameBindings.add(gameBinding)) continue;
 
-            if (binding == null) {
-                String bindingName = humanizeBindingName(command.getGameBinding());
+            String bindingName = humanizeBindingName(gameBinding);
+            if (currentBindings.get(gameBinding) == null) {
                 keyBindingManager.addBinding(bindingName);
                 result.add(bindingName);
-            } else if (oldMissingBindings.contains(humanizeBindingName(command.getGameBinding()))) {
-                String bindingName = humanizeBindingName(command.getGameBinding());
+            } else if (oldMissingBindings.contains(bindingName)) {
                 keyBindingManager.removeBinding(bindingName);
             }
         }

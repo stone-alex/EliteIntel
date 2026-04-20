@@ -1,6 +1,5 @@
 package elite.intel.ai.hands;
 
-import elite.intel.db.managers.KeyBindingManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -90,7 +89,6 @@ public class KeyBindingsParser {
             }
         }
         log.info("Parsed {} bindings from file: {}", bindings.size(), file.getName());
-        KeyBindingManager.getInstance().clear();
         return bindings;
     }
 

@@ -1,3 +1,12 @@
+## Elite Intel v-0.0364-beta
+
+### bug fixes / features:
+- Keybinding monitor fix. A) will not update the bindings without restart. B) it will not read the StartPreset, not just the bindings file that was supdated last.
+
+
+
+
+
 ## Elite Intel v-0.0363-beta
 
 ### bug fixes / features:

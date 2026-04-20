@@ -318,7 +318,7 @@ public class CarrierDataDto implements ToJsonConvertible {
     }
 
     public int getFundedOperation() {
-        return Math.toIntExact((getTotalBalance() - getMarketBalance()) / 31000000);
+        return Math.toIntExact(reserveBalance / 31000000);
     }
 
 

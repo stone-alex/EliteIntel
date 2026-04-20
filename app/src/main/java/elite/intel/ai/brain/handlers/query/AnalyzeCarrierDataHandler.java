@@ -36,6 +36,7 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
                     - if specific field is not mentioned provide summary.
                     - Do not invent or assume values not in the data.
                     - If a value is zero or missing, state that clearly.
+                    - If reporting fundedOperation always mention that calculation is approximate based on 31 million credits per week.
                     """;
             return process(
                     new AiDataStruct(

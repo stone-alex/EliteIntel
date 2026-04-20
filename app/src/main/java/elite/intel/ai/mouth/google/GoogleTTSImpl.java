@@ -77,7 +77,8 @@ public class GoogleTTSImpl implements MouthInterface {
             log.info("TextToSpeechClient initialized successfully with API key");
         } catch (Exception e) {
             log.error("Failed to initialize TextToSpeechClient: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to initialize TextToSpeechClient", e);
+            EventBusManager.publish(new AppLogEvent("Google TTS failed to start: " + e.getMessage()));
+            return;
         }
 
         running = true;

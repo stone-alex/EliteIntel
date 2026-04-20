@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="DEBUG">
+<Configuration status="WARN">
     <Properties>
         <Property name="logPattern">%d{HH:mm:ss} %-6p→ %c{1}.%M(%F:%L) - %m%n</Property>
         <Property name="logPath">logs/</Property>

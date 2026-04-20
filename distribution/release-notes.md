@@ -1,3 +1,8 @@
+## Elite Intel v-0.0366-beta
+
+### bug fixes / features:
+- ParakeetSTTImpl.buildRecognizer(). On Windows, before any sherpa-onnx JNI class is touched, we call System.load() with the absolute path to the bundled onnxruntime.dll. Windows DLL loading is idempotent. Once a DLL is in the process, any subsequent load request for the same name reuses the already-loaded module, so sherpa-onnx-jni.dll will get the correct version.
+
 ## Elite Intel v-0.0365-beta
 
 ### bug fixes / features:

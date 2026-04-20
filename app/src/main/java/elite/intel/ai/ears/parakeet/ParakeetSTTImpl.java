@@ -137,6 +137,21 @@ public class ParakeetSTTImpl implements EarsInterface {
     }
 
     private OfflineRecognizer buildRecognizer() {
+        // Windows DLL hell: another app (e.g. LM Studio) may have installed a different
+        // onnxruntime.dll into System32. System32 is searched before our native dir for
+        // transitive DLL dependencies, so we preload the bundled copy first to win the race.
+        if (System.getProperty("os.name", "").toLowerCase().contains("win")) {
+            Path onnxRuntime = AppPaths.getNativeLibDir().resolve("sherpa-onnx/onnxruntime.dll");
+            if (Files.exists(onnxRuntime)) {
+                try {
+                    System.load(onnxRuntime.toAbsolutePath().toString());
+                    log.debug("Preloaded bundled onnxruntime.dll from {}", onnxRuntime);
+                } catch (UnsatisfiedLinkError e) {
+                    log.warn("Could not preload bundled onnxruntime.dll: {}", e.getMessage());
+                }
+            }
+        }
+
         Path modelDir = AppPaths.getParakeetModelDir();
         Path encoderFile = modelDir.resolve("encoder.int8.onnx");
         Path decoderFile = modelDir.resolve("decoder.int8.onnx");

@@ -95,7 +95,7 @@ public class AiActionsMap {
             // fighter orders
             map.put("deploy fighter, launch fighter, send out fighter", DEPLOY_FIGHTER.getAction());
             map.put("order fighter defend ship, fighter defend, fighter defensive", FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR.getAction());
-            map.put("order fighter attack my target, fighter attack, sic fighter on target", FIGHTER_REQUEST_FOCUS_TARGET.getAction());
+            map.put("order fighter attack my target, fighter attack, sic fighter on target, focus my target, focus target, focus on target, fighter focus target", FIGHTER_REQUEST_FOCUS_TARGET.getAction());
             map.put("order fighter hold fire, fighter cease fire, fighter stand down", FIGHTER_REQUEST_HOLD_FIRE.getAction());
             map.put("order fighter return to ship, fighter dock, recall fighter", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("fighter open orders, fire at will, attack at will", FIGHTER_OPEN_ORDERS.getAction());
@@ -106,7 +106,7 @@ public class AiActionsMap {
         }
 
         if (status.isInSrv() && status.isDocked() || isDryRun) {
-            map.put("show, open or display station services panel", SHOW_STATION_SERVICES.getAction());
+            map.put("show services panel, open services panel, display services panel, show station services panel", SHOW_STATION_SERVICES.getAction());
         }
 
         if (status.isInMainShip() || status.isInSrv() || isDryRun) {
@@ -117,7 +117,7 @@ public class AiActionsMap {
             map.put("night vision, nightvision, turn on night vision, turn off night vision ", NIGHT_VISION_ON_OFF.getAction());
             map.put("headlights, lights, turn off lights, turn on lights, ship lights, lights on, lights off ", LIGHTS_ON_OFF.getAction());
             // UI panels
-            map.put("show, open or display commander, central, role panel,", SHOW_COMMANDER_PANEL.getAction());
+            map.put("show, open or display commander, central, role panel, open knee board", SHOW_COMMANDER_PANEL.getAction());
             map.put("show, open or display crew panel", SHOW_CREW.getAction());
             map.put("show, open or display home panel", SHOW_INTERNAL_PANEL.getAction());
             map.put("show, open or display modules panel", SHOW_MODULES_PANEL.getAction());
@@ -243,7 +243,7 @@ public class AiActionsMap {
         map.put("exploration profits, discovery profits, how much exploration worth, exploration value, scan value, mapping profit, exobiology value, scan earnings, what are scans worth", EXPLORATION_PROFITS.getAction());
         map.put("query current location, where are we, our position, what system are we in, where am i, our coordinates, current system, what planet are we at, our current position, day length", CURRENT_LOCATION.getAction());
         map.put("FSD target info, analyze destination, what star are we targeting, analyze fsd target, information on fsd target", FSD_TARGET_ANALYSIS.getAction());
-        map.put("plotted route, fuel at next stop, fuel availability on route, route analysis, current route, navigation route, jumps remaining, jumps left, how many jumps, next star scoopable, fuel stop", PLOTTED_ROUTE_ANALYSIS.getAction());
+        map.put("plotted route, fuel at next stop, fuel availability on route, route analysis, are we there yet, current route, navigation route, jumps remaining, jumps left, how many jumps, next star scoopable, fuel stop", PLOTTED_ROUTE_ANALYSIS.getAction());
         map.put("trade route, trading route, current trade plan, what are we trading, our trading plan, trading schedule, trade legs", TRADE_ROUTE_ANALYSIS.getAction());
         map.put("outfitting, ship upgrades, modules available, what modules at station, available modules, available equipment, buy modules, ship parts, station equipment", LOCAL_OUTFITTING.getAction());
         map.put("shipyard, ships for sale, what ships at station, buy a ship, available ships, ships to buy, new ship", LOCAL_SHIPYARD.getAction());

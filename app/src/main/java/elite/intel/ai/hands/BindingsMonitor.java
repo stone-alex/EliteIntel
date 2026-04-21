@@ -3,6 +3,7 @@ package elite.intel.ai.hands;
 import elite.intel.ai.brain.handlers.commands.Bindings;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.dao.KeyBindingDao.KeyBinding;
+import elite.intel.db.managers.BindingConflictManager;
 import elite.intel.db.managers.KeyBindingManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
@@ -48,6 +49,7 @@ public class BindingsMonitor {
     private static volatile BindingsMonitor instance;
     private final KeyBindingsParser parser;
     private final KeyBindingManager keyBindingManager = KeyBindingManager.getInstance();
+    private final BindingConflictManager conflictManager = BindingConflictManager.getInstance();
     private Path bindingsDir;
     private Map<String, KeyBindingsParser.KeyBinding> bindings;
     private File currentBindsFile;
@@ -135,6 +137,7 @@ public class BindingsMonitor {
                     }
                 }
                 checkForMissingBindingsAndPersist();
+                checkForConflictsAndPersist();
                 boolean valid = key.reset();
                 if (!valid) {
                     log.error("Watch key no longer valid; directory may be inaccessible");
@@ -168,6 +171,78 @@ public class BindingsMonitor {
 
     public Map<String, KeyBindingsParser.KeyBinding> getBindings() {
         return bindings;
+    }
+
+    /**
+     * Detects binding conflicts among GameCommand bindings and persists them.
+     * Returns descriptions of newly detected conflicts only — empty list means nothing changed.
+     */
+    public List<String> checkForConflictsAndPersist() {
+        List<String> newDescriptions = new ArrayList<>();
+        Map<String, KeyBindingsParser.KeyBinding> currentBindings = getBindings();
+        if (currentBindings == null || currentBindings.isEmpty()) return newDescriptions;
+
+        // Invert: keyCombo → all action names sharing it
+        Map<String, List<String>> byCombo = new HashMap<>();
+        for (Map.Entry<String, KeyBindingsParser.KeyBinding> e : currentBindings.entrySet()) {
+            String combo = normalizeCombo(e.getValue());
+            if (!combo.isEmpty()) byCombo.computeIfAbsent(combo, k -> new ArrayList<>()).add(e.getKey());
+        }
+
+        // Find conflicts: for each distinct GameCommand binding, check what else shares its key
+        Set<String> currentConflictKeys = new HashSet<>();
+        Map<String, String> currentConflictDescriptions = new LinkedHashMap<>();
+        Set<String> processedCombos = new HashSet<>();
+
+        for (Bindings.GameCommand cmd : Bindings.GameCommand.values()) {
+            String gameBinding = cmd.getGameBinding();
+            KeyBindingsParser.KeyBinding kb = currentBindings.get(gameBinding);
+            if (kb == null) continue;
+
+            String combo = normalizeCombo(kb);
+            if (!processedCombos.add(combo)) continue; // same combo already checked via another GameCommand
+
+            List<String> sharingActions = byCombo.getOrDefault(combo, List.of());
+            for (String other : sharingActions) {
+                if (other.equals(gameBinding)) continue;
+                if (BindingConflictRules.isSafeOverlap(gameBinding, other)) continue;
+
+                String conflictKey = BindingConflictRules.makeKey(gameBinding, other);
+                if (currentConflictKeys.add(conflictKey)) {
+                    currentConflictDescriptions.put(conflictKey, BindingConflictRules.describe(gameBinding, other));
+                }
+            }
+        }
+
+        // Diff against persisted state
+        Set<String> persistedKeys = new HashSet<>(
+                conflictManager.getConflicts().stream()
+                        .map(r -> r.getConflictKey())
+                        .toList()
+        );
+
+        for (Map.Entry<String, String> entry : currentConflictDescriptions.entrySet()) {
+            if (!persistedKeys.contains(entry.getKey())) {
+                conflictManager.save(entry.getKey(), entry.getValue());
+                newDescriptions.add(entry.getValue());
+            }
+        }
+
+        for (String persisted : persistedKeys) {
+            if (!currentConflictKeys.contains(persisted)) {
+                conflictManager.remove(persisted);
+            }
+        }
+
+        return newDescriptions;
+    }
+
+    private String normalizeCombo(KeyBindingsParser.KeyBinding kb) {
+        if (kb == null || kb.key == null || kb.key.isBlank() || kb.key.equals("Key_")) return "";
+        if (kb.modifiers == null || kb.modifiers.length == 0) return kb.key;
+        String[] sorted = kb.modifiers.clone();
+        Arrays.sort(sorted);
+        return kb.key + "|" + String.join("|", sorted);
     }
 
     /**

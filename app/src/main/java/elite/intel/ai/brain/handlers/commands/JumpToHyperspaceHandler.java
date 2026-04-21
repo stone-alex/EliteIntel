@@ -54,7 +54,6 @@ public class JumpToHyperspaceHandler implements CommandHandler {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Fighter is still out. Can not comply."));
         } else if (status.isInMainShip()) {
             PreFtlChecks.preJumpCheck(status, "Preparing for FTL.");
-            GameControllerBus.publish(new GameInputEvent(BINDING_SET_SPEED100.getGameBinding(), 0));
             GameControllerBus.publish(new GameInputEvent(BINDING_JUMP_TO_HYPERSPACE.getGameBinding(), 0));
         } else {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Get in to your ship, so we can blast out of here."));

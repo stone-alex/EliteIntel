@@ -24,7 +24,6 @@ public class ShipManager {
 
     /**
      * Creates or updates ship on LoadoutEvent.
-     *
      */
     public void save(int shipId, String shipName, int cargoCapacity, String shipMake, String voice) {
         Database.withDao(ShipDao.class, dao -> {

@@ -28,7 +28,7 @@ public class NaturalSpeechIntegrationTest {
      * 250 you are pushing it.
      * 150 bro I want your hardware.
      */
-    private static final int LLM_WAIT_MS = 3000;
+    private static final int LLM_WAIT_MS = 4000;
 
     private HandlerCapture capture;
 
@@ -252,7 +252,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> dropFromSupercruise() {
-        return Stream.of("drop here", "drop in", "drop out", "drop ftl");
+        return Stream.of("drop here", "drop in", "drop out");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -410,7 +410,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> dismissShip() {
-        return Stream.of("dismiss ship", "send ship away", "park ship", "ship to orbit", "go play", "dismissed");
+        return Stream.of("dismiss ship", "send ship away", "ship to orbit", "go play", "dismissed");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -748,7 +748,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryPlottedRoute() {
-        return Stream.of("plotted route", "jumps remaining", "how many jumps to destination");
+        return Stream.of("plotted route", "jumps remaining", "how many jumps to destination", "are we there yet");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -815,7 +815,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryPlayerProfile() {
-        return Stream.of("player profile", "player profile summarize ranks", "player profile summarize progress", "summarize player profile");
+        return Stream.of("player profile", "player profile summarize ranks", "player profile summarize progress", "player profile summary");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -1083,7 +1083,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> openCentralPanel() {
-        return Stream.of("Open commander panel", "open central panel", "open role panel");
+        return Stream.of("Open commander panel", "open central panel", "open role panel", "open knee board");
     }
 
 

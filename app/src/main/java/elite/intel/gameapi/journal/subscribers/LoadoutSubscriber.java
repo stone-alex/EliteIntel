@@ -33,7 +33,8 @@ public class LoadoutSubscriber {
             );
 
 
-            playerSession.setCurrentShipName(event.getShipName());
+            String shipName = event.getShipName() != null ? event.getShipName() : event.getShip();
+            playerSession.setCurrentShipName(shipName);
             playerSession.setCurrentShip(event.getShip());
             playerSession.setShipLoadout(LoadoutConverter.toShipLoadOutDto(event));
 
@@ -44,16 +45,16 @@ public class LoadoutSubscriber {
                 if (!systemSession.useLocalTTS()) {
                     shipDefaultVoice = GoogleVoices.STEVE.name();
                 }
-                shipManager.save(event.getShipId(), event.getShipName(), event.getCargoCapacity(), event.getShip(), shipDefaultVoice);
+                shipManager.save(event.getShipId(), shipName, event.getCargoCapacity(), event.getShip(), shipDefaultVoice);
             } else {
                 ship.setCargoCapacity(event.getCargoCapacity());
                 ship.setShipIdentifier(event.getShip());
-                ship.setShipName(event.getShipName());
+                ship.setShipName(shipName);
                 shipManager.saveShip(ship);
             }
 
             if (Status.getInstance().isOkToAnnounceLoadout()) {
-                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Hello " + playerSession.getPlayerName() + ", I am " + event.getShipName() + ", at your service " + Ranks.getPlayerHonorific()));
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Hello " + playerSession.getPlayerName() + ", I am " + shipName + ", at your service " + Ranks.getPlayerHonorific()));
             }
         });
     }

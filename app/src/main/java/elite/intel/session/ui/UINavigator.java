@@ -2,6 +2,7 @@ package elite.intel.session.ui;
 
 import elite.intel.ai.brain.handlers.commands.Bindings;
 import elite.intel.ai.hands.events.GameInputEvent;
+import elite.intel.db.managers.GlobalSettingsManager;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
@@ -31,6 +32,7 @@ public class UINavigator {
     private static final int RANDOM_MAX = 201;
 
     private final PanelStateTracker tracker = PanelStateTracker.getInstance();
+    private final GlobalSettingsManager globalSettingsManager = GlobalSettingsManager.getInstance();
 
     public UINavigator() {
     }
@@ -104,9 +106,22 @@ public class UINavigator {
             GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.EXPLORATION_SAAEXIT_THIRD_PERSON.getGameBinding(), 0));
         }
 
-        for (int i = 0; i < 10; i++) {
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0));
+        if (shouldBackOut()) {
+            for (int i = 0; i < 10; i++) {
+                GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0));
+            }
         }
+    }
+
+    private boolean shouldBackOut() {
+        if (!globalSettingsManager.getAutoExitUiBeforeOpeningAnotherWindow()) return false;
+        if (status.isGalaxyMapOpen()) return true;
+        if (status.isSystemMapOpen()) return true;
+        if (status.isOrreryOpen()) return true;
+        if (status.isFssModeActive()) return true;
+        if (status.isSaaModeActive()) return true;
+        if (status.isStationServicesOpen()) return true;
+        return status.isCodexOpen();
     }
 
 

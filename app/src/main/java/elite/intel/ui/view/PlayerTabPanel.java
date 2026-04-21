@@ -6,11 +6,15 @@ import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.ai.mouth.subscribers.events.AiVoxDemoEvent;
 import elite.intel.db.dao.ShipDao;
+import elite.intel.db.dao.ShipSettingsDao;
 import elite.intel.db.managers.ShipManager;
+import elite.intel.db.managers.ShipSettingsManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.view.settings.GlobalSettingsPopup;
+import elite.intel.ui.view.settings.ShipSettingsPopup;
 import elite.intel.util.Ranks;
 
 import javax.swing.*;
@@ -111,6 +115,10 @@ public class PlayerTabPanel extends JPanel {
         saveButton.addActionListener(e -> savePlayerConfig());
         btns.add(saveButton);
 
+        JButton automationButton = makeButtonSubtle("Ship Options");
+        automationButton.addActionListener(e -> GlobalSettingsPopup.create(this).setVisible(true));
+        btns.add(automationButton);
+
         conversationModeCheckBox = new JCheckBox("Conversation Mode");
         conversationModeCheckBox.addActionListener(e -> systemSession.setConversationalMode(conversationModeCheckBox.isSelected()));
         btns.add(conversationModeCheckBox);
@@ -176,23 +184,26 @@ public class PlayerTabPanel extends JPanel {
 
         // Header row
         c.gridy = 0;
-        c.weightx = 0.35;
+        c.weightx = 0.30;
         c.gridx = 0;
         panel.add(makeColHeader("Ship"), c);
-        c.weightx = 0.25;
+        c.weightx = 0.24;
         c.gridx = 1;
         panel.add(makeColHeader("Voice"), c);
-        c.weightx = 0.25;
+        c.weightx = 0.24;
         c.gridx = 2;
         panel.add(makeColHeader("Personality"), c);
-        c.weightx = 0.15;
+        c.weightx = 0.14;
         c.gridx = 3;
         panel.add(makeColHeader("Cadence"), c);
+        c.weightx = 0.08;
+        c.gridx = 4;
+        panel.add(makeColHeader(""), c);
 
         // Separator under header
         c.gridy = 1;
         c.gridx = 0;
-        c.gridwidth = 4;
+        c.gridwidth = 5;
         c.insets = new Insets(0, 6, 4, 6);
         JSeparator sep = new JSeparator();
         sep.setForeground(BUTTON_BG);
@@ -203,32 +214,30 @@ public class PlayerTabPanel extends JPanel {
         // Ship rows
         for (int i = 0; i < ships.size(); i++) {
             ShipDao.Ship ship = ships.get(i);
-            int row = i + 2;
+            ShipSettingsDao.ShipSettings shipSettings = ShipSettingsManager.getInstance().getSettings(ship.getShipId());
+            int gridRow = i + 2;
 
-            c.gridy = row;
+            c.gridy = gridRow;
             c.gridx = 0;
-            c.weightx = 0.35;
+            c.weightx = 0.30;
             JLabel nameLabel = new JLabel(ship.getShipName() != null ? ship.getShipName() : "Unknown");
             nameLabel.setForeground(FG);
             panel.add(nameLabel, c);
 
             c.gridx = 1;
-            c.weightx = 0.25;
+            c.weightx = 0.24;
             JComboBox<String> voiceCombo = makeCombo(voiceOptions, ship.getVoice());
             voiceCombo.addActionListener(e -> {
                 String voiceName = (String) voiceCombo.getSelectedItem();
                 ship.setVoice(voiceName);
                 String tts = "Hello " + playerSession.getPlayerName() + ", I am " + ship.getShipName() + ", at your service " + Ranks.getPlayerHonorific();
-                EventBusManager.publish(new AiVoxDemoEvent(
-                        tts,
-                        voiceName
-                ));
+                EventBusManager.publish(new AiVoxDemoEvent(tts, voiceName));
                 ShipManager.getInstance().saveShip(ship);
             });
             panel.add(voiceCombo, c);
 
             c.gridx = 2;
-            c.weightx = 0.25;
+            c.weightx = 0.24;
             JComboBox<String> personalityCombo = makeCombo(personalityOptions, ship.getPersonality());
             personalityCombo.addActionListener(e -> {
                 ship.setPersonality((String) personalityCombo.getSelectedItem());
@@ -237,19 +246,27 @@ public class PlayerTabPanel extends JPanel {
             panel.add(personalityCombo, c);
 
             c.gridx = 3;
-            c.weightx = 0.15;
+            c.weightx = 0.14;
             JComboBox<String> cadenceCombo = makeCombo(cadenceOptions, ship.getCadence());
             cadenceCombo.addActionListener(e -> {
                 ship.setCadence((String) cadenceCombo.getSelectedItem());
                 ShipManager.getInstance().saveShip(ship);
             });
             panel.add(cadenceCombo, c);
+
+            c.gridx = 4;
+            c.weightx = 0.08;
+            c.fill = GridBagConstraints.NONE;
+            JButton shipSettingsBtn = makeButtonSubtle("...");
+            shipSettingsBtn.addActionListener(e -> ShipSettingsPopup.create(panel, ship.getShipName(), shipSettings).setVisible(true));
+            panel.add(shipSettingsBtn, c);
+            c.fill = GridBagConstraints.HORIZONTAL;
         }
 
         // Push rows to top
         c.gridy = ships.size() + 2;
         c.gridx = 0;
-        c.gridwidth = 4;
+        c.gridwidth = 5;
         c.weighty = 1;
         c.fill = GridBagConstraints.BOTH;
         panel.add(Box.createGlue(), c);

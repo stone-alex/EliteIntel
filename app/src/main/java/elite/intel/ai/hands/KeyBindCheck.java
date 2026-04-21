@@ -16,45 +16,32 @@ public class KeyBindCheck {
     }
 
     public static synchronized KeyBindCheck getInstance() {
-        if (instance == null) {
-            instance = new KeyBindCheck();
-        }
-
+        if (instance == null) instance = new KeyBindCheck();
         return instance;
     }
 
-    /*
-        Check if there are missing key bindings
-    */
     public void check() {
         BindingsMonitor monitor = BindingsMonitor.getInstance();
 
-        List<String> missingBindings = monitor.checkForMissingBindingsAndPersist();
-        boolean bindingDiscreppency = missingBindings.isEmpty(); //True if empty
+        List<String> newMissing = monitor.checkForMissingBindingsAndPersist();
+        List<String> newConflicts = monitor.checkForConflictsAndPersist();
 
-        if (bindingDiscreppency) return;
-
-        StringBuilder missingBindingsMessage = new StringBuilder();
-        Integer numberOfBindings = missingBindings.size();
-        missingBindingsMessage.append("No Binding found for: ");
-
-        for (String binding : missingBindings) {
-            missingBindingsMessage.append(binding);
-            missingBindingsMessage.append(".\n");
+        if (!newMissing.isEmpty()) {
+            int total = bindingManager.getMissingBindings().size();
+            String s = total == 1 ? "" : "s";
+            EventBusManager.publish(new AiVoxResponseEvent(
+                    "Commander, " + total + " required binding" + s + " unassigned. Check the bindings panel."
+            ));
+            newMissing.forEach(m -> EventBusManager.publish(new AppLogEvent("Missing binding: " + m)));
         }
 
-        StringBuilder warning = new StringBuilder();
-        String s = numberOfBindings == 1 ? "" : "s";
-        warning.append("Commander, there " + (s.equalsIgnoreCase(s) ? "is " : "are") + numberOfBindings + " missing keybinding" + s + ". ");
-        warning.append("Until you bind these bindings, i can not fully function in my tasks.");
-
-        EventBusManager.publish(
-                new AiVoxResponseEvent(warning.toString())
-        );
-
-        EventBusManager.publish(
-                new AppLogEvent(missingBindingsMessage.toString())
-        );
-
+        if (!newConflicts.isEmpty()) {
+            int count = newConflicts.size();
+            String s = count == 1 ? "" : "s";
+            EventBusManager.publish(new AiVoxResponseEvent(
+                    "Commander, " + count + " binding conflict" + s + " detected. Check the bindings panel."
+            ));
+            newConflicts.forEach(c -> EventBusManager.publish(new AppLogEvent("Binding conflict: " + c)));
+        }
     }
 }

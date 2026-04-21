@@ -528,4 +528,8 @@ public class Status extends StatusFlags {
     public void setOkToAnnounceLoadout(boolean okToAnounceLoadout) {
         this.okToAnnounceLoadout = okToAnounceLoadout;
     }
+
+    public int getFireGroup() {
+        return getStatus().getFireGroup();
+    }
 }

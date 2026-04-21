@@ -126,7 +126,13 @@ public class Bindings {
         BINDING_TARGET_WINGMAN0("TargetWingman0"),
         BINDING_TARGET_WINGMAN1("TargetWingman1"),
         BINDING_TARGET_WINGMAN2("TargetWingman2"),
-        BINDING_WING_NAV_LOCK("WingNavLock");
+        BINDING_WING_NAV_LOCK("WingNavLock"),
+
+        /// These two trigger must operate only in analysis mode for safety - hands off the trigger!
+        BINDING_PRIMARY_FIRE("PrimaryFire"),
+        BINDING_SECONDARY_FIRE("SecondaryFire"),
+        BINDING_CYCLE_NEXT_FIRE_GROUP("CycleFireGroupNext"),
+        ;
         //UP_THRUST_BUTTON("up_thrust_button", "UpThrustButton",GenericGameController.class),
         //DOWN_THRUST_BUTTON("down_thrust_button", "DownThrustButton",GenericGameController.class);
 

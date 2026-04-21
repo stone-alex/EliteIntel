@@ -1,3 +1,21 @@
+## Elite Intel v-0.0369-beta
+
+### bug fixes / features:
+- The auto-hunk... Next to each ship you will see a button with three dots. Click that, select the check box if you want that ship to auto-hunk. Select which fire group the hunker is on, and which trigger it is on. When you come out of hyperspace the ship will switch to analysis mode, change to firegroup that you have selected and use the trigger you specified to hunk the system.
+- There is now a Ship Options button that applies to all ships. This allow you to set the global settings for all ships to automate some of the functions, such as pre-FTL check for gear, scoop, weapons, fighter out, auto-accelerate etc. Toggle what you want.
+
+
+
+
+## Elite Intel v-0.0368-beta
+
+### bug fixes / features:
+- Added check for backing out of UI before switching to another UI section via voice. Instead of backing out every time the app will attempt to back out only if it necessary. (Performance improvement)
+- Changed default voice in Kokoro from EMMA to GEORGE for case when the app is just installed. (EMMA a bit cringe - bad impression on first launch)
+- Removed auto-throttle on FTL per request. (Might add later as a UI toggle option)
+
+
+
 ## Elite Intel v-0.0367-beta
 
 ### bug fixes / features:

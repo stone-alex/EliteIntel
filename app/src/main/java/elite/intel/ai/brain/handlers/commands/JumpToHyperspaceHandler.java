@@ -12,7 +12,8 @@ import elite.intel.session.Status;
 import elite.intel.session.ui.UINavigator;
 import elite.intel.util.SleepNoThrow;
 
-import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_JUMP_TO_HYPERSPACE;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM;
 
 public class JumpToHyperspaceHandler implements CommandHandler {
 
@@ -49,9 +50,6 @@ public class JumpToHyperspaceHandler implements CommandHandler {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("We are mass locked, FTL is not available."));
         } else if (status.isFsdCooldown()) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("FSD is on cooldown."));
-        } else if (status.isFighterOut()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), 0));
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Fighter is still out. Can not comply."));
         } else if (status.isInMainShip()) {
             PreFtlChecks.preJumpCheck(status, "Preparing for FTL.");
             GameControllerBus.publish(new GameInputEvent(BINDING_JUMP_TO_HYPERSPACE.getGameBinding(), 0));

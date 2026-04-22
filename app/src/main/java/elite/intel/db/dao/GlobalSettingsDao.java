@@ -19,7 +19,7 @@ public interface GlobalSettingsDao {
     @SqlUpdate("""
                     INSERT OR REPLACE INTO global_settings (id, autoSpeedUpForFtl,
                                                                 autoLightsForFtl, 
-                                                                autoNightVisionOffForSrv, 
+                                                                autoNightVisionOff, 
                                                                 autoCargoScoopRetractForFtl, 
                                                                 autoLandingGearUpForFtl, 
                                                                 autoHardpointsRetractForFtl, 
@@ -29,7 +29,7 @@ public interface GlobalSettingsDao {
                                                                 autoFighterOutFighterDocking) 
                     VALUES (1, :autoSpeedUpForFtl,
                                 :autoLightsForFtl,
-                                :autoNightVisionOffForSrv,
+                                :autoNightVisionOff,
                                 :autoCargoScoopRetractForFtl, 
                                 :autoLandingGearUpForFtl, 
                                 :autoHardpointsRetractForFtl, 
@@ -47,7 +47,7 @@ public interface GlobalSettingsDao {
             GlobalSettings entity = new GlobalSettings();
             entity.setAutoSpeedUpForFtl(rs.getBoolean("autoSpeedUpForFtl"));
             entity.setAutoLightsForFtl(rs.getBoolean("autoLightsForFtl"));
-            entity.setAutoNightVisionOffForSrv(rs.getBoolean("autoNightVisionOffForSrv"));
+            entity.setAutoNightVisionOff(rs.getBoolean("autoNightVisionOff"));
             entity.setAutoCargoScoopRetractForFtl(rs.getBoolean("autoCargoScoopRetractForFtl"));
             entity.setAutoLandingGearUpForFtl(rs.getBoolean("autoLandingGearUpForFtl"));
             entity.setAutoHardpointsRetractForFtl(rs.getBoolean("autoHardpointsRetractForFtl"));
@@ -63,7 +63,7 @@ public interface GlobalSettingsDao {
     class GlobalSettings {
         boolean autoSpeedUpForFtl;
         boolean autoLightsForFtl;
-        boolean autoNightVisionOffForSrv;
+        boolean autoNightVisionOff;
         boolean autoCargoScoopRetractForFtl;
         boolean autoLandingGearUpForFtl;
         boolean autoHardpointsRetractForFtl;
@@ -76,40 +76,40 @@ public interface GlobalSettingsDao {
             return autoSpeedUpForFtl;
         }
 
-        public void setAutoSpeedUpForFtl(boolean autoSpeedUpForFtl) {
-            this.autoSpeedUpForFtl = autoSpeedUpForFtl;
+        public void setAutoSpeedUpForFtl(boolean onOff) {
+            this.autoSpeedUpForFtl = onOff;
         }
 
         public boolean isAutoLightsForFtl() {
             return autoLightsForFtl;
         }
 
-        public void setAutoLightsForFtl(boolean autoLightsForFtl) {
-            this.autoLightsForFtl = autoLightsForFtl;
+        public void setAutoLightsForFtl(boolean onOff) {
+            this.autoLightsForFtl = onOff;
         }
 
-        public boolean isAutoNightVisionOffForSrv() {
-            return autoNightVisionOffForSrv;
+        public boolean isAutoNightVisionOff() {
+            return autoNightVisionOff;
         }
 
-        public void setAutoNightVisionOffForSrv(boolean autoNightVisionOffForSrv) {
-            this.autoNightVisionOffForSrv = autoNightVisionOffForSrv;
+        public void setAutoNightVisionOff(boolean onOff) {
+            this.autoNightVisionOff = onOff;
         }
 
         public boolean isAutoCargoScoopRetractForFtl() {
             return autoCargoScoopRetractForFtl;
         }
 
-        public void setAutoCargoScoopRetractForFtl(boolean autoCargoScoopRetractForFtl) {
-            this.autoCargoScoopRetractForFtl = autoCargoScoopRetractForFtl;
+        public void setAutoCargoScoopRetractForFtl(boolean onOff) {
+            this.autoCargoScoopRetractForFtl = onOff;
         }
 
         public boolean isAutoLandingGearUpForFtl() {
             return autoLandingGearUpForFtl;
         }
 
-        public void setAutoLandingGearUpForFtl(boolean autoLandingGearUpForFtl) {
-            this.autoLandingGearUpForFtl = autoLandingGearUpForFtl;
+        public void setAutoLandingGearUpForFtl(boolean onOff) {
+            this.autoLandingGearUpForFtl = onOff;
         }
 
         public boolean isAutoHardpointsRetractForFtl() {

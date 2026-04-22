@@ -50,14 +50,14 @@ public class GlobalSettingsManager {
     public void setAutoNightVisionOffForSrv(boolean autoNightVisionOffForSrv) {
         Database.withDao(GlobalSettingsDao.class, dao -> {
             GlobalSettingsDao.GlobalSettings settings = dao.get();
-            settings.setAutoNightVisionOffForSrv(autoNightVisionOffForSrv);
+            settings.setAutoNightVisionOff(autoNightVisionOffForSrv);
             dao.save(settings);
             return Void.TYPE;
         });
     }
 
-    public boolean getAutoNightVisionOffForSrv() {
-        return Database.withDao(GlobalSettingsDao.class, dao -> dao.get().isAutoNightVisionOffForSrv());
+    public boolean getAutoNightVisionOff() {
+        return Database.withDao(GlobalSettingsDao.class, dao -> dao.get().isAutoNightVisionOff());
     }
 
     public void setAutoCargoScoopRetractForFtl(boolean autoCargoScoopRetractForFtl) {

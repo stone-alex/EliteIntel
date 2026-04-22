@@ -12,7 +12,7 @@ public class GlobalSettingsPopup {
         List<SettingRow> rows = List.of(
                 new CheckboxRow("Auto speed up for FTL", mgr::getAutoSpeedUpForFtl, mgr::setAutoSpeedUpForFtl),
                 new CheckboxRow("Auto lights off for FTL", mgr::getAutoLightsForFtl, mgr::setAutoLightsForFtl),
-                new CheckboxRow("Auto night vision off for FTL", mgr::getAutoNightVisionOffForSrv, mgr::setAutoNightVisionOffForSrv),
+                new CheckboxRow("Auto night vision off for FTL", mgr::getAutoNightVisionOff, mgr::setAutoNightVisionOffForSrv),
                 new CheckboxRow("Auto hardpoints retract for FTL", mgr::getAutoHardpointsRetractForFtl, mgr::setAutoHardpointsRetractForFtl),
                 new CheckboxRow("Auto landing gear up for FTL", mgr::getAutoLandingGearUpForFtl, mgr::setAutoLandingGearUpForFtl),
                 new CheckboxRow("Auto cargo scoop retract for FTL", mgr::getAutoCargoScoopRetractForFtl, mgr::setAutoCargoScoopRetractForFtl),

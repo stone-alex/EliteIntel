@@ -3,7 +3,7 @@ create table if not exists global_settings
     id                                   INTEGER PRIMARY KEY AUTOINCREMENT,
     autoSpeedUpForFtl                    boolean default false,
     autoLightsForFtl                     boolean default false,
-    autoNightVisionOffForSrv             boolean default false,
+    autoNightVisionOff boolean default false,
     autoCargoScoopRetractForFtl          boolean default false,
     autoLandingGearUpForFtl              boolean default false,
     autoHardpointsRetractForFtl          boolean default false,

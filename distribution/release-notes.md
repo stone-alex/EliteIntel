@@ -1,4 +1,4 @@
-## Elite Intel v-0.0369-beta
+## v-0.0369-beta
 
 ### bug fixes / features:
 - The auto-hunk... Next to each ship you will see a button with three dots. Click that, select the check box if you want that ship to auto-hunk. Select which fire group the hunker is on, and which trigger it is on. When you come out of hyperspace the ship will switch to analysis mode, change to firegroup that you have selected and use the trigger you specified to hunk the system.
@@ -7,7 +7,7 @@
 
 
 
-## Elite Intel v-0.0368-beta
+## v-0.0368-beta
 
 ### bug fixes / features:
 - Added check for backing out of UI before switching to another UI section via voice. Instead of backing out every time the app will attempt to back out only if it necessary. (Performance improvement)
@@ -16,19 +16,19 @@
 
 
 
-## Elite Intel v-0.0367-beta
+## v-0.0367-beta
 
 ### bug fixes / features:
 - Fixing on-boarding. Default to LMStudio tulu3.1:8b-supernova etc
 
 
 
-## Elite Intel v-0.0366-beta
+## v-0.0366-beta
 
 ### bug fixes / features:
 - ParakeetSTTImpl.buildRecognizer(). On Windows, before any sherpa-onnx JNI class is touched, we call System.load() with the absolute path to the bundled onnxruntime.dll. Windows DLL loading is idempotent. Once a DLL is in the process, any subsequent load request for the same name reuses the already-loaded module, so sherpa-onnx-jni.dll will get the correct version.
 
-## Elite Intel v-0.0365-beta
+## v-0.0365-beta
 
 ### bug fixes / features:
 - Changed carrier estimated operation cost calculation
@@ -39,13 +39,13 @@
 
 
 
-## Elite Intel v-0.0364-beta
+## v-0.0364-beta
 
 ### bug fixes / features:
 - Keybinding monitor fix. A) will not update the bindings without restart. B) it will not read the StartPreset, not just the bindings file that was updated last.
 
 
-## Elite Intel v-0.0363-beta
+## v-0.0363-beta
 
 ### bug fixes / features:
 - Changed installer.sh script to download a known Java 21 JRE and run the app with it. Turns out some setups might have a headless JDK which can't run GUI apps.
@@ -53,7 +53,7 @@
 
 
 
-## Elite Intel v-0.0362-beta
+## v-0.0362-beta
 
 ### bug fixes / features:
 - Refactoring LLM provider package for DRY - no functional changes
@@ -63,7 +63,7 @@
 
 
 
-## Elite Intel v-0.0360-beta
+## v-0.0360-beta
 
 ### bug fixes / features:
 - Fix for EDSM client. headers and API call limit/timeout
@@ -76,27 +76,27 @@
 - removed lights and night vision from pre-FTL check.
 
 
-## Elite Intel v-0.0357-beta
+## v-0.0357-beta
 
 ### bug fixes / features:
 - Trade route fix. Allow to **optionally** filter out enemy Stronghold. NOTE this may introduce a gap in the route.
 
 
-## Elite Intel v-0.0356-beta
+## v-0.0356-beta
 
 ### bug fixes / features:
 - Pirate Massacre mission finder fix
 
 
 
-## Elite Intel v-0.0355-beta
+## v-0.0355-beta
 
 ### bug fixes / features:
 - Added SttCorrector. It automatically corrects input adjusting it against the curated domain list of tokens "blending" to "landing", "sip" to "ship".
 - trade route fix
 - use corrected STT in display
 
-## Elite Intel v-0.0354-beta
+## v-0.0354-beta
 
 ### bug fixes / features:
 
@@ -109,7 +109,7 @@
 - Fixed loadout query. "Do we have a fuel scoop" will not invent actions anymore
 
 
-## Elite Intel v-0.0352-beta
+## v-0.0352-beta
 
 ### bug fixes / features:
 
@@ -117,7 +117,7 @@
 
 
 
-## Elite Intel v-0.0352-beta
+## v-0.0352-beta
 
 ### bug fixes / features:
 
@@ -130,7 +130,7 @@
 
 
 
-## Elite Intel v-0.0350-beta
+## v-0.0350-beta
 
 ### bug fixes / features:
 - basic on-foot commands (wheel)
@@ -146,7 +146,7 @@
 - Fire at Will!, Attack! (that's open orders, but can't use word "open", or it will think it needs to open something on UI)
 
 
-## Elite Intel v-0.0348-beta
+## v-0.0348-beta
 
 ### bug fixes / features:
 
@@ -160,13 +160,13 @@
 - Prohibition to use player stats command unless explicitly asked (used to fall back on that for some reason)
 
 
-## Elite Intel v-0.0347-beta
+## v-0.0347-beta
 
 ### bug fixes / features:
 
 - hot fix. saving new ship was broken
 
-## Elite Intel v-0.0346-beta
+## v-0.0346-beta
 
 ### bug fixes / features:
 
@@ -175,7 +175,7 @@
 - Added "disembark" command. Not to be confused with "exit" which will exit Game UI panes / maps etc.
 - Fixed an incorrect bio sample projected payment announcement.
 
-## Elite Intel v-0.0342-beta
+## v-0.0342-beta
 
 ### bug fixes / features:
 
@@ -191,7 +191,7 @@
 - Bio samples collection improvements.
 - Orbital navigation fixes. Account for radius, polar correction. Adjusted glide angle calculation, illuminated sharp turns while in orbit, added pull up / level off prompts.
 
-## Elite Intel v-0.0338-beta
+## v-0.0338-beta
 
 ### bug fixes / features:
 
@@ -199,7 +199,7 @@
 - Improved app accuracy (part 1 LLM)
 - Decoupled handlers from game controller.
 
-## Elite Intel v-0.0335-beta
+## v-0.0335-beta
 
 ### bug fixes / features:
 
@@ -211,7 +211,7 @@
 - Added exit Detailed Surface Scan mode to "exit" command.
 - Updated user manual.
 
-## Elite Intel v-0.0334-beta
+## v-0.0334-beta
 
 ### bug fixes / features:
 
@@ -226,27 +226,27 @@
 - Reminders can now be interrupted
 - Added better support for subsystem targeting. Say "target fsd" or "target drive" or "target engines" or "target power distributor" etc. NOTE: Optional subsystems are not included.
 
-## Elite Intel v-0.0333-beta
+## v-0.0333-beta
 
 ### bug fixes / features:
 
 - Attempt to fix no TTS Issue on Windows. (App was looking to load a non-existent C++ library)
 
-## Elite Intel v-0.0332-beta
+## v-0.0332-beta
 
 ### bug fixes / features:
 - Prompt normalization algorithm and logic.
 - Adjusted missing material caps
 - Combined query for commodity and materials. Now you can ask: "Do we have <blah🡢" and it will query both cargo and inventory
 
-## Elite Intel v-0.0331-beta
+## v-0.0331-beta
 
 ### bug fixes / features:
 
 - Replacing whisper with NVIDIA Parakeet
 - Dictionary file no longer in use and no longer needed.
 
-## Elite Intel v-0.0328-beta
+## v-0.0328-beta
 
 ### bug fixes / features:
 
@@ -255,14 +255,14 @@
 - Radio now has random vocalizations and 2-way radio effect static.
 - Added suport for left/right modifier keys for Windows and Linux.
 
-## Elite Intel v-0.0327-beta
+## v-0.0327-beta
 
 ### bug fixes / features:
 
 - Fuzzy search for STT corrections. This works like a spell checker attempting to match bad input to commands known to the app.
 - Hot fix for left / vs right key modifiers.
 
-## Elite Intel v-0.0322-beta
+## v-0.0322-beta
 
 ### bug fixes / features:
 
@@ -271,7 +271,7 @@
 - Fixed combo key bindings.
 - Fixed sub system targeting. Say "target fsd" or "target drive" or "target engines" etc. Fallback is powerplant.
 
-## Elite Intel v-0.0320
+## v-0.0320
 
 ### bug fixes / features:
 
@@ -285,7 +285,7 @@
 - Added more misinterpreted words to the correction dictionary.
 - Fixed Speed +N / Speed -N commands.
 
-## Elite Intel v-0.0316
+## v-0.0316
 
 ### bug fixes / features:
 
@@ -293,14 +293,14 @@
 - UI will now update properly when you change the ship cadence, personality or voice.
 - Fixed hot LLM swap when changing from LM Studio to Gemini.
 
-## Elite Intel v-0.0315
+## v-0.0315
 
 ### bug fixes / features:
 
 - Changed Gemini model to "gemini-3.1-flash-lite-preview" per request.
 
 
-## Elite Intel v-0.0314
+## v-0.0314
 
 ### bug fixes / features:
 
@@ -308,7 +308,7 @@
 - Fixing orbital navigation.
 
 
-## Elite Intel v-0.0313 (hot fix)
+## v-0.0313 (hot fix)
 
 ### bug fixes / features:
 
@@ -317,7 +317,7 @@
 - Added a Fleet management panel under the Player tab. You can now customize the personality, cadence and voice of your ships. NOTE: The voice names will be reset to default if you switch from Local to Cloud voices and back.
 
 
-## Elite Intel v-0.0311-beta
+## v-0.0311-beta
 
 ### bug fixes / features:
 

@@ -903,7 +903,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryStationDetails() {
-        return Stream.of("station details", "open services", "what services here", "station info");
+        return Stream.of("station details", "what station services are at this station", "what services here", "station info");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

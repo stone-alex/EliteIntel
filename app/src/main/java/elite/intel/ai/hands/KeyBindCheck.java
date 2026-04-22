@@ -30,7 +30,7 @@ public class KeyBindCheck {
             int total = bindingManager.getMissingBindings().size();
             String s = total == 1 ? "" : "s";
             EventBusManager.publish(new AiVoxResponseEvent(
-                    "Commander, " + total + " required binding" + s + " unassigned. Check the bindings panel."
+                    "Commander, " + total + " required binding" + s + " unassigned. See system readout in the app and bindings panel in the game."
             ));
             newMissing.forEach(m -> EventBusManager.publish(new AppLogEvent("Missing binding: " + m)));
         }
@@ -39,7 +39,7 @@ public class KeyBindCheck {
             int count = newConflicts.size();
             String s = count == 1 ? "" : "s";
             EventBusManager.publish(new AiVoxResponseEvent(
-                    "Commander, " + count + " binding conflict" + s + " detected. Check the bindings panel."
+                    "Commander, " + count + " binding conflict" + s + " detected. See system readout in the app and bindings panel in the game."
             ));
             newConflicts.forEach(c -> EventBusManager.publish(new AppLogEvent("Binding conflict: " + c)));
         }

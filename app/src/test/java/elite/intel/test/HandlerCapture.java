@@ -8,7 +8,7 @@ import elite.intel.gameapi.EventBusManager;
  * Subscribes to {@link HandlerDispatchedEvent} on the main EventBus and captures
  * the most recent dispatch so tests can assert on it.
  * <p>
- * Register once and reuse across tests — call {@link #reset()} before each assertion.
+ * Register once and reuse across tests - call {@link #reset()} before each assertion.
  */
 public class HandlerCapture {
 

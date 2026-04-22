@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * Routing sanity check — verifies that natural-language input phrases are
+ * Routing sanity check - verifies that natural-language input phrases are
  * routed to the correct handler by the live LLM.
  * <p>
  * Run with:  ./gradlew localIntegrationTest
@@ -133,7 +133,7 @@ public class RoutingIntegrationTest {
     }
 
     // =========================================================================
-    // Speed / throttle  — highest collision risk group
+    // Speed / throttle  - highest collision risk group
     // =========================================================================
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -225,7 +225,7 @@ public class RoutingIntegrationTest {
     }
 
     // =========================================================================
-    // Navigation — second highest collision risk
+    // Navigation - second highest collision risk
     // =========================================================================
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -618,7 +618,7 @@ public class RoutingIntegrationTest {
     }
 
     // =========================================================================
-    // UI panels — test a representative sample (they share similar vocabulary)
+    // UI panels - test a representative sample (they share similar vocabulary)
     // =========================================================================
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -699,7 +699,7 @@ public class RoutingIntegrationTest {
     }
 
     // =========================================================================
-    // Queries — use primary phrase from each entry
+    // Queries - use primary phrase from each entry
     // =========================================================================
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

@@ -175,7 +175,7 @@ public class BindingsMonitor {
 
     /**
      * Detects binding conflicts among GameCommand bindings and persists them.
-     * Returns descriptions of newly detected conflicts only — empty list means nothing changed.
+     * Returns descriptions of newly detected conflicts only - empty list means nothing changed.
      */
     public List<String> checkForConflictsAndPersist() {
         List<String> newDescriptions = new ArrayList<>();

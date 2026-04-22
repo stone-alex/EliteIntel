@@ -52,10 +52,10 @@ public class BindingConflictRules {
      * Returns true when two actions sharing a key is safe and should not be flagged.
      * <p>
      * Safe cases:
-     * - Different vehicle states (ship / buggy / humanoid) — mutually exclusive, player
+     * - Different vehicle states (ship / buggy / humanoid) - mutually exclusive, player
      * can only be in one at a time. The AiActionsMap also filters on state, so the
      * game itself prevents simultaneous activation.
-     * - Either action belongs to a sub-state overlay (camera, FSS, Galnet) — these
+     * - Either action belongs to a sub-state overlay (camera, FSS, Galnet) - these
      * modes are only active inside a specific overlay and cannot fire alongside
      * regular ship actions.
      */
@@ -72,7 +72,7 @@ public class BindingConflictRules {
     }
 
     /**
-     * Ship / buggy (SRV) / humanoid (on-foot) — the three mutually exclusive player states.
+     * Ship / buggy (SRV) / humanoid (on-foot) - the three mutually exclusive player states.
      */
     private static String vehicleStateOf(String action) {
         if (action.endsWith("_Buggy")) return "buggy";

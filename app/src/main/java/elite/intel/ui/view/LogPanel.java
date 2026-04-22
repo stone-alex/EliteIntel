@@ -42,11 +42,15 @@ class LogPanel extends JPanel {
     private final Font font;
     private final boolean enableClickableTokens;
 
+    private static final int SCROLLBAR_W = 5;
+
     // --- State ---
     private final List<Message> messages = new ArrayList<>();
     private final List<ClickableToken> clickableTokens = new ArrayList<>();
     private BufferedImage offscreen;
     private Timer typewriterTimer;
+    private int scrollOffset = 0;      // pixels scrolled up from bottom (0 = at bottom)
+    private int totalContentHeight = 0;
 
     // --- Inner types ---
     private static final class Message {
@@ -107,6 +111,18 @@ class LogPanel extends JPanel {
                         : Cursor.getDefaultCursor());
             }
         });
+        addMouseWheelListener(e -> {
+            int lineHeight = getFontMetrics(font).getHeight();
+            scrollOffset += (int) (e.getPreciseWheelRotation() * lineHeight * 3);
+            clampScroll();
+            repaint();
+        });
+    }
+
+    private void clampScroll() {
+        int visible = getHeight() - TITLE_HEIGHT - PAD_Y;
+        int maxScroll = Math.max(0, totalContentHeight - visible);
+        scrollOffset = Math.max(0, Math.min(scrollOffset, maxScroll));
     }
 
     // --- Public API ---
@@ -119,6 +135,7 @@ class LogPanel extends JPanel {
         }
         typewriterTimer.stop();
         removeAllTimerListeners();
+        scrollOffset = 0;
 
         Message msg = new Message("\n \u2022 " + text);
         messages.add(msg);
@@ -203,7 +220,7 @@ class LogPanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         g2.setFont(font);
         FontMetrics fm = g2.getFontMetrics();
-        int maxW = w - PAD_X * 2;
+        int maxW = w - PAD_X * 2 - SCROLLBAR_W;
 
         // Wrap all message texts
         List<List<String>> wrappedAll = new ArrayList<>();
@@ -211,10 +228,18 @@ class LogPanel extends JPanel {
             wrappedAll.add(wrapText(m.complete ? m.fullText : m.visibleText, fm, maxW));
         }
 
+        // Compute total content height for scroll clamping
+        int newTotalH = PAD_Y;
+        for (List<String> lines : wrappedAll) {
+            newTotalH += lines.size() * fm.getHeight() + LINE_GAP;
+        }
+        totalContentHeight = newTotalH;
+        clampScroll();
+
         g2.setClip(0, TITLE_HEIGHT, w, h - TITLE_HEIGHT);
 
         List<ClickableToken> newTokens = new ArrayList<>();
-        int y = h - PAD_Y;
+        int y = h - PAD_Y + scrollOffset;
 
         for (int i = messages.size() - 1; i >= 0; i--) {
             List<String> lines = wrappedAll.get(i);
@@ -252,6 +277,22 @@ class LogPanel extends JPanel {
 
         clickableTokens.clear();
         clickableTokens.addAll(newTokens);
+
+        // Draw thin scrollbar when content overflows
+        int contentArea = h - TITLE_HEIGHT;
+        if (totalContentHeight > contentArea) {
+            g2.setClip(null);
+            int barX = w - SCROLLBAR_W - 1;
+            int barTop = TITLE_HEIGHT + 2;
+            int barH = contentArea - 4;
+            int thumbH = Math.max(16, (int) ((float) contentArea / totalContentHeight * barH));
+            int maxScroll = Math.max(1, totalContentHeight - contentArea);
+            int thumbY = barTop + (int) ((float) (maxScroll - scrollOffset) / maxScroll * (barH - thumbH));
+            g2.setColor(new Color(255, 255, 255, 30));
+            g2.fillRoundRect(barX, barTop, SCROLLBAR_W, barH, 3, 3);
+            g2.setColor(new Color(255, 255, 255, scrollOffset > 0 ? 100 : 55));
+            g2.fillRoundRect(barX, thumbY, SCROLLBAR_W, thumbH, 3, 3);
+        }
 
         g2.dispose();
         g.drawImage(offscreen, 0, 0, null);

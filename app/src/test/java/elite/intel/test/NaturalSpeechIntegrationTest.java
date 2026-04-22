@@ -126,7 +126,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     // =========================================================================
-    // Speed / throttle  — highest collision risk group
+    // Speed / throttle  - highest collision risk group
     // =========================================================================
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -218,7 +218,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     // =========================================================================
-    // Navigation — second highest collision risk
+    // Navigation - second highest collision risk
     // =========================================================================
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -623,7 +623,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     // =========================================================================
-    // UI panels — test a representative sample (they share similar vocabulary)
+    // UI panels - test a representative sample (they share similar vocabulary)
     // =========================================================================
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -704,7 +704,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     // =========================================================================
-    // Queries — use primary phrase from each entry
+    // Queries - use primary phrase from each entry
     // =========================================================================
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

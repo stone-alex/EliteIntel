@@ -13,29 +13,58 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class MarketSellEventSubscriber {
 
+    private static final int DEBOUNCE_MS = 2000;
+
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final List<MarketSellEvent> pending = new ArrayList<>();
+    private ScheduledFuture<?> pendingFlush;
+
     @Subscribe
     public void onMarketSellEvent(MarketSellEvent event) {
-        Thread.ofVirtual().start(() -> {
+        TradeRouteManager.getInstance().deleteForMarketId(event.getMarketID());
+
+        synchronized (pending) {
+            pending.add(event);
+            if (pendingFlush != null) pendingFlush.cancel(false);
+            pendingFlush = scheduler.schedule(this::flush, DEBOUNCE_MS, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void flush() {
+        synchronized (pending) {
+            if (pending.isEmpty()) return;
+
+            if (pending.size() == 1) {
+                MarketSellEvent e = pending.getFirst();
+                EventBusManager.publish(new AiVoxResponseEvent("Sold " + e.getCount() + " units of " + e.getType() + " for " + e.getTotalSale() + " credits."));
+            } else {
+                long total = pending.stream().mapToLong(MarketSellEvent::getTotalSale).sum();
+                EventBusManager.publish(new AiVoxResponseEvent("Sold " + pending.size() + " commodities for " + total + " credits total."));
+            }
+            pending.clear();
+
             final TradeRouteManager tradeRouteManager = TradeRouteManager.getInstance();
             final PlayerSession playerSession = PlayerSession.getInstance();
             final ReminderManager reminderManager = ReminderManager.getInstance();
 
-            tradeRouteManager.deleteForMarketId(event.getMarketID());
-            EventBusManager.publish(new AiVoxResponseEvent("Sold " + event.getCount() + " units of " + event.getType() + " for " + event.getTotalSale() + " credits."));
-
             TradeRouteManager.TradeRouteLegTuple<Integer, TradeStopDto> nextStop = tradeRouteManager.getNextStop();
 
-            StringBuilder sb = new StringBuilder();
             if (nextStop != null) {
                 String sourceSystem = nextStop.getTradeStopDto().getSourceSystem();
                 String sourceStation = nextStop.getTradeStopDto().getSourceStation();
                 String destinationSystem = nextStop.getTradeStopDto().getDestinationSystem();
                 String destinationStation = nextStop.getTradeStopDto().getDestinationStation();
 
+                StringBuilder sb = new StringBuilder();
                 if (playerSession.getPrimaryStarName().equalsIgnoreCase(sourceSystem)) {
                     sb.append(" Buy ");
                     nextStop.getTradeStopDto().getCommodities().forEach(commodity -> sb.append(commodity.getName()).append(", "));
@@ -46,18 +75,14 @@ public class MarketSellEventSubscriber {
                     sb.append(" Sell at ").append(destinationSystem).append(", ").append(destinationStation).append(" port.");
                 }
 
-
                 EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
-                reminderManager.setReminder(
-                        sb.toString(),
-                        destinationSystem
-                );
+                reminderManager.setReminder(sb.toString(), destinationSystem);
             } else {
                 reminderManager.clear();
             }
 
             MonetizeRouteManager.getInstance().clear();
-        });
+        }
     }
 
 

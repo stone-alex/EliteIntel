@@ -1,3 +1,12 @@
+## v-0.0370-beta
+
+### bug fixes / features:
+- The common thread across all failing combinations is Right Alt on Windows. When VK_RMENU is sent via SendInput with wScan=0, on many European keyboard layouts (AltGr keyboards) Windows automatically injects a synthetic VK_LCONTROL, turning the combo into Ctrl+RightAlt+Apps+6, which doesn't match the binding
+- 1. DirectInput uses hardware scan codes, not VK codes, to identify keys. With wScan = 0, DirectInput can't reliably match the modifier key events to the binding, so combos like RightAlt + Apps + 6 silently fail. Meanwhile, Java Robot's keybd_event calls auto-compute the scan code from the VK (via MapVirtualKey), which is why simple keys sent through Robot work fine.
+- 2. AltGr keyboard layouts (German, French, etc.): sending VK_RMENU via VK code causes Windows to inject a synthetic VK_LCONTROL, turning RightAlt + Apps + 6 into Ctrl + RightAlt + Apps + 6 from the game's perspective resulting in no binding match.
+- Fix: Switch to KEYEVENTF_SCANCODE with hardcoded PS/2 Set 1 hardware scan codes (wVk = 0, wScan = scan code). Extended keys (Right Ctrl, Right Alt, Win, Apps) get KEYEVENTF_EXTENDEDKEY | KEYEVENTF_SCANCODE to produce the correct E0-prefixed scan sequence. This bypasses both issues and is consistent with how physical key presses arrive at DirectInput.
+
+
 ## v-0.0369-beta
 
 ### bug fixes / features:

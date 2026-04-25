@@ -37,7 +37,9 @@ Powered by NVIDIA Parakeet. built-in / included.
 
 ### 🧠 LLMs (Larger Language Models)
 
-- **Ollama (Local off-line Models tulu3:8b or qwen2.5:14b class)**
+- **LMStudio (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
+- **Ollama (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
+
 - Claude (Cloud. Models: Sonnet/Haiku)
 - Grok (Cloud model xAI grok-4-1-fast-non-reasoning)
 - Open AI (Cloud Chat GPT gpt-5.2)

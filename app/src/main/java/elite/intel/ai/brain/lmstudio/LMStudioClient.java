@@ -7,9 +7,10 @@ import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 public class LMStudioClient extends BaseAiClient implements Client {
 
@@ -57,23 +58,17 @@ public class LMStudioClient extends BaseAiClient implements Client {
 
     @Override
     public synchronized JsonObject sendJsonRequest(String request) {
-        return super.sendJsonRequest(request, getHttpURLConnection());
+        return super.sendJsonRequest(buildRequest(request));
     }
 
-    @Override
-    public HttpURLConnection getHttpURLConnection() {
-        try {
-            String url = systemSession.getLocalLlmAddress();
-            log.info("LM Studio connecting to: {}", url);
-            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(115_000);
-            conn.setReadTimeout(1_100_000);
-            return conn;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private HttpRequest buildRequest(String body) {
+        String url = systemSession.getLocalLlmAddress();
+        log.info("LM Studio connecting to: {}", url);
+        return HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
+                .header("Content-Type", "application/json")
+                .timeout(Duration.ofSeconds(1_100))
+                .build();
     }
 }

@@ -10,10 +10,10 @@ import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.LlmMetadata;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
+import java.net.http.HttpRequest;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 public class OpenAiClient extends BaseAiClient implements Client {
 
@@ -39,7 +39,6 @@ public class OpenAiClient extends BaseAiClient implements Client {
     }
 
     @Override public JsonObject createPrompt(String model, float temp) {
-
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("model", model);
         jsonObject.addProperty("temperature", temp);
@@ -53,27 +52,20 @@ public class OpenAiClient extends BaseAiClient implements Client {
     }
 
     @Override public JsonObject sendJsonRequest(String request) {
-        JsonObject response = super.sendJsonRequest(request, getHttpURLConnection());
+        JsonObject response = super.sendJsonRequest(buildRequest(request));
         LlmMetadata meta = GsonFactory.getGson().fromJson(response, LlmMetadata.class);
         EventBusManager.publish(new AppLogEvent("LLM: " + meta));
         return response;
     }
 
-    @Override public HttpURLConnection getHttpURLConnection() {
-        try {
-            URI uri = URI.create(API_URL);
-            URL url = uri.toURL();
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Authorization", "Bearer " + SystemSession.getInstance().getAiApiKey());
-            conn.setRequestProperty("User-Agent", "EliteIntel/1.0");
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(10_000);
-            conn.setReadTimeout(60_000);
-            return conn;
-        } catch (IOException noConnectiotn) {
-            throw new RuntimeException(noConnectiotn);
-        }
+    private HttpRequest buildRequest(String body) {
+        return HttpRequest.newBuilder()
+                .uri(URI.create(API_URL))
+                .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + SystemSession.getInstance().getAiApiKey())
+                .header("User-Agent", "EliteIntel/1.0")
+                .timeout(Duration.ofSeconds(60))
+                .build();
     }
 }

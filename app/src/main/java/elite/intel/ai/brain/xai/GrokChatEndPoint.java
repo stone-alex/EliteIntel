@@ -10,8 +10,6 @@ import elite.intel.ai.brain.commons.AiEndPoint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.HttpURLConnection;
-
 /**
  * Singleton class representing an AI chat communication endpoint with Grok.
  * Implements the AIChatInterface to provide functionality for sending message history
@@ -38,7 +36,6 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
         String bodyString = null;
         try {
             GrokClient client = GrokClient.getInstance();
-            HttpURLConnection conn = client.getHttpURLConnection();
             JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_REASONING, temp);
 
             // Sanitize messages

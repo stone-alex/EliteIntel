@@ -7,10 +7,10 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
+import java.net.http.HttpRequest;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 public class GeminiClient extends BaseAiClient implements Client {
 
@@ -53,7 +53,7 @@ public class GeminiClient extends BaseAiClient implements Client {
 
     @Override
     public JsonObject sendJsonRequest(String request) {
-        JsonObject response = super.sendJsonRequest(request, getHttpURLConnection());
+        JsonObject response = super.sendJsonRequest(buildRequest(request));
         if (response != null && response.has("usageMetadata")) {
             JsonObject usage = response.getAsJsonObject("usageMetadata");
             int promptTokens = usage.has("promptTokenCount") ? usage.get("promptTokenCount").getAsInt() : 0;
@@ -64,22 +64,15 @@ public class GeminiClient extends BaseAiClient implements Client {
         return response;
     }
 
-    @Override
-    public HttpURLConnection getHttpURLConnection() {
-        try {
-            String apiKey = SystemSession.getInstance().getAiApiKey();
-            URI uri = URI.create(API_BASE_URL + currentModel + ":generateContent?key=" + apiKey);
-            URL url = uri.toURL();
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(10_000);
-            conn.setReadTimeout(60_000);
-            return conn;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private HttpRequest buildRequest(String body) {
+        String apiKey = SystemSession.getInstance().getAiApiKey();
+        URI uri = URI.create(API_BASE_URL + currentModel + ":generateContent?key=" + apiKey);
+        return HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
+                .header("Content-Type", "application/json")
+                .timeout(Duration.ofSeconds(60))
+                .build();
     }
 
     /**

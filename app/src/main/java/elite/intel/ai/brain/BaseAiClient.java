@@ -8,16 +8,17 @@ import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class BaseAiClient {
     private static final Logger log = LogManager.getLogger(BaseAiClient.class);
-    private volatile HttpURLConnection currentConnection = null;
-    private volatile Thread currentRequestThread = null;  // optional, for interrupt()
+    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_1_1)
+            .build();
+    private volatile Thread currentRequestThread = null;
     private final SystemSession systemSession = SystemSession.getInstance();
 
     public BaseAiClient() {
@@ -30,80 +31,39 @@ public class BaseAiClient {
     }
 
     public void cancelCurrentRequest() {
-        HttpURLConnection conn = currentConnection;
-        if (conn != null) {
-            conn.disconnect();  // safe to call from any thread; closes socket → Ollama aborts
-            currentConnection = null;  // clear after cancel
-        }
         Thread t = currentRequestThread;
         if (t != null) {
-            t.interrupt();  // optional: wake up if blocked on read
+            t.interrupt();
         }
     }
 
-    // Helper to set/reset connection (call before/after sending)
-    private void setCurrentConnection(HttpURLConnection conn, Thread thread) {
-        currentConnection = conn;
-        currentRequestThread = thread;
-    }
-
-    private void clearCurrentConnection() {
-        currentConnection = null;
-        currentRequestThread = null;
-    }
-
-    public JsonObject sendJsonRequest(String request, HttpURLConnection conn) {
-        Thread currentThread = Thread.currentThread();
-
+    public JsonObject sendJsonRequest(HttpRequest request) {
+        currentRequestThread = Thread.currentThread();
         try {
-            setCurrentConnection(conn, currentThread);
-
-            conn.getOutputStream().write(request.getBytes(StandardCharsets.UTF_8));
-            conn.getOutputStream().flush();
-
-            int code = conn.getResponseCode();
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            int code = response.statusCode();
             if (code != 200) {
+                String body = response.body();
+                log.error("HTTP {} – response: {}", code, body);
                 if (code == 400 && !systemSession.useLocalCommandLlm()) {
-                    log.error("Bad Request. Unsupported request format or invalid API key: " + code);
                     EventBusManager.publish(new AiVoxResponseEvent("Bad Request. Unsupported request format or invalid API key"));
-                }
-                if (code == 429) {
-                    log.error("Too Many Requests. Please try again later." + code);
+                } else if (code == 429) {
                     EventBusManager.publish(new AiVoxResponseEvent("Too Many Requests. Please try again later."));
-                }
-                if (code == 401) {
-                    log.error("Invalid API Key. Please check your API Key and try again." + code);
+                } else if (code == 401) {
                     EventBusManager.publish(new AiVoxResponseEvent("Invalid API Key. Please check your API Key and try again."));
-                }
-                if (code == 500) {
-                    log.error("Internal Server Error. Please try again later." + code);
+                } else if (code == 500) {
                     EventBusManager.publish(new AiVoxResponseEvent("Internal Server Error. Please try again later."));
                 }
-
                 return createErrorResponse("HTTP " + code);
             }
-
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line);
-                }
-                return JsonParser.parseString(sb.toString()).getAsJsonObject();
-            }
+            return JsonParser.parseString(response.body()).getAsJsonObject();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return createErrorResponse("LLM Call Failed");
         } catch (IOException e) {
-            if (e.getMessage() != null && (e.getMessage().contains("Socket closed") || e instanceof java.net.SocketException)) {
-                return createErrorResponse("LLM Call Failed");
-            }
             return createErrorResponse("Request failed: " + e.getMessage());
         } finally {
-            clearCurrentConnection();  // always clean up
-            if (conn != null) {
-                try {
-                    conn.disconnect();
-                } catch (Exception ignored) {
-                }
-            }
+            currentRequestThread = null;
         }
     }
 }

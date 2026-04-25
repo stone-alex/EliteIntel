@@ -18,7 +18,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -147,7 +146,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             prompt.add("messages", messages);
             String jsonString = GsonFactory.getGson().toJson(prompt);
 
-            HttpURLConnection conn = client.getHttpURLConnection();
             JsonObject response = processAiPrompt(jsonString, client);
 
             JsonArray choices = response.getAsJsonArray("choices");

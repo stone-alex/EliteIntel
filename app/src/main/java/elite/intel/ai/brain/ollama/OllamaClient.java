@@ -9,9 +9,10 @@ import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.OllamaMetadata;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 public class OllamaClient extends BaseAiClient implements Client {
     public static final Integer MODEL_COMMANDS = 1;
@@ -85,25 +86,18 @@ public class OllamaClient extends BaseAiClient implements Client {
 
     @Override
     public synchronized JsonObject sendJsonRequest(String request) {
-        JsonObject response = super.sendJsonRequest(request, getHttpURLConnection());
+        JsonObject response = super.sendJsonRequest(buildRequest(request));
         OllamaMetadata metadata = GsonFactory.getGson().fromJson(response, OllamaMetadata.class);
         EventBusManager.publish(new AppLogEvent("Model " + metadata));
         return response;
     }
 
-    @Override
-    public HttpURLConnection getHttpURLConnection() {
-        try {
-            String url = getBaseUrl();
-            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(115_000);
-            conn.setReadTimeout(1_100_000);
-            return conn;
-        } catch (IOException noConnection) {
-            throw new RuntimeException(noConnection);
-        }
+    private HttpRequest buildRequest(String body) {
+        return HttpRequest.newBuilder()
+                .uri(URI.create(getBaseUrl()))
+                .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
+                .header("Content-Type", "application/json")
+                .timeout(Duration.ofSeconds(1_100))
+                .build();
     }
 }

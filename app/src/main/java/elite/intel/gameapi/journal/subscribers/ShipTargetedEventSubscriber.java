@@ -114,8 +114,8 @@ public class ShipTargetedEventSubscriber {
         if (legalStatus == null) return false;
         if (event == null) return false;
         if (legalStatus.isBlank()) return false;
-        if ("clean".contains(legalStatus.toLowerCase())) return false;
+        if ("clean".equalsIgnoreCase(legalStatus)) return false;
         if (event.getScanStage() == 0) return false;
-        return "wanted".contains(legalStatus.toLowerCase());
+        return "wanted".equalsIgnoreCase(legalStatus);
     }
 }

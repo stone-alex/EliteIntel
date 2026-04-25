@@ -137,7 +137,7 @@ public class ApproachBodySubscriber {
             sb.append(". ");
         }
         Map<String, Double> materials = bodyData.getMaterials();
-        if (!materials.isEmpty()) {
+        if (materials != null && !materials.isEmpty()) {
             sb.append(" ").append(materials.size()).append(" materials detected. Details available on request. ");
             for (Map.Entry<String, Double> material : materials.entrySet()) {
                 location.addMaterial(new MaterialDto(material.getKey(), material.getValue()));

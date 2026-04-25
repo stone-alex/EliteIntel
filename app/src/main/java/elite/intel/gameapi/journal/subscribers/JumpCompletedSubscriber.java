@@ -20,8 +20,6 @@ import elite.intel.search.edsm.dto.DeathsDto;
 import elite.intel.search.edsm.dto.SystemBodiesDto;
 import elite.intel.search.edsm.dto.TrafficDto;
 import elite.intel.search.edsm.dto.data.BodyData;
-import elite.intel.search.edsm.dto.data.DeathsStats;
-import elite.intel.search.edsm.dto.data.TrafficStats;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
@@ -95,13 +93,7 @@ public class JumpCompletedSubscriber {
                     sb.append(" Arrived at final destination: ").append(finalDestination);
                 }
                 TrafficDto trafficDto = EdsmApiClient.searchTraffic(finalDestination);
-                if (trafficDto.getData() != null && trafficDto.getData().getTraffic() != null) {
-                    TrafficStats trafficStats = trafficDto.getData().getTraffic();
-                }
                 DeathsDto deathsDto = EdsmApiClient.searchDeaths(finalDestination);
-                if (deathsDto.getData() != null && deathsDto.getData().getDeaths() != null) {
-                    DeathsStats deathsStats = deathsDto.getData().getDeaths();
-                }
                 primaryStar.setTrafficDto(trafficDto);
                 primaryStar.setDeathsDto(deathsDto);
 
@@ -191,7 +183,9 @@ public class JumpCompletedSubscriber {
         fireGroups.put("J", 9);
         fireGroups.put("K", 10);
         fireGroups.put("L", 11);
-        return fireGroups.get(fireGroup);
+        if (fireGroup == null) return 0;
+        Integer result = fireGroups.get(fireGroup);
+        return result == null ? 0 : result;
     }
 
     private void processEdsmData(SystemBodiesDto systemBodiesDto, long systemAddress, double[] starPos) {

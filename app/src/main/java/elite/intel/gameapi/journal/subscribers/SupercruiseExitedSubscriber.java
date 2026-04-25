@@ -15,7 +15,6 @@ public class SupercruiseExitedSubscriber {
     @Subscribe
     public void onSupercruiseExited(SupercruiseExitEvent event) {
         Thread.ofVirtual().start(() -> {
-                    LocationDto starSystem = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
                     LocationDto here = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyId());
                     playerSession.setCurrentLocationId(event.getBodyId(), event.getSystemAddress());
 
@@ -36,8 +35,6 @@ public class SupercruiseExitedSubscriber {
                     if (here.getLocationType() == null || LocationDto.LocationType.UNCLASSIFIED == here.getLocationType()) {
                         here.setLocationType(locationType);
                     }
-
-                    playerSession.setCurrentLocationId(event.getBodyId(), event.getSystemAddress());
                 }
         );
     }

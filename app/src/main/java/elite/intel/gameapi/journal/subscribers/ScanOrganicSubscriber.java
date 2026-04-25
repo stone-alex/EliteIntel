@@ -70,15 +70,9 @@ public class ScanOrganicSubscriber {
             BioForms.BioDetails bioDetails = BioForms.getDetails(genus, species);
             Integer distance = BioScanDistances.GENUS_TO_CCR.get(genus);
 
-            Integer range = null;
-            if (bioDetails == null) {
-                range = distance;
-            }
-            if (distance != null) {
-                range = distance;
-            }
+            Integer range = (bioDetails != null) ? (int) bioDetails.colonyRange() : distance;
 
-            if (scan1.equals(scanType)) {
+            if (scan1.equalsIgnoreCase(scanType)) {
                 sb.append(" Organic sample detected. Genus: ");
                 sb.append(" ");
                 sb.append("\"").append(genus).append("\"");

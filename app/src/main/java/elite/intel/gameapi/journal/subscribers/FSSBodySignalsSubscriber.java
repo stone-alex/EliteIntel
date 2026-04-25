@@ -40,7 +40,7 @@ public class FSSBodySignalsSubscriber {
                 if ("$SAA_SignalType_Biological;".equalsIgnoreCase(s.getType())) {
                     bioSignals = bioSignals + s.getCount();
                 }
-                if ("Geological".equalsIgnoreCase(s.getTypeLocalised())) {
+                if ("$SAA_SignalType_Geological;".equalsIgnoreCase(s.getType())) {
                     geoSignals = geoSignals + s.getCount();
                 }
                 signal.setSystemAddress(event.getSystemAddress());

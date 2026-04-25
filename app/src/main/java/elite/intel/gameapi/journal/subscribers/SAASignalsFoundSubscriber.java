@@ -98,7 +98,7 @@ public class SAASignalsFoundSubscriber {
                     ring.setMaterials(toMaterials(event.getSignals()));
                     ring.setLocationType(PLANETARY_RING);
 
-                    String parentBodyName = event.getBodyName().substring(0, event.getBodyName().length() - " X Ring".length());
+                    String parentBodyName = event.getBodyName().replaceAll(" [A-Z] Ring$", "");
                     ring.setParentBodyName(parentBodyName);
                     LocationDto parent = locationManager.getLocation(
                             playerSession.getPrimaryStarName(),

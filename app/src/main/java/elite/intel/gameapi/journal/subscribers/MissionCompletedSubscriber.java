@@ -22,11 +22,11 @@ public class MissionCompletedSubscriber {
     public void onMissionCompletedEvent(MissionCompletedEvent event) {
         Thread.ofVirtual().start(() -> {
             MissionDto mission = playerSession.getMission(event.getMissionID());
-            MissionType missionType = missionManager.getMissionType(removeNameEnding(event.getName()));
-
             if (mission == null) {
-                return; // no mission in session storage. just exit.
+                return; // no mission in session storage. just exit silently - nothing to do.
             }
+
+            MissionType missionType = missionManager.getMissionType(removeNameEnding(event.getName()));
             if (MISSION_PIRATE_MASSACRE.equals(missionType) || MISSION_PIRATE_MASSACRE_WING.equals(missionType)) {
                 playerSession.removeMission(event.getMissionID());
                 String targetFaction = event.getTargetFaction();

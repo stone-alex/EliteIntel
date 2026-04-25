@@ -28,10 +28,10 @@ public class StartJumpSubscriber {
             sb.append(event.getStarClass());
             sb.append(", ");
             sb.append(isFuelStarClause(event.getStarClass()));
-            if (trafficDto.getData() != null && trafficDto.getData().getTraffic().getTotal() > 0) {
+                if (trafficDto.getData() != null && trafficDto.getData().getTraffic() != null && trafficDto.getData().getTraffic().getTotal() > 0) {
                 sb.append(" Traffic data: " + trafficDto.getData().getTraffic().toYaml());
             }
-            if (deathsDto.getData() != null && deathsDto.getData().getDeaths().getTotal() > 0) {
+                if (deathsDto.getData() != null && deathsDto.getData().getDeaths() != null && deathsDto.getData().getDeaths().getTotal() > 0) {
                 sb.append(" Deaths data: " + deathsDto.getData().getDeaths().toYaml());
             }
 

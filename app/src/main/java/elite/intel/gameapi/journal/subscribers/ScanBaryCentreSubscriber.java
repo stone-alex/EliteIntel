@@ -13,13 +13,13 @@ public class ScanBaryCentreSubscriber {
     public void onScanBaryCentreEvent(ScanBaryCentreEvent event) {
         Thread.ofVirtual().start(() -> {
             LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
+
+            /// set galactic coordinates of the primary star
             LocationDto primaryStarLocation = locationManager.findPrimaryStar(event.getStarSystem());
-            location.setBodyId(event.getBodyID());
-            location.setStarName(primaryStarLocation.getStarName());
             location.setX(primaryStarLocation.getX());
             location.setY(primaryStarLocation.getY());
             location.setZ(primaryStarLocation.getZ());
-            location.setStarName(event.getStarSystem());
+
             location.setBodyId(event.getBodyID());
             location.setSystemAddress(event.getSystemAddress());
             location.setOrbitalPeriod(event.getOrbitalPeriod());

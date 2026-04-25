@@ -49,15 +49,10 @@ public class ScanEventSubscriber {
         boolean hasMats = event.getMaterials() != null && !event.getMaterials().isEmpty();
         boolean isTerraformable = event.getTerraformState() != null && !event.getTerraformState().isEmpty();
         boolean isLandable = event.isLandable();
-        String sensorData = "New discovery: " + shortName + " "
+        return "Previously discovered: " + shortName + " "
                 + (hasMats ? ". Materials detected. " : " ")
                 + (isTerraformable ? " Terraformable, " : " ")
                 + (isLandable ? " landable. " : ". ");
-
-        if (hasMats || isTerraformable) {
-            EventBusManager.publish(new DiscoveryAnnouncementEvent(sensorData));
-        }
-        return sensorData;
     }
 
     @Subscribe
@@ -240,8 +235,6 @@ public class ScanEventSubscriber {
             }
         } else if (!wasDiscovered && PRIMARY_STAR.equals(location.getLocationType())) {
             EventBusManager.publish(new DiscoveryAnnouncementEvent("New System discovered!"));
-        } else if (PRIMARY_STAR.equals(location.getLocationType())) {
-            EventBusManager.publish(new DiscoveryAnnouncementEvent("Previously discovered!"));
         }
     }
 

@@ -6,6 +6,9 @@ import elite.intel.ai.brain.anthropic.AnthropicCommandEndPoint;
 import elite.intel.ai.brain.anthropic.AnthropicUserEndPoint;
 import elite.intel.ai.brain.commons.PromptFactory;
 import elite.intel.ai.brain.commons.ResponseRouter;
+import elite.intel.ai.brain.deepseek.DeepSeekAnalysisEndpoint;
+import elite.intel.ai.brain.deepseek.DeepSeekChatEndPoint;
+import elite.intel.ai.brain.deepseek.DeepSeekCommandEndPoint;
 import elite.intel.ai.brain.gemini.GeminiAnalysisEndpoint;
 import elite.intel.ai.brain.gemini.GeminiChatEndPoint;
 import elite.intel.ai.brain.gemini.GeminiCommandEndPoint;
@@ -60,6 +63,7 @@ public class ApiFactory {
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
             case GROK -> GrokAnalysisEndpoint.getInstance();
+            case DEEPSEEK -> DeepSeekAnalysisEndpoint.getInstance();
             case OPENAI -> OpenAiAnalysisEndPoint.getInstance();
             case ANTHROPIC -> AnthropicAnalysisEndpoint.getInstance();
             case GEMENI -> GeminiAnalysisEndpoint.getInstance();
@@ -81,6 +85,7 @@ public class ApiFactory {
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
             case GROK -> GrokChatEndPoint.getInstance();
+            case DEEPSEEK -> DeepSeekChatEndPoint.getInstance();
             case OPENAI -> OpenAiChatEndPoint.getInstance();
             case ANTHROPIC -> AnthropicUserEndPoint.getInstance();
             case GEMENI -> GeminiChatEndPoint.getInstance();
@@ -116,6 +121,7 @@ public class ApiFactory {
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
             case GROK -> GrokCommandEndPoint.getInstance();
+            case DEEPSEEK -> DeepSeekCommandEndPoint.getInstance();
             case OPENAI -> OpenAiCommandEndPoint.getInstance();
             case ANTHROPIC -> AnthropicCommandEndPoint.getInstance();
             case GEMENI -> GeminiCommandEndPoint.getInstance();

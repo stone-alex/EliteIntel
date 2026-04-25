@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.apache.logging.log4j.util.Strings.trimToNull;
 
 public class LMStudioUserInputProcessor extends CommandEndPoint implements AiCommandInterface {
@@ -36,7 +37,7 @@ public class LMStudioUserInputProcessor extends CommandEndPoint implements AiCom
     public void start() {
         EventBusManager.register(this);
         if (running.compareAndSet(false, true)) {
-            this.executor = java.util.concurrent.Executors.newSingleThreadExecutor(
+            this.executor = newSingleThreadExecutor(
                     r -> {
                         Thread t = new Thread(r, "LMStudioCommand-Worker");
                         t.setDaemon(true);
@@ -78,6 +79,7 @@ public class LMStudioUserInputProcessor extends CommandEndPoint implements AiCom
         });
     }
 
+    @SuppressWarnings("DuplicatedCode")
     private void processVoiceCommand(String userInput) {
         if (userInput == null || userInput.isEmpty()) {
             getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);

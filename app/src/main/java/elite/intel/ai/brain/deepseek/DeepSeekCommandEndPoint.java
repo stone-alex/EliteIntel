@@ -1,10 +1,11 @@
-package elite.intel.ai.brain.openai;
+package elite.intel.ai.brain.deepseek;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.brain.commons.CommandEndPoint;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
@@ -20,51 +21,37 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static elite.intel.util.json.JsonUtils.getAsStringOrEmpty;
 import static org.apache.logging.log4j.util.Strings.trimToNull;
 
-public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandInterface {
-    private static final Logger log = LogManager.getLogger(OpenAiCommandEndPoint.class);
-    private static OpenAiCommandEndPoint instance;
+public class DeepSeekCommandEndPoint extends CommandEndPoint implements AiCommandInterface {
+    private static final Logger log = LogManager.getLogger(DeepSeekCommandEndPoint.class);
+    private static DeepSeekCommandEndPoint instance;
     private final AtomicBoolean running = new AtomicBoolean(false);
     private ExecutorService executor;
 
-    private OpenAiCommandEndPoint() {
-        EventBusManager.register(this);
+    private DeepSeekCommandEndPoint() {
     }
 
-    public static OpenAiCommandEndPoint getInstance() {
+    public static DeepSeekCommandEndPoint getInstance() {
         if (instance == null) {
-            instance = new OpenAiCommandEndPoint();
+            instance = new DeepSeekCommandEndPoint();
         }
         return instance;
-    }
-
-    private static String serverErrorMessage(IOException e) {
-        String aiServerError = "AI Internal server error.";
-        if (e.getMessage().contains("500") || e.getMessage().contains("402") || e.getMessage().contains("401")) {
-            aiServerError = "AI Internal server crash.";
-        }
-        if (e.getMessage().contains("404")) {
-            aiServerError = "AI API URL is invalid";
-        }
-        if (e.getMessage().contains("403")) {
-            aiServerError = "AI API key is invalid, or not authorized for this endpoint.";
-        }
-        return aiServerError;
     }
 
     @Override
     public void start() {
         if (running.compareAndSet(false, true)) {
             this.executor = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
-                Thread t = new Thread(r, "OpenAiCommandEndPoint-Worker");
+                Thread t = new Thread(r, "DeepSeekCommandEndPoint-Worker");
                 t.setDaemon(true);
                 return t;
             });
             EventBusManager.register(this);
-            log.info("OpenAiCommandEndPoint started");
+            log.info("DeepSeekCommandEndPoint started");
         } else {
-            log.debug("OpenAiCommandEndPoint already started");
+            log.debug("DeepSeekCommandEndPoint already started");
         }
     }
 
@@ -73,7 +60,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         if (running.compareAndSet(true, false)) {
             EventBusManager.unregister(this);
             if (executor != null) {
-                OpenAiClient.getInstance().cancelCurrentRequest();
+                DeepSeekClient.getInstance().cancelCurrentRequest();
                 executor.shutdown();
                 try {
                     if (!executor.awaitTermination(2, java.util.concurrent.TimeUnit.SECONDS)) {
@@ -86,9 +73,9 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
                     executor = null;
                 }
             }
-            log.info("OpenAiCommandEndPoint stopped");
+            log.info("DeepSeekCommandEndPoint stopped");
         } else {
-            log.debug("OpenAiCommandEndPoint already stopped");
+            log.debug("DeepSeekCommandEndPoint already stopped");
         }
     }
 
@@ -123,12 +110,13 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         JsonArray messages = buildVoiceCommandMessages(userInput);
 
-        JsonObject apiResponse = callOpenAiApi(messages);
+        JsonObject apiResponse = DeepSeekChatEndPoint.getInstance().processAiPrompt(messages, 0.01f);
         if (apiResponse == null) {
             getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
             return;
         }
 
+        log.info("Processing Action: {}", getAsStringOrEmpty(apiResponse, AIConstants.TYPE_ACTION));
         getRouter().processAiResponse(apiResponse, userInput);
     }
 
@@ -143,7 +131,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         executor.submit(() -> {
             try {
-                JsonObject apiResponse = callOpenAiApi(messages);
+                JsonObject apiResponse = callDeepSeekApi(messages);
                 if (apiResponse == null) {
                     EventBusManager.publish(new AiVoxResponseEvent("Failure processing system request. Check programming"));
                     return;
@@ -156,15 +144,15 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         });
     }
 
-    private JsonObject callOpenAiApi(JsonArray messages) {
+    private JsonObject callDeepSeekApi(JsonArray messages) {
         try {
-            OpenAiClient client = OpenAiClient.getInstance();
-            JsonObject prompt = client.createPrompt(OpenAiClient.MODEL_GPT, 0.10f);
+            DeepSeekClient client = DeepSeekClient.getInstance();
+            JsonObject prompt = client.createPrompt(DeepSeekClient.MODEL_CHAT, 1.00f);
             prompt.add("messages", messages);
             String jsonString = GsonFactory.getGson().toJson(prompt);
+
             JsonObject response = processAiPrompt(jsonString, client);
 
-            // Extract content
             JsonArray choices = response.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
                 log.error("No choices in API response:\n{}", response);
@@ -183,26 +171,39 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
                 return client.createErrorResponse("No content in API response");
             }
 
-            log.debug("API response content:\n{}", content);
+            log.debug("Raw API content:\n{}", content);
 
             String jsonContent = extractJsonFromContent(content);
             if (jsonContent == null) {
-                log.error("Could not extract JSON from content:\n{}", content);
-                return client.createErrorResponse("No JSON object in content");
+                log.error("Could not extract valid JSON from content:\n{}", content);
+                return client.createErrorResponse("Could not extract JSON from model response");
             }
 
-            log.debug("Extracted JSON content:\n\n{}\n\n", jsonContent);
+            log.debug("Extracted JSON:\n{}", jsonContent);
 
-            try {
-                return JsonParser.parseString(jsonContent).getAsJsonObject();
-            } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response content:\n{}", jsonContent, e);
-                return client.createErrorResponse("Failed to parse API content");
-            }
+            return JsonParser.parseString(jsonContent).getAsJsonObject();
+
         } catch (IOException e) {
-            log.error("Open AI API call failed: {}", e.getMessage(), e);
+            log.error("DeepSeek API call failed: {}", e.getMessage(), e);
             String aiServerError = serverErrorMessage(e);
-            return OpenAiClient.getInstance().createErrorResponse("API call failed: " + aiServerError);
+            return DeepSeekClient.getInstance().createErrorResponse("API call failed: " + aiServerError);
+        } catch (JsonSyntaxException e) {
+            log.error("JSON parse failed after extraction", e);
+            return DeepSeekClient.getInstance().createErrorResponse("Invalid JSON structure from model");
         }
+    }
+
+    private String serverErrorMessage(Exception e) {
+        String msg = e.getMessage();
+        if (msg.contains("500") || msg.contains("402") || msg.contains("401")) {
+            return "AI Internal server crash.";
+        }
+        if (msg.contains("404")) {
+            return "AI API URL is invalid";
+        }
+        if (msg.contains("403")) {
+            return "AI API key is invalid, or not authorized for this endpoint.";
+        }
+        return msg;
     }
 }

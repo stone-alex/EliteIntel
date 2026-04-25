@@ -9,6 +9,7 @@ package elite.intel.ai;
  */
 public enum ProviderEnum {
     GROK("LLM"),
+    DEEPSEEK("LLM"),
     GOOGLE_STT("STT"),
     GOOGLE_TTS("TTS"),
     GEMENI("LLM"),

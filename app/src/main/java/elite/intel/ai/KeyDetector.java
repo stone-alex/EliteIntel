@@ -38,6 +38,7 @@ public class KeyDetector {
      */
     private static final Map<ProviderEnum, Pattern> PATTERNS = Map.ofEntries(
             Map.entry(ProviderEnum.GROK, Pattern.compile("^xai-[a-zA-Z0-9_-]{40,100}$")),
+            Map.entry(ProviderEnum.DEEPSEEK, Pattern.compile("^sk-[a-f0-9]{32}$")),
             Map.entry(ProviderEnum.OPENAI, Pattern.compile("^sk-[a-zA-Z0-9_-]{161}$")),
             Map.entry(ProviderEnum.GOOGLE_STT, Pattern.compile("^AIzaSy[a-zA-Z0-9_-]{33}$")),
             Map.entry(ProviderEnum.GOOGLE_TTS, Pattern.compile("^AIzaSy[a-zA-Z0-9_-]{33}$")),

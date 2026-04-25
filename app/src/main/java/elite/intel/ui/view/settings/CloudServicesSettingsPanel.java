@@ -93,7 +93,7 @@ public class CloudServicesSettingsPanel extends JPanel {
 
         buttons.add(Box.createVerticalGlue());
         buttons.add(new JLabel(" Supported Cloud LLMS:"));
-        buttons.add(new JLabel(" Gemeni, Grok, OpenAI, Claude"));
+        buttons.add(new JLabel(" Gemeni, Grok, OpenAI, Claude, Deepseek"));
         buttons.add(new JLabel(" Model will be selected automatically based on your key."));
 
 

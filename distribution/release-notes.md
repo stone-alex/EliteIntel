@@ -1,3 +1,11 @@
+## v-0.0371-beta
+
+### bug fixes / features:
+- added deepseek
+
+
+
+- refactored clients to not use deprecated http client api.
 ## v-0.0370-beta
 
 ### bug fixes / features:

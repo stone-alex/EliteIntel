@@ -60,7 +60,7 @@ public class OllamaClient extends BaseAiClient implements Client {
         /// Strongest "follow instructions + output clean JSON" preset for ~8–13B models
         request.addProperty("mirostat", 2);           // mirostat 2.0 - best for controlled output
         request.addProperty("mirostat_tau", 3.5f);    // 3.0–4.5 range; 3.5 is a common sweet spot
-        request.addProperty("mirostat_eta", 0.1f);    // leave at default
+        request.addProperty("mirostat_eta", 0.1f);    // default
         request.addProperty("repeat_penalty", 1.12f); // 1.08–1.15 → prevents repeating keys or structure
 
         if (isQueryModel) {

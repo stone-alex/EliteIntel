@@ -2,10 +2,10 @@ package elite.intel.search.spansh.stellarobjects;
 
 import com.google.gson.annotations.SerializedName;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
-import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -46,6 +46,7 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
     }
 
     public List<Result> getResults() {
+        if (results == null) return Collections.emptyList();
         results.sort(Comparator.comparingDouble(Result::getDistance));
         return results;
     }

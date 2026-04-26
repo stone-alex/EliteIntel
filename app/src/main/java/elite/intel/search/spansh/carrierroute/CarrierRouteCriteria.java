@@ -8,5 +8,5 @@ public record CarrierRouteCriteria(
         String destinationSystem,
         int capacity,
         int capacityUsed,
-        int calculateStartingFuel
+        int startingFuel
 ) {}

@@ -50,11 +50,14 @@ public class IntraRequest {
     }
 
     static class MissionProvider {
+        @SerializedName("fac")
         Faction faction = new Faction();
+        @SerializedName("dist")
         Distance distance = new Distance();
     }
 
     static class BattleGround {
+        @SerializedName("dist")
         Distance distance = new Distance();
     }
 

@@ -34,6 +34,7 @@ public class TradeRouteFilter {
         if (pledgedPower == null || pledgedPower.isEmpty()) return route; // no filter needed
 
         List<TradeRouteTransaction> originalResults = route.getResult();
+        if (originalResults == null) return route;
         List<TradeRouteTransaction> filteredResults = new ArrayList<>();
 
         for (TradeRouteTransaction transaction : originalResults) {

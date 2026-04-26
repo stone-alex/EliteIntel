@@ -59,6 +59,14 @@ public class IntraResponse {
         @SerializedName("shop") int missionProvider;
         @SerializedName("arena") int battleGround;
 
+        public int getMissionProvider() {
+            return missionProvider;
+        }
+
+        public void setMissionProvider(int missionProvider) {
+            this.missionProvider = missionProvider;
+        }
+
         public int getBattleGround() {
             return battleGround;
         }

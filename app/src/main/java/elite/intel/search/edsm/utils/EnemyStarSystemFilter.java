@@ -12,11 +12,11 @@ public class EnemyStarSystemFilter {
 
         boolean aIsEnemy = a.getRecord().getControllingPower() != null
                 && !a.getRecord().getControllingPower().equalsIgnoreCase(pledgedPower)
-                && a.getRecord().getPowerState().equalsIgnoreCase("Stronghold");
+                && "Stronghold".equalsIgnoreCase(a.getRecord().getPowerState());
 
         boolean bIsEnemy = b.getRecord().getControllingPower() != null
                 && !b.getRecord().getControllingPower().equalsIgnoreCase(pledgedPower)
-                && b.getRecord().getPowerState().equalsIgnoreCase("Stronghold");
+                && "Stronghold".equalsIgnoreCase(b.getRecord().getPowerState());
 
         return aIsEnemy || bIsEnemy;
     }

@@ -46,6 +46,7 @@ public class StationClient extends SpanshClient {
         StationSearchResult stationSearchResult = GsonFactory.getGson().fromJson(performSearch(criteria), StationSearchResult.class);
         if (stationSearchResult == null) return null;
         List<StationSearchResult.SystemResult> results = stationSearchResult.getResults();
+        if (results == null) return null;
         for (StationSearchResult.SystemResult result : results) {
             if (result.getId64() == 0) continue;
             HttpRequest post = HttpRequest.newBuilder()
@@ -62,7 +63,7 @@ public class StationClient extends SpanshClient {
                 HttpResponse<String> resp = httpClient.send(post, HttpResponse.BodyHandlers.ofString());
                 if (resp.statusCode() == 400) {
                     log.warn("POST failed: {}", resp.body());
-                    EventBusManager.publish(new SensorDataEvent("Unable to complete Shapnsh request: " + resp.body(), "Issue a warning"));
+                    EventBusManager.publish(new SensorDataEvent("Unable to complete Spansh request: " + resp.body(), "Issue a warning"));
                 }
 
                 if (resp.statusCode() == 200) {
@@ -71,7 +72,7 @@ public class StationClient extends SpanshClient {
                     String expectedName = (criteria.getFilters() != null && criteria.getFilters().getSystemName() != null)
                             ? criteria.getFilters().getSystemName().getValue()
                             : criteria.getReferenceSystem();
-                    if (starSystem.getRecord().getName().equalsIgnoreCase(expectedName)) {
+                    if (starSystem.getRecord() != null && expectedName.equalsIgnoreCase(starSystem.getRecord().getName())) {
                         return starSystem;
                     }
                 }

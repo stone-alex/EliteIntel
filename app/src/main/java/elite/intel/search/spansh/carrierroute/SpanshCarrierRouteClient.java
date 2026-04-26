@@ -27,19 +27,19 @@ public class SpanshCarrierRouteClient extends SpanshClient {
     }
 
     /**
-     * Calculates a fleet carrier route based on criteria and current fuel supply.
+     * Calculates a fleet carrier route based on criteria.
      *
-     * @param criteria   Search criteria for the route.
-     * @param fuelSupply Current fuel level in tons.
+     * @param criteria Search criteria including starting fuel in tons.
      * @return Map of jump index (1-based) to CarrierJump details, or empty map on failure.
      */
-    public Map<Integer, CarrierJump> calculateRoute(CarrierRouteCriteria criteria, int fuelSupply) {
+    public Map<Integer, CarrierJump> calculateRoute(CarrierRouteCriteria criteria) {
         // Build form-urlencoded payload
         String payload = "source=" + URLEncoder.encode(criteria.sourceSystem(), StandardCharsets.UTF_8) +
                 "&destinations=" + URLEncoder.encode(criteria.destinationSystem(), StandardCharsets.UTF_8) +
                 "&capacity=" + criteria.capacity() +
                 "&capacity_used=" + criteria.capacityUsed() +
-                "&calculate_starting_fuel=" + criteria.calculateStartingFuel();
+                "&calculate_starting_fuel=0" +
+                "&starting_fuel=" + criteria.startingFuel();
 
 
         /// search
@@ -53,11 +53,10 @@ public class SpanshCarrierRouteClient extends SpanshClient {
         }
 
         Map<Integer, CarrierJump> routeMap = new TreeMap<>();
-        int remainingFuel = fuelSupply;
+        int remainingFuel = criteria.startingFuel();
         int jumpIndex = 1;
 
         for (int i = 1; i < jumpsArray.size(); i++) { // Start from index 1 to skip current position
-            jumpIndex = jumpIndex + 1;
             JsonObject jumpJson = jumpsArray.get(i).getAsJsonObject();
 
             int fuelUsed = jumpJson.get("fuel_used").getAsInt();
@@ -74,8 +73,8 @@ public class SpanshCarrierRouteClient extends SpanshClient {
             jump.setY(jumpJson.get("y").getAsDouble());
             jump.setZ(jumpJson.get("z").getAsDouble());
             jump.setLeg(jumpIndex);
-
             routeMap.put(jumpIndex, jump);
+            jumpIndex++;
         }
 
         return routeMap;

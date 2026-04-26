@@ -3,10 +3,7 @@ package elite.intel.search.spansh.stellarobjects;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 public class StellarObjectSearch {
@@ -48,7 +45,7 @@ public class StellarObjectSearch {
 
 
             criteria.setSize(10);
-            criteria.setPage(1);
+        criteria.setPage(0);
             criteria.setFilters(filters);
 
             StellarObjectSearchRequestDto.ReferenceCoords referenceCoords = new StellarObjectSearchRequestDto.ReferenceCoords();

@@ -22,8 +22,8 @@ public class EdsmUtils {
             if(station.getType() == null) continue;
             if (!allowedStationTypes.contains(station.getType().toLowerCase())) continue;
             station.setStarSystemName(starSystemName);
-            MarketDto market = EdsmApiClient.searchMarket(station.getMarketId(), station.getName(), null, 1000);
-            station.setCommodities(market.getData().getCommodities());
+            MarketDto market = EdsmApiClient.searchMarket(station.getMarketId(), starSystemName, null, 1000);
+            if (market.getData() != null) station.setCommodities(market.getData().getCommodities());
         }
 
         return stations;

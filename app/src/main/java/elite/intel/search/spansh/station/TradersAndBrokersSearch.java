@@ -37,8 +37,8 @@ public class TradersAndBrokersSearch {
         LocationDao.Coordinates galacticCoordinates = locationManager.getGalacticCoordinates();
 
         TraderAndBrokerSearchCriteria criteria = new TraderAndBrokerSearchCriteria();
-        criteria.setSize(1); // one page
-        criteria.setPage(5); // 5 results per page
+        criteria.setSize(5);
+        criteria.setPage(0);
 
         TraderAndBrokerSearchCriteria.ReferenceCoords coordinates = new TraderAndBrokerSearchCriteria.ReferenceCoords();
 
@@ -102,7 +102,7 @@ public class TradersAndBrokersSearch {
 
         if (result != null) {
             EventBusManager.publish(
-                    new AiVoxResponseEvent("Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName()
+                    new AiVoxResponseEvent("Head to " + result.getSystemName() + " star system. When you get there looks for " + result.getStationName()
                             + ". Data was last updated: " + TimeUtils.transformToYMDHtimeAgo(result.getUpdatedAt(), TimeUtils.LOCAL_DATE_TIME)
                     )
             );

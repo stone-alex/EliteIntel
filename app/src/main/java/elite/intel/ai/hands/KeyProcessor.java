@@ -213,7 +213,10 @@ public class KeyProcessor {
 
     public void pressKeys(int... keyCodes) {
         for (int keyCode : keyCodes) {
-            if (isNative(keyCode)) nativeKeyInput.keyDown(keyCode);
+            if (isNative(keyCode)) {
+                nativeKeyInput.keyDown(keyCode);
+                robot.delay(30);
+            }
             else robot.keyPress(keyCode);
         }
         for (int i = keyCodes.length - 1; i >= 0; i--) {
@@ -225,7 +228,10 @@ public class KeyProcessor {
     public void pressKeyCombo(int... keyCodes) {
         try {
             for (int keyCode : keyCodes) {
-                if (isNative(keyCode)) nativeKeyInput.keyDown(keyCode);
+                if (isNative(keyCode)) {
+                    nativeKeyInput.keyDown(keyCode);
+                    robot.delay(30);
+                }
                 else robot.keyPress(keyCode);
             }
             Thread.sleep(100);

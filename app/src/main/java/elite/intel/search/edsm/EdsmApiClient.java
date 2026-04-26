@@ -31,14 +31,9 @@ public class EdsmApiClient {
         return new StringBuilder(BASE_URL + endpoint + "?");
     }
 
-    private static StringBuilder authenticatedUrl(String endpoint) {
-        return new StringBuilder(BASE_URL + endpoint + "?");
-    }
-
-
     public static StarSystemDto searchStarSystem(String starSystemName, int showInformation) {
         if (starSystemName == null) return new StarSystemDto();
-        String endpoint = "/api-v1/systems";  // Note: Fixed to match docs if needed; check your DTO
+        String endpoint = "/api-v1/systems";
         StringBuilder query = publicUrl(endpoint);
         try {
             query.append("systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
@@ -266,6 +261,7 @@ public class EdsmApiClient {
         }
         DeathsDto dto = new DeathsDto();
         dto.data = data;
+        dto.timestamp = timestamp;
         return dto;
     }
 

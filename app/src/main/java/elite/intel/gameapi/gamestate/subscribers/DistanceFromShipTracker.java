@@ -64,7 +64,7 @@ public class DistanceFromShipTracker {
         // Check if player is in the donut
         boolean isInDonut = distance >= innerDonut && distance <= outerDonut;
         long NOW = System.currentTimeMillis();
-        if (isInDonut && shouldAnnounce && status.getStatus().getAltitude() == 0 && NOW - lastAnnounceTime < 15_000) {
+        if (isInDonut && shouldAnnounce && status.getStatus().getAltitude() == 0 && NOW - lastAnnounceTime > 15_000) {
             EventBusManager.publish(
                     new MissionCriticalAnnouncementEvent(
                             String.format("Warning: You are %d meters from your ship, approaching auto-departure zone!",
@@ -72,6 +72,7 @@ public class DistanceFromShipTracker {
                     )
             );
             log.info("Alert triggered: Player entered donut area at {} meters.", distance);
+            lastAnnounceTime = NOW;
         }
         // when outside, and ship departed, no reason to announce again
         shouldAnnounce = distance > outerDonut;

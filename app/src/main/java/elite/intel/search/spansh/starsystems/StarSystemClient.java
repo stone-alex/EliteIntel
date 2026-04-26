@@ -28,6 +28,7 @@ public class StarSystemClient extends SpanshClient {
     public List<StationSearchResult.SystemResult> searchStarSystems(SystemSearchCriteria criteria) {
         StationSearchResult stationSearchResult = GsonFactory.getGson().fromJson(performSearch(criteria), StationSearchResult.class);
         if (stationSearchResult == null) return new ArrayList<>();
-        return stationSearchResult.getResults();
+        List<StationSearchResult.SystemResult> results = stationSearchResult.getResults();
+        return results != null ? results : new ArrayList<>();
     }
 }

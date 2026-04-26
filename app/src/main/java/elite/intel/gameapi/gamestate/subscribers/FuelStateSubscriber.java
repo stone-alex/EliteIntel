@@ -38,7 +38,7 @@ public class FuelStateSubscriber {
                 double fuelCapacityMain = playerSession.getShipLoadout().getFuelCapacity().getMainTank();
                 double fuelAmount = oldStatus.getFuel().getFuelMain();
                 double remainingFuelInPercent = Math.round((fuelAmount / fuelCapacityMain * 100) * 100.0) / 100.0;
-                if (remainingFuelInPercent != 0 && remainingFuelInPercent < QUARTER_TANK_REMAINING && event.getFuel().getFuelMain() > fuelAmount) {
+                if (remainingFuelInPercent != 0 && remainingFuelInPercent < QUARTER_TANK_REMAINING && event.getFuel().getFuelMain() < fuelAmount) {
                     EventBusManager.publish(new MissionCriticalAnnouncementEvent("Fuel warning: " + remainingFuelInPercent + "% remaining."));
                     hasAnnounced = true;
                 } else {

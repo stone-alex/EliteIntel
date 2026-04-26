@@ -1,7 +1,6 @@
 package elite.intel.search.edsm.commodity;
 
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.db.managers.TradeProfileManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.MarketDto;
@@ -11,9 +10,7 @@ import elite.intel.search.edsm.dto.data.Station;
 import elite.intel.search.spansh.starsystems.StarSystemClient;
 import elite.intel.search.spansh.starsystems.StationSearchResult;
 import elite.intel.search.spansh.starsystems.SystemSearchCriteria;
-import elite.intel.search.spansh.traderoute.TradeRouteSearchCriteria;
 import elite.intel.util.AudioPlayer;
-import elite.intel.util.SleepNoThrow;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,10 +104,4 @@ public class EdsmCommoditySearch {
     }
 
 
-    public static void main(String[] args) {
-        List<CommoditySearchResult> results = search("Tritium", "Colonia", 200);
-        for (CommoditySearchResult result : results) {
-            System.out.println(result.getPrice() + " " + result.getStationName() + " " + result.getStarSystem());
-        }
-    }
 }

@@ -10,6 +10,7 @@ import elite.intel.util.yaml.YamlFactory;
 public class DeathsDto implements ToJsonConvertible, ToYamlConvertable {
     @SerializedName("data")
     public DeathsData data;
+    public long timestamp;
 
     public DeathsData getData() {
         return data;

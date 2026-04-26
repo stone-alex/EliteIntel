@@ -1,3 +1,34 @@
+## v-0.0372-beta
+
+### bug fixes / features:
+**Station** - 5 fixes:
+  - TradersAndBrokersSearch: swapped size/page (was size=1, page=5; now size=5, page=0) - closest stations were being skipped entirely
+  - TradersAndBrokersSearch: missing space in TTS string "looks for" + station name
+  - TraderAndBrokerSearchDto.getResults(): null guard before sort
+  - SearchForMaterialBrokerOrTrader: null check on dto before calling getResults()
+  - VistaGenomicsSearch: null checks on dto/getResults(), null-safe services stream, fixed wrong error log message
+
+**Stellarobjects** - 2 fixes:
+  - StellarObjectSearch: page = 1 → page = 0, removed unused IOException import
+
+**Traderoute** - 4 fixes:
+  - TradeRouteFilter: null guard on originalResults before for-each
+  - TradeRouteSearchCriteria: allowStrongHold was silently dropped from the query string, now included as allow_restricted_access; ONE_HOUR made final
+  - EnemyStarSystemFilter (used by both traderoute and missions/pirates): getPowerState() NPE when power state is null - flipped to "Stronghold".equalsIgnoreCase(...) style
+
+**IntraRequest** - MissionProvider.faction and both MissionProvider.distance / BattleGround.distance were missing @SerializedName("fac") / @SerializedName("dist"). The API was receiving "faction" and "distance" instead of the abbreviated keys it uses everywhere else, so those filters were silently ignored - meaning the HAZ-RES distance cap and minimum faction count were never actually enforced.
+  - IntraResponse.Head - added getMissionProvider() / setMissionProvider() for the shop count, which was write-only.
+  - PirateMassacreMissionSearch - added response.getOk() != 1 check before processing the body.
+
+  - Wrong arg station.getName() → starSystemName; added null guard on market.getData() before .getCommodities()
+  - Removed debug main() method
+  - allowedStations.remove("outpost") (no-op, inverted logic) → allowedStations.add("outpost")
+  - Removed dead authenticatedUrl() duplicate; removed dev comment from searchStarSystem
+  - EdsmApiClient.java + DeathsDto.java
+  - Added missing dto.timestamp = timestamp in searchDeaths; added timestamp field to DeathsDto
+  - Added a short pause after modifier is pressed and before the main key is triggered (hope this fixes some issues on Windows - maybe...)
+
+
 ## v-0.0371-beta
 
 ### bug fixes / features:

@@ -16,6 +16,7 @@ public class SearchForMaterialBrokerOrTrader {
         try {
             StationSearchClient client = StationSearchClient.getInstance();
             TraderAndBrokerSearchDto dto = client.searchTradersOrBrokers(searchCriteria);
+            if (dto == null) return null;
             return dto.getResults();
         } catch (Exception e) {
             log.error("Failed to find material trader", e);

@@ -92,40 +92,6 @@ public class BrainTreeCriteria extends BaseJsonDto implements ToJsonConvertible 
         }
     }
 
-    public static class ReserveLevel {
-
-        @SerializedName("value")
-        private List<String> value;
-
-        public void setValue(List<String> value) {
-            this.value = value;
-        }
-    }
-
-    public static class RingSignal {
-
-        @SerializedName("comparison")
-        private String comparison;
-
-        @SerializedName("count")
-        private List<Integer> count;
-
-        @SerializedName("name")
-        private String name;
-
-        public void setComparison(String comparison) {
-            this.comparison = comparison;
-        }
-
-        public void setCount(List<Integer> count) {
-            this.count = count;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-    }
-
     public static class ReferenceCoords {
 
         @SerializedName("x")

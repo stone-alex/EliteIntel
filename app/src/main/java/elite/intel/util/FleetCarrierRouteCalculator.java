@@ -54,7 +54,7 @@ public class FleetCarrierRouteCalculator {
                 fuelSupply
         );
 
-        Map<Integer, CarrierJump> route = client.calculateRoute(carrierRouteCriteria, fuelSupply);
+        Map<Integer, CarrierJump> route = client.calculateRoute(carrierRouteCriteria);
         routeManager.setFleetCarrierRoute(route);
 
         int fuelRequired = route.values().stream().mapToInt(CarrierJump::getFuelUsed).sum();

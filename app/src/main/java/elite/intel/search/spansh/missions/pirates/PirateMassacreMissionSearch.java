@@ -52,7 +52,7 @@ public class PirateMassacreMissionSearch {
      */
     public List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> findHuntingSpotsInRange(int range) {
         LocationDao.Coordinates coordinates = locationManager.getGalacticCoordinates();
-        return PirateMassacreMissionSearch.getInstance().queryApi(coordinates, range);
+        return queryApi(coordinates, range);
     }
 
 
@@ -78,6 +78,7 @@ public class PirateMassacreMissionSearch {
 
         IntraResponse response = missionSearchClient.findMassacrePairs(request);
         if (response == null) return null;
+        if (response.getOk() != 1) return null;
         if (response.getBody() == null) return null;
         if (response.getBody().isEmpty()) return null;
 
@@ -121,7 +122,7 @@ public class PirateMassacreMissionSearch {
         filters.setDistance(distance);
         criteria.setFilters(filters);
         criteria.setReferenceSystem(starSystemName);
-        criteria.setPage(1);
+        criteria.setPage(0);
         criteria.setSize(10);
         return starSystemSearchClient.search(criteria);
     }

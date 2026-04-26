@@ -5,6 +5,7 @@ import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class TraderAndBrokerSearchDto extends BaseJsonDto implements ToJsonConve
     private int size;
 
     public List<Result> getResults() {
+        if (results == null) return Collections.emptyList();
         results.sort(Comparator.comparingDouble(Result::getDistance));
         return results;
     }

@@ -40,9 +40,14 @@ public class FindNearestFleetCarrierHandler implements CommandHandler {
                 playerCarrierCallSign = carrierData.getCallSign();
             }
 
+            if (fleetCarriers == null) {
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Unable to reach Spansh. Try again later."));
+                return;
+            }
+
             final String finalPlayerCarrierCallSign = playerCarrierCallSign;
             fleetCarriers.getResults().stream()
-                    .filter(carrier -> !carrier.getCallSign().equals(finalPlayerCarrierCallSign))
+                    .filter(carrier -> finalPlayerCarrierCallSign == null || !finalPlayerCarrierCallSign.equals(carrier.getCallSign()))
                     .findFirst()
                     .ifPresentOrElse(
                             result -> {

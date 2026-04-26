@@ -98,6 +98,7 @@ public class BrainTreeManager {
         criteria.setFilters(filters);
 
         StellarObjectSearchResultDto result = client.search(criteria);
+        if (result == null) return;
         result.getResults().forEach(this::addBrainTreeLocation);
     }
 }

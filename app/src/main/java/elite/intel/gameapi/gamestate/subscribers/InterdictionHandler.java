@@ -15,9 +15,11 @@ public class InterdictionHandler {
     @Subscribe
     public void onInterdictedEvent(BeingInterdictedEvent event) {
         CommandHandler activateCombatMode = commandHandlerFactory.getCommandHandlers().get(ACTIVATE_COMBAT_MODE.getAction());
-        new Thread(() -> activateCombatMode.handle(ACTIVATE_COMBAT_MODE.getAction(), null, "")).start();
+        if (activateCombatMode != null)
+            new Thread(() -> activateCombatMode.handle(ACTIVATE_COMBAT_MODE.getAction(), null, "")).start();
 
         CommandHandler handler = commandHandlerFactory.getCommandHandlers().get(SELECT_HIGHEST_THREAT.getAction());
-        new Thread(() -> handler.handle(SELECT_HIGHEST_THREAT.getAction(), null, "")).start();
+        if (handler != null)
+            new Thread(() -> handler.handle(SELECT_HIGHEST_THREAT.getAction(), null, "")).start();
     }
 }

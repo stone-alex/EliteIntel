@@ -7,7 +7,7 @@ import java.util.StringJoiner;
 
 public class TradeRouteSearchCriteria implements StringQuery {
 
-    private static int ONE_HOUR = 3600;
+    private static final int ONE_HOUR = 3600;
 
     private int maxHops;
     private int maxHopDistance;
@@ -146,7 +146,8 @@ public class TradeRouteSearchCriteria implements StringQuery {
                 + (allowPlanetary ? "&allow_planetary=1" : "")
                 + (allowFleetCarriers ? "&allow_player_owned=1" : "")
                 + "&max_price_age=" + (ONE_HOUR * 2)
-                + (allowPermit ? "&permit=1" : "");
+                + (allowPermit ? "&permit=1" : "")
+                + (allowStrongHold ? "&allow_restricted_access=1" : "");
         return criteria.replace(" ", "%20");
     }
 

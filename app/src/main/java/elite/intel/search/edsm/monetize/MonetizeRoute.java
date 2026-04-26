@@ -3,15 +3,15 @@ package elite.intel.search.edsm.monetize;
 import elite.intel.db.managers.TradeProfileManager;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
-import elite.intel.search.edsm.EdsmApiClient;
-import elite.intel.search.edsm.dto.MarketDto;
-import elite.intel.search.edsm.dto.StationsDto;
 import elite.intel.search.edsm.dto.data.Commodity;
 import elite.intel.search.edsm.dto.data.Station;
 import elite.intel.search.spansh.traderoute.TradeRouteSearchCriteria;
 import elite.intel.util.json.ToJsonConvertible;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static elite.intel.search.edsm.utils.EdsmUtils.ALLOWED_STATION_TYPES;
 import static elite.intel.search.edsm.utils.EdsmUtils.toStationWithMarket;
@@ -34,7 +34,7 @@ public class MonetizeRoute {
             allowedStations.add("odyssey settlement");
         }
         if (!criteria.isRequiresLargePad()) {
-            allowedStations.remove("outpost");
+            allowedStations.add("outpost");
         }
 
         NavRouteDto destination = stops.getLast();

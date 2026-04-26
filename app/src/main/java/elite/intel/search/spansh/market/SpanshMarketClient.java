@@ -2,26 +2,26 @@ package elite.intel.search.spansh.market;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.xai.GrokChatEndPoint;
 import elite.intel.search.spansh.client.SpanshClient;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class SpanshMarketClient extends SpanshClient {
 
-    private static final String BASE_URL = "https://spansh.co.uk/api/stations/search";
+    private static final String SAVE_URL = "https://spansh.co.uk/api/stations/search/save";
+    private static final String RESULTS_URL = "https://spansh.co.uk/api/stations/search/recall/";
     private static final Logger log = LogManager.getLogger(SpanshMarketClient.class);
+
     public SpanshMarketClient() {
-        super(BASE_URL, BASE_URL + "/recall/");
+        super(SAVE_URL, RESULTS_URL);
     }
 
-    public List<StationMarketDto> searchMarkets(MarketSearchCriteria criteria) throws IOException, InterruptedException {
+    public List<StationMarketDto> searchMarkets(MarketSearchCriteria criteria) {
 
         // Build POST payload
         JsonObject filters = new JsonObject();
@@ -39,17 +39,19 @@ public class SpanshMarketClient extends SpanshClient {
         JsonObject payload = new JsonObject();
         payload.add("filters", filters);
         payload.add("sort", new JsonArray());
-        payload.addProperty("page", 1); // one page
+        payload.addProperty("page", 0);
         payload.addProperty("size", 100); // 100 results per page
         payload.addProperty("reference_system", criteria.referenceSystem());
 
 
         JsonObject result = performSearch(GsonFactory.getGson().toJson(payload));
+        if (result == null) return new ArrayList<>();
         log.debug("Result: {}", GsonFactory.getGson().toJson(result));
 
         // Parse and filter results
         JsonArray resultsArray = result.getAsJsonArray("results");
         List<StationMarketDto> stations = new ArrayList<>();
+        if (resultsArray == null) return stations;
 
         for (var stationElement : resultsArray) {
             JsonObject stationJson = stationElement.getAsJsonObject();
@@ -98,7 +100,7 @@ public class SpanshMarketClient extends SpanshClient {
         else if (criteria.wantToBuy())
             stations.sort(Comparator.comparing(StationMarketDto::getSellPrice));
         else
-            stations.sort(Comparator.comparing(StationMarketDto::getBuyPrice));
+            stations.sort(Comparator.comparing(StationMarketDto::getBuyPrice).reversed());
 
         return stations;
     }

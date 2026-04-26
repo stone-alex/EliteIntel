@@ -1,8 +1,6 @@
 package elite.intel.search.spansh.station.vista;
 
-import com.google.gson.JsonObject;
 import elite.intel.search.spansh.station.StationSearchClient;
-import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,14 +16,15 @@ public class VistaGenomicsSearch {
         try {
             StationSearchClient client = StationSearchClient.getInstance();
             VistaGenomicsLocationDto dto = client.searchVistaGenomics(searchCriteria);
+            if (dto == null || dto.getResults() == null) return null;
 
             return dto.getResults().stream().filter(
-                    result -> result.getServices().stream().anyMatch(service -> VISTA_GENOMICS.equalsIgnoreCase(service.getName())
-                    )
+                    result -> result.getServices() != null && result.getServices().stream().anyMatch(
+                            service -> VISTA_GENOMICS.equalsIgnoreCase(service.getName()))
             ).toList();
 
         } catch (Exception e) {
-            log.error("Failed to find material trader", e);
+            log.error("Failed to find Vista Genomics location", e);
         }
         return null;
     }

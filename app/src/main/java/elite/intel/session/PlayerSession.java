@@ -855,5 +855,18 @@ public class PlayerSession {
 
         return result.get(new Random().nextInt(result.size()));
     }
+
+    public boolean useVm() {
+        return Database.withDao(PlayerDao.class, dao -> dao.get().isUseVm());
+    }
+
+    public void setUseVm(boolean useVm) {
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setUseVm(useVm);
+            dao.save(player);
+            return Void.class;
+        });
+    }
 }
 

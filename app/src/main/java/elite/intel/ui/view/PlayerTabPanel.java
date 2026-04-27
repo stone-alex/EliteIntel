@@ -37,6 +37,7 @@ public class PlayerTabPanel extends JPanel {
     private JTextField bindingsDirField;
     private JScrollPane fleetScrollPane;
     private JCheckBox conversationModeCheckBox;
+    private JCheckBox useVmCheckBox;
 
     public PlayerTabPanel() {
         buildUi();
@@ -125,6 +126,10 @@ public class PlayerTabPanel extends JPanel {
         conversationModeCheckBox.addActionListener(e -> systemSession.setConversationalMode(conversationModeCheckBox.isSelected()));
         btns.add(conversationModeCheckBox);
 
+        useVmCheckBox = new JCheckBox("Delegate Controller to VM");
+        useVmCheckBox.addActionListener(e -> playerSession.setUseVm(useVmCheckBox.isSelected()));
+        btns.add(useVmCheckBox);
+
         add(btns, gbc);
 
         // Row 4: Fleet Management header
@@ -158,6 +163,7 @@ public class PlayerTabPanel extends JPanel {
         journalDirField.setText(playerSession.getJournalPath().toString());
         bindingsDirField.setText(playerSession.getBindingsDir().toString());
         conversationModeCheckBox.setSelected(systemSession.conversationalModeOn());
+        useVmCheckBox.setSelected(playerSession.useVm());
 
         List<ShipDao.Ship> ships = ShipManager.getInstance().getAllShips();
         ships.sort((a, b) -> {

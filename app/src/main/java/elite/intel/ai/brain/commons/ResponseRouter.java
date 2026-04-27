@@ -10,6 +10,7 @@ import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.StringUtls;
@@ -37,7 +38,7 @@ public class ResponseRouter implements AIRouterInterface {
     private final Map<String, CommandHandler> commandHandlers;
     private final Map<String, QueryHandler> queryHandlers;
     private final SystemSession systemSession;
-
+    private final PlayerSession playerSession;
     private boolean dryRun = false;
 
     /**
@@ -53,6 +54,7 @@ public class ResponseRouter implements AIRouterInterface {
             commandHandlers = CommandHandlerFactory.getInstance().registerCommandHandlers();
             queryHandlers = QueryHandlerFactory.getInstance().registerQueryHandlers();
             this.systemSession = SystemSession.getInstance();
+            this.playerSession = PlayerSession.getInstance();
         } catch (Exception e) {
             log.error("Failed to initialize ResponseRouter", e);
             throw new RuntimeException("ResponseRouter initialization failed", e);
@@ -64,11 +66,11 @@ public class ResponseRouter implements AIRouterInterface {
     }
 
     private void fireVmMacroRemote(String action) {
-        if (action == null || action.isEmpty()) {
+        if (action == null || action.isEmpty() || !playerSession.useVm()) {
             return;
         }
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://127.0.0.1:8080/executemacro?name=" + action))
+                .uri(URI.create("http://127.0.0.1:8080/ExecuteMacro=EliteDangerous/" + action))
                 .GET()
                 .timeout(Duration.ofSeconds(2))
                 .build();
@@ -84,7 +86,7 @@ public class ResponseRouter implements AIRouterInterface {
         try {
             String responseText = getAsStringOrEmpty(jsonResponse, AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE);
             String action = getAsStringOrEmpty(jsonResponse, AIConstants.TYPE_ACTION);
-            fireVmMacroRemote(action); /// VM Macro integration point.
+
             JsonObject params = getAsObjectOrEmpty(jsonResponse);
 
             if (!responseText.isEmpty() && action.isEmpty()) {
@@ -104,6 +106,7 @@ public class ResponseRouter implements AIRouterInterface {
 
             if (getCommandHandlers().containsKey(action)) {
                 handleCommand(action, params, responseText);
+                fireVmMacroRemote(action); /// VM Macro integration point.
             } else if (getQueryHandlers().containsKey(action)) {
                 handleQuery(action, params, userInput);
             } else if (!action.isEmpty()) {

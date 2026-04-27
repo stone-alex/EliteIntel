@@ -31,7 +31,7 @@ public interface PlayerDao {
                        total_bounty_claimed, total_distance_traveled, total_hyperspace_distance,
                        total_profits_from_exploration, total_systems_visited, exobiology_profits, alternative_name,
                        journal_dir, bindings_dir, logging_enabled, game_build, bounty_collected_lifetime, homeSystemId, 
-                       localTtsServer, localLlmAddress, systemAddress, currentGenus, radarAnnouncementOn
+                       localTtsServer, localLlmAddress, systemAddress, currentGenus, radarAnnouncementOn, useVm
                     )
                     VALUES (1, :currentPrimaryStar,
                        :carrierDepartureTime, :crewWagsPayout,
@@ -46,7 +46,7 @@ public interface PlayerDao {
                        :shipsOwned, :speciesFirstLogged, :totalBountyClaimed, :totalDistanceTraveled, 
                        :totalHyperspaceDistance, :totalProfitsFromExploration, :totalSystemsVisited, :exobiologyProfits, :alternativeName,
                        :journalDirectory, :bindingsDirectory, :loggingEnabled, :gameBuild, :bountyCollectedLifetime, :homeSystemId, 
-                       :localTtsServer, :localLlmAddress, :systemAddress, :currentGenus, :radarAnnouncementOn
+                       :localTtsServer, :localLlmAddress, :systemAddress, :currentGenus, :radarAnnouncementOn, :useVm
                     )
             """)
     void save(@BindBean Player player);
@@ -100,6 +100,7 @@ public interface PlayerDao {
         private String localLlmAddress;
         private String currentGenus;
         private boolean radarAnnouncementOn;
+        private boolean useVm;
 
         public Player() {
         } // required for JDBI
@@ -481,6 +482,14 @@ public interface PlayerDao {
         public void setRadarAnnouncementOn(boolean radarAnnouncementOn) {
             this.radarAnnouncementOn = radarAnnouncementOn;
         }
+
+        public boolean isUseVm() {
+            return useVm;
+        }
+
+        public void setUseVm(boolean useVm) {
+            this.useVm = useVm;
+        }
     }
 
     class PlayerMapper implements RowMapper<Player> {
@@ -534,6 +543,7 @@ public interface PlayerDao {
             p.setSystemAddress(rs.getLong("systemAddress"));
             p.setCurrentGenus(rs.getString("currentGenus"));
             p.setRadarAnnouncementOn(rs.getBoolean("radarAnnouncementOn"));
+            p.setUseVm(rs.getBoolean("useVm"));
             return p;
         }
     }

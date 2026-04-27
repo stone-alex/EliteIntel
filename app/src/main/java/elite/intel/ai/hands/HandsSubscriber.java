@@ -8,6 +8,7 @@ import elite.intel.ai.hands.events.RawKeyEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
+import elite.intel.session.PlayerSession;
 import elite.intel.session.ui.UINavigator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,6 +29,7 @@ public class HandsSubscriber {
 
     private final BindingsMonitor monitor = BindingsMonitor.getInstance();
     private final KeyBindingExecutor executor = KeyBindingExecutor.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     public HandsSubscriber() {
         GameControllerBus.register(this);
@@ -36,6 +38,7 @@ public class HandsSubscriber {
     @Subscribe
     public void onGameInput(GameInputEvent event) {
         if (monitor.getBindings() == null) return;
+        if (playerSession.useVm()) return;
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(event.getBindingId());
         if (binding != null) {
             executor.executeBindingWithHold(binding, event.getHoldTime());

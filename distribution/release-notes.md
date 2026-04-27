@@ -1,8 +1,15 @@
+## v-0.0379-beta
+
+### bug fixes / features:
+- Removed experimental Web Socket integration point.
+- Added warning message for anyone who dare to check the "Delegate Controller to VM" check box. (experimental feature)
+
+
 ## v-0.0377-beta
 
 ### bug fixes / features:
 
-- Added VM integration. The LLM inferred actions are pushed to http://127.0.0.1:8080/executemacro?name=ACTION_NAME
+- Added VM integration. The LLM inferred actions are pushed to http://127.0.0.1:8080/ExecuteMacro=EliteDangerous/ACTION_NAME
 
 
 ## v-0.0376-beta

@@ -11,6 +11,17 @@ public class CommoditySearchResult extends BaseJsonDto implements ToJsonConverti
     private String stationName;
     private String stationType;
 
+    /// transient
+    private double distanceFromPlayer;
+
+    public double getDistanceFromPlayer() {
+        return distanceFromPlayer;
+    }
+
+    public void setDistanceFromPlayer(double distanceFromPlayer) {
+        this.distanceFromPlayer = distanceFromPlayer;
+    }
+
     public String getCommodity() {
         return commodity;
     }

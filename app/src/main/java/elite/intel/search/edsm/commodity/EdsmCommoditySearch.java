@@ -29,7 +29,7 @@ public class EdsmCommoditySearch {
     );
 
 
-    public static List<CommoditySearchResult> search(String commodityToFind, String refStarSystem, int maxDistance) {
+    public static List<CommoditySearchResult> search(String commodityToFind, String refStarSystem, int maxDistance, int cargoHoldCapacity, boolean returnClosest) {
         StarSystemClient edsmClient = StarSystemClient.getInstance();
         SystemSearchCriteria spanshCriteria = new SystemSearchCriteria();
         SystemSearchCriteria.Filters filters = new SystemSearchCriteria.Filters();
@@ -61,6 +61,7 @@ public class EdsmCommoditySearch {
                     for (Station station : list) {
                         if(!ALLOWED_STATION_TYPES.contains(station.getType())) continue;
                         station.setStarSystemName(star.getName());
+                        station.setTransientDistance(star.getDistance());
                         stations.add(station);
                     }
                 }
@@ -85,13 +86,14 @@ public class EdsmCommoditySearch {
 
             for (Commodity entry : commodities) {
                 if (commodityToFind.equalsIgnoreCase(entry.getName())) {
-                    if (entry.getStock() > 0 && entry.getBuyPrice() > 0) {  // buyPrice is what player pays
+                    if (entry.getStock() >= cargoHoldCapacity && entry.getBuyPrice() > 0) {  // buyPrice is what player pays
                         CommoditySearchResult result = new CommoditySearchResult();
                         result.setCommodity(entry.getName());
                         result.setPrice(entry.getBuyPrice());
                         result.setStarSystem(starSystem);
                         result.setStationName(stationName);
                         result.setStationType(station.getType());
+                        result.setDistanceFromPlayer(station.getTransientDistance());
                         results.add(result);
                         AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_3); // audio indicator of background search
                     }
@@ -99,7 +101,11 @@ public class EdsmCommoditySearch {
             }
         }
 
-        results.sort(Comparator.comparing(CommoditySearchResult::getPrice));
+        if (returnClosest) {
+            results.sort(Comparator.comparing(CommoditySearchResult::getDistanceFromPlayer));
+        } else {
+            results.sort(Comparator.comparing(CommoditySearchResult::getPrice));
+        }
         return results;
     }
 

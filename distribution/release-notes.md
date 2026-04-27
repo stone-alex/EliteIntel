@@ -1,6 +1,13 @@
 ## v-0.0372-beta
 
 ### bug fixes / features:
+- Parametrized market searches. You can now specified **nearest** vs **best price**. The market also must have the commodity in stock 2x your max cargo hold capacity. If you specify **within X light years** the query will be limited to markets within that range, else it is 3x your ship jump range. NOTE: The data is from Spansh, and is dependant on other commanders submitting market data. It can be wrong or outdated. Max data age is 1 hour.
+
+
+
+## v-0.0372-beta
+
+### bug fixes / features:
 **Station** - 5 fixes:
   - TradersAndBrokersSearch: swapped size/page (was size=1, page=5; now size=5, page=0) - closest stations were being skipped entirely
   - TradersAndBrokersSearch: missing space in TTS string "looks for" + station name

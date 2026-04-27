@@ -149,7 +149,7 @@ public class AiActionsMap {
         map.put("find manufactured material trader, manufactured trader {key:X}", FIND_MANUFACTURED_MATERIAL_TRADER.getAction());
         map.put("find human tech broker, human technology broker {key:X}", FIND_HUMAN_TECHNOLOGY_BROKER.getAction());
         map.put("find guardian tech broker, guardian technology broker {key:X}", FIND_GUARDIAN_TECHNOLOGY_BROKER.getAction());
-        map.put("find commodity, buy commodity, where to buy, find market {key:X, max_distance:Y}", FIND_COMMODITY.getAction());
+        map.put("find commodity, find nearest commodity, buy commodity, where to buy, find market{key:X, max_distance:Y, state:true/false}", FIND_COMMODITY.getAction());
         map.put("find nearest fleet carrier, nearest carrier", FIND_NEAREST_FLEET_CARRIER.getAction());
 
         // fleet carrier

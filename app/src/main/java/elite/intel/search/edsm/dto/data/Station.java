@@ -38,6 +38,16 @@ public class Station implements ToYamlConvertable {
     @SerializedName("updateTime")
     public StationUpdateTime updateTime;
 
+    /// transient - not part of json!
+    private double transientDistance;
+
+    public double getTransientDistance() {
+        return transientDistance;
+    }
+
+    public void setTransientDistance(double transientDistance) {
+        this.transientDistance = transientDistance;
+    }
 
     //transient
     List<Commodity> commodities;

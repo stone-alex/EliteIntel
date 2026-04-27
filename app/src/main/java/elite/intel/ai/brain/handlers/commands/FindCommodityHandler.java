@@ -24,6 +24,8 @@ public class FindCommodityHandler implements CommandHandler {
 
         JsonElement key = params.get("key");
         JsonElement maxDistance = params.get("max_distance");
+        JsonElement stateEl = params.get("state");
+        boolean returnClosest = stateEl != null && stateEl.getAsBoolean();
         Integer distance = maxDistance == null ? null : getIntSafely(maxDistance.getAsString());
         if (distance == null || distance < 1) distance = (int) playerSession.getShipLoadout().getMaxJumpRange() * 2;
         String starName = playerSession.getPrimaryStarName();
@@ -45,9 +47,11 @@ public class FindCommodityHandler implements CommandHandler {
             return;
         }
 
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching markets with best price for " + commodity + " within " + distance + " light years."));
+        String searchMode = returnClosest ? "nearest market" : "best price";
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for " + searchMode + " for " + commodity + " within " + distance + " light years."));
 
-        List<CommoditySearchResult> results = EdsmCommoditySearch.search(commodity, starName, distance);
+        int cargoCapacity = playerSession.getShipLoadout().getCargoCapacity();
+        List<CommoditySearchResult> results = EdsmCommoditySearch.search(commodity, starName, distance, cargoCapacity, returnClosest);
         if (results.isEmpty()) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No match found."));
             return;

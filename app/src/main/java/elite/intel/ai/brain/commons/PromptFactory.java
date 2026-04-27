@@ -186,7 +186,10 @@ public class PromptFactory implements AiPromptFactory {
                   - "night vision on"          → {"action": "toggle_night_vision_on_off", "params": {"state": true}}
                   - "night vision off"         → {"action": "toggle_night_vision_on_off", "params": {"state": false}}
                   - "lights on"                → {"action": "toggle_lights_on_off", "params": {"state": true}}
-                  - "find gold within 80 ly"   → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
+                  - "find gold within 80 ly"        → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
+                  - "find nearest market for gold"  → {"action": "find_commodity", "params": {"key": "gold", "state": true}}
+                  - "where can we buy gold"         → {"action": "find_commodity", "params": {"key": "gold", "state": false}}
+                  - find_commodity state: if "nearest" or "closest" appears anywhere in input → true (distance), regardless of other words. Otherwise → false (price).
                 """);
 
         Map<String, String> reduced = Reducer.reduce(normalizedInput, fullMap, !systemSession.conversationalModeOn());

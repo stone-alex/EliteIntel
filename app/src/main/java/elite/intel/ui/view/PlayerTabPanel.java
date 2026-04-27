@@ -23,6 +23,7 @@ import java.awt.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static elite.intel.ui.view.AppTheme.*;
 
@@ -115,7 +116,8 @@ public class PlayerTabPanel extends JPanel {
         saveButton.addActionListener(e -> savePlayerConfig());
         btns.add(saveButton);
 
-        JButton automationButton = makeButtonSubtle("Ship Options");
+        JButton automationButton = makeButtonSubtle("");
+        automationButton.setIcon(scaledIcon("/images/handicapped.png"));
         automationButton.addActionListener(e -> GlobalSettingsPopup.create(this).setVisible(true));
         btns.add(automationButton);
 
@@ -257,7 +259,8 @@ public class PlayerTabPanel extends JPanel {
             c.gridx = 4;
             c.weightx = 0.08;
             c.fill = GridBagConstraints.NONE;
-            JButton shipSettingsBtn = makeButtonSubtle("...");
+            JButton shipSettingsBtn = makeButtonSubtle("");
+            shipSettingsBtn.setIcon(scaledIcon("/images/handicapped.png"));
             shipSettingsBtn.addActionListener(e -> ShipSettingsPopup.create(panel, ship.getShipName(), shipSettings).setVisible(true));
             panel.add(shipSettingsBtn, c);
             c.fill = GridBagConstraints.HORIZONTAL;
@@ -302,5 +305,11 @@ public class PlayerTabPanel extends JPanel {
         playerSession.setBindingsDir(bindingsDirField.getText());
         EventBusManager.publish(new AppLogEvent("Player config saved"));
         initData();
+    }
+
+    private ImageIcon scaledIcon(String resource) {
+        return new ImageIcon(
+                new ImageIcon(Objects.requireNonNull(getClass().getResource(resource)))
+                        .getImage().getScaledInstance(28, 28, Image.SCALE_SMOOTH));
     }
 }

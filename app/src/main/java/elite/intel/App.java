@@ -8,6 +8,7 @@ import elite.intel.session.LoadSessionEvent;
 import elite.intel.ui.controller.AppController;
 import elite.intel.ui.view.AppView;
 import elite.intel.util.Cypher;
+import elite.intel.ws.LlmActionBroadcaster;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 
@@ -21,6 +22,8 @@ public class App {
         // init kry and db first!
         Cypher.initializeKey();
         Database.init();
+
+        LlmActionBroadcaster.getInstance().start();
 
         // change the debug log level when we have version 1.0
         Configurator.setRootLevel(Level.ALL);

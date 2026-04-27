@@ -1,3 +1,9 @@
+## v-0.0376-beta
+
+### bug fixes / features:
+- Added websocket on port 7497. It exposes the llm actions as they return.
+
+
 ## v-0.0372-beta
 
 ### bug fixes / features:

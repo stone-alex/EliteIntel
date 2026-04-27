@@ -70,6 +70,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.0'     // or latest 2.18.x / 2.19.x / 2.21.x
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.0'
+
+    // WebSocket server for external integrations
+    implementation 'org.java-websocket:Java-WebSocket:1.5.7'
 }
 
 

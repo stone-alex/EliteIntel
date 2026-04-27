@@ -66,7 +66,7 @@ public class ApiFactory {
             case DEEPSEEK -> DeepSeekAnalysisEndpoint.getInstance();
             case OPENAI -> OpenAiAnalysisEndPoint.getInstance();
             case ANTHROPIC -> AnthropicAnalysisEndpoint.getInstance();
-            case GEMENI -> GeminiAnalysisEndpoint.getInstance();
+            case GEMINI -> GeminiAnalysisEndpoint.getInstance();
             default -> OllamaAnalysisEndpoint.getInstance();
         };
 
@@ -88,7 +88,7 @@ public class ApiFactory {
             case DEEPSEEK -> DeepSeekChatEndPoint.getInstance();
             case OPENAI -> OpenAiChatEndPoint.getInstance();
             case ANTHROPIC -> AnthropicUserEndPoint.getInstance();
-            case GEMENI -> GeminiChatEndPoint.getInstance();
+            case GEMINI -> GeminiChatEndPoint.getInstance();
             default -> OllamaCommandEndPoint.getInstance();
         };
     }
@@ -124,7 +124,7 @@ public class ApiFactory {
             case DEEPSEEK -> DeepSeekCommandEndPoint.getInstance();
             case OPENAI -> OpenAiCommandEndPoint.getInstance();
             case ANTHROPIC -> AnthropicCommandEndPoint.getInstance();
-            case GEMENI -> GeminiCommandEndPoint.getInstance();
+            case GEMINI -> GeminiCommandEndPoint.getInstance();
             default -> OllamaUserInputProcessor.getInstance();
         };
     }

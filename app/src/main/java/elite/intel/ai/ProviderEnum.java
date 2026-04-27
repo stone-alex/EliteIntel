@@ -12,7 +12,7 @@ public enum ProviderEnum {
     DEEPSEEK("LLM"),
     GOOGLE_STT("STT"),
     GOOGLE_TTS("TTS"),
-    GEMENI("LLM"),
+    GEMINI("LLM"),
     OPENAI("LLM"),
     ANTHROPIC("LLM"),
     AWS_LLM("LLM"),

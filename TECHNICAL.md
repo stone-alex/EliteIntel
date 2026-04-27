@@ -57,7 +57,7 @@ Supported providers:
 | Anthropic Claude | Cloud           | Sonnet / Haiku                       |
 | xAI Grok         | Cloud           | Fast non-reasoning model             |
 | OpenAI ChatGPT   | Cloud           | GPT-4 class                          |
-| Gemeni           | Cloud           | gemini-3.1-flash-lite-preview        |
+| Gemini           | Cloud           | gemini-3.1-flash-lite-preview        |
 
 ### Dual-Model Local Inference
 

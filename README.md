@@ -43,7 +43,7 @@ Powered by NVIDIA Parakeet. built-in / included.
 - Claude (Cloud. Models: Sonnet/Haiku)
 - Grok (Cloud model xAI grok-4-1-fast-non-reasoning)
 - Open AI (Cloud Chat GPT gpt-5.2)
-- Google Gemeni (Cloud Generative Language API gemini-2.5-flash)
+- Google Gemini (Cloud Generative Language API gemini-2.5-flash)
 - Deepseek deepseek-v4-flash
 
 ### 🎤 STT (Speech To Text)

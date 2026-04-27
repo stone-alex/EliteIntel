@@ -374,7 +374,7 @@
 ### bug fixes / features:
 
 - Navigation announcements will turn on automatically when you ask to navigate to surface coordinates or codex entry.
-- Gemeni response format tuning.
+- Gemini response format tuning.
 - Added a Fleet management panel under the Player tab. You can now customize the personality, cadence and voice of your ships. NOTE: The voice names will be reset to default if you switch from Local to Cloud voices and back.
 
 
@@ -382,7 +382,7 @@
 
 ### bug fixes / features:
 
-- Added support for Google Gemeni (Generative Language API)
+- Added support for Google Gemini (Generative Language API)
 - Added disable all announcements callout.
 - Added audio calibration verification on service startup.
 - If the Noise Floor to RMS ratio is low, (below 300) you will get a warning.

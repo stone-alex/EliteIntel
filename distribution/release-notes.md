@@ -1,3 +1,10 @@
+## v-0.0377-beta
+
+### bug fixes / features:
+
+- Added VM integration. The LLM inferred actions are pushed to http://127.0.0.1:8080/executemacro?name=ACTION_NAME
+
+
 ## v-0.0376-beta
 
 ### bug fixes / features:

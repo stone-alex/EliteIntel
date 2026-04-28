@@ -23,42 +23,41 @@ DEFAULT_INSTALL_LOCATION="$HOME/.var/app/elite.intel.app"
 INSTALL_FOLDER="elite.intel.app"
 STEAM_FOLDER=""
 
-# Temurin 21 LTS JRE - bundled with the app, not dependent on system Java.
-# Using the Adoptium API to always fetch the latest 21 patch release.
-# Full (not headless) JRE is required for Swing/AWT.
-JRE_API="https://api.adoptium.net/v3/binary/latest/21/ga/linux/x64/jre/hotspot/normal/eclipse"
-JRE_DIR="jre"
+# Oracle JDK 21 LTS - bundled with the app, not dependent on system Java.
+# Direct download; no login/paywall for this rolling "latest" URL.
+JDK_URL="https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.tar.gz"
+JDK_DIR="jdk"
 
 #
 #	Functions
 #
 
-install_jre() {
-    local JRE_PATH="$DEFAULT_INSTALL_LOCATION/$JRE_DIR"
+install_jdk() {
+    local JDK_PATH="$DEFAULT_INSTALL_LOCATION/$JDK_DIR"
 
-    # Skip download if a bundled JRE is already present from a previous install
-    if [ -x "$JRE_PATH/bin/java" ]; then
-        echo "Bundled JRE already present, skipping download."
+    # Skip download if a bundled JDK is already present from a previous install
+    if [ -x "$JDK_PATH/bin/java" ]; then
+        echo "Bundled JDK already present, skipping download."
         return
     fi
 
-    echo "Downloading bundled JRE (Temurin 21)..."
-    mkdir -p "$JRE_PATH"
+    echo "Downloading bundled JDK (Oracle JDK 21)..."
+    mkdir -p "$JDK_PATH"
 
-    if ! curl -L -o /tmp/ei_jre.tar.gz "$JRE_API"; then
-        echo "ERROR: Failed to download JRE. Check your internet connection."
+    if ! curl -L -o /tmp/ei_jdk.tar.gz "$JDK_URL"; then
+        echo "ERROR: Failed to download JDK. Check your internet connection."
         exit 1
     fi
 
-    tar -xzf /tmp/ei_jre.tar.gz -C "$JRE_PATH" --strip-components=1
-    rm -f /tmp/ei_jre.tar.gz
+    tar -xzf /tmp/ei_jdk.tar.gz -C "$JDK_PATH" --strip-components=1
+    rm -f /tmp/ei_jdk.tar.gz
 
-    if [ ! -x "$JRE_PATH/bin/java" ]; then
-        echo "ERROR: JRE extraction failed. Installation cannot continue."
+    if [ ! -x "$JDK_PATH/bin/java" ]; then
+        echo "ERROR: JDK extraction failed. Installation cannot continue."
         exit 1
     fi
 
-    echo "Bundled JRE installed: $($JRE_PATH/bin/java -version 2>&1 | head -1)"
+    echo "Bundled JDK installed: $("$JDK_PATH/bin/java" -version 2>&1 | head -1)"
 }
 
 detect_steam() {
@@ -103,6 +102,24 @@ detect_steam() {
     echo "Steam not detected"
 }
 
+fetch_latest_zip_url() {
+    local URL
+    URL=$(curl -sf "https://api.github.com/repos/stone-alex/EliteIntel/releases" \
+        | grep '"browser_download_url"' \
+        | grep '\.zip' \
+        | grep -v '\.exe' \
+        | head -1 \
+        | cut -d '"' -f 4)
+
+    if [ -z "$URL" ]; then
+        echo "ERROR: Could not resolve download URL. Check your internet connection or GitHub API rate limit." >&2
+        exit 1
+    fi
+
+    echo "Resolved download URL: $URL" >&2
+    echo "$URL"
+}
+
 set_install_folder() {
     cat << EOF
 
@@ -129,51 +146,19 @@ EOF
         mkdir "$DEFAULT_INSTALL_LOCATION"
     fi
 
-#    Move the files
-    local ELITE_ZIP="elite_intel*.zip"
-    local ELITE_JAR="elite_intel.jar"
+    echo "Downloading latest EliteIntel release from GitHub..."
+    local DOWNLOAD_URL
+    DOWNLOAD_URL=$(fetch_latest_zip_url)
 
-    if [ -e $ELITE_JAR ]; then
-        # If the user has downloaded a release, we try to detect if it is in the current directory
-        # Also assumes that this script will be in the distributed release folder
-        # Use cp -r (not mv) - safe across filesystems and for upgrades over existing installs.
-        # logs/ is created at runtime, not distributed.
-        cp -r ./dictionary "$DEFAULT_INSTALL_LOCATION/"
-        cp ./elite_intel.jar "$DEFAULT_INSTALL_LOCATION/"
-        [ -d ./whisper ] && cp -r ./whisper "$DEFAULT_INSTALL_LOCATION/"
-        [ -d ./tts ]     && cp -r ./tts     "$DEFAULT_INSTALL_LOCATION/"
-        [ -d ./native ]  && cp -r ./native  "$DEFAULT_INSTALL_LOCATION/"
-
-        cat << EOF
-        Installed EliteIntel with files in the current directory.
-        Please check the $DEFAULT_INSTALL_LOCATION folder that all the files is present:
-        [ 'elite_intel.jar', 'dictionary/', 'whisper/', 'tts/', 'native/' ]
-
-EOF
-    elif [ -e $ELITE_ZIP ]; then
-        # If the user has downloaded a release.zip, and not extracted any thing we do the extraction
-        # as if we downloaded it our self
-        unzip "$ELITE_ZIP" -d $DEFAULT_INSTALL_LOCATION
-
-        echo "Extracted the app files to $DEFAULT_INSTALL_LOCATION"
-
-    else
-        # Last resort. We fetch the latest version of EliteIntel from Github
-        # and install it cleanly
-        echo "Couldn't find the elite_intel.jar!"
-
-        curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest \
-            | grep "browser_download_url" \
-            | grep "\.zip" \
-            | grep -v "\.exe" \
-            | cut -d '"' -f 4)
-
-        local NEW_ELITE_ZIP=( elite_intel*.zip )
-        unzip "$NEW_ELITE_ZIP" -d "$DEFAULT_INSTALL_LOCATION"
-        rm "$NEW_ELITE_ZIP"
-
-        echo "Downloaded and installed the latest version of EliteIntel!"
+    if ! curl -L -o /tmp/elite_intel.zip "$DOWNLOAD_URL"; then
+        echo "ERROR: Download failed."
+        exit 1
     fi
+
+    unzip -o /tmp/elite_intel.zip -d "$DEFAULT_INSTALL_LOCATION"
+    rm -f /tmp/elite_intel.zip
+
+    echo "Downloaded and installed the latest version of EliteIntel!"
 }
 
 create_bindings() {
@@ -238,19 +223,20 @@ update_elite_intel() {
     esac
 
     echo "Updating EliteIntel ..."
-    curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest \
-        | grep "browser_download_url" \
-        | grep "\.zip" \
-        | grep -v "\.exe" \
-        | cut -d '"' -f 4)
+    local DOWNLOAD_URL
+    DOWNLOAD_URL=$(fetch_latest_zip_url)
 
-    local ELITE_ZIP="elite_intel*.zip"
+    if ! curl -L -o /tmp/elite_intel.zip "$DOWNLOAD_URL"; then
+        echo "ERROR: Download failed."
+        exit 1
+    fi
+
     # Update all distributed assets - jar, dictionary, models and native libs.
-    # The bundled JRE lives in $ELITEINTEL_FOLDER/jre/ and is preserved across updates
+    # The bundled JDK lives in $ELITEINTEL_FOLDER/jdk/ and is preserved across updates
     # unless explicitly replaced.
-    unzip -o "$ELITE_ZIP" -d "$ELITEINTEL_FOLDER"
+    unzip -o /tmp/elite_intel.zip -d "$ELITEINTEL_FOLDER"
 
-    rm $ELITE_ZIP
+    rm -f /tmp/elite_intel.zip
 
     echo "Done!"
     echo "Fly Dangerous, commander"
@@ -327,15 +313,15 @@ create_start_menu() {
     local ICON_PATH="$DEFAULT_INSTALL_LOCATION/elite-logo.png"
     local LAUNCHER="$DEFAULT_INSTALL_LOCATION/elite-intel.sh"
     local NATIVE_DIR="$DEFAULT_INSTALL_LOCATION/native/sherpa-onnx"
-    local JAVA_BIN="$DEFAULT_INSTALL_LOCATION/$JRE_DIR/bin/java"
+    local JAVA_BIN="$DEFAULT_INSTALL_LOCATION/$JDK_DIR/bin/java"
 
     mkdir -p "$DESKTOP_DIR"
 
     # Download icon only if missing
     [ -f "$ICON_PATH" ] || curl -L -o "$ICON_PATH" https://raw.githubusercontent.com/stone-alex/EliteIntel/master/app/src/main/resources/images/elite-logo.png
 
-    # Launcher script - uses the bundled JRE so system Java version and
-    # headless/full split are irrelevant. Also sets LD_LIBRARY_PATH so
+    # Launcher script - uses the bundled Oracle JDK so system Java version is irrelevant.
+    # Also sets LD_LIBRARY_PATH so
     # sherpa-onnx JNI resolves libsherpa-onnx-jni.so by name (required
     # by JDK 21+, cannot be done post-launch). DISPLAY fallback handles
     # Wayland desktops where the .desktop launcher may not inherit $DISPLAY.
@@ -399,10 +385,10 @@ set_install_folder
 sleep 0.2
 
 #
-#       Download and install bundled JRE (Temurin 21, full - not headless)
+#       Download and install bundled JDK (Oracle JDK 21)
 #       Must run after set_install_folder so DEFAULT_INSTALL_LOCATION is finalised
 #
-install_jre
+install_jdk
 sleep 0.2
 
 #       Determine Steam installation

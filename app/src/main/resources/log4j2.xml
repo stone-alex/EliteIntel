@@ -47,6 +47,7 @@
         <Logger name="org.jdbi.v3.core" level="off"/>
         <Logger name="org.jdbi.v3" level="off"/>
         <Logger name="com.zaxxer" level="off"/>
+        <Logger name="org.java_websocket" level="off"/>
 
 
         <!-- Specific logger levels -->

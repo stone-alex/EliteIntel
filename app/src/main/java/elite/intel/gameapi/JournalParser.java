@@ -9,6 +9,7 @@ import elite.intel.session.PlayerSession;
 import elite.intel.ui.controller.ManagedService;
 import elite.intel.ui.event.AppLogDebugEvent;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.ws.WebSocketBroadcaster;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,6 +50,7 @@ public class JournalParser implements Runnable, ManagedService {
     private  Path journalDir;
     private Thread processingThread;
     private volatile boolean isRunning;
+    private final WebSocketBroadcaster webSocketBroadcaster = WebSocketBroadcaster.getInstance();
 
     public JournalParser() {
     }
@@ -163,6 +165,7 @@ public class JournalParser implements Runnable, ManagedService {
                                 BaseEvent event = EventRegistry.createEvent(eventType, eventJson);
                                 if (event != null && !event.isExpired()) {
                                     EventBusManager.publish(event);
+                                    webSocketBroadcaster.broadcast(event.toJson());
                                     EventBusManager.publish(new AppLogDebugEvent("\tProcessing Event: " + eventType));
                                     log.info("Processing Journal Event: {} {}", eventType, event.toJsonObject());
                                 } else if (event != null && event.isExpired()) {

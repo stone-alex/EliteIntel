@@ -4,7 +4,7 @@ import elite.intel.ai.brain.commons.HandlerDispatchedEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
-import elite.intel.ws.LlmActionBroadcaster;
+import elite.intel.ws.WebSocketBroadcaster;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -48,7 +48,7 @@ public class NaturalSpeechIntegrationTest {
     void bootstrap() throws InterruptedException {
         SystemSession.getInstance().setConversationalMode(false);
         HeadlessBootstrap.start();
-        LlmActionBroadcaster.getInstance().start();
+        WebSocketBroadcaster.getInstance().start();
         capture = new HandlerCapture();
         // Let any startup noise (connection check etc.) settle
         Thread.sleep(2000);

@@ -3,7 +3,6 @@ package elite.intel.ai.brain.commons;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import elite.intel.ai.ApiFactory;
-import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AIRouterInterface;
 import elite.intel.ai.brain.AiPromptFactory;
@@ -28,10 +27,6 @@ public abstract class CommandEndPoint extends AiEndPoint {
 
     public AIRouterInterface getRouter() {
         return router;
-    }
-
-    public AIChatInterface getChatInterface() {
-        return ApiFactory.getInstance().getChatEndpoint();
     }
 
     protected JsonObject createError(String text) {

@@ -11,20 +11,20 @@ import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
 
-public class LlmActionBroadcaster implements Runnable, ManagedService {
+public class WebSocketBroadcaster implements Runnable, ManagedService {
 
-    private static final Logger log = LogManager.getLogger(LlmActionBroadcaster.class);
+    private static final Logger log = LogManager.getLogger(WebSocketBroadcaster.class);
     private static final int PORT = 7497;
-    private static final LlmActionBroadcaster INSTANCE = new LlmActionBroadcaster();
+    private static final WebSocketBroadcaster INSTANCE = new WebSocketBroadcaster();
 
     private final Gson gson = new Gson();
     private volatile WebSocketServer server;
     private Thread thread;
 
-    private LlmActionBroadcaster() {
+    private WebSocketBroadcaster() {
     }
 
-    public static LlmActionBroadcaster getInstance() {
+    public static WebSocketBroadcaster getInstance() {
         return INSTANCE;
     }
 

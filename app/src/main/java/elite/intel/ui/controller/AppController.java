@@ -14,7 +14,7 @@ import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
 import elite.intel.util.Updater;
-import elite.intel.ws.LlmActionBroadcaster;
+import elite.intel.ws.WebSocketBroadcaster;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -233,7 +233,7 @@ public class AppController implements Runnable {
         services.put(ServiceType.BRAIN, new ServiceHolder(ApiFactory.getInstance()::getCommandEndpoint));
         services.put(ServiceType.NOTIFICATION_MONITOR, new ServiceHolder(DeferredNotificationMonitor::getInstance));
         services.put(ServiceType.MISSING_MISSION_MONITOR, new ServiceHolder(MissingMissionMonitor::getInstance));
-        services.put(ServiceType.WEB_SOCKET, new ServiceHolder(LlmActionBroadcaster::getInstance));
+        services.put(ServiceType.WEB_SOCKET, new ServiceHolder(WebSocketBroadcaster::getInstance));
     }
 
     private static class ServiceHolder {

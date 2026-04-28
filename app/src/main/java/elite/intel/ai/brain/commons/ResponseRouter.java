@@ -10,11 +10,10 @@ import elite.intel.ai.brain.actions.handlers.query.QueryHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.StringUtls;
-import elite.intel.ws.LlmActionBroadcaster;
+import elite.intel.ws.WebSocketBroadcaster;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,7 +32,7 @@ public class ResponseRouter implements AIRouterInterface {
     private final Map<String, CommandHandler> commandHandlers;
     private final Map<String, QueryHandler> queryHandlers;
     private final SystemSession systemSession;
-    private final PlayerSession playerSession;
+    private final WebSocketBroadcaster webSocketBroadcaster;
     private boolean dryRun = false;
 
     /**
@@ -48,8 +47,8 @@ public class ResponseRouter implements AIRouterInterface {
         try {
             commandHandlers = CommandHandlerFactory.getInstance().registerCommandHandlers();
             queryHandlers = QueryHandlerFactory.getInstance().registerQueryHandlers();
+            webSocketBroadcaster = WebSocketBroadcaster.getInstance();
             this.systemSession = SystemSession.getInstance();
-            this.playerSession = PlayerSession.getInstance();
         } catch (Exception e) {
             log.error("Failed to initialize ResponseRouter", e);
             throw new RuntimeException("ResponseRouter initialization failed", e);
@@ -65,7 +64,7 @@ public class ResponseRouter implements AIRouterInterface {
             log.error("Null LLM response received");
             return;
         }
-        LlmActionBroadcaster.getInstance().broadcast(jsonResponse);
+        webSocketBroadcaster.broadcast(jsonResponse);
         try {
             String responseText = getAsStringOrEmpty(jsonResponse, AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE);
             String action = getAsStringOrEmpty(jsonResponse, AIConstants.TYPE_ACTION);

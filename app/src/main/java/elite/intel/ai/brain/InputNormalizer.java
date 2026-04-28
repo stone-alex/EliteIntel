@@ -179,14 +179,14 @@ public class InputNormalizer {
         m.put("get us out", "jump to hyperspace");
         m.put("let's bounce", "jump to hyperspace");
 
-        // FTL / supercruise - "drop ftl" must precede "ftl"
-        m.put("light speed", "enter supercruise");
-        m.put("lightspeed", "enter supercruise");
-        m.put("drop ftl", "drop from supercruise");   // before "ftl" → enter supercruise
-        m.put("ftl", "enter supercruise");
-        m.put("f t l", "enter supercruise");
-        m.put("supercruise", "enter supercruise");
-        m.put("super cruise", "enter supercruise");
+        // FTL / supercruise - normalize to "supercruise" (not "enter supercruise") so the
+        // word "enter" does not pull JUMP_TO_HYPERSPACE into the Reducer set via "enter hyperspace".
+        m.put("drop ftl", "drop from supercruise");   // must precede "ftl" below
+        m.put("light speed", "supercruise");
+        m.put("lightspeed", "supercruise");
+        m.put("ftl", "supercruise");
+        m.put("f t l", "supercruise");
+        m.put("super cruise", "supercruise");
         m.put("leave supercruise", "drop out");
         m.put("drop here", "drop out");
         m.put("disengage", "drop out");
@@ -377,10 +377,12 @@ public class InputNormalizer {
         m.put("what are we hauling", "cargo hold");
         m.put("what's in the hold", "cargo hold");
         m.put("hold contents", "cargo hold");
-        m.put("deploy cargo scoop", "open cargo scoop");
-        m.put("open cargo bay", "open cargo scoop");
-        m.put("retract cargo scoop", "close cargo scoop");
-        m.put("close cargo bay", "close cargo scoop");
+        m.put("deploy cargo scoop", "cargo scoop");
+        m.put("open cargo scoop", "cargo scoop");
+        m.put("open cargo bay", "cargo scoop");
+        m.put("retract cargo scoop", "cargo scoop");
+        m.put("close cargo scoop", "cargo scoop");
+        m.put("close cargo bay", "cargo scoop");
         m.put("display", "open");     // generic; must follow "open cargo bay" above
     }
 

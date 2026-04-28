@@ -3,7 +3,6 @@ package elite.intel.ai.brain.ollama;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.brain.commons.CommandEndPoint;
 import elite.intel.gameapi.EventBusManager;
@@ -73,15 +72,7 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
             return;
         }
 
-        JsonArray request = new JsonArray();
-        JsonObject system = new JsonObject();
-        system.addProperty("role", AIConstants.ROLE_SYSTEM);
-        system.addProperty("content", getContextFactory().generateUserInputSystemPrompt(userInput));
-        request.add(system);
-        JsonObject userMsg = new JsonObject();
-        userMsg.addProperty("role", AIConstants.ROLE_USER);
-        userMsg.addProperty("content", getContextFactory().normalizeInput(userInput));
-        request.add(userMsg);
+        JsonArray request = buildVoiceCommandMessages(userInput);
 
         JsonObject response = OllamaCommandEndPoint.getInstance().processAiPrompt(request, 0.01f);
         if (response == null) {

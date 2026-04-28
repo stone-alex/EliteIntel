@@ -6,6 +6,7 @@ import elite.intel.ai.brain.Client;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.LlmUsageEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -70,6 +71,8 @@ public class AnthropicClient extends BaseAiClient implements Client {
                                 (cached > 0 ? " cache_read= " + cached : "") +
                                 (written > 0 ? " cache_written= " + written : "") +
                                 " tokens"));
+                String model = response.has("model") ? response.get("model").getAsString() : MODEL_COMMAND_MODEL;
+                EventBusManager.publish(new LlmUsageEvent("Claude", model, in, out, cached, written));
             }
             return response;
         } catch (Exception e) {

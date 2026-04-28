@@ -22,3 +22,4 @@ app/src/main/resources/elite-intel-xai-api-key.conf
 ./CLAUDE.md
 /distribution/elite_intel_updater.jar
 /CLAUDE.md
+/scratch/scratch.sql

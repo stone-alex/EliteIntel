@@ -147,7 +147,7 @@ public class DeepSeekCommandEndPoint extends CommandEndPoint implements AiComman
     private JsonObject callDeepSeekApi(JsonArray messages) {
         try {
             DeepSeekClient client = DeepSeekClient.getInstance();
-            JsonObject prompt = client.createPrompt(DeepSeekClient.MODEL_CHAT, 1.00f);
+            JsonObject prompt = client.createPrompt(DeepSeekClient.MODEL, 1.00f);
             prompt.add("messages", messages);
             String jsonString = GsonFactory.getGson().toJson(prompt);
 

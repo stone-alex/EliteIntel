@@ -35,8 +35,13 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
 
     private ExecutorService executor;
     private final AtomicBoolean running = new AtomicBoolean(false);
+
     private AnthropicCommandEndPoint() {
-        // singleton
+    }
+
+    @Override
+    public AnthropicPromptFactory getContextFactory() {
+        return AnthropicPromptFactory.getInstance();
     }
 
     public static AnthropicCommandEndPoint getInstance() {
@@ -133,12 +138,17 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
 
         JsonArray request = new JsonArray();
 
-        // System prompt comes first – AnthropicCommandEndPoint will lift this
-        // out to the top-level "system" field before sending to the API.
-        JsonObject system = new JsonObject();
-        system.addProperty("role", AIConstants.ROLE_SYSTEM);
-        system.addProperty("content", getContextFactory().generateUserInputSystemPrompt(userInput));
-        request.add(system);
+        // Static rules block first (cached by AnthropicUserEndPoint), then the
+        // Reducer-filtered action list (uncached - unique per voice input).
+        JsonObject staticSystem = new JsonObject();
+        staticSystem.addProperty("role", AIConstants.ROLE_SYSTEM);
+        staticSystem.addProperty("content", getContextFactory().generateFullUserInputPromptForAnthropicCaching());
+        request.add(staticSystem);
+
+        JsonObject actionSystem = new JsonObject();
+        actionSystem.addProperty("role", AIConstants.ROLE_SYSTEM);
+        actionSystem.addProperty("content", getContextFactory().generateUserInputActionListForAnthropicPrompt(userInput));
+        request.add(actionSystem);
 
         JsonObject userMsg = new JsonObject();
         userMsg.addProperty("role", AIConstants.ROLE_USER);

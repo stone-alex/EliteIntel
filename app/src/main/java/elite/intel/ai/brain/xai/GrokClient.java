@@ -8,6 +8,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.LlmUsageEvent;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.LlmMetadata;
 
@@ -60,6 +61,12 @@ public class GrokClient extends BaseAiClient implements Client {
         JsonObject response = super.sendJsonRequest(buildRequest(request));
         LlmMetadata meta = GsonFactory.getGson().fromJson(response, LlmMetadata.class);
         EventBusManager.publish(new AppLogEvent("LLM: " + meta));
+        if (meta != null && meta.usage() != null) {
+            int cached = meta.usage().promptDetails() != null ? meta.usage().promptDetails().cachedTokens() : 0;
+            EventBusManager.publish(new LlmUsageEvent("Grok",
+                    meta.model() != null ? meta.model() : MODEL_GROK_NON_REASONING,
+                    meta.usage().promptTokens(), meta.usage().completionTokens(), cached, 0));
+        }
         return response;
     }
 

@@ -26,7 +26,7 @@ public class DeepSeekChatEndPoint extends AiEndPoint implements AIChatInterface 
         String bodyString = null;
         try {
             DeepSeekClient client = DeepSeekClient.getInstance();
-            JsonObject prompt = client.createPrompt(DeepSeekClient.MODEL_CHAT, temp);
+            JsonObject prompt = client.createPrompt(DeepSeekClient.MODEL, temp);
 
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);
             prompt.add("messages", sanitizedMessages);

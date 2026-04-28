@@ -59,10 +59,10 @@ public class AiActionsMap {
 
         if (status.isInMainShip() || isDryRun) {
             // navigation
-            map.put("select fds destination", TARGET_DESTINATION.getAction());
+            map.put("select fds destination, target destination, set destination, select target destination", TARGET_DESTINATION.getAction());
             map.put("jump to hyperspace,  jump, hyperspace jump, enter hyperspace, lets go, next way point, let's go", JUMP_TO_HYPERSPACE.getAction());
             map.put("drop out, drop here, drop ftl, drop from supercruise, leave supercruise, drop in", DROP_FROM_SUPER_CRUISE.getAction());
-            map.put("enter supercruise,  supercruise, go supercruise, supercruise", ENTER_SUPER_CRUISE.getAction());
+            map.put("enter supercruise, supercruise, go supercruise", ENTER_SUPER_CRUISE.getAction());
             map.put("launch ship, launch, detach from station, leave port, leave station", LAUNCH_SHIP.getAction());
             // speed / throttle
             map.put("stop engines, stop here, full stop, all stop, halt, kill engines, cut throttle, zero throttle, stop ship", SET_SPEED_ZERO.getAction());
@@ -113,7 +113,7 @@ public class AiActionsMap {
             // flight / ship systems
             map.put("switch to combat mode", ACTIVATE_COMBAT_MODE.getAction());
             map.put("switch to analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
-            map.put("open / close cargo scoop, deploy / retract cargo scoop, open / close cargo bay / deploy cargo scoop", TOGGLE_CARGO_SCOOP.getAction());
+            map.put("cargo scoop, open cargo scoop, close cargo scoop, deploy cargo scoop, retract cargo scoop, open cargo bay, close cargo bay", TOGGLE_CARGO_SCOOP.getAction());
             map.put("night vision, nightvision, turn on night vision, turn off night vision ", NIGHT_VISION_ON_OFF.getAction());
             map.put("headlights, lights, turn off lights, turn on lights, ship lights, lights on, lights off ", LIGHTS_ON_OFF.getAction());
             // UI panels
@@ -213,7 +213,7 @@ public class AiActionsMap {
         map.put("find brain trees {key:X, max_distance:Y}", FIND_BRAIN_TREES.getAction());
         map.put("find mining site, find mining location, find mining hotspot, find where to mine, find asteroid field {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("find tritium mining site, find tritium field {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
-        map.put("navigate to next bio sample, go to next sample, navigate to next organic, codex entry", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
+        map.put("navigate to next bio sample, go to next sample, navigate to next organic, codex entry, navigate to codex entry, navigate to codex", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
         map.put("scan the system, open fss, full scan, honk, system scan, discovery scan, FSS, full spectrum scan, scan system", OPEN_FSS_AND_SCAN.getAction());
         map.put("find nearest vista genomics, find genomics, vista genomics", FIND_VISTA_GENOMICS.getAction());
         map.put("delete codex entry, delete this codex, delete this entry, delete this organic", DELETE_CODEX_ENTRY.getAction());

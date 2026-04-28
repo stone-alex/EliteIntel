@@ -7,7 +7,6 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.NormalizedUserInputEvent;
 import elite.intel.util.Ranks;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -15,14 +14,14 @@ import java.util.Set;
 public class PromptFactory implements AiPromptFactory {
 
     private static final PromptFactory INSTANCE = new PromptFactory();
-    private final SystemSession systemSession = SystemSession.getInstance();
-    private final AiActionsMap actionsMap = AiActionsMap.getInstance();
-    private final InputNormalizer normalizer = InputNormalizer.getInstance();
-    private boolean isDryRun = false;
+    protected final SystemSession systemSession = SystemSession.getInstance();
+    protected final AiActionsMap actionsMap = AiActionsMap.getInstance();
+    protected final InputNormalizer normalizer = InputNormalizer.getInstance();
+    protected boolean isDryRun = false;
 
     // Rebuilt each time generateUserInputSystemPrompt() is called (which always
     // precedes normalizeInput() in every backend), then reused by normalizeInput().
-    private volatile Set<String> sttVocabulary = Set.of();
+    protected volatile Set<String> sttVocabulary = Set.of();
 
     @Override
     public String normalizeInput(String rawUserInput) {
@@ -31,7 +30,7 @@ public class PromptFactory implements AiPromptFactory {
         return normalizer.normalize(corrected);
     }
 
-    private PromptFactory() {
+    protected PromptFactory() {
     }
 
     public static PromptFactory getInstance() {
@@ -43,33 +42,18 @@ public class PromptFactory implements AiPromptFactory {
         isDryRun = dryRun;
     }
 
-    /**
-     * Generates a system prompt based on the given raw user input and the current session configuration.
-     * The generated prompt provides a strict command parsing guideline to ensure correct action classification
-     * and JSON formatting based on specific contextual rules.
-     *
-     * @param rawUserInput The raw input string provided by the user, which will be normalized
-     *                     and used to generate the system prompt.
-     * @return A formatted string containing the system prompt with detailed classification and
-     * handling rules for parsing user inputs into structured JSON actions.
-     */
-    @Override
-    public String generateUserInputSystemPrompt(String rawUserInput) {
-        Map<String, String> fullMap = actionsMap.actionMap(isDryRun);
-        sttVocabulary = SttCorrector.extractVocabulary(fullMap);
-        String normalizedInput = normalizer.normalize(SttCorrector.correct(rawUserInput, sttVocabulary));
-        StringBuilder sb = new StringBuilder();
+    protected void buildCommandRules(StringBuilder sb) {
         if (!systemSession.useLocalCommandLlm()) {
             youAre(sb);
         }
         sb.append("""
                 You are a strict command parser. Your only job: return exactly one JSON action from the lists below.
                 Map user input to actions with ≥95% confidence. Else fall back to fall back to ignore_nonsensical_input or query_general_conversation which ever is available.
-                
+
                 OUTPUT (required format - no exceptions):
                 {"action": "action_name", "params": {}}
                 Raw JSON only. No text, no markdown, no explanation before or after.
-                
+
                 CLASSIFICATION:
                 - ABSOLUTE RULE - 'query_player_profile_rank_progress' requires an EXPLICIT player rank/profile request with ≥95% confidence. The input MUST contain 'player profile'  - exact phrasing only. If confidence is below 95%, or the input is ambiguous or tangentially related, fall back to ignore_nonsensical_input (strict mode) or query_general_conversation (conversational mode). This action is NEVER a fallback or closest-match - it must be explicitly requested. Violations are a critical failure.
                 - Default to COMMAND. Only use a QUERY action when the input is clearly interrogative (starts with: what, how, which, why, is, are, does, tell me, how much, how many).
@@ -130,6 +114,11 @@ public class PromptFactory implements AiPromptFactory {
                 - distance to bubble is distance from our stellar coordinates to the center of the coordinate system (0,0,0)
                 - For EXPLICIT "player ranks / player stats / player profile / player progress / what rank are we" → 'query_player_profile_rank_progress'. Do NOT confuse with profits, exploration earnings, missions, bounties, or any other use of the word "rank" or "progress".
                 
+                - "supercruise" / "go supercruise" / "enter supercruise" → enter_super_cruise (NOT jump_to_hyperspace - supercruise stays in-system)
+                - "navigate to active mission" / "go to mission" / "plot route to mission" → navigate_to_next_mission (NOT analyze_missions - navigation, not a query)
+                - "navigate to codex entry" / "navigate to next codex" → navigate_to_next_bio_sample (travel to the sample, do NOT use delete_codex_entry)
+                - "cargo scoop" / "open cargo scoop" / "deploy cargo scoop" / "close cargo scoop" / "retract cargo scoop" → toggle_cargo_scoop
+                - "unbound keys" / "check key bindings" / "missing bindings" / "keybind check" → key_bindings_analysis (this IS a valid game command, not meta-talk)
                 - "listen" / "listen up" alone → start_listening
                 - "listen [+ any instruction]" → treat as a normal command/query
                 - "exit" or "close" → exit_close
@@ -177,6 +166,7 @@ public class PromptFactory implements AiPromptFactory {
 
         sb.append("""
                 PARAMS RULES:
+                • `{paramName:X}` in a trigger = the JSON param key is literally `paramName`, X is the value from user input. Copy the name exactly.
                 • Use ONLY the exact key names shown in the action template. No template → empty {}
                 • Use digits not spelled-out numbers: {"key": "123000"} not "one hundred thousand"
                 • {state:true/false} param: on/enable/activate/open/deploy → true, off/disable/deactivate/close/retract → false. ALWAYS include state when the template shows it.
@@ -186,24 +176,27 @@ public class PromptFactory implements AiPromptFactory {
                   - "night vision on"          → {"action": "toggle_night_vision_on_off", "params": {"state": true}}
                   - "night vision off"         → {"action": "toggle_night_vision_on_off", "params": {"state": false}}
                   - "lights on"                → {"action": "toggle_lights_on_off", "params": {"state": true}}
+                  - "increase speed by 25"          → {"action": "increase_speed_by", "params": {"key": "25"}}
                   - "find gold within 80 ly"        → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                   - "find nearest market for gold"  → {"action": "find_commodity", "params": {"key": "gold", "state": true}}
                   - "where can we buy gold"         → {"action": "find_commodity", "params": {"key": "gold", "state": false}}
                   - find_commodity state: if "nearest" or "closest" appears anywhere in input → true (distance), regardless of other words. Otherwise → false (price).
                 """);
+    }
 
-        Map<String, String> reduced = Reducer.reduce(normalizedInput, fullMap, !systemSession.conversationalModeOn());
-        if (!systemSession.conversationalModeOn() && !reduced.containsKey("ignore_nonsensical_input")) {
-            // Always keep the fallback visible so the LLM never hallucinates a missing action
-            Map<String, String> pinned = new LinkedHashMap<>();
-            pinned.put("ignore_nonsensical_input", "ignore_nonsensical_input");
-            pinned.putAll(reduced);
-            reduced = pinned;
-        }
-        sb.append(Reducer.formatActions(reduced));
-
-
+    @Override
+    public String generateUserInputSystemPrompt(String rawUserInput) {
+        StringBuilder sb = new StringBuilder();
+        buildCommandRules(sb);
+        sb.append(Reducer.formatActions(reduce(rawUserInput)));
         return sb.toString();
+    }
+
+    protected Map<String, String> reduce(String rawUserInput) {
+        Map<String, String> fullMap = actionsMap.actionMap(isDryRun);
+        sttVocabulary = SttCorrector.extractVocabulary(fullMap);
+        String normalizedInput = normalizer.normalize(SttCorrector.correct(rawUserInput, sttVocabulary));
+        return Reducer.reduce(normalizedInput, fullMap, systemSession.conversationalModeOn());
     }
 
     private void youAre(StringBuilder sb) {

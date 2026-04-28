@@ -30,7 +30,7 @@ public class DeepSeekAnalysisEndpoint extends AiEndPoint implements AiAnalysisIn
 
             String systemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt();
 
-            JsonObject prompt = client.createPrompt(DeepSeekClient.MODEL_CHAT, 0.8f);
+            JsonObject prompt = client.createPrompt(DeepSeekClient.MODEL, 0.8f);
 
             JsonObject systemMessage1 = new JsonObject();
             systemMessage1.addProperty("role", AIConstants.ROLE_SYSTEM);

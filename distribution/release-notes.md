@@ -1,3 +1,10 @@
+## v-0.0380-beta
+
+### bug fixes / features:
+- Added token monitoring panel. Now you can see how many tokens you spend. For Local LLM this is purely academic since they are free. For the cloud LLM you can see what your usage is.
+
+
+
 ## v-0.0379-beta
 
 ### bug fixes / features:

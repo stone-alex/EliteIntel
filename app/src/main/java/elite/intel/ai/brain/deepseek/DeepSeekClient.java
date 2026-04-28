@@ -6,6 +6,7 @@ import elite.intel.ai.brain.Client;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.LlmUsageEvent;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.LlmMetadata;
 
@@ -16,9 +17,7 @@ import java.time.Duration;
 
 public class DeepSeekClient extends BaseAiClient implements Client {
 
-    public static final String MODEL_CHAT = "deepseek-v4-flash";
-    public static final String MODEL_REASONER = "deepseek-v4-flash";
-
+    public static final String MODEL = "deepseek-v4-flash";
     private static final String API_URL = "https://api.deepseek.com/v1/chat/completions";
     private static final DeepSeekClient instance = new DeepSeekClient();
 
@@ -55,6 +54,12 @@ public class DeepSeekClient extends BaseAiClient implements Client {
         JsonObject response = super.sendJsonRequest(buildRequest(request));
         LlmMetadata meta = GsonFactory.getGson().fromJson(response, LlmMetadata.class);
         EventBusManager.publish(new AppLogEvent("LLM: " + meta));
+        if (meta != null && meta.usage() != null) {
+            int cached = meta.usage().promptDetails() != null ? meta.usage().promptDetails().cachedTokens() : 0;
+            EventBusManager.publish(new LlmUsageEvent("DeepSeek",
+                    meta.model() != null ? meta.model() : MODEL,
+                    meta.usage().promptTokens(), meta.usage().completionTokens(), cached, 0));
+        }
         return response;
     }
 

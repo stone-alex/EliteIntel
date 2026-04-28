@@ -14,6 +14,7 @@ import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.StringUtls;
+import elite.intel.ws.LlmActionBroadcaster;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -81,6 +82,7 @@ public class ResponseRouter implements AIRouterInterface {
             log.error("Null LLM response received");
             return;
         }
+        LlmActionBroadcaster.getInstance().broadcast(jsonResponse);
         try {
             String responseText = getAsStringOrEmpty(jsonResponse, AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE);
             String action = getAsStringOrEmpty(jsonResponse, AIConstants.TYPE_ACTION);
@@ -175,7 +177,7 @@ public class ResponseRouter implements AIRouterInterface {
             /// do nothing and return.
             return;
         }
-        //AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
+
         if (!CONNECTION_CHECK_COMMAND.equalsIgnoreCase(action)) {
             EventBusManager.publish(new AiVoxResponseEvent("%s".formatted(StringUtls.affirmative())));
         }

@@ -67,6 +67,7 @@
         <Logger name="elite.intel.db" level="error"/>
         <Logger name="elite.intel.search.spansh.market" level="error"/>
         <Logger name="elite.intel.ai.brain.handlers" level="error"/>
+        <Logger name="elite.intel.ws" level="error"/>
 
         <Logger name="elite.intel.util.UnknownEnumLogger"
                 level="info"

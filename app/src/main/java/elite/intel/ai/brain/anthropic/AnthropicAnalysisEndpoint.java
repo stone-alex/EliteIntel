@@ -66,20 +66,20 @@ public class AnthropicAnalysisEndpoint extends AiEndPoint implements AiAnalysisI
 
             JsonArray systemArray = new JsonArray();
 
-            // Base system prompt
             JsonObject systemBlock1 = new JsonObject();
             systemBlock1.addProperty("type", "text");
             systemBlock1.addProperty("text", baseSystemPrompt);
-
-            JsonObject cacheControl1 = new JsonObject();
-            cacheControl1.addProperty("type", "ephemeral");
-            systemBlock1.add("cache_control", cacheControl1);
             systemArray.add(systemBlock1);
 
-            // Instructions prompt
+            // Cache covers base + instructions together a larger prefix increases odds
+            // of meeting Anthropic's minimum token threshold for cache writes.
+            // Cache hits on consecutive calls of the same query type.
             JsonObject systemBlock2 = new JsonObject();
             systemBlock2.addProperty("type", "text");
             systemBlock2.addProperty("text", instructionsPrompt);
+            JsonObject cacheControl = new JsonObject();
+            cacheControl.addProperty("type", "ephemeral");
+            systemBlock2.add("cache_control", cacheControl);
             systemArray.add(systemBlock2);
 
             prompt.add("system", systemArray);

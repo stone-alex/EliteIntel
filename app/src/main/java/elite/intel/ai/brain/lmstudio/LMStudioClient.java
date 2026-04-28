@@ -3,7 +3,12 @@ package elite.intel.ai.brain.lmstudio;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.BaseAiClient;
 import elite.intel.ai.brain.Client;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.LlmUsageEvent;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.LlmMetadata;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,7 +63,15 @@ public class LMStudioClient extends BaseAiClient implements Client {
 
     @Override
     public synchronized JsonObject sendJsonRequest(String request) {
-        return super.sendJsonRequest(buildRequest(request));
+        JsonObject response = super.sendJsonRequest(buildRequest(request));
+        LlmMetadata meta = GsonFactory.getGson().fromJson(response, LlmMetadata.class);
+        EventBusManager.publish(new AppLogEvent("LM Studio: " + meta));
+        if (meta != null && meta.usage() != null) {
+            EventBusManager.publish(new LlmUsageEvent("LM Studio",
+                    meta.model() != null ? meta.model() : "local",
+                    meta.usage().promptTokens(), meta.usage().completionTokens(), 0, 0));
+        }
+        return response;
     }
 
     private HttpRequest buildRequest(String body) {

@@ -25,7 +25,7 @@ public record LlmMetadata(
         @Override public String toString() {
             return " | Prompt Tokens: " + promptTokens +
                    " | Completion: " + completionTokens +
-                   " | Cached: " + promptDetails.cachedTokens +
+                    (promptDetails != null ? " | Cached: " + promptDetails.cachedTokens : "") +
                    " | Total: " + totalTokens;
         }
 

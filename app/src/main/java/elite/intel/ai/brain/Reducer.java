@@ -44,18 +44,17 @@ public class Reducer {
 
 
     /**
-     * Filters a map of key-value pairs based on a normalized input string.
-     * Input words are extracted from the normalized input, converted to lowercase,
-     * and filtered to exclude short words and stop words. The method returns a
-     * new map containing only entries whose keys contain at least one of the
-     * filtered words from the input.
+     * Reduces a given map of key-value pairs based on a normalized input string and a specified conversation mode flag.
+     * Filters out entries in the map unless the keys contain significant words from the normalized input.
+     * Ensures a fallback behavior for empty or irrelevant inputs based on the conversation mode.
      *
-     * @param normalizedInput the cleaned user input string used for filtering; can be null or blank,
-     *                        in which case the full input map is returned.
-     * @param full            the complete map of key-value pairs to be filtered.
-     * @return a filtered map containing entries from the input map whose keys match the filtering criteria.
+     * @param normalizedInput the input string that is normalized and used to filter the map; null or blank input defaults to returning the original map
+     * @param full the original map of key-value pairs to be filtered
+     * @param isConversationMode a flag indicating whether the method is running in conversation mode; determines fallback behavior for empty input
+     * @return a reduced map containing only the entries whose keys match significant words from the normalized input;
+     *         may return a map with fallback values if the input is empty or irrelevant
      */
-    public static Map<String, String> reduce(String normalizedInput, Map<String, String> full, boolean isStrictMode) {
+    public static Map<String, String> reduce(String normalizedInput, Map<String, String> full, boolean isConversationMode) {
         if (normalizedInput == null || normalizedInput.isBlank()) return full;
 
         Set<String> inputWords = Arrays.stream(normalizedInput.toLowerCase().split("\\W+"))
@@ -63,20 +62,17 @@ public class Reducer {
                 .filter(w -> !STOP_WORDS.contains(w))
                 .collect(Collectors.toSet());
 
-        //if (inputWords.isEmpty()) return full;
+
+        Map<String, String> result = new LinkedHashMap<>();
+        /// Ensure an escape hatch is present
         if (inputWords.isEmpty()) {
-            if (isStrictMode) {
-                Map<String, String> pinned = new LinkedHashMap<>();
-                pinned.put(IGNORE_NONSENSE.getAction(), IGNORE_NONSENSE.getAction());
-                return pinned;
+            if (isConversationMode) {
+                result.put(GENERAL_CONVERSATION.getAction(), GENERAL_CONVERSATION.getAction());
             } else {
-                Map<String, String> pinned = new LinkedHashMap<>();
-                pinned.put(GENERAL_CONVERSATION.getAction(), GENERAL_CONVERSATION.getAction());
-                return pinned;
+                result.put(IGNORE_NONSENSE.getAction(), IGNORE_NONSENSE.getAction());
             }
         }
 
-        Map<String, String> result = new LinkedHashMap<>();
         for (Map.Entry<String, String> entry : full.entrySet()) {
             String keyLower = entry.getKey().toLowerCase();
             for (String word : inputWords) {

@@ -23,6 +23,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private static final String ICON_AI = "/images/ai.png";
     private static final String ICON_PLAYER = "/images/controller.png";
     private static final String ICON_SETTINGS = "/images/settings.png";
+    private static final String ICON_STATS = "/images/stats.png";
     private static final String RELEASE_ICON = "/images/release.png";
     private static final String MANUAL_ICON = "/images/manual.png";
 
@@ -30,6 +31,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private final AiTabPanel aiTabPanel;
     private final PlayerTabPanel playerTabPanel;
     private final SettingsTabPanel settingsTabPanel;
+    private final UsageStatsTabPanel usageStatsTabPanel;
     private final MarkdownViewPanel releaseNotesPanel;
     private final MarkdownViewPanel userManualPanel;
 
@@ -60,18 +62,21 @@ public class AppView extends JFrame implements AppViewInterface {
         ImageIcon aiIcon = scaledIcon(ICON_AI);
         ImageIcon playerIcon = scaledIcon(ICON_PLAYER);
         ImageIcon settingsIcon = scaledIcon(ICON_SETTINGS);
+        ImageIcon statsIcon = scaledIcon(ICON_STATS);
         ImageIcon releaseIcon = scaledIcon(RELEASE_ICON);
         ImageIcon manualIcon = scaledIcon(MANUAL_ICON);
 
         aiTabPanel = new AiTabPanel(monoFont);
         playerTabPanel = new PlayerTabPanel();
         settingsTabPanel = new SettingsTabPanel();
+        usageStatsTabPanel = new UsageStatsTabPanel();
         releaseNotesPanel = new MarkdownViewPanel("release-notes.md");
         userManualPanel = new MarkdownViewPanel("user-manual.md");
 
         tabs.addTab("Ai", aiIcon, aiTabPanel);
         tabs.addTab("Player", playerIcon, playerTabPanel);
         tabs.addTab("Settings", settingsIcon, settingsTabPanel);
+        tabs.addTab("Stats", statsIcon, usageStatsTabPanel);
         tabs.addTab("Manual", manualIcon, userManualPanel);
         tabs.addTab("Release Notes", releaseIcon, releaseNotesPanel);
 

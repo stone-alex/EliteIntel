@@ -6,6 +6,7 @@ import elite.intel.ai.brain.Client;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.LlmUsageEvent;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -58,8 +59,10 @@ public class GeminiClient extends BaseAiClient implements Client {
             JsonObject usage = response.getAsJsonObject("usageMetadata");
             int promptTokens = usage.has("promptTokenCount") ? usage.get("promptTokenCount").getAsInt() : 0;
             int candidateTokens = usage.has("candidatesTokenCount") ? usage.get("candidatesTokenCount").getAsInt() : 0;
+            int cachedTokens = usage.has("cachedContentTokenCount") ? usage.get("cachedContentTokenCount").getAsInt() : 0;
             EventBusManager.publish(new AppLogEvent(
                     "LLM Gemini [" + currentModel + "] in=" + promptTokens + " out=" + candidateTokens));
+            EventBusManager.publish(new LlmUsageEvent("Gemini", currentModel, promptTokens, candidateTokens, cachedTokens, 0));
         }
         return response;
     }

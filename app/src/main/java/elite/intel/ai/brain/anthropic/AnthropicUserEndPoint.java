@@ -11,6 +11,9 @@ import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AnthropicUserEndPoint extends AiEndPoint implements AIChatInterface {
 
     private static final Logger log = LogManager.getLogger(AnthropicUserEndPoint.class);
@@ -33,7 +36,7 @@ public class AnthropicUserEndPoint extends AiEndPoint implements AIChatInterface
             JsonObject prompt = client.createPrompt(AnthropicClient.MODEL_COMMAND_MODEL, temp);
 
             // -- Separate system messages from user/assistant messages ----------
-            StringBuilder systemContent = new StringBuilder();
+            List<String> systemParts = new ArrayList<>();
             JsonArray conversationMessages = new JsonArray();
 
             JsonArray sanitized = sanitizeJsonArray(messages);
@@ -42,8 +45,7 @@ public class AnthropicUserEndPoint extends AiEndPoint implements AIChatInterface
                 String role = msg.has("role") ? msg.get("role").getAsString() : "";
 
                 if (AIConstants.ROLE_SYSTEM.equals(role)) {
-                    if (!systemContent.isEmpty()) systemContent.append("\n\n");
-                    systemContent.append(msg.get("content").getAsString());
+                    systemParts.add(msg.get("content").getAsString());
                 } else {
                     conversationMessages.add(msg);
                 }
@@ -55,15 +57,22 @@ public class AnthropicUserEndPoint extends AiEndPoint implements AIChatInterface
                 return null;
             }
 
-            if (!systemContent.isEmpty()) {
+            if (!systemParts.isEmpty()) {
                 JsonArray systemArray = new JsonArray();
-                JsonObject systemBlock = new JsonObject();
-                systemBlock.addProperty("type", "text");
-                systemBlock.addProperty("text", systemContent.toString());
-                JsonObject cacheControl = new JsonObject();
-                cacheControl.addProperty("type", "ephemeral");
-                systemBlock.add("cache_control", cacheControl);
-                systemArray.add(systemBlock);
+                if (systemParts.size() == 1) {
+                    // Single block (chat / sensor with one system msg) to cache all of it
+                    addSystemBlock(systemArray, systemParts.get(0), true);
+                } else {
+                    // Multiple blocks: combine first N-1 into one cached block (static rules),
+                    // leave the last block uncached (dynamic Reducer action list or event instructions).
+                    StringBuilder cached = new StringBuilder();
+                    for (int i = 0; i < systemParts.size() - 1; i++) {
+                        if (!cached.isEmpty()) cached.append("\n\n");
+                        cached.append(systemParts.get(i));
+                    }
+                    addSystemBlock(systemArray, cached.toString(), true);
+                    addSystemBlock(systemArray, systemParts.get(systemParts.size() - 1), false);
+                }
                 prompt.add("system", systemArray);
             }
             prompt.add("messages", conversationMessages);
@@ -112,9 +121,18 @@ public class AnthropicUserEndPoint extends AiEndPoint implements AIChatInterface
     // Helpers
     // -----------------------------------------------------------------------
 
-    /**
-     * Strip ```json … ``` or ``` … ``` fences that Claude occasionally wraps around JSON.
-     */
+    private void addSystemBlock(JsonArray arr, String text, boolean cache) {
+        JsonObject block = new JsonObject();
+        block.addProperty("type", "text");
+        block.addProperty("text", text);
+        if (cache) {
+            JsonObject cc = new JsonObject();
+            cc.addProperty("type", "ephemeral");
+            block.add("cache_control", cc);
+        }
+        arr.add(block);
+    }
+
     private String stripJsonFences(String text) {
         String t = text.trim();
         if (t.startsWith("```")) {

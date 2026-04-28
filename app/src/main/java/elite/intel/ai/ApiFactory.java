@@ -3,6 +3,7 @@ package elite.intel.ai;
 import elite.intel.ai.brain.*;
 import elite.intel.ai.brain.anthropic.AnthropicAnalysisEndpoint;
 import elite.intel.ai.brain.anthropic.AnthropicCommandEndPoint;
+import elite.intel.ai.brain.anthropic.AnthropicPromptFactory;
 import elite.intel.ai.brain.anthropic.AnthropicUserEndPoint;
 import elite.intel.ai.brain.commons.PromptFactory;
 import elite.intel.ai.brain.commons.ResponseRouter;
@@ -94,19 +95,15 @@ public class ApiFactory {
     }
 
     public AiPromptFactory getAiPromptFactory() {
-        return PromptFactory.getInstance();
-
-        ///NOTE: there is the same prompt for all supported LLMs at the moment.
-        ///NOTE: if that changes use the code below
-
-/*        String apiKey = SystemSession.getInstance().getAiApiKey();
+        if (systemSession.useLocalCommandLlm()) {
+            return PromptFactory.getInstance();
+        }
+        String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
-            // testing ollama prompts with cloud llms. If good, that will be the default
-            case GROK -> PromptFactory.getInstance();
-            case OPENAI -> PromptFactory.getInstance();
+            case ANTHROPIC -> AnthropicPromptFactory.getInstance();
             default -> PromptFactory.getInstance();
-        };*/
+        };
     }
 
     public AiCommandInterface getCommandEndpoint() {

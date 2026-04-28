@@ -38,7 +38,6 @@ public class HandsSubscriber {
     @Subscribe
     public void onGameInput(GameInputEvent event) {
         if (monitor.getBindings() == null) return;
-        if (playerSession.useVm()) return;
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(event.getBindingId());
         if (binding != null) {
             executor.executeBindingWithHold(binding, event.getHoldTime());

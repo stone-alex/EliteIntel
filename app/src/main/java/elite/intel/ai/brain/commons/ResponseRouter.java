@@ -19,11 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.Map;
 
 import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
@@ -65,18 +60,6 @@ public class ResponseRouter implements AIRouterInterface {
         return INSTANCE;
     }
 
-    private void fireVmMacroRemote(String action) {
-        if (action == null || action.isEmpty() || !playerSession.useVm()) {
-            return;
-        }
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://127.0.0.1:8080/ExecuteMacro=EliteDangerous/" + action))
-                .GET()
-                .timeout(Duration.ofSeconds(2))
-                .build();
-        HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.discarding());
-    }
-
     @Override public void processAiResponse(JsonObject jsonResponse, @Nullable String userInput) {
         if (jsonResponse == null) {
             log.error("Null LLM response received");
@@ -106,7 +89,6 @@ public class ResponseRouter implements AIRouterInterface {
 
             if (getCommandHandlers().containsKey(action)) {
                 handleCommand(action, params, responseText);
-                fireVmMacroRemote(action); /// VM Macro integration point.
             } else if (getQueryHandlers().containsKey(action)) {
                 handleQuery(action, params, userInput);
             } else if (!action.isEmpty()) {

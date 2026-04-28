@@ -37,7 +37,6 @@ public class PlayerTabPanel extends JPanel {
     private JTextField bindingsDirField;
     private JScrollPane fleetScrollPane;
     private JCheckBox conversationModeCheckBox;
-    private JCheckBox useVmCheckBox;
 
     public PlayerTabPanel() {
         buildUi();
@@ -126,40 +125,6 @@ public class PlayerTabPanel extends JPanel {
         conversationModeCheckBox.addActionListener(e -> systemSession.setConversationalMode(conversationModeCheckBox.isSelected()));
         btns.add(conversationModeCheckBox);
 
-        useVmCheckBox = new JCheckBox("Delegate Controller to VM");
-        useVmCheckBox.addActionListener(e -> {
-            if (useVmCheckBox.isSelected()) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        """
-                                <html>
-                                <h3>Experimental Integration</h3>
-                                <p>
-                                    This will disable Elite Intel internal keyboard controller
-                                    and delegate to VoiceMacro, a Windows Only application.
-                                </p>
-                                <p>
-                                    The functionality will be limited to basic commands only.
-                                </p>
-                                <ul>
-                                <li>Advanced options such as route plotting will not be possible.</li>
-                                <li>All handicap features will be disabled.</li>
-                                <li>The app WILL NOT operate keyboard controls at all.</li>
-                                </ul>
-                                <p>All LLM command actions will be sent to VoiceMacro. </p>
-                                <p>You must setup 'EliteDangerous' profile and name keyboard macros matching the action names exactly</p>
-                                <p>See Commands.java class on the GitHub for current list of commands</p>
-                                <p>This list will change without notice</p>
-                                </html>
-                                """,
-                        "Experimental Feature",
-                        JOptionPane.WARNING_MESSAGE
-                );
-            }
-            playerSession.setUseVm(useVmCheckBox.isSelected());
-        });
-        btns.add(useVmCheckBox);
-
         add(btns, gbc);
 
         // Row 4: Fleet Management header
@@ -193,7 +158,6 @@ public class PlayerTabPanel extends JPanel {
         journalDirField.setText(playerSession.getJournalPath().toString());
         bindingsDirField.setText(playerSession.getBindingsDir().toString());
         conversationModeCheckBox.setSelected(systemSession.conversationalModeOn());
-        useVmCheckBox.setSelected(playerSession.useVm());
 
         List<ShipDao.Ship> ships = ShipManager.getInstance().getAllShips();
         ships.sort((a, b) -> {

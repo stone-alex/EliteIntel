@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 import static elite.intel.ui.view.AppTheme.*;
 
-public class HunkSystemSettingsPanel implements SettingRow {
+public class HonkSystemSettingsPanel implements SettingRow {
 
     private final String checkLabel;
     private final BooleanSupplier checkGetter;
@@ -23,7 +23,7 @@ public class HunkSystemSettingsPanel implements SettingRow {
     private final Supplier<Integer> triggerGetter;
     private final Consumer<Integer> triggerSetter;
 
-    public HunkSystemSettingsPanel(String checkLabel,
+    public HonkSystemSettingsPanel(String checkLabel,
                                    BooleanSupplier checkGetter,
                                    Consumer<Boolean> checkSetter,
 

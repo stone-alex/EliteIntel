@@ -11,8 +11,8 @@ public class ShipSettingsPopup {
 
     public static SettingsPopup create(Component parent, String identifier, ShipSettingsDao.ShipSettings shipSettings) {
         List<SettingRow> rows = new ArrayList<>();
-        rows.add(new HunkSystemSettingsPanel(
-                "Hunk system on entry",
+        rows.add(new HonkSystemSettingsPanel(
+                "Honk system on entry",
                 shipSettings::isHonkOnJump,
                 shipSettings::setHonkOnJump,
 

@@ -148,9 +148,8 @@ public class ApiFactory {
         }
     }
 
-    /// -- no choises here
+    /// -- no choices here
     public EarsInterface getEarsImpl() {
-        ///return new WhisperSTTImpl();
         return new ParakeetSTTImpl();
     }
 }

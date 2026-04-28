@@ -46,15 +46,17 @@ public class UsageStatsTabPanel extends JPanel {
     }
 
     private void buildUi() {
-        setLayout(new BorderLayout(0, 12));
-        setBorder(new EmptyBorder(16, 20, 16, 20));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(new EmptyBorder(16, 2, 16, 20));
         setOpaque(false);
 
         // Header
-        JPanel header = new JPanel(new GridLayout(2, 1, 0, 4));
+        JPanel header = new JPanel();
+        header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
         header.setOpaque(false);
+        header.setBorder(new EmptyBorder(8, 0, 0, 0));
 
-        providerLabel = new JLabel("LLM: -");
+        providerLabel = new JLabel("LLM: N/A");
         providerLabel.setFont(providerLabel.getFont().deriveFont(Font.BOLD, 16f));
         providerLabel.setForeground(AppTheme.FG);
 
@@ -62,17 +64,20 @@ public class UsageStatsTabPanel extends JPanel {
         sessionTimeLabel.setForeground(AppTheme.FG_MUTED);
 
         header.add(providerLabel);
+        header.add(Box.createHorizontalGlue());
         header.add(sessionTimeLabel);
-        add(header, BorderLayout.NORTH);
+        header.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Chart
         chart = new BarChart();
-        add(chart, BorderLayout.CENTER);
 
         // Footer
-        JPanel footer = new JPanel(new GridLayout(3, 1, 0, 4));
+        JPanel footer = new JPanel();
+        footer.setLayout(new BoxLayout(footer, BoxLayout.Y_AXIS));
         footer.setOpaque(false);
         footer.setBorder(new EmptyBorder(8, 0, 0, 0));
+        footer.setBackground(AppTheme.LOG_BG);
+        footer.setPreferredSize(new Dimension(super.getPreferredSize().width, 180));
         if (systemSession.useLocalCommandLlm() && systemSession.useLocalQueryLlm()) {
             totalLabel = new JLabel("Total tokens used (free):  0");
         } else {
@@ -87,10 +92,20 @@ public class UsageStatsTabPanel extends JPanel {
         tphLabel = new JLabel("Tokens / Hour (estimate this session):  -");
         tphLabel.setForeground(AppTheme.FG_MUTED);
 
+        totalLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        savedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        tphLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        footer.add(Box.createVerticalGlue());
         footer.add(totalLabel);
         footer.add(savedLabel);
         footer.add(tphLabel);
-        add(footer, BorderLayout.SOUTH);
+
+        /// put it all together
+        add(header);
+        add(chart);
+        add(Box.createVerticalGlue());
+        add(footer);
     }
 
     @Subscribe
@@ -122,7 +137,7 @@ public class UsageStatsTabPanel extends JPanel {
         int written = totalCacheWritten.get();
         int total = totalPrompt.get() + totalCompletion.get();
 
-        chart.update(lastPrompt, lastCompletion, hits, written, total);
+        chart.update(lastPrompt, lastCompletion, hits, written);
         if (systemSession.useLocalCommandLlm() && systemSession.useLocalQueryLlm()) {
             totalLabel.setText("Total tokens used (FREE):  " + total);
         } else {
@@ -158,26 +173,35 @@ public class UsageStatsTabPanel extends JPanel {
         private static final String[] LABELS = {
                 "Last Prompt",
                 "Last Completion",
-                "Cache Hits (total)",
-                "Cache Written (total)",
-                "Session Total"
+                "Cache Hits Total",
+                "Cache Written Total"
         };
         private static final Color[] COLORS = {
                 new Color(0x03529F),   // blue   – prompt
                 new Color(0x2E8B57),   // green  – completion
                 new Color(0xFF8C00),   // orange – cache hits
-                new Color(0x6A6A8A),   // grey   – cache written
-                new Color(0xDC143C)    // red    – total (chargeable)
+                new Color(0x6A6A8A)   // grey   – cache written
         };
 
-        private int[] values = new int[5];
+        private int[] values = new int[4];
 
         BarChart() {
             setOpaque(false);
         }
 
-        void update(int prompt, int completion, int hits, int written, int total) {
-            values = new int[]{prompt, completion, hits, written, total};
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(super.getPreferredSize().width, 180);
+        }
+
+        @Override
+        public Dimension getMaximumSize() {
+            // Let it grow horizontally but stay fixed height
+            return new Dimension(Integer.MAX_VALUE, 180);
+        }
+
+        void update(int prompt, int completion, int hits, int written) {
+            values = new int[]{prompt, completion, hits, written};
             repaint();
         }
 

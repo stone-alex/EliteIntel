@@ -16,6 +16,17 @@ import static elite.intel.ai.brain.actions.Queries.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * Integration test class for verifying the interaction between the application and the NaturalSpeech system.
+ * This class contains a series of parameterized tests designed to validate the proper routing of input commands
+ * to corresponding actions in the system. It covers various scenarios such as navigation, speed control,
+ * operational modes, and other gameplay-related actions.
+ * <p>
+ * REQUIREMENTS
+ * 1) Have local LLM installed and configured with the supported model.
+ * 2) Start the app at least once and have the game running for some basic data
+ * 3) Ensure that the LLM is responsive and capable of handling the test scenarios within the allocated time.
+ */
 @Tag("local-integration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

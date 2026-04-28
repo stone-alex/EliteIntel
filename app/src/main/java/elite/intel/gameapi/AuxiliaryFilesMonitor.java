@@ -3,7 +3,7 @@ package elite.intel.gameapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import elite.intel.ai.brain.handlers.CommandHandlerFactory;
+import elite.intel.ai.brain.actions.handlers.CommandHandlerFactory;
 import elite.intel.ai.hands.GameController;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.session.PlayerSession;

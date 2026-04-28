@@ -6,9 +6,9 @@ import elite.intel.session.SystemSession;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static elite.intel.ai.brain.actions.Commands.*;
+import static elite.intel.ai.brain.actions.Queries.*;
 import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
-import static elite.intel.ai.brain.handlers.commands.Commands.*;
-import static elite.intel.ai.brain.handlers.query.Queries.*;
 
 public class AiActionsMap {
 

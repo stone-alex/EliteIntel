@@ -9,7 +9,7 @@ import elite.intel.gameapi.journal.events.ShipTargetedEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.SleepNoThrow;
 
-import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_CYCLE_NEXT_SUBSYSTEM;
+import static elite.intel.ai.hands.Bindings.GameCommand.BINDING_CYCLE_NEXT_SUBSYSTEM;
 
 public class SubSystemsManager {
 

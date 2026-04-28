@@ -9,8 +9,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static elite.intel.ai.brain.handlers.commands.Commands.*;
-import static elite.intel.ai.brain.handlers.query.Queries.*;
+import static elite.intel.ai.brain.actions.Commands.*;
+import static elite.intel.ai.brain.actions.Queries.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

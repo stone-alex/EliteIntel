@@ -27,7 +27,7 @@ import elite.intel.util.SleepNoThrow;
 
 import java.util.*;
 
-import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
+import static elite.intel.ai.hands.Bindings.GameCommand.*;
 import static elite.intel.util.GravityCalculator.calculateSurfaceGravity;
 import static elite.intel.util.StringUtls.isFuelStarClause;
 

@@ -1,8 +1,8 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.brain.handlers.CommandHandlerFactory;
-import elite.intel.ai.brain.handlers.commands.CommandHandler;
+import elite.intel.ai.brain.actions.handlers.CommandHandlerFactory;
+import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
@@ -12,8 +12,8 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.StringUtls;
 
-import static elite.intel.ai.brain.handlers.commands.Commands.ACTIVATE_ANALYSIS_MODE;
-import static elite.intel.ai.brain.handlers.commands.Commands.ACTIVATE_COMBAT_MODE;
+import static elite.intel.ai.brain.actions.Commands.ACTIVATE_ANALYSIS_MODE;
+import static elite.intel.ai.brain.actions.Commands.ACTIVATE_COMBAT_MODE;
 
 public class SuperCruiseDropSubscriber {
 

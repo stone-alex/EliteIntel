@@ -3,10 +3,10 @@ package elite.intel.ai.brain.commons;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AIRouterInterface;
-import elite.intel.ai.brain.handlers.CommandHandlerFactory;
-import elite.intel.ai.brain.handlers.QueryHandlerFactory;
-import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.brain.handlers.query.QueryHandler;
+import elite.intel.ai.brain.actions.handlers.CommandHandlerFactory;
+import elite.intel.ai.brain.actions.handlers.QueryHandlerFactory;
+import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
+import elite.intel.ai.brain.actions.handlers.query.QueryHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
@@ -21,8 +21,8 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.util.Map;
 
+import static elite.intel.ai.brain.actions.Commands.IGNORE_NONSENSE;
 import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
-import static elite.intel.ai.brain.handlers.commands.Commands.IGNORE_NONSENSE;
 import static elite.intel.util.json.JsonUtils.nullSaveJsonObject;
 
 

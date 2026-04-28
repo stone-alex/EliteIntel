@@ -1,6 +1,6 @@
 package elite.intel.session.ui;
 
-import elite.intel.ai.brain.handlers.commands.Bindings;
+import elite.intel.ai.hands.Bindings;
 import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.db.managers.GlobalSettingsManager;
 import elite.intel.gameapi.GameControllerBus;

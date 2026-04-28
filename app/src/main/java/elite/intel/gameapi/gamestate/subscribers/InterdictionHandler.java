@@ -1,12 +1,12 @@
 package elite.intel.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.brain.handlers.CommandHandlerFactory;
-import elite.intel.ai.brain.handlers.commands.CommandHandler;
+import elite.intel.ai.brain.actions.handlers.CommandHandlerFactory;
+import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
 import elite.intel.gameapi.gamestate.status_events.BeingInterdictedEvent;
 
-import static elite.intel.ai.brain.handlers.commands.Commands.ACTIVATE_COMBAT_MODE;
-import static elite.intel.ai.brain.handlers.commands.Commands.SELECT_HIGHEST_THREAT;
+import static elite.intel.ai.brain.actions.Commands.ACTIVATE_COMBAT_MODE;
+import static elite.intel.ai.brain.actions.Commands.SELECT_HIGHEST_THREAT;
 
 public class InterdictionHandler {
 

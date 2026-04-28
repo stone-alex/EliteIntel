@@ -3,8 +3,8 @@ package elite.intel.ai.brain;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static elite.intel.ai.brain.handlers.commands.Commands.IGNORE_NONSENSE;
-import static elite.intel.ai.brain.handlers.query.Queries.GENERAL_CONVERSATION;
+import static elite.intel.ai.brain.actions.Commands.IGNORE_NONSENSE;
+import static elite.intel.ai.brain.actions.Queries.GENERAL_CONVERSATION;
 
 public class Reducer {
 

@@ -1,6 +1,5 @@
 package elite.intel.ai.hands;
 
-import elite.intel.ai.brain.handlers.commands.Bindings;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.dao.KeyBindingDao.KeyBinding;
 import elite.intel.db.managers.BindingConflictManager;

@@ -1,7 +1,7 @@
 package elite.intel.ai.hands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.commands.Commands;
+import elite.intel.ai.brain.actions.Commands;
 import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;

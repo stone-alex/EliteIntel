@@ -54,7 +54,9 @@ public class GeminiClient extends BaseAiClient implements Client {
 
     @Override
     public JsonObject sendJsonRequest(String request) {
+        long t0 = System.nanoTime();
         JsonObject response = super.sendJsonRequest(buildRequest(request));
+        long elapsed = System.nanoTime() - t0;
         if (response != null && response.has("usageMetadata")) {
             JsonObject usage = response.getAsJsonObject("usageMetadata");
             int promptTokens = usage.has("promptTokenCount") ? usage.get("promptTokenCount").getAsInt() : 0;
@@ -62,7 +64,8 @@ public class GeminiClient extends BaseAiClient implements Client {
             int cachedTokens = usage.has("cachedContentTokenCount") ? usage.get("cachedContentTokenCount").getAsInt() : 0;
             EventBusManager.publish(new AppLogEvent(
                     "LLM Gemini [" + currentModel + "] in=" + promptTokens + " out=" + candidateTokens));
-            EventBusManager.publish(new LlmUsageEvent("Gemini", currentModel, promptTokens, candidateTokens, cachedTokens, 0));
+            EventBusManager.publish(new LlmUsageEvent("Gemini", currentModel, promptTokens, candidateTokens, cachedTokens, 0,
+                    wallClockTps(elapsed, candidateTokens)));
         }
         return response;
     }

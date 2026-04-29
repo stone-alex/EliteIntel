@@ -63,13 +63,16 @@ public class LMStudioClient extends BaseAiClient implements Client {
 
     @Override
     public synchronized JsonObject sendJsonRequest(String request) {
+        long t0 = System.nanoTime();
         JsonObject response = super.sendJsonRequest(buildRequest(request));
+        long elapsed = System.nanoTime() - t0;
         LlmMetadata meta = GsonFactory.getGson().fromJson(response, LlmMetadata.class);
         EventBusManager.publish(new AppLogEvent("LM Studio: " + meta));
         if (meta != null && meta.usage() != null) {
             EventBusManager.publish(new LlmUsageEvent("LM Studio",
                     meta.model() != null ? meta.model() : "local",
-                    meta.usage().promptTokens(), meta.usage().completionTokens(), 0, 0));
+                    meta.usage().promptTokens(), meta.usage().completionTokens(), 0, 0,
+                    wallClockTps(elapsed, meta.usage().completionTokens())));
         }
         return response;
     }

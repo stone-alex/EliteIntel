@@ -4,6 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.LlmUsageEvent;
+import elite.intel.ui.event.RestartBrainEvent;
+import elite.intel.ui.event.ServicesStateEvent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -16,12 +18,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class UsageStatsTabPanel extends JPanel {
 
-    private final Instant sessionStart = Instant.now();
+    private Instant sessionStart = Instant.now();
     // Only ever read/written on the EDT
     private final Set<String> seenModels = new LinkedHashSet<>();
 
     private volatile int lastPrompt = 0;
     private volatile int lastCompletion = 0;
+    private volatile double lastTps = 0.0;
     private final AtomicInteger totalPrompt = new AtomicInteger();
     private final AtomicInteger totalCompletion = new AtomicInteger();
     private final AtomicInteger totalCachedHits = new AtomicInteger();
@@ -45,11 +48,39 @@ public class UsageStatsTabPanel extends JPanel {
         clockTimer.start();
     }
 
+    @Subscribe
+    public void onServicesState(ServicesStateEvent event) {
+        if (event.isRunning()) {
+            SwingUtilities.invokeLater(this::reset);
+        }
+    }
+
+    @Subscribe
+    public void onRestartBrain(RestartBrainEvent event) {
+        SwingUtilities.invokeLater(this::reset);
+    }
+
+    private void reset() {
+        lastPrompt = 0;
+        lastCompletion = 0;
+        lastTps = 0.0;
+        totalPrompt.set(0);
+        totalCompletion.set(0);
+        totalCachedHits.set(0);
+        totalCacheWritten.set(0);
+        seenModels.clear();
+        sessionStart = Instant.now();
+        removeAll();
+        buildUi();
+        revalidate();
+        repaint();
+    }
+
     private void buildUi() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(new EmptyBorder(16, 2, 16, 20));
         setOpaque(false);
-
+        boolean usingLocalLLMs = systemSession.useLocalCommandLlm() && systemSession.useLocalQueryLlm();
         // Header
         JPanel header = new JPanel();
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
@@ -69,7 +100,7 @@ public class UsageStatsTabPanel extends JPanel {
         header.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Chart
-        chart = new BarChart();
+        chart = new BarChart(usingLocalLLMs);
 
         // Footer
         JPanel footer = new JPanel();
@@ -78,7 +109,8 @@ public class UsageStatsTabPanel extends JPanel {
         footer.setBorder(new EmptyBorder(8, 0, 0, 0));
         footer.setBackground(AppTheme.LOG_BG);
         footer.setPreferredSize(new Dimension(super.getPreferredSize().width, 180));
-        if (systemSession.useLocalCommandLlm() && systemSession.useLocalQueryLlm()) {
+
+        if (usingLocalLLMs) {
             totalLabel = new JLabel("Total tokens used (free):  0");
         } else {
             totalLabel = new JLabel("Total tokens used (chargeable):  0");
@@ -98,12 +130,15 @@ public class UsageStatsTabPanel extends JPanel {
 
         footer.add(Box.createVerticalGlue());
         footer.add(totalLabel);
-        footer.add(savedLabel);
+        if (!usingLocalLLMs) footer.add(savedLabel);
         footer.add(tphLabel);
 
         /// put it all together
         add(header);
         add(chart);
+        if (usingLocalLLMs) {
+            add(new JLabel("Local inference services caches automatically via llama.cpp's KV cache but does not expose the numbers for tracking"));
+        }
         add(Box.createVerticalGlue());
         add(footer);
     }
@@ -112,6 +147,7 @@ public class UsageStatsTabPanel extends JPanel {
     public void onLlmUsage(LlmUsageEvent event) {
         lastPrompt = event.promptTokens();
         lastCompletion = event.completionTokens();
+        lastTps = event.tps();
         totalPrompt.addAndGet(event.promptTokens());
         totalCompletion.addAndGet(event.completionTokens());
         totalCachedHits.addAndGet(event.cachedTokens());
@@ -137,7 +173,7 @@ public class UsageStatsTabPanel extends JPanel {
         int written = totalCacheWritten.get();
         int total = totalPrompt.get() + totalCompletion.get();
 
-        chart.update(lastPrompt, lastCompletion, hits, written);
+        chart.update(lastPrompt, lastCompletion, hits, written, lastTps);
         if (systemSession.useLocalCommandLlm() && systemSession.useLocalQueryLlm()) {
             totalLabel.setText("Total tokens used (FREE):  " + total);
         } else {
@@ -180,28 +216,34 @@ public class UsageStatsTabPanel extends JPanel {
                 new Color(0x03529F),   // blue   – prompt
                 new Color(0x2E8B57),   // green  – completion
                 new Color(0xFF8C00),   // orange – cache hits
-                new Color(0x6A6A8A)   // grey   – cache written
+                new Color(0x6A6A8A)    // grey   – cache written
         };
+        private static final Color TPS_COLOR = new Color(0x20B2AA); // teal – speed
 
+        private final boolean localMode;
         private int[] values = new int[4];
+        private double lastTps = 0.0;
+        private double maxTps = 1.0;
 
-        BarChart() {
+        BarChart(boolean localMode) {
+            this.localMode = localMode;
             setOpaque(false);
         }
 
         @Override
         public Dimension getPreferredSize() {
-            return new Dimension(super.getPreferredSize().width, 180);
+            return new Dimension(super.getPreferredSize().width, 220);
         }
 
         @Override
         public Dimension getMaximumSize() {
-            // Let it grow horizontally but stay fixed height
-            return new Dimension(Integer.MAX_VALUE, 180);
+            return new Dimension(Integer.MAX_VALUE, 220);
         }
 
-        void update(int prompt, int completion, int hits, int written) {
+        void update(int prompt, int completion, int hits, int written, double tps) {
             values = new int[]{prompt, completion, hits, written};
+            lastTps = tps;
+            if (tps > maxTps) maxTps = tps;
             repaint();
         }
 
@@ -213,26 +255,28 @@ public class UsageStatsTabPanel extends JPanel {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-                int n = values.length;
+                int tokenBars = localMode ? 2 : values.length;
+                int totalBars = tokenBars + 1; // +1 for TPS
                 int labelW = 260;
                 int valueW = 80;
                 int barAreaW = getWidth() - labelW - valueW - 24;
                 if (barAreaW <= 0) return;
 
-                int rowH = Math.min(42, Math.max(20, (getHeight() - 20) / n));
+                int rowH = Math.min(42, Math.max(20, (getHeight() - 20) / totalBars));
                 int barH = rowH - Math.max(4, rowH / 5);
-                int totalH = n * rowH - (rowH - barH);
+                int totalH = totalBars * rowH - (rowH - barH);
                 int startY = (getHeight() - totalH) / 2;
 
                 int maxVal = 1;
-                for (int v : values) maxVal = Math.max(maxVal, v);
+                for (int i = 0; i < tokenBars; i++) maxVal = Math.max(maxVal, values[i]);
 
                 Font font = g2.getFont().deriveFont(18f);
                 g2.setFont(font);
                 FontMetrics fm = g2.getFontMetrics(font);
                 int baseline = barH / 2 + fm.getAscent() / 2 - 1;
 
-                for (int i = 0; i < n; i++) {
+                // Token bars
+                for (int i = 0; i < tokenBars; i++) {
                     int y = startY + i * rowH;
 
                     g2.setColor(AppTheme.FG_MUTED);
@@ -248,14 +292,32 @@ public class UsageStatsTabPanel extends JPanel {
                     }
 
                     g2.setColor(AppTheme.FG);
-                    g2.drawString(format(values[i]), labelW + barAreaW + 8, y + baseline);
+                    g2.drawString(formatTokens(values[i]), labelW + barAreaW + 8, y + baseline);
                 }
+
+                // TPS bar – independent scale: max observed TPS = full width
+                int tpsY = startY + tokenBars * rowH;
+                g2.setColor(AppTheme.FG_MUTED);
+                g2.drawString("Last Speed (t/s)", 0, tpsY + baseline);
+
+                g2.setColor(AppTheme.BG_PANEL);
+                g2.fillRoundRect(labelW, tpsY, barAreaW, barH, 6, 6);
+
+                if (lastTps > 0) {
+                    int fillW = Math.max(6, (int) (lastTps / maxTps * barAreaW));
+                    g2.setColor(TPS_COLOR);
+                    g2.fillRoundRect(labelW, tpsY, fillW, barH, 6, 6);
+                }
+
+                g2.setColor(AppTheme.FG);
+                g2.drawString(String.format("%.1f t/s", lastTps), labelW + barAreaW + 8, tpsY + baseline);
+
             } finally {
                 g2.dispose();
             }
         }
 
-        private static String format(int v) {
+        private static String formatTokens(int v) {
             if (v >= 1_000_000) return String.format("%.1fM", v / 1_000_000.0);
             if (v >= 1_000) return String.format("%.1fK", v / 1_000.0);
             return String.valueOf(v);

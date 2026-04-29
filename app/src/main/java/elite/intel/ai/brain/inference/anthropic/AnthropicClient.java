@@ -59,7 +59,9 @@ public class AnthropicClient extends BaseAiClient implements Client {
     @Override
     public JsonObject sendJsonRequest(String request) {
         try {
+            long t0 = System.nanoTime();
             JsonObject response = super.sendJsonRequest(buildRequest(request));
+            long elapsed = System.nanoTime() - t0;
             if (response != null && response.has("usage")) {
                 JsonObject usage = response.getAsJsonObject("usage");
                 int in = usage.has("input_tokens") ? usage.get("input_tokens").getAsInt() : 0;
@@ -72,7 +74,7 @@ public class AnthropicClient extends BaseAiClient implements Client {
                                 (written > 0 ? " cache_written= " + written : "") +
                                 " tokens"));
                 String model = response.has("model") ? response.get("model").getAsString() : MODEL_COMMAND_MODEL;
-                EventBusManager.publish(new LlmUsageEvent("Claude", model, in, out, cached, written));
+                EventBusManager.publish(new LlmUsageEvent("Claude", model, in, out, cached, written, wallClockTps(elapsed, out)));
             }
             return response;
         } catch (Exception e) {

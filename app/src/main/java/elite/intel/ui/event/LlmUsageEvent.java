@@ -6,6 +6,7 @@ public record LlmUsageEvent(
         int promptTokens,
         int completionTokens,
         int cachedTokens,
-        int cacheWrittenTokens
+        int cacheWrittenTokens,
+        double tps
 ) {
 }

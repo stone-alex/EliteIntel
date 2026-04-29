@@ -51,14 +51,17 @@ public class DeepSeekClient extends BaseAiClient implements Client {
 
     @Override
     public JsonObject sendJsonRequest(String request) {
+        long t0 = System.nanoTime();
         JsonObject response = super.sendJsonRequest(buildRequest(request));
+        long elapsed = System.nanoTime() - t0;
         LlmMetadata meta = GsonFactory.getGson().fromJson(response, LlmMetadata.class);
         EventBusManager.publish(new AppLogEvent("LLM: " + meta));
         if (meta != null && meta.usage() != null) {
             int cached = meta.usage().promptDetails() != null ? meta.usage().promptDetails().cachedTokens() : 0;
             EventBusManager.publish(new LlmUsageEvent("DeepSeek",
                     meta.model() != null ? meta.model() : MODEL,
-                    meta.usage().promptTokens(), meta.usage().completionTokens(), cached, 0));
+                    meta.usage().promptTokens(), meta.usage().completionTokens(), cached, 0,
+                    wallClockTps(elapsed, meta.usage().completionTokens())));
         }
         return response;
     }

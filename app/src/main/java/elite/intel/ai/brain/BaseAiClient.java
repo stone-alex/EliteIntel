@@ -24,6 +24,10 @@ public class BaseAiClient {
     public BaseAiClient() {
     }
 
+    protected static double wallClockTps(long elapsedNs, int completionTokens) {
+        return elapsedNs > 0 ? completionTokens * 1_000_000_000.0 / elapsedNs : 0.0;
+    }
+
     public JsonObject createErrorResponse(String message) {
         JsonObject err = new JsonObject();
         err.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, message);

@@ -7,6 +7,13 @@ assignees: ''
 
 ---
 
+**Environment**
+- Linux or Windows
+- App version number
+- Inference engine (LMStudio, Ollama, Or which cloud service is used). 
+- If local LLM, which model used.
+
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 

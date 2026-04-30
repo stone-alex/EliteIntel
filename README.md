@@ -51,11 +51,13 @@ Powered by NVIDIA Parakeet. built-in / included.
 - Google Gemini (Cloud Generative Language API gemini-2.5-flash)
 - Deepseek deepseek-v4-flash
 
-### 🎤 STT (Speech To Text)
+---
+
+## 🎤 STT (Speech To Text)
 
 - **NVIDIA Parakeet (Local - off-line)**
 
-### 🔊 TTS (Text To Speech)
+## 🔊 TTS (Text To Speech)
 
 - **Kokoro (Local - off-line)**
 - Google (Cloud)

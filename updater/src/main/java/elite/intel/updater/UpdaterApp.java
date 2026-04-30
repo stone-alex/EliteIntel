@@ -496,7 +496,7 @@ public class UpdaterApp {
 
     private String resolveJavaCommand() {
         if (System.getProperty("os.name", "").toLowerCase().contains("linux")) {
-            Path bundled = Path.of(installDir, "jre", "bin", "java");
+            Path bundled = Path.of(installDir, "jdk", "bin", "java");
             if (Files.exists(bundled))
                 return bundled.toAbsolutePath().toString();
         }

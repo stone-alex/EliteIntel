@@ -139,17 +139,28 @@ public class Updater {
 
     /**
      * Builds the OS-appropriate command to launch the updater jar.
-     * On Windows we use {@code javaw} (no console window); on Linux/macOS {@code java}.
+     * On Windows we use {@code javaw} (no console window); on Linux/macOS we
+     * prefer the bundled JDK installed at {@code <installDir>/jdk/bin/java} by
+     * installer.sh, falling back to whatever {@code java} is on PATH.
      */
     private static List<String> buildLaunchCommand(Path updaterJar) {
-        String javaExe = OsDetector.getOs() == OS.WINDOWS ? "javaw" : "java";
-
         List<String> cmd = new ArrayList<>();
-        cmd.add(javaExe);
+        cmd.add(resolveJavaExecutable());
         cmd.add("-jar");
         cmd.add(updaterJar.toAbsolutePath().toString());
         cmd.add(JAR_DIR.toAbsolutePath().toString());        // argv[0] = install dir
         cmd.add(String.valueOf(ProcessHandle.current().pid())); // argv[1] = main app PID
         return cmd;
+    }
+
+    private static String resolveJavaExecutable() {
+        OS os = OsDetector.getOs();
+        if (os == OS.WINDOWS) return "javaw";
+        if (os == OS.LINUX) {
+            Path bundled = JAR_DIR.resolve("jdk/bin/java");
+            if (bundled.toFile().exists())
+                return bundled.toAbsolutePath().toString();
+        }
+        return "java";
     }
 }

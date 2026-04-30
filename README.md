@@ -21,7 +21,7 @@ Powered by NVIDIA Parakeet. built-in / included.
 **✅ Local off-line private LLMs are now supported**
 [Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/installing-local-llms)
 
-### Minimum requirements for **running the game and the LLM on the same GPU**
+## Minimum requirements for **running the game and the LLM on the same GPU**
 - NVIDIA RTX 3090 **24GB VRAM** or equivalent.
 
 - RTX 5090 with only **12GB VRAM will not do**. Not enough VRAM.
@@ -35,13 +35,16 @@ Powered by NVIDIA Parakeet. built-in / included.
 
 ---
 
-### 🧠 LLMs (Larger Language Models)
+## 🧠 LLMs (Larger Language Models)
+
+### Local
 
 - **LMStudio (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
 - **Ollama (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
 
 [Why tulu-3.1-8b Supernova specifically](https://github.com/stone-alex/EliteIntel/wiki/Why-Tulu3.1-supernova)
 
+### Cloud
 - Claude (Cloud. Models: Sonnet/Haiku)
 - Grok (Cloud model xAI grok-4-1-fast-non-reasoning)
 - Open AI (Cloud Chat GPT gpt-5.2)

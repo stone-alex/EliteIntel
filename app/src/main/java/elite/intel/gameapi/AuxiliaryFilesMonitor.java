@@ -3,8 +3,6 @@ package elite.intel.gameapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import elite.intel.ai.brain.actions.handlers.CommandHandlerFactory;
-import elite.intel.ai.hands.GameController;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.controller.ManagedService;
@@ -65,11 +63,6 @@ public class AuxiliaryFilesMonitor implements Runnable, ManagedService {
     private final Set<String> monitoredFileSet = new HashSet<>(MONITORED_FILES);
     private Thread processingThread;
     private volatile boolean isRunning;
-    private final GameController gameController;
-
-    public AuxiliaryFilesMonitor() {
-        this.gameController = CommandHandlerFactory.getInstance().getGameCommandHandler();
-    }
 
     public synchronized void start() {
         this.directory = PlayerSession.getInstance().getJournalPath();
@@ -80,12 +73,10 @@ public class AuxiliaryFilesMonitor implements Runnable, ManagedService {
         isRunning = true;
         processingThread = new Thread(this, "AuxiliaryFilesMonitorThread");
         processingThread.start();
-        gameController.start();
         log.info("AuxiliaryFilesMonitor started");
     }
 
     public synchronized void stop() {
-        gameController.stop();
         if (processingThread == null || !processingThread.isAlive()) {
             log.warn("AuxiliaryFilesMonitor is not running");
             return;

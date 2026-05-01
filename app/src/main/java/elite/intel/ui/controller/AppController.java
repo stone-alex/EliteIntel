@@ -5,6 +5,7 @@ import elite.intel.ai.ApiFactory;
 import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.EarsInterface;
+import elite.intel.ai.hands.HandsService;
 import elite.intel.ai.hands.KeyBindCheck;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
@@ -228,6 +229,7 @@ public class AppController implements Runnable {
         this.services.clear();
         services.put(ServiceType.JOURNAL_PARSER, new ServiceHolder(JournalParser::new));
         services.put(ServiceType.AUXILIARY_FILES_MONITOR, new ServiceHolder(AuxiliaryFilesMonitor::new));
+        services.put(ServiceType.HANDS, new ServiceHolder(HandsService::new));
         services.put(ServiceType.MOUTH, new ServiceHolder(ApiFactory.getInstance()::getMouthImpl));
         services.put(ServiceType.EARS, new ServiceHolder(ApiFactory.getInstance()::getEarsImpl));
         services.put(ServiceType.BRAIN, new ServiceHolder(ApiFactory.getInstance()::getCommandEndpoint));
@@ -263,7 +265,7 @@ public class AppController implements Runnable {
     }
 
     private enum ServiceType {
-        JOURNAL_PARSER, AUXILIARY_FILES_MONITOR, MOUTH, EARS, BRAIN,
+        JOURNAL_PARSER, AUXILIARY_FILES_MONITOR, HANDS, MOUTH, EARS, BRAIN,
         NOTIFICATION_MONITOR, MISSING_MISSION_MONITOR, WEB_SOCKET
     }
 }

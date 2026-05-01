@@ -2,7 +2,6 @@ package elite.intel.ai.brain.actions.handlers;
 
 import elite.intel.ai.brain.actions.Commands;
 import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
-import elite.intel.ai.hands.GameController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,15 +14,8 @@ public class CommandHandlerFactory {
     private static final Logger log = LogManager.getLogger(CommandHandlerFactory.class);
     private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
     private static CommandHandlerFactory instance;
-    private final GameController gameController;
 
     private CommandHandlerFactory() {
-        // Private constructor for singleton
-        try {
-            this.gameController = new GameController();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static CommandHandlerFactory getInstance() {
@@ -32,11 +24,6 @@ public class CommandHandlerFactory {
         }
         return instance;
     }
-
-    public GameController getGameCommandHandler() {
-        return gameController;
-    }
-
 
     public Map<String, CommandHandler> registerCommandHandlers() {
         for (Commands action : Commands.values()) {
@@ -57,21 +44,11 @@ public class CommandHandlerFactory {
         return commandHandlers;
     }
 
-    public GameController getGameController() {
-        return gameController;
-    }
-
     private CommandHandler instantiateCommandHandler(Class<? extends CommandHandler> handlerClass, String action) {
         try {
-            try {
-                Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameController.class);
-                constructor.setAccessible(true);
-                return constructor.newInstance(gameController);
-            } catch (NoSuchMethodException e) {
-                Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor();
-                constructor.setAccessible(true);
-                return constructor.newInstance();
-            }
+            Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return constructor.newInstance();
         } catch (NoSuchMethodException e) {
             log.error("No suitable constructor found for handler: {}, action/binding: {}", handlerClass.getName(), action);
             throw new RuntimeException("Failed to instantiate command handler: " + handlerClass.getName(), e);

@@ -8,7 +8,6 @@ import elite.intel.ai.hands.events.RawKeyEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
-import elite.intel.session.PlayerSession;
 import elite.intel.session.ui.UINavigator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +19,7 @@ import static elite.intel.util.SleepNoThrow.sleep;
  * <p>
  * Translates game input events into physical keystrokes via {@link KeyBindingExecutor}
  * and {@link KeyProcessor}. By keeping all keystroke execution here, the rest of the
- * codebase (handlers, RoutePlotter, GameController) only publishes intent - they never
+ * codebase (handlers, RoutePlotter, HandsService) only publishes intent - they never
  * touch the keyboard directly.
  */
 public class HandsSubscriber {
@@ -29,7 +28,6 @@ public class HandsSubscriber {
 
     private final BindingsMonitor monitor = BindingsMonitor.getInstance();
     private final KeyBindingExecutor executor = KeyBindingExecutor.getInstance();
-    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     public HandsSubscriber() {
         GameControllerBus.register(this);
@@ -42,10 +40,7 @@ public class HandsSubscriber {
         if (binding != null) {
             executor.executeBindingWithHold(binding, event.getHoldTime());
         } else {
-            log.warn("No binding found for action: {}", event.getBindingId());
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent(
-                    "No key binding found for " + event.getBindingId())
-            );
+            handleNoKeyBindingFound(event.getBindingId());
         }
         sleep(UINavigator.randomDelay());
     }
@@ -58,11 +53,16 @@ public class HandsSubscriber {
             log.debug("Tap binding: key={}, ignoring hold flag={}", binding.key, binding.hold);
             executor.executeTap(binding);
         } else {
-            log.warn("No binding found for action: {}", event.getBindingId());
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent(
-                    "No key binding found for " + event.getBindingId()));
+            handleNoKeyBindingFound(event.getBindingId());
         }
         sleep(UINavigator.randomDelay());
+    }
+
+    private void handleNoKeyBindingFound(String event) {
+        log.warn("No binding found for action: {}", event);
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent(
+                "No key binding found for " + event)
+        );
     }
 
     @Subscribe

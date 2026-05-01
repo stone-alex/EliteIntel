@@ -1,3 +1,11 @@
+## v-0.0385-beta
+
+### bug fixes / features:
+
+- The commodity search will not filter by the distance from arrival set in your per-ship trade profile.
+- Fixing estimated total tokens use projection when using Anthropic Claude.
+
+
 ## v-0.0384-beta
 
 ### bug fixes / features:

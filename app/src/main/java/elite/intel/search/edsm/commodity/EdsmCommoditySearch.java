@@ -29,7 +29,7 @@ public class EdsmCommoditySearch {
     );
 
 
-    public static List<CommoditySearchResult> search(String commodityToFind, String refStarSystem, int maxDistance, int cargoHoldCapacity, boolean returnClosest) {
+    public static List<CommoditySearchResult> search(String commodityToFind, String refStarSystem, int maxDistance, int distanceFromArrival, int cargoHoldCapacity, boolean returnClosest) {
         StarSystemClient edsmClient = StarSystemClient.getInstance();
         SystemSearchCriteria spanshCriteria = new SystemSearchCriteria();
         SystemSearchCriteria.Filters filters = new SystemSearchCriteria.Filters();
@@ -53,13 +53,14 @@ public class EdsmCommoditySearch {
         final List<Station> stations = new ArrayList<>();
 
         for (StationSearchResult.SystemResult star : starSystems) {
-            if(star.getStations() == null || star.getStations().isEmpty()) continue;
+            if (star.getStations() == null || star.getStations().isEmpty()) continue;
             StationsDto data = EdsmApiClient.searchStations(star.getName(), 1000);
             if (data.getData() != null) {
                 List<Station> list = data.getData().getStations();
                 if (list != null) {
                     for (Station station : list) {
-                        if(!ALLOWED_STATION_TYPES.contains(station.getType())) continue;
+                        if (station.getDistanceToArrivalInLightSeconds() > distanceFromArrival) continue;
+                        if (!ALLOWED_STATION_TYPES.contains(station.getType())) continue;
                         station.setStarSystemName(star.getName());
                         station.setTransientDistance(star.getDistance());
                         stations.add(station);
@@ -72,7 +73,7 @@ public class EdsmCommoditySearch {
 
         List<CommoditySearchResult> results = new ArrayList<>();
         for (Station station : stations) {
-            if(station.getMarketId() == 0) continue;
+            if (station.getMarketId() == 0) continue;
 
             MarketDto market = EdsmApiClient.searchMarket(station.getMarketId(), station.getStarSystemName(), station.getName(), 1000);
             if (market.getData().getId() == 0) continue;

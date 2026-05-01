@@ -186,17 +186,17 @@ public class UsageStatsTabPanel extends JPanel {
     }
 
     private void refreshTph() {
-        // Only count non-cached input + completion as full-rate chargeable tokens
+        // promptTokens = API input_tokens (excludes cache reads), so add all three buckets
         int prompt = totalPrompt.get();
         int completion = totalCompletion.get();
         int hits = totalCachedHits.get();
-        int chargeable = (prompt - hits) + completion;
+        int total = prompt + completion + hits;
         long elapsedSeconds = Duration.between(sessionStart, Instant.now()).toSeconds();
         if (elapsedSeconds < 600) {
             tphLabel.setText("Tokens / Hour (estimate this session):  - (collecting data...)");
-        } else if (chargeable > 0) {
-            long tph = Math.round(chargeable / (elapsedSeconds / 3600.0));
-            tphLabel.setText("Tokens / Hour (estimate this session):  " + tph);
+        } else if (total > 0) {
+            long tph = Math.round(total / (elapsedSeconds / 3600.0));
+            tphLabel.setText("Tokens / Hour (estimate this session including cached):  " + tph);
         } else {
             tphLabel.setText("Tokens / Hour (estimate this session):  -");
         }

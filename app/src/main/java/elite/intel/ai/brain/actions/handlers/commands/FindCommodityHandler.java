@@ -5,9 +5,11 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.FuzzySearch;
 import elite.intel.db.managers.ReminderManager;
+import elite.intel.db.managers.TradeProfileManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.edsm.commodity.CommoditySearchResult;
 import elite.intel.search.edsm.commodity.EdsmCommoditySearch;
+import elite.intel.search.spansh.traderoute.TradeRouteSearchCriteria;
 import elite.intel.session.PlayerSession;
 
 import java.util.List;
@@ -18,15 +20,16 @@ import static elite.intel.util.StringUtls.getIntSafely;
 public class FindCommodityHandler implements CommandHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final TradeProfileManager tradeProfileManager = TradeProfileManager.getInstance();
 
 
     @Override public void handle(String action, JsonObject params, String responseText) {
 
         JsonElement key = params.get("key");
-        JsonElement maxDistance = params.get("max_distance");
+        JsonElement maxGalacticDistance = params.get("max_distance");
         JsonElement stateEl = params.get("state");
         boolean returnClosest = stateEl != null && stateEl.getAsBoolean();
-        Integer distance = maxDistance == null ? null : getIntSafely(maxDistance.getAsString());
+        Integer distance = maxGalacticDistance == null ? null : getIntSafely(maxGalacticDistance.getAsString());
         if (distance == null || distance < 1) distance = (int) playerSession.getShipLoadout().getMaxJumpRange() * 2;
         String starName = playerSession.getPrimaryStarName();
 
@@ -49,9 +52,17 @@ public class FindCommodityHandler implements CommandHandler {
 
         String searchMode = returnClosest ? "nearest market" : "best price";
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for " + searchMode + " for " + commodity + " within " + distance + " light years."));
-
-        int cargoCapacity = playerSession.getShipLoadout().getCargoCapacity();
-        List<CommoditySearchResult> results = EdsmCommoditySearch.search(commodity, starName, distance, cargoCapacity, returnClosest);
+        TradeRouteSearchCriteria tradeProfileManagerCriteria = tradeProfileManager.getCriteria(false);
+        int cargoCapacity = tradeProfileManagerCriteria.getMaxCargo();
+        int maxDistanceFromArrival = tradeProfileManagerCriteria.getMaxLsFromArrival();
+        List<CommoditySearchResult> results = EdsmCommoditySearch.search(
+                commodity,
+                starName,
+                distance,
+                maxDistanceFromArrival,
+                cargoCapacity,
+                returnClosest
+        );
         if (results.isEmpty()) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No match found."));
             return;

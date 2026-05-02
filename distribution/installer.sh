@@ -174,10 +174,17 @@ create_bindings() {
         return 1
     fi
 
-    cd "$DEFAULT_INSTALL_LOCATION"  # or wherever you want the links
+    # Remove any nested symlinks that previous ln -sf runs may have created
+    # inside the real game directories (e.g. Bindings/Bindings/Bindings/...)
+    find "$BINDINGS_FOLDER" -maxdepth 6 -type l -name "$(basename "$BINDINGS_FOLDER")" -delete 2>/dev/null
+    find "$JOURNAL_FOLDER"  -maxdepth 6 -type l -name "$(basename "$JOURNAL_FOLDER")"  -delete 2>/dev/null
 
-    ln -sfT "$BINDINGS_FOLDER" ed-bindings
-    ln -sfT "$JOURNAL_FOLDER" ed-journal
+    cd "$DEFAULT_INSTALL_LOCATION"
+
+    rm -f ed-bindings
+    ln -s "$BINDINGS_FOLDER" ed-bindings
+    rm -f ed-journal
+    ln -s "$JOURNAL_FOLDER" ed-journal
 
     echo "Symlinks created: ed-bindings -> $BINDINGS_FOLDER"
     echo "                  ed-journal -> $JOURNAL_FOLDER"

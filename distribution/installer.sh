@@ -176,8 +176,8 @@ create_bindings() {
 
     cd "$DEFAULT_INSTALL_LOCATION"  # or wherever you want the links
 
-    ln -sf "$BINDINGS_FOLDER" ed-bindings
-    ln -sf "$JOURNAL_FOLDER" ed-journal
+    ln -sfT "$BINDINGS_FOLDER" ed-bindings
+    ln -sfT "$JOURNAL_FOLDER" ed-journal
 
     echo "Symlinks created: ed-bindings -> $BINDINGS_FOLDER"
     echo "                  ed-journal -> $JOURNAL_FOLDER"

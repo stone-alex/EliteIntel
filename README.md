@@ -1,4 +1,4 @@
-# Elite Intel - Public Beta
+# Elite Intel - Release Candidate
 
 ## Installation & Setup
 

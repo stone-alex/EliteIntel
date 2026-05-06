@@ -13,7 +13,7 @@ import elite.intel.util.SleepNoThrow;
 
 import static elite.intel.ai.hands.Bindings.GameCommand.*;
 
-public class OpenInboxPenalHandler implements CommandHandler {
+public class OpenInboxPanelHandler implements CommandHandler {
 
 
     private final UINavigator navigator = new UINavigator();

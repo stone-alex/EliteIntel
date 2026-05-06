@@ -24,7 +24,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private static final String ICON_PLAYER = "/images/controller.png";
     private static final String ICON_SETTINGS = "/images/settings.png";
     private static final String ICON_STATS = "/images/stats.png";
-    private static final String RELEASE_ICON = "/images/release.png";
+    private static final String CREDITS_ICON = "/images/release.png";
     private static final String MANUAL_ICON = "/images/manual.png";
 
     private final SystemSession systemSession = SystemSession.getInstance();
@@ -32,7 +32,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private final PlayerTabPanel playerTabPanel;
     private final SettingsTabPanel settingsTabPanel;
     private final UsageStatsTabPanel usageStatsTabPanel;
-    private final MarkdownViewPanel releaseNotesPanel;
+    private final MarkdownViewPanel creditsPanel;
     private final MarkdownViewPanel userManualPanel;
 
     public AppView() {
@@ -63,14 +63,14 @@ public class AppView extends JFrame implements AppViewInterface {
         ImageIcon playerIcon = scaledIcon(ICON_PLAYER);
         ImageIcon settingsIcon = scaledIcon(ICON_SETTINGS);
         ImageIcon statsIcon = scaledIcon(ICON_STATS);
-        ImageIcon releaseIcon = scaledIcon(RELEASE_ICON);
+        ImageIcon creditsIcon = scaledIcon(CREDITS_ICON);
         ImageIcon manualIcon = scaledIcon(MANUAL_ICON);
 
         aiTabPanel = new AiTabPanel(monoFont);
         playerTabPanel = new PlayerTabPanel();
         settingsTabPanel = new SettingsTabPanel();
         usageStatsTabPanel = new UsageStatsTabPanel();
-        releaseNotesPanel = new MarkdownViewPanel("release-notes.md");
+        creditsPanel = new MarkdownViewPanel("credits.md");
         userManualPanel = new MarkdownViewPanel("user-manual.md");
 
         tabs.addTab("Ai", aiIcon, aiTabPanel);
@@ -78,7 +78,7 @@ public class AppView extends JFrame implements AppViewInterface {
         tabs.addTab("Settings", settingsIcon, settingsTabPanel);
         tabs.addTab("Stats", statsIcon, usageStatsTabPanel);
         tabs.addTab("Manual", manualIcon, userManualPanel);
-        tabs.addTab("Release Notes", releaseIcon, releaseNotesPanel);
+        //tabs.addTab("Credits", creditsIcon, creditsPanel);
 
         root.add(tabs, BorderLayout.CENTER);
         AppTheme.applyDarkPalette(getContentPane());

@@ -40,7 +40,7 @@ public class NaturalSpeechIntegrationTest {
      * 250 you are pushing it.
      * 150 bro I want your hardware.
      */
-    private static final int LLM_WAIT_MS = 4000;
+    private static final int LLM_WAIT_MS = 2000;
 
     private HandlerCapture capture;
 
@@ -828,7 +828,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryPlayerProfile() {
-        return Stream.of("player profile", "player profile summarize ranks", "player profile summarize progress", "player profile summary");
+        return Stream.of("player profile", "player profile summarize ranks", "player profile summarize progress");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

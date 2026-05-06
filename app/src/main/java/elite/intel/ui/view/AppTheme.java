@@ -116,7 +116,8 @@ public class AppTheme {
             protected void paintTabArea(Graphics g, int tabPlacement, int selectedIndex) {
                 g.setColor(BG);
                 g.fillRect(0, 0, tabPane.getWidth(),
-                        calculateTabAreaHeight(tabPlacement, runCount, maxTabHeight));
+                        calculateTabAreaHeight(tabPlacement, runCount, maxTabHeight)
+                );
                 super.paintTabArea(g, tabPlacement, selectedIndex);
             }
 

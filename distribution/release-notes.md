@@ -1,8 +1,9 @@
-## v-0.0387-rc
+## v-0.0388-rc
 
 ### bug fixes / features:
 - Cosmetics / typos
 - Feature freeze
+- Ship dismiss / Recall fix
 
 
 

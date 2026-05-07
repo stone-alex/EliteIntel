@@ -1,3 +1,9 @@
+## v-0.0389-rc
+
+### bug fixes / features:
+
+- mangle 50,000 into "50 million"
+
 ## v-0.0388-rc
 
 ### bug fixes / features:

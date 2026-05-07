@@ -110,7 +110,7 @@ public class CodexEntryEventSubscriber {
                                 - IF entry is about organics: List Genus, payment and distance if provided.
                                 - IF there is a warning announce it, else do not mention that there are no warnings.
                         - Do not append any extra data.
-                        - Round rewards in credits to nearest million.
+                        - Express credit amounts using K (thousands) or M (millions) shorthand as appropriate (e.g. 50K, 1.2M).
                         """;
                 EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));
             }

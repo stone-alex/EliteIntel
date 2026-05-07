@@ -5,7 +5,6 @@ import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.ai.mouth.subscribers.events.RadioTransmissionEvent;
 import elite.intel.db.managers.CargoHoldManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.ReceiveTextEvent;
 import elite.intel.session.PlayerSession;
 
@@ -53,7 +52,7 @@ public class TransmissionReceivedSubscriber {
 
                 if (isStation) {
                     if (!event.getMessageLocalised().toLowerCase().contains("fire zone")) {
-                        EventBusManager.publish(new SensorDataEvent("radio_transmission from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + ".", "Notify User"));
+                        EventBusManager.publish(new RadioTransmissionEvent("This is " + event.getFrom() + " traffic control. " + event.getMessageLocalised()));
                     }
                 } else {
                     EventBusManager.publish(new RadioTransmissionEvent(event.getMessageLocalised()));

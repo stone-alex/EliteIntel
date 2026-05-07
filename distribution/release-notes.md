@@ -2,7 +2,8 @@
 
 ### bug fixes / features:
 
-- mangle 50,000 into "50 million"
+- mangle 50,000 into "50 million".
+- Station transmission vocalization.
 
 ## v-0.0388-rc
 

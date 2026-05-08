@@ -2,7 +2,7 @@
 
 ### bug fixes / features:
 - Fixed swapping between LMStudio and Ollama in UI. The app was loading defaults instead of use entered data.
-
+- Added few more taps to the left when galaxy or local maps open. maybe it will help to get un-stuck in cases where game ui refuses to exit the map on key press and require mouse intervention.
 
 
 ## v-0.0389-rc

@@ -40,8 +40,8 @@ public class LMStudioClient extends BaseAiClient implements Client {
 
         JsonObject request = new JsonObject();
         request.addProperty("model", isQueryModel
-                ? systemSession.getLocalLlmQueryModel().trim()
-                : systemSession.getLocalLlmCommandModel().trim());
+                ? systemSession.getLmStudioQueryModel().trim()
+                : systemSession.getLmStudioCommandModel().trim());
         request.addProperty("temperature", temp);
         request.addProperty("max_tokens", isQueryModel ? 1024 : 512);
         request.addProperty("stream", false);
@@ -78,7 +78,7 @@ public class LMStudioClient extends BaseAiClient implements Client {
     }
 
     private HttpRequest buildRequest(String body) {
-        String url = systemSession.getLocalLlmAddress();
+        String url = systemSession.getLmStudioAddress();
         log.info("LM Studio connecting to: {}", url);
         return HttpRequest.newBuilder()
                 .uri(URI.create(url))

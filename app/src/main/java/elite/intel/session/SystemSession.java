@@ -248,25 +248,6 @@ public class SystemSession {
     }
 
 
-    public void setLocalLlmCommandModel(String text) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setLocalLlmCommandModel(text);
-            dao.save(session);
-            return Void.class;
-        });
-    }
-
-    public void setLocalLlmQueryModel(String text) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setLocalLlmQueryModel(text);
-            dao.save(session);
-            return Void.class;
-        });
-    }
-
-
     public void setUseLocalCommandLlm(boolean b) {
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
@@ -308,14 +289,6 @@ public class SystemSession {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().isUseLocalTTS());
     }
 
-    public String getLocalLlmCommandModel() {
-        return Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmCommandModel());
-    }
-
-    public String getLocalLlmQueryModel() {
-        return Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmQueryModel());
-    }
-
     public LocalLlmProvider getLocalLlmProvider() {
         String raw = Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmProvider());
         try {
@@ -329,19 +302,6 @@ public class SystemSession {
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             session.setLocalLlmProvider(provider.name());
-            dao.save(session);
-            return Void.class;
-        });
-    }
-
-    public String getLocalLlmAddress() {
-        return Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmAddress());
-    }
-
-    public void setLocalLlmAddress(String address) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setLocalLlmAddress(address);
             dao.save(session);
             return Void.class;
         });
@@ -376,6 +336,52 @@ public class SystemSession {
             dao.clear();
             return Void.class;
         });
+    }
+
+    public void setOllamaSettings(String address, String commandModel, String queryModel) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setOllamaAddress(address);
+            session.setOllamaCommandModel(commandModel);
+            session.setOllamaQueryModel(queryModel);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public void setLmStudioSettings(String address, String commandModel, String queryModel) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setLmStudioAddress(address);
+            session.setLmStudioCommandModel(commandModel);
+            session.setLmStudioQueryModel(queryModel);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public String getOllamaAddress() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getOllamaAddress());
+    }
+
+    public String getOllamaCommandModel() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getOllamaCommandModel());
+    }
+
+    public String getOllamaQueryModel() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getOllamaQueryModel());
+    }
+
+    public String getLmStudioAddress() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getLmStudioAddress());
+    }
+
+    public String getLmStudioCommandModel() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getLmStudioCommandModel());
+    }
+
+    public String getLmStudioQueryModel() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getLmStudioQueryModel());
     }
 
     public void setConversationalMode(boolean b) {

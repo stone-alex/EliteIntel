@@ -24,6 +24,7 @@ public class LocalLlmSettingsPanel extends JPanel {
     private JRadioButton ollamaRadio;
     private JRadioButton lmStudioRadio;
 
+    private LocalLlmProvider currentProvider;
     private Runnable onLocalLlmChanged;
 
     public void setOnLocalLlmChanged(Runnable r) {
@@ -106,6 +107,7 @@ public class LocalLlmSettingsPanel extends JPanel {
     }
 
     private void setDefaults() {
+        currentProvider = LocalLlmProvider.LMSTUDIO;
         lmStudioRadio.setSelected(true);
         useLocalCommandLLMCheck.setSelected(true);
         useLocalQueryLLMCheck.setSelected(true);
@@ -116,21 +118,50 @@ public class LocalLlmSettingsPanel extends JPanel {
     }
 
     public void initData() {
-        localLlmAddressField.setText(systemSession.getLocalLlmAddress() != null ? systemSession.getLocalLlmAddress() : "");
-        localLlmModelCommandField.setText(systemSession.getLocalLlmCommandModel() != null ? systemSession.getLocalLlmCommandModel() : "");
-        localLlmModelQueryField.setText(systemSession.getLocalLlmQueryModel() != null ? systemSession.getLocalLlmQueryModel() : "");
-        useLocalCommandLLMCheck.setSelected(systemSession.useLocalCommandLlm());
-        useLocalQueryLLMCheck.setSelected(systemSession.useLocalQueryLlm());
-
         LocalLlmProvider provider = systemSession.getLocalLlmProvider();
+        currentProvider = provider;
         ollamaRadio.setSelected(provider == LocalLlmProvider.OLLAMA);
         lmStudioRadio.setSelected(provider == LocalLlmProvider.LMSTUDIO);
+        loadProviderFieldsIntoUi(provider);
+        useLocalCommandLLMCheck.setSelected(systemSession.useLocalCommandLlm());
+        useLocalQueryLLMCheck.setSelected(systemSession.useLocalQueryLlm());
     }
 
-    private void onProviderSelected(LocalLlmProvider provider) {
-        localLlmAddressField.setText(provider.getDefaultUrl());
+    private void loadProviderFieldsIntoUi(LocalLlmProvider provider) {
+        String addr, cmd, qry;
+        if (provider == LocalLlmProvider.OLLAMA) {
+            addr = systemSession.getOllamaAddress();
+            cmd = systemSession.getOllamaCommandModel();
+            qry = systemSession.getOllamaQueryModel();
+        } else {
+            addr = systemSession.getLmStudioAddress();
+            cmd = systemSession.getLmStudioCommandModel();
+            qry = systemSession.getLmStudioQueryModel();
+        }
+        localLlmAddressField.setText(addr != null && !addr.isEmpty() ? addr : provider.getDefaultUrl());
+        localLlmModelCommandField.setText(cmd != null ? cmd : "");
+        localLlmModelQueryField.setText(qry != null ? qry : "");
+    }
+
+    private void onProviderSelected(LocalLlmProvider newProvider) {
+        if (currentProvider != null && currentProvider != newProvider) {
+            saveProviderFields(currentProvider);
+        }
+        currentProvider = newProvider;
+        loadProviderFieldsIntoUi(newProvider);
         save();
-        EventBusManager.publish(new AppLogEvent("Local LLM provider set to: " + provider.name()));
+        EventBusManager.publish(new AppLogEvent("Local LLM provider set to: " + newProvider.name()));
+    }
+
+    private void saveProviderFields(LocalLlmProvider provider) {
+        String addr = localLlmAddressField.getText();
+        String cmd = localLlmModelCommandField.getText();
+        String qry = localLlmModelQueryField.getText();
+        if (provider == LocalLlmProvider.OLLAMA) {
+            systemSession.setOllamaSettings(addr, cmd, qry);
+        } else {
+            systemSession.setLmStudioSettings(addr, cmd, qry);
+        }
     }
 
     /**
@@ -154,10 +185,8 @@ public class LocalLlmSettingsPanel extends JPanel {
 
     private void save() {
         LocalLlmProvider provider = lmStudioRadio.isSelected() ? LocalLlmProvider.LMSTUDIO : LocalLlmProvider.OLLAMA;
+        saveProviderFields(provider);
         systemSession.setLocalLlmProvider(provider);
-        systemSession.setLocalLlmAddress(localLlmAddressField.getText());
-        systemSession.setLocalLlmCommandModel(localLlmModelCommandField.getText());
-        systemSession.setLocalLlmQueryModel(localLlmModelQueryField.getText());
         systemSession.setUseLocalCommandLlm(useLocalCommandLLMCheck.isSelected());
         systemSession.setUseLocalQueryLlm(useLocalQueryLLMCheck.isSelected());
         EventBusManager.publish(new AppLogEvent("Local LLM config saved"));

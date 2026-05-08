@@ -1,3 +1,10 @@
+## v-0.0390-rc
+
+### bug fixes / features:
+- Fixed swapping between LMStudio and Ollama in UI. The app was loading defaults instead of use entered data.
+
+
+
 ## v-0.0389-rc
 
 ### bug fixes / features:

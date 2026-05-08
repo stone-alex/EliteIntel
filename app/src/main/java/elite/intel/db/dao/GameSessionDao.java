@@ -20,14 +20,18 @@ public interface GameSessionDao {
                                                              rmsThresholdLow, encryptedLLMKey, encryptedTTSKey,
                                                              encryptedEDSSMKey, speechSpeed, localLlmCommandModel, localLlmQueryModel,
                                                              useLocalCommandLlm, useLocalQueryLlm, useLocalTTS, notificationVolume, sttThreads, voiceVolume,
-                                                             localLlmProvider, localLlmAddress, conversationModeOn
+                                                             localLlmProvider, localLlmAddress, conversationModeOn,
+                                                             ollamaAddress, ollamaCommandModel, ollamaQueryModel,
+                                                             lmStudioAddress, lmStudioCommandModel, lmStudioQueryModel
                                                 )
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey,
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh,
                                                       :rmsThresholdLow, :encryptedLLMKey, :encryptedTTSKey,
                                                       :encryptedEDSSMKey,  :speechSpeed, :localLlmCommandModel, :localLlmQueryModel,
                                                       :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS, :notificationVolume, :sttThreads, :voiceVolume,
-                                                      :localLlmProvider, :localLlmAddress, :conversationModeOn
+                                                      :localLlmProvider, :localLlmAddress, :conversationModeOn,
+                                                      :ollamaAddress, :ollamaCommandModel, :ollamaQueryModel,
+                                                      :lmStudioAddress, :lmStudioCommandModel, :lmStudioQueryModel
                                           )
             """)
     void save(@BindBean GameSessionDao.GameSession data);
@@ -73,6 +77,12 @@ public interface GameSessionDao {
             session.setLocalLlmProvider(rs.getString("localLlmProvider"));
             session.setLocalLlmAddress(rs.getString("localLlmAddress"));
             session.setConversationModeOn(rs.getBoolean("conversationModeOn"));
+            session.setOllamaAddress(rs.getString("ollamaAddress"));
+            session.setOllamaCommandModel(rs.getString("ollamaCommandModel"));
+            session.setOllamaQueryModel(rs.getString("ollamaQueryModel"));
+            session.setLmStudioAddress(rs.getString("lmStudioAddress"));
+            session.setLmStudioCommandModel(rs.getString("lmStudioCommandModel"));
+            session.setLmStudioQueryModel(rs.getString("lmStudioQueryModel"));
             return session;
         }
     }
@@ -109,6 +119,12 @@ public interface GameSessionDao {
         private String localLlmProvider;
         private String localLlmAddress;
         private boolean conversationModeOn;
+        private String ollamaAddress;
+        private String ollamaCommandModel;
+        private String ollamaQueryModel;
+        private String lmStudioAddress;
+        private String lmStudioCommandModel;
+        private String lmStudioQueryModel;
 
 
         public String getAiPersonality() {
@@ -319,6 +335,54 @@ public interface GameSessionDao {
 
         public void setConversationModeOn(boolean conversationModeOn) {
             this.conversationModeOn = conversationModeOn;
+        }
+
+        public String getOllamaAddress() {
+            return ollamaAddress;
+        }
+
+        public void setOllamaAddress(String ollamaAddress) {
+            this.ollamaAddress = ollamaAddress;
+        }
+
+        public String getOllamaCommandModel() {
+            return ollamaCommandModel;
+        }
+
+        public void setOllamaCommandModel(String ollamaCommandModel) {
+            this.ollamaCommandModel = ollamaCommandModel;
+        }
+
+        public String getOllamaQueryModel() {
+            return ollamaQueryModel;
+        }
+
+        public void setOllamaQueryModel(String ollamaQueryModel) {
+            this.ollamaQueryModel = ollamaQueryModel;
+        }
+
+        public String getLmStudioAddress() {
+            return lmStudioAddress;
+        }
+
+        public void setLmStudioAddress(String lmStudioAddress) {
+            this.lmStudioAddress = lmStudioAddress;
+        }
+
+        public String getLmStudioCommandModel() {
+            return lmStudioCommandModel;
+        }
+
+        public void setLmStudioCommandModel(String lmStudioCommandModel) {
+            this.lmStudioCommandModel = lmStudioCommandModel;
+        }
+
+        public String getLmStudioQueryModel() {
+            return lmStudioQueryModel;
+        }
+
+        public void setLmStudioQueryModel(String lmStudioQueryModel) {
+            this.lmStudioQueryModel = lmStudioQueryModel;
         }
     }
 }

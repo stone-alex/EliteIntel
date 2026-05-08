@@ -30,14 +30,14 @@ public class OllamaClient extends BaseAiClient implements Client {
     }
 
     private String getBaseUrl() {
-        return systemSession.getLocalLlmAddress();
+        return systemSession.getOllamaAddress();
     }
 
     @Override
     public JsonObject createPrompt(int model, float temp) {
 
-        String localLlmCommandModel = systemSession.getLocalLlmCommandModel().trim();
-        String localLlmQueryModel = systemSession.getLocalLlmQueryModel().trim();
+        String localLlmCommandModel = systemSession.getOllamaCommandModel().trim();
+        String localLlmQueryModel = systemSession.getOllamaQueryModel().trim();
 
         boolean isQueryModel = model == MODEL_QUERIES;
 

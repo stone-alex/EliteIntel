@@ -77,7 +77,7 @@ public class StatusEventSubscriber {
         }
 
         if (status.isGlideMode() && !glideAnnounced) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Atmospheric descend!"));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Glide Engaged!"));
             glideAnnounced = true;
         } else if (!status.isGlideMode() && glideAnnounced) {
             glideAnnounced = false;

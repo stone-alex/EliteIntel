@@ -3,9 +3,9 @@ package elite.intel.ai.brain.actions.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
+import elite.intel.ai.mouth.subscribers.events.RouteAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
-import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.FsdTarget;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
@@ -24,22 +24,14 @@ public class JumpToHyperspaceHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         GameControllerBus.publish(new GameInputEvent(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0));
-        SleepNoThrow.sleep(800);
+        UiNavCommon.close();
+        SleepNoThrow.sleep(150);
         FsdTarget fsdTarget = playerSession.getFsdTarget();
         if (fsdTarget != null) {
             String starName = fsdTarget.getName() == null ? "unknown" : fsdTarget.getName();
             String fuelStatus = fsdTarget.getFuelStarStatus() == null ? "unknown" : fsdTarget.getFuelStarStatus();
-            String instructions = """
-                    Announce hyperspace jump destination name and re-fuel availability at destination.
-                        Example 1: Jumping to Sol, fuel available at destination.
-                        Example 2: Jumping to Atari, WARNING! No fuel available at destination.
-                    """;
-            EventBusManager.publish(
-                    new SensorDataEvent(
-                            "Jumping to: " + starName + ", " + fuelStatus,
-                            instructions
-                    )
-            );
+            String starClass = fsdTarget.getStarClass() == null ? "unknown" : fsdTarget.getStarClass();
+            EventBusManager.publish(new RouteAnnouncementEvent("Jumping to " + starName + ", star class " + starClass + ", " + fuelStatus));
         }
 
         Status status = Status.getInstance();

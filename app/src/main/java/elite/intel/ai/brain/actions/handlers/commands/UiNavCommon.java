@@ -6,8 +6,7 @@ import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import elite.intel.session.ui.UINavigator;
 
-import static elite.intel.ai.hands.Bindings.GameCommand.BINDING_GALAXY_MAP;
-import static elite.intel.ai.hands.Bindings.GameCommand.BINDING_LOCAL_MAP;
+import static elite.intel.ai.hands.Bindings.GameCommand.*;
 
 public class UiNavCommon {
 
@@ -20,6 +19,7 @@ public class UiNavCommon {
             GameControllerBus.publish(new GameInputEvent(BINDING_GALAXY_MAP.getGameBinding(), 0));
         }
         new UINavigator().closeOpenPanel();
+        GameControllerBus.publish(new GameInputEvent(BINDING_EXIT_KEY.getGameBinding(), 0));
     }
 
 

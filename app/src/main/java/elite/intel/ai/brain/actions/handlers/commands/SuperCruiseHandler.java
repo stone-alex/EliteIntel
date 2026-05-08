@@ -21,7 +21,7 @@ public class SuperCruiseHandler implements CommandHandler {
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
-        navigator.closeOpenPanel();
+        UiNavCommon.close();
 
         if (status.isFsdCharging()) return;
 

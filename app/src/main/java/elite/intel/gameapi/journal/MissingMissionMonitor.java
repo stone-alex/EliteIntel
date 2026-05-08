@@ -110,7 +110,7 @@ public class MissingMissionMonitor implements Runnable, ManagedService {
             for (MissionAcceptedEvent mission : missingMissions) {
                 EventBusManager.publish(new AiVoxResponseEvent(
                         "%s! i detected a %s mission that i haven't catalogued.".formatted(
-                                PlayerSession.getInstance().randomPlayerName(),
+                                PlayerSession.getInstance().getVariablePlayerName(),
                                 mission.getName()
                         )
                 ));

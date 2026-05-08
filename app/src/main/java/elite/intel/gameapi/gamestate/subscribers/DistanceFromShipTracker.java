@@ -22,8 +22,8 @@ public class DistanceFromShipTracker {
     private static final Logger log = LogManager.getLogger(DistanceFromShipTracker.class);
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
-    private boolean shouldAnnounce = true;
-    private long lastAnnounceTime = 0;
+    private double previousDistance = -1;
+    private boolean announcedForCurrentEntry = false;
 
     @Subscribe
     public void onPlayerMovedEvent(PlayerMovedEvent event) {
@@ -32,10 +32,9 @@ public class DistanceFromShipTracker {
         if (status.getStatus() == null) {
             return;
         }
-        if (status.getStatus().getFuel() != null && status.getStatus().getFuel().getFuelMain() > 0) {
-            // we are in the ship
-            return;
-        }
+
+        if (playerSession.isShipAutoDeparted()) return;
+
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         if (currentLocation == null) {
             log.debug("Current location is null, skipping distance check.");
@@ -54,48 +53,51 @@ public class DistanceFromShipTracker {
         double lzLat = landingCoordinates[0];
         double lzLon = landingCoordinates[1];
 
-        // Calculate great-circle distance (in meters)
         double distance = calculateSurfaceDistance(latitude, longitude, lzLat, lzLon, planetRadius, 0);
 
-        // Define donut boundaries: 1.8km to 2km
-        double innerDonut = 1800.0; // 1.8km in meters
-        double outerDonut = 2000.0; // 2km in meters
+        double innerDonut = 1800.0;
+        double outerDonut = 2000.0;
 
-        // Check if player is in the donut
+        boolean movingAway = previousDistance >= 0 && distance > previousDistance;
         boolean isInDonut = distance >= innerDonut && distance <= outerDonut;
-        long NOW = System.currentTimeMillis();
-        if (isInDonut && shouldAnnounce && status.getStatus().getAltitude() == 0 && NOW - lastAnnounceTime > 15_000) {
+
+        if (isInDonut && movingAway && !announcedForCurrentEntry && !status.isInMainShip()) {
             EventBusManager.publish(
                     new MissionCriticalAnnouncementEvent(
                             String.format("Warning: You are %d meters from your ship, approaching auto-departure zone!",
                                     Math.round(distance))
                     )
             );
-            log.info("Alert triggered: Player entered donut area at {} meters.", distance);
-            lastAnnounceTime = NOW;
+            log.info("Alert triggered: Player moving away from ship at {} meters.", distance);
+            announcedForCurrentEntry = true;
         }
-        // when outside, and ship departed, no reason to announce again
-        shouldAnnounce = distance > outerDonut;
+
+        // Reset when leaving the donut in either direction, so the next entry arms again
+        if (distance < innerDonut || distance > outerDonut) {
+            announcedForCurrentEntry = false;
+        }
+
+        previousDistance = distance;
     }
 
     @Subscribe
     public void onTouchdownEvent(TouchdownEvent event) {
-        shouldAnnounce = false;
-        lastAnnounceTime = 0;
+        previousDistance = -1;
+        announcedForCurrentEntry = false;
         log.debug("State reset on touchdown.");
     }
 
     @Subscribe
     public void onDockSRV(DockSRVEvent event) {
-        shouldAnnounce = false;
-        lastAnnounceTime = 0;
+        previousDistance = -1;
+        announcedForCurrentEntry = false;
         log.debug("State reset on dock.");
     }
 
     @Subscribe
     public void onSrvLaunch(LaunchSRVEvent event) {
-        shouldAnnounce = true;
-        lastAnnounceTime = 0;
+        previousDistance = -1;
+        announcedForCurrentEntry = false;
         log.debug("State reset on srv launch.");
     }
 }

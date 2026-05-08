@@ -49,6 +49,7 @@ public class TransmissionReceivedSubscriber {
 
                 if (event.getFrom().toLowerCase().contains("cruise")) return;
                 if (event.getFrom().toLowerCase().contains("military")) return;
+                if (event.getMessage().contains("$STATION_docking_granted;")) return;
 
                 if (isStation) {
                     if (!event.getMessageLocalised().toLowerCase().contains("fire zone")) {

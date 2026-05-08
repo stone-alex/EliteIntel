@@ -1,3 +1,11 @@
+## v-0.0392-rc
+
+### bug fixes / features:
+- Adjusting announcements wording.
+- Fixed distance from ship tracker (warning that ship is about to auto-depart).
+- Personalized station greeting.
+
+
 ## v-0.0391-rc
 
 ### bug fixes / features:

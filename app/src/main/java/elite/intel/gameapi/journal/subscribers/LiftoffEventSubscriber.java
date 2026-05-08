@@ -5,6 +5,7 @@ import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.db.managers.GlobalSettingsManager;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.gameapi.journal.events.LiftoffEvent;
+import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 
 import static elite.intel.ai.hands.Bindings.GameCommand.BINDING_LANDING_GEAR_TOGGLE;
@@ -13,7 +14,7 @@ import static elite.intel.ai.hands.Bindings.GameCommand.BINDING_LANDING_GEAR_TOG
 public class LiftoffEventSubscriber {
 
     private final GlobalSettingsManager globalSettingsManager = GlobalSettingsManager.getInstance();
-
+    private final PlayerSession playerSession = PlayerSession.getInstance();
     @Subscribe
     public void onLiftoffEvent(LiftoffEvent event) {
         if (globalSettingsManager.getAutoGearUpOnTakeOff()) {
@@ -24,5 +25,7 @@ public class LiftoffEventSubscriber {
                 }
             });
         }
+
+        playerSession.setShipAutoDeparted(!event.isPlayerControlled());
     }
 }

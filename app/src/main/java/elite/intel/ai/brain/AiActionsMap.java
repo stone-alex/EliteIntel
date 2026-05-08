@@ -248,7 +248,7 @@ public class AiActionsMap {
         map.put("outfitting, ship upgrades, modules available, what modules at station, available modules, available equipment, buy modules, ship parts, station equipment", LOCAL_OUTFITTING.getAction());
         map.put("shipyard, ships for sale, what ships at station, buy a ship, available ships, ships to buy, new ship", LOCAL_SHIPYARD.getAction());
         map.put("what is in our cargo hold, what are we carrying, cargo contents, commodities on board, what are we hauling, hold contents", CARGO_HOLD_CONTENTS.getAction());
-        map.put("player profile, player ranks, player stats, player progress, what rank are we", PLAYER_PROFILE_ANALYSIS.getAction());
+        map.put("player profile", PLAYER_PROFILE_ANALYSIS.getAction());
         map.put("ship loadout, damage report, ship modules, combat readiness report, ship equipment, ship specs, what am I flying, what are we equipped with, do you have, is it equipped, shield generator, hull reinforcement, sensors, thrusters, frameshift, fuel scoop, installed", SHIP_LOADOUT.getAction());
         map.put("station details, what services here, what services are here, services here, what services does this station have, services at this station, what does station offer, station info, station facilities, what's at this station, services available", STATION_DETAILS.getAction());
         map.put("bounties, total bounties, bounty collected, how much in bounties, bounty earnings, credits from bounties, bounty credits", TOTAL_BOUNTIES.getAction());

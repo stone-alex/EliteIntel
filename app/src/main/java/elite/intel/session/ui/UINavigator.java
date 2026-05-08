@@ -110,6 +110,10 @@ public class UINavigator {
             for (int i = 0; i < 10; i++) {
                 GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0));
             }
+        } else {
+            for (int i = 0; i < 3; i++) {
+                GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0));
+            }
         }
     }
 

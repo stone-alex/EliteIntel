@@ -59,7 +59,7 @@ public class StringUtls {
             return "";
         }
         boolean isFuelStar = "KGBFOAM".contains(starClass);
-        return isFuelStar ? " Fuel Available. " : " Warning! - No fuel Available at next stop. ";
+        return isFuelStar ? " Refuel possible. " : " Warning! - No fuel Available at next stop. ";
     }
 
     private static int getHourOfDay() {
@@ -136,8 +136,8 @@ public class StringUtls {
                 .replace(":", " - ")
                 .replaceAll("\\.{2,}", " ")                     // "..." → space (espeak-ng stof crash on multi-dot sequences)
                 .replaceAll("\\s{2,}", " ")                     // collapse repeated spaces
-                .replace(", pilot", " " + PlayerSession.getInstance().randomPlayerName())
-                .replace(", Commander", " " + PlayerSession.getInstance().randomPlayerName())
+                .replace(", pilot", " " + PlayerSession.getInstance().getVariablePlayerName())
+                .replace(", Commander", " " + PlayerSession.getInstance().getVariablePlayerName())
                 .trim();
     }
 

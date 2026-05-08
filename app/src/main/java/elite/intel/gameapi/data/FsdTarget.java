@@ -13,15 +13,21 @@ public class FsdTarget implements ToJsonConvertible {
     private DeathsDto deathsDto;
     private TrafficDto trafficDto;
     private String fuelStarStatus;
+    private String starClass;
     private String name;
 
-    public FsdTarget(String name, LocationDto location, StarSystemDto systemDto, DeathsDto deathsDto, TrafficDto trafficDto, String fuelStarStatus) {
+    public FsdTarget(String name, String starClass, LocationDto location, StarSystemDto systemDto, DeathsDto deathsDto, TrafficDto trafficDto, String fuelStarStatus) {
         this.name = name;
+        this.starClass = starClass;
         this.location = location;
         this.systemDto = systemDto;
         this.deathsDto = deathsDto;
         this.trafficDto = trafficDto;
         this.fuelStarStatus = fuelStarStatus;
+    }
+
+    public String getStarClass() {
+        return starClass;
     }
 
     public String getName() {

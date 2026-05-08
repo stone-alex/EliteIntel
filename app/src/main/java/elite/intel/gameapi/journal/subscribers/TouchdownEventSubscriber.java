@@ -61,7 +61,7 @@ public class TouchdownEventSubscriber {
             } else {
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Touchdown!"));
             }
-
+            playerSession.setShipAutoDeparted(false);
         });
     }
 }

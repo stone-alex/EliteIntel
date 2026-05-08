@@ -48,6 +48,7 @@ public class PlayerSession {
     private final TargetLocationManager targetLocationManager = TargetLocationManager.getInstance();
     private final FsdTargetManager fsdTargetManager = FsdTargetManager.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
+    private boolean shipAutoDeparted = false;
 
     private PlayerSession() {
         EventBusManager.register(this);
@@ -840,7 +841,7 @@ public class PlayerSession {
         });
     }
 
-    public String randomPlayerName() {
+    public String getVariablePlayerName() {
         String alternativeName = getAlternativeName();
         String playerName = trimToNull(alternativeName) != null ? alternativeName : getPlayerName();
         String playerMilitaryRank = getPlayerHighestMilitaryRank();
@@ -854,6 +855,14 @@ public class PlayerSession {
         }
 
         return result.get(new Random().nextInt(result.size()));
+    }
+
+    public void setShipAutoDeparted(boolean isDeparted) {
+        this.shipAutoDeparted = isDeparted;
+    }
+
+    public boolean isShipAutoDeparted() {
+        return shipAutoDeparted;
     }
 }
 

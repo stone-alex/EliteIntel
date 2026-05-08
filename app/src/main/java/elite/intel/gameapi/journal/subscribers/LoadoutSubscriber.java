@@ -22,11 +22,14 @@ public class LoadoutSubscriber {
     private final ShipManager shipManager = ShipManager.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final Status status = Status.getInstance();
 
     @Subscribe
     public void onLoadoutEvent(LoadoutEvent event) {
         Thread.ofVirtual().start(() -> {
-
+            if (status.isInMainShip()) {
+                playerSession.setShipAutoDeparted(false);
+            }
             ShipDao.Ship currentShip = shipManager.getShip();
             Status.getInstance().setOkToAnnounceLoadout(
                     currentShip != null && !Objects.equals(currentShip.getShipId(), event.getShipId())

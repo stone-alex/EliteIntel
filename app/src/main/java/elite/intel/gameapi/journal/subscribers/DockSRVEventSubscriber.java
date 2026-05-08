@@ -10,6 +10,6 @@ public class DockSRVEventSubscriber {
 
     @Subscribe
     public void onDockSRVEvent(DockSRVEvent event) {
-        EventBusManager.publish(new AiVoxResponseEvent("Welcome back aboard, " + PlayerSession.getInstance().randomPlayerName()));
+        EventBusManager.publish(new AiVoxResponseEvent("Welcome back aboard, " + PlayerSession.getInstance().getVariablePlayerName()));
     }
 }

@@ -42,6 +42,7 @@ public class EventRegistry {
         registerEvent("MaterialCollected", MaterialCollectedEvent.class);
         registerEvent("ScanBaryCentre", ScanBaryCentreEvent.class);
         registerEvent("Docked", DockedEvent.class);
+        registerEvent("DockingGranted", DockingGrantedEvent.class);
         registerEvent("DockSRV", DockSRVEvent.class);
         registerEvent("LaunchSRV", LaunchSRVEvent.class);
         registerEvent("FSSBodySignals", FSSBodySignalsEvent.class);

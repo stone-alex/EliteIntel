@@ -562,13 +562,7 @@ public class InputNormalizer {
         m.put("dominant faction", "faction control");
         m.put("security level", "system security");
 
-        // Player profile / ranks
-        m.put("player progress", "player profile");
-        m.put("commander stats", "player profile");
-        m.put("pilot rank", "player profile");
-        m.put("what rank are we", "player profile");
-        m.put("our ranking", "player profile");
-        m.put("commander profile", "player profile");
+        // Player profile - only exact "player profile" phrase triggers query_player_profile_rank_progress
 
         // Pirate / massacre missions
         m.put("kills remaining", "kill count");

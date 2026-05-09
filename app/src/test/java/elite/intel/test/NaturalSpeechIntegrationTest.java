@@ -205,7 +205,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> speedPlus() {
-        return Stream.of("increase speed by 10", "increase speed by 25");
+        return Stream.of("increase speed by 10", "increase speed by 5");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -216,7 +216,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> speedMinus() {
-        return Stream.of("decrease speed by 10", "decrease speed by 25");
+        return Stream.of("decrease speed by 10", "decrease speed by 5");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

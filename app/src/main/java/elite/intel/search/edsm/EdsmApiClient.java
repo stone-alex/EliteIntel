@@ -5,6 +5,7 @@ import elite.intel.search.edsm.dto.*;
 import elite.intel.search.edsm.dto.data.*;
 import elite.intel.util.SleepNoThrow;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.ws.WebSocketBroadcaster;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -364,6 +365,7 @@ public class EdsmApiClient {
 
     private static String doCallEdsm(StringBuilder query, int retriesLeft) {
         try {
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(query.toString()))
                     .timeout(Duration.ofSeconds(15))
@@ -373,7 +375,9 @@ public class EdsmApiClient {
                     .GET()
                     .build();
 
+
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            WebSocketBroadcaster.getInstance().broadcast(request);
             int status = response.statusCode();
 
             if (status == 429) {
@@ -401,6 +405,7 @@ public class EdsmApiClient {
             }
 
             String body = response.body();
+            WebSocketBroadcaster.getInstance().broadcast(body);
             log.debug("EDSM API response: {}", body);
             return body;
         } catch (Exception e) {

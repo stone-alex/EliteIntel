@@ -1,3 +1,11 @@
+## v-0.0393-rc
+
+### bug fixes / features:
+- Added Spansh, EDSM, INTRA and LLM request/response to the websocket.
+- Fixed reducer that would push false positives for queries with word "distance" that would match the param names for some queries instead of the colloquial terms.
+- InputNormalizer hidden bug, it would replace 'of' with 'off' including inside the words that would change profile to proffile, and software to sofftware etc. So if your profile query failed, or you could not find some "software" commodities in the markets - that be why.
+
+
 ## v-0.0392-rc
 
 ### bug fixes / features:

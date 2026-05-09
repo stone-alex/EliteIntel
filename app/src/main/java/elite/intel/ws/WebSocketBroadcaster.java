@@ -10,6 +10,7 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
+import java.net.http.HttpRequest;
 
 public class WebSocketBroadcaster implements Runnable, ManagedService {
 
@@ -58,14 +59,22 @@ public class WebSocketBroadcaster implements Runnable, ManagedService {
         broadcast(gson.toJson(json));
     }
 
-    public void broadcast(String json) {
+    public void broadcast(String text) {
         WebSocketServer srv = server;
         if (srv == null) return;
         try {
-            srv.broadcast(json);
+            srv.broadcast(text);
         } catch (Exception e) {
             log.debug("WS broadcast failed: {}", e.getMessage());
         }
+    }
+
+    public void broadcast(HttpRequest request) {
+        JsonObject o = new JsonObject();
+        o.addProperty("URL", request.uri().toASCIIString());
+        o.addProperty("method", request.method());
+        o.addProperty("headers", request.headers().toString());
+        broadcast(gson.toJson(o));
     }
 
     @Override

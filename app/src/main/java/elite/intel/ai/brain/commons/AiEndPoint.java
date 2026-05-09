@@ -4,6 +4,7 @@ import com.google.gson.*;
 import elite.intel.ai.brain.Client;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.ws.WebSocketBroadcaster;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +37,7 @@ public abstract class AiEndPoint {
 
     public JsonObject processAiPrompt(String jsonString, Client client) throws IOException {
         log.debug("AI API call:\n{}", jsonString);
+        WebSocketBroadcaster.getInstance().broadcast(jsonString);
         return client.sendJsonRequest(jsonString);
     }
 

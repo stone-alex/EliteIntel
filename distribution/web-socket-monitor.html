@@ -6,6 +6,7 @@ This file helps to test the websocket connection to the LLM exchange
 <!DOCTYPE html>
 <html style="background-color: #000000; color:#ff8e12; font-family: Arial, sans-serif; font-size: 14px;" lang="EN-US">
 <body>
+<h2>WebSocket Monitor</h2>
 <pre id="log"></pre>
 <script>
     const log = document.getElementById('log');
@@ -16,7 +17,7 @@ This file helps to test the websocket connection to the LLM exchange
     ws.onmessage = e => append(JSON.stringify(JSON.parse(e.data), null, 2));
 
     function append(msg) {
-        log.textContent += msg + '\n---\n';
+        log.textContent = (msg + ('\n\n' + log.textContent));
     }
 </script>
 </body>

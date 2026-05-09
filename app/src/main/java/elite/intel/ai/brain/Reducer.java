@@ -74,7 +74,9 @@ public class Reducer {
         }
 
         for (Map.Entry<String, String> entry : full.entrySet()) {
-            String keyLower = entry.getKey().toLowerCase();
+            // Strip param templates like {key:X, max_distance:Y} before matching to avoid
+            // false positives (e.g. "distance" matching "max_distance" in a param template).
+            String keyLower = entry.getKey().toLowerCase().replaceAll("\\{[^}]*\\}", "");
             for (String word : inputWords) {
                 if (keyLower.contains(word)) {
                     result.put(entry.getKey(), entry.getValue());

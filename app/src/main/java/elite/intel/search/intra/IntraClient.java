@@ -2,6 +2,7 @@ package elite.intel.search.intra;
 
 import com.google.gson.Gson;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.ws.WebSocketBroadcaster;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,7 +11,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static java.net.http.HttpRequest.*;
+import static java.net.http.HttpRequest.BodyPublishers;
+import static java.net.http.HttpRequest.newBuilder;
 
 public class IntraClient {
 
@@ -36,6 +38,7 @@ public class IntraClient {
     public IntraResponse findMassacrePairs(IntraRequest request) {
         try {
             String json = gson.toJson(request);
+            WebSocketBroadcaster.getInstance().broadcast(json);
             HttpRequest httpRequest = newBuilder()
                     .uri(URI.create(ENDPOINT))
                     .header("Content-Type", "application/json")
@@ -48,7 +51,9 @@ public class IntraClient {
                 return null;
             }
 
-            return gson.fromJson(response.body(), IntraResponse.class);
+            String body = response.body();
+            WebSocketBroadcaster.getInstance().broadcast(body);
+            return gson.fromJson(body, IntraResponse.class);
         } catch (Exception e) {
             log.error("Failed to query Intra API", e);
             return null;

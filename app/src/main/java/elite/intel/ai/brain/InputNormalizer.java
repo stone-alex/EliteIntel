@@ -612,7 +612,7 @@ public class InputNormalizer {
      * automatically. Adding them here is redundant and grows this list needlessly.
      */
     private static void loadPhonetics(LinkedHashMap<String, String> m) {
-        m.put("of", "off");
+        m.put(" of", " off");
         m.put("manax", "max");
         m.put("hard points", "hardpoints");
         m.put("scott", "scan");

@@ -1,4 +1,3 @@
-app/src/main/resources/elite-intel-xai-api-key.conf
 /app/build
 /logs
 /misc
@@ -16,11 +15,11 @@ app/src/main/resources/elite-intel-xai-api-key.conf
 ./.gradle
 ./distribution/elite_intel.jar
 .gradle/*
+.gradle/*/*
 ./.gradle/file-system.probe
 ./.gradle/buildOutputCleanup/
 ./locations
-./CLAUDE.md
+./*.md
 /distribution/elite_intel_updater.jar
-/CLAUDE.md
 /scratch/scratch.sql
 /installers/

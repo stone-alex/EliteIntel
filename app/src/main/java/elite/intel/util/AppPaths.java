@@ -50,10 +50,6 @@ public final class AppPaths {
         return getDistributionFile("native");
     }
 
-    public static Path getWhisperModelPath() {
-        return getDistributionFile("whisper/ggml-base.en.bin");
-    }
-
     public static Path getParakeetModelDir() {
         return getDistributionFile("parakeet");
     }

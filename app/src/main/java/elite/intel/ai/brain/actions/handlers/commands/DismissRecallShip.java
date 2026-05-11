@@ -11,10 +11,9 @@ import static elite.intel.ai.hands.Bindings.GameCommand.*;
 
 public class DismissRecallShip implements CommandHandler {
 
+    private final Status status = Status.getInstance();
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        Status status = Status.getInstance();
-
         if (status.isInSrv()) {
             GameControllerBus.publish(new GameInputEvent(BINDING_RECALL_DISMISS_SHIP.getGameBinding(), 0));
         } else if (status.isOnFoot()) {
@@ -29,10 +28,8 @@ public class DismissRecallShip implements CommandHandler {
         }
         if (status.isLanded()) {
             EventBusManager.publish(new AiVoxResponseEvent("Going to orbit, call me, when you need me."));
-            return;
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("Coming back to get you."));
-            return;
         }
     }
 }

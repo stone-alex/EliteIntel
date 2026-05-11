@@ -10,7 +10,6 @@ import elite.intel.db.dao.GameSessionDao;
 import elite.intel.db.dao.ShipDao;
 import elite.intel.db.managers.ShipManager;
 import elite.intel.db.util.Database;
-import elite.intel.util.AppPaths;
 import elite.intel.util.Cypher;
 
 import java.io.BufferedReader;
@@ -305,10 +304,6 @@ public class SystemSession {
             dao.save(session);
             return Void.class;
         });
-    }
-
-    public String getWhisperModelPath() {
-        return AppPaths.getWhisperModelPath().toString();
     }
 
     public String getDesignation() {

@@ -22,7 +22,7 @@ public class AudioSettingsPanel extends JPanel {
     private JSlider voiceVolumeSlider;
     private JSlider beepVolumeSlider;
     private JSlider speechSpeedSlider;
-    private JSlider whisperThreadsSlider;
+    private JSlider sttThreadsSlider;
     private JCheckBox useLocalTTSCheck;
 
     private Runnable onLocalTtsChanged;
@@ -97,13 +97,13 @@ public class AudioSettingsPanel extends JPanel {
         lblSttThreads.setPreferredSize(new Dimension(120, 42));
         grid.add(lblSttThreads, ag);
 
-        whisperThreadsSlider = makeSlider(4, 11, systemSession.getSttThreads(), 1, 1);
-        whisperThreadsSlider.addChangeListener(e -> EventBusManager.publish(new SttThreadsChangedEvent(whisperThreadsSlider.getValue())));
+        sttThreadsSlider = makeSlider(4, 11, systemSession.getSttThreads(), 1, 1);
+        sttThreadsSlider.addChangeListener(e -> EventBusManager.publish(new SttThreadsChangedEvent(sttThreadsSlider.getValue())));
         ag.gridx = 3;
         ag.weightx = 1.0;
         ag.fill = GridBagConstraints.HORIZONTAL;
         ag.insets = new Insets(6, 6, 6, 6);
-        grid.add(whisperThreadsSlider, ag);
+        grid.add(sttThreadsSlider, ag);
 
         // Row 2: Use Local TTS
         ag.gridy = 2;

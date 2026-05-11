@@ -1,7 +1,7 @@
 package elite.intel.ai.ears;
 
 /**
- * Published by WhisperSTTImpl on every captured audio frame (~100ms).
+ * Published by STTImpl on every captured audio frame (~100ms).
  * Consumed by AudioWaveformPanel via AudioMonitorBus (async, non-blocking).
  */
 public class AudioMonitorEvent {

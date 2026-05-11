@@ -3,6 +3,7 @@
 ### bug fixes / features:
 
 - Removing dead code.
+- Disembark from ship.
 
 
 ## v-0.0393-rc

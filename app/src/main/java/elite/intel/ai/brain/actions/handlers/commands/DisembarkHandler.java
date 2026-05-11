@@ -32,9 +32,12 @@ public class DisembarkHandler implements CommandHandler {
             GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_ACTIVATE.getGameBinding(), 0));
             navigator.assumeDefaultState(StatusFlags.GuiFocus.ROLE_PANEL);
         } else if (status.isInMainShip()) {
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0));
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0));
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0));
             GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_ACTIVATE.getGameBinding(), 0));
         }
     }

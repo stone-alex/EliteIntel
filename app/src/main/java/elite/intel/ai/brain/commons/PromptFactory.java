@@ -265,7 +265,7 @@ public class PromptFactory implements AiPromptFactory {
         sb.append(ttsResponseRules());
         sb.append("""
                 Instructions:
-                Data provided is in YAML format as 'sensorData'.
+                Event data is provided in the sensorData field below.
                 
                 Summarise ONLY the important concrete readings and events that are ACTUALLY present in the provided sensorData.
                 Use ONLY the data inside sensorData and the event-specific instructions below (if any).

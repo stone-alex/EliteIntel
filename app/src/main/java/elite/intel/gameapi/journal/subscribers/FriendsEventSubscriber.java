@@ -44,6 +44,7 @@ public class FriendsEventSubscriber {
             data.append(name).append(" is ").append(status);
         });
         pending.clear();
-        EventBusManager.publish(new SensorDataEvent("Friends: " + data, "Notify User"));
+        String instructions = "Report each friend's name and their new status (online, offline, etc.). One friend per sentence.";
+        EventBusManager.publish(new SensorDataEvent("Friends: " + data, instructions));
     }
 }

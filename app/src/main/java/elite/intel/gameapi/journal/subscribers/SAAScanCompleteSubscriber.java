@@ -13,7 +13,11 @@ public class SAAScanCompleteSubscriber {
 
         if (PlayerSession.getInstance().isDiscoveryAnnouncementOn()) {
             String message = "Surface scan complete " + efficiency(event);
-            EventBusManager.publish(new SensorDataEvent(message, "Notify User"));
+            String instructions = """
+                        Report the surface scan result.
+                        State the efficiency outcome clearly: whether the target was beaten, met, or missed, and by how many probes.
+                    """;
+            EventBusManager.publish(new SensorDataEvent(message, instructions));
         }
     }
 

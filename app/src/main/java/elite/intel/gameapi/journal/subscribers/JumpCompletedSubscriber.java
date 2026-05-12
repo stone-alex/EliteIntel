@@ -128,11 +128,11 @@ public class JumpCompletedSubscriber {
                 EventBusManager.publish(new RouteAnnouncementEvent(sb.toString()));
             }
             if (isSellerSystem && station != null) {
-                EventBusManager.publish(new SensorDataEvent("Head to " + station.getSourceStationName() + " buy " + station.getSourceCommodity(), "Remind User"));
+                EventBusManager.publish(new SensorDataEvent("Head to " + station.getSourceStationName() + " buy " + station.getSourceCommodity(), "Remind the commander of their active trade route: state the station name and the commodity to buy."));
             }
 
             if (isBuyerSystem && station != null) {
-                EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind User"));
+                EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind the commander of their active trade route: state the station name and the commodity to sell."));
             }
 
 

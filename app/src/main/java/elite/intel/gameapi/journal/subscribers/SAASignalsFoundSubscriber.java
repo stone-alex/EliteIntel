@@ -27,7 +27,12 @@ public class SAASignalsFoundSubscriber {
     private static void announce(String sb) {
         Status status = Status.getInstance();
         if (status.isInMainShip() && !status.isLanded() && !status.isDocked()) {
-            EventBusManager.publish(new SensorDataEvent(sb, "Notify User"));
+            String instructions = """
+                        Report the signals detected on this body. List each signal type briefly.
+                        If biological signals are present, name each genus and state the average projected payout.
+                        If this is our first discovery, include the first-discovery bonus.
+                    """;
+            EventBusManager.publish(new SensorDataEvent(sb, instructions));
         }
     }
 
@@ -55,9 +60,6 @@ public class SAASignalsFoundSubscriber {
                 sb.append(" Signal(s) found: ");
                 for (SAASignalsFoundEvent.Signal signal : signals) {
                     sb.append(" Type: ").append(signal.getType()).append(". ");
-                    if ("Tritium".equals(signal.getType())) {
-                        sb.append(" Carrier fuel source is detected. ");
-                    }
                 }
 
                 if (liveSignals > 0) {

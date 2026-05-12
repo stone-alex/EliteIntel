@@ -18,7 +18,7 @@ public class MultiSellExplorationDataSubscriber {
             EventBusManager.publish(
                     new SensorDataEvent(
                             " Sold: " + discoveredStarSystems + " star systems. Reward: " + (bonus + totalSale),
-                            "We made some credits. let the user know details"
+                            "Report the exploration data sale. State the total credits earned, the bonus, and the number of star systems sold."
                     )
             );
         }

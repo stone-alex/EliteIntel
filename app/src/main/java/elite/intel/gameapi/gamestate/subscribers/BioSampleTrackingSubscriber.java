@@ -67,9 +67,9 @@ public class BioSampleTrackingSubscriber {
 
             if (wasFarEnough != isFarEnough) {
                 if (isFarEnough) {
-                    EventBusManager.publish(new SensorDataEvent(vehicle+" is now far enough to take the new sample.", "Notify User: distance from previous colony is sufficient to take next sample"));
+                    EventBusManager.publish(new SensorDataEvent(vehicle + " is now far enough to take the new sample.", "State that minimum separation distance from the previous bio colony has been reached and a new sample can now be taken."));
                 } else {
-                    EventBusManager.publish(new SensorDataEvent(vehicle + " is moved too close to previous colony to take new sample. insufficient bio diversity.", "Moved too close to previous bio from colony. insufficient bio diversity."));
+                    EventBusManager.publish(new SensorDataEvent(vehicle + " is moved too close to previous colony to take new sample. insufficient bio diversity.", "Warn that we have moved within minimum separation distance of the previous bio colony and a new sample cannot be taken at this position."));
                 }
             }
         }

@@ -74,8 +74,6 @@ public enum Commands {
     OPEN_SYSTEM_MAP                                     ("display_open_system_map", null,  OpenLocalMapHandler.class),
 
 
-    ///DISPLAY_INTERNAL_PANEL                              ("display_internal_panel", null,  DisplayInternalPanelHandler.class),
-    ///DISPLAY_STATUS_PANEL                                ("display_status_panel", null,  DisplayStatusPanelHandler.class),
     DISPLAY_RADAR_PANEL                                 ("display_radar_panel", null,  DisplayRadarPanelHandler.class),
     ///
     DISPLAY_CARRIER_MANAGEMENT                          ("display_fleet_carrier_management_panel", null,  OpenFleetCarrierManagementHandler.class    ),

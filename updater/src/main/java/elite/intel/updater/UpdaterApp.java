@@ -51,8 +51,7 @@ public class UpdaterApp {
     private static final Color BUTTON_BG = new Color(0x03529F);
     private static final Color CONSOLE_FG = new Color(0xE0FFEF);
 
-    private static final String GITHUB_API =
-            "https://api.github.com/repos/stone-alex/EliteIntel/releases/latest";
+    private static final String GITHUB_API = "https://api.github.com/repos/stone-alex/EliteIntel/releases/latest";
     private static final String MAIN_JAR = "elite_intel.jar";
 
     // -- UI components ---------------------------------------------------------
@@ -333,9 +332,7 @@ public class UpdaterApp {
         // Match the Linux ZIP asset - exclude .exe and Windows-only variants.
         // Pattern mirrors what installer.sh does:
         //   grep "browser_download_url" | grep "\.zip" | grep -v "\.exe"
-        Matcher m = Pattern.compile(
-                        "\"browser_download_url\"\\s*:\\s*\"([^\"]*elite_intel[^\"]*\\.zip)\"")
-                .matcher(resp.body());
+        Matcher m = Pattern.compile("\"browser_download_url\"\\s*:\\s*\"([^\"]*elite_intel[^\"]*\\.zip)\"").matcher(resp.body());
 
         String zipUrl = null;
         while (m.find()) {

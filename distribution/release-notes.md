@@ -1,3 +1,10 @@
+## v-0.0395-rc
+
+### bug fixes / features:
+
+- Minor Sensor prompt adjustments
+
+
 ## v-0.0394-rc
 
 ### bug fixes / features:

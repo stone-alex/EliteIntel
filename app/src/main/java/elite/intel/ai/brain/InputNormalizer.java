@@ -709,7 +709,6 @@ public class InputNormalizer {
             }
         }
         // Strip STT noise words that carry no action signal
-        input = input.replaceAll("(?i)\\bwhere\\b", "").replaceAll("\\s{2,}", " ").trim();
-        return input;
+        return input.replaceAll("(?i)\\bwhere\\b", "").replaceAll("\\s{2,}", " ").trim();
     }
 }

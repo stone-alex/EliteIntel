@@ -112,7 +112,7 @@ public class PromptFactory implements AiPromptFactory {
                 - carrier full status (fuel + credits + operations): "carrier status / carrier fuel status / how far can carrier jump / fleet carrier fuel status" → query_carrier_status_fuel_credit_balance
                 - carrier tritium level only: "how much tritium / tritium supply / tritium level / tritium reserve" → query_carrier_fuel
                 - distance to bubble is distance from our stellar coordinates to the center of the coordinate system (0,0,0)
-                - For EXPLICIT "player profile" (these two words, in this order, nothing else) → 'query_player_profile_rank_progress'. Any other phrasing, including rank, stats, progress, name, or commander — return ignore_nonsensical_input or query_general_conversation. This is an instant fail if triggered by anything else.
+                - For EXPLICIT "player profile" (these two words, in this order, nothing else) → 'query_player_profile_rank_progress'. Any other phrasing, including rank, stats, progress, name, or commander - return ignore_nonsensical_input or query_general_conversation. This is an instant fail if triggered by anything else.
                 
                 - "supercruise" / "go supercruise" / "enter supercruise" → enter_super_cruise (NOT jump_to_hyperspace - supercruise stays in-system)
                 - "navigate to active mission" / "go to mission" / "plot route to mission" → navigate_to_next_mission (NOT analyze_missions - navigation, not a query)

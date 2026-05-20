@@ -16,6 +16,9 @@ import elite.intel.ai.brain.inference.gemini.GeminiCommandEndPoint;
 import elite.intel.ai.brain.inference.lmstudio.LMStudioAnalysisEndpoint;
 import elite.intel.ai.brain.inference.lmstudio.LMStudioCommandEndPoint;
 import elite.intel.ai.brain.inference.lmstudio.LMStudioUserInputProcessor;
+import elite.intel.ai.brain.inference.mistral.MistralAnalysisEndpoint;
+import elite.intel.ai.brain.inference.mistral.MistralChatEndPoint;
+import elite.intel.ai.brain.inference.mistral.MistralCommandEndPoint;
 import elite.intel.ai.brain.inference.ollama.OllamaAnalysisEndpoint;
 import elite.intel.ai.brain.inference.ollama.OllamaCommandEndPoint;
 import elite.intel.ai.brain.inference.ollama.OllamaUserInputProcessor;
@@ -65,6 +68,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokAnalysisEndpoint.getInstance();
             case DEEPSEEK -> DeepSeekAnalysisEndpoint.getInstance();
+            case MISTRAL -> MistralAnalysisEndpoint.getInstance();
             case OPENAI -> OpenAiAnalysisEndPoint.getInstance();
             case ANTHROPIC -> AnthropicAnalysisEndpoint.getInstance();
             case GEMINI -> GeminiAnalysisEndpoint.getInstance();
@@ -87,6 +91,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokChatEndPoint.getInstance();
             case DEEPSEEK -> DeepSeekChatEndPoint.getInstance();
+            case MISTRAL -> MistralChatEndPoint.getInstance();
             case OPENAI -> OpenAiChatEndPoint.getInstance();
             case ANTHROPIC -> AnthropicUserEndPoint.getInstance();
             case GEMINI -> GeminiChatEndPoint.getInstance();
@@ -119,6 +124,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokCommandEndPoint.getInstance();
             case DEEPSEEK -> DeepSeekCommandEndPoint.getInstance();
+            case MISTRAL -> MistralCommandEndPoint.getInstance();
             case OPENAI -> OpenAiCommandEndPoint.getInstance();
             case ANTHROPIC -> AnthropicCommandEndPoint.getInstance();
             case GEMINI -> GeminiCommandEndPoint.getInstance();

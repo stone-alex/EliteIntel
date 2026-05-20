@@ -45,11 +45,12 @@ Powered by NVIDIA Parakeet. built-in / included.
 [Why tulu-3.1-8b Supernova specifically](https://github.com/stone-alex/EliteIntel/wiki/Why-Tulu3.1-supernova)
 
 ### Cloud
-- Claude (Cloud. Models: Sonnet/Haiku)
-- Grok (Cloud model xAI grok-4-1-fast-non-reasoning)
-- Open AI (Cloud Chat GPT gpt-5.2)
-- Google Gemini (Cloud Generative Language API gemini-2.5-flash)
-- Deepseek deepseek-v4-flash
+- Claude | claude-haiku-4-5
+- Grok | grok-4-1-fast-non-reasoning
+- Open AI | gpt-5.2
+- Google Gemini | gemini-3.1-flash-lite
+- Deepseek | deepseek-v4-flash
+- Mistral | mistral-small-latest
 
 ---
 

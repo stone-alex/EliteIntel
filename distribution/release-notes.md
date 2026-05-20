@@ -1,3 +1,10 @@
+## v-0.0396-rc
+
+### bug fixes / features:
+
+- Added Mistral
+
+
 ## v-0.0395-rc
 
 ### bug fixes / features:

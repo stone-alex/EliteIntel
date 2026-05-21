@@ -13,7 +13,7 @@ public enum Queries {
     QUERY_STATIONS                      ("query_stations",                              AnalyzeStationsHandler.class),
     ANALYZE_MARKETS                     ("query_markets",                               AnalyzeMarkets.class),
     QUERY_CARRIERS                      ("query_carriers",                              AnalyzeCarriersHandler.class),
-    KEY_BINDINGS_ANALYSIS               ("query_key_bindings",                          AnalyzeMisingKeyBindingHandler.class),
+    KEY_BINDINGS_ANALYSIS               ("check_missing_key_bindings",                          AnalyzeMisingKeyBindingHandler.class),
     SYSTEM_SECURITY_ANALYSIS            ("query_system_security",                       AnalyzeSystemSecurityHandler.class),
     TRADE_PROFILE_ANALYSIS              ("query_trade_profile",                         AnalyzeTradeProfileHandler.class),
     DISTANCE_TO_BODY                    ("query_distance_to_body",                      AnalyzeDistanceToStellarObject.class),

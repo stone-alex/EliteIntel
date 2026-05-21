@@ -55,10 +55,8 @@ public class InputNormalizer {
         m.put("hud analysis mode", "switch to analysis mode");
         m.put("combat mode", "switch to combat mode");
         m.put("analysis mode", "switch to analysis mode");
-        m.put("switch to combat", "switch to combat mode");
         m.put("enter combat mode", "switch to combat mode");
         m.put("combat hud", "switch to combat mode");
-        m.put("switch to analysis", "switch to analysis mode");
         m.put("analysis hud", "switch to analysis mode");
         m.put("explorer mode", "switch to analysis mode");
         m.put("next enemy", "priority target");
@@ -167,6 +165,11 @@ public class InputNormalizer {
         // Ship route jump counts - more specific before "how many jumps"
         m.put("how many jumps to destination", "plotted route");
         m.put("how many jump to destination", "plotted route");
+        // "jumps remaining/left/to destination" must precede single "jump" to prevent substring corruption
+        // ("jump" would match inside "jumps remaining" and produce "jump to hyperspaces remaining")
+        m.put("jumps remaining", "plotted route");
+        m.put("jumps left", "plotted route");
+        m.put("jumps to destination", "plotted route");
         m.put("how many jumps", "plotted route");
 
         // Single "jump" - must follow all multi-word jump phrases above
@@ -286,7 +289,6 @@ public class InputNormalizer {
 
         // SRV
         m.put("launch srv", "deploy srv");
-        m.put("deploy car", "deploy srv");
         m.put("deploy vehicle", "deploy srv");
 
         // Board ship / SRV recovery
@@ -344,11 +346,8 @@ public class InputNormalizer {
         m.put("even out power", "equalize power");
 
         // Activate - single-word forms; MUST follow "activate combat mode" in loadHudModes()
-        m.put("engage", "activate");
         m.put("select", "activate");
         m.put("activate", "activate");
-        m.put("turn on", "activate");
-        m.put("enable", "activate");
         m.put("activate controls", "activate");
 
         // Stop listening
@@ -370,7 +369,6 @@ public class InputNormalizer {
         m.put("optimize", "set optimal speed");
 
         // Cargo / commodities
-        // "open cargo bay" must precede "display" → "open" below
         m.put("commodity inventory", "cargo contents");
         m.put("what commodities do we have", "cargo contents");
         m.put("cargo manifest", "cargo hold");
@@ -383,7 +381,6 @@ public class InputNormalizer {
         m.put("retract cargo scoop", "cargo scoop");
         m.put("close cargo scoop", "cargo scoop");
         m.put("close cargo bay", "cargo scoop");
-        m.put("display", "open");     // generic; must follow "open cargo bay" above
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -393,10 +390,7 @@ public class InputNormalizer {
     private static void loadRouteAndShipQueries(LinkedHashMap<String, String> m) {
         // Plotted route / jump counts
         m.put("how many jumps remaining", "plotted route");
-        m.put("jumps remaining", "plotted route");
         m.put("how many jumps left", "plotted route");
-        m.put("jumps to destination", "plotted route");
-        m.put("jumps left", "plotted route");
         m.put("is next star scoopable", "fuel at next stop");
         m.put("can we scoop next star", "fuel at next stop");
         m.put("scoopable at next stop", "fuel at next stop");
@@ -428,8 +422,8 @@ public class InputNormalizer {
         m.put("ready for a hunt", "ship loadout combat readiness summary");
 
         // Current location
-        m.put("where are we", "current location");
-        m.put("where am i", "current location");
+        m.put("where are we", "what is our current location");
+        m.put("where am i", "what is our current location");
         m.put("our coordinates", "current location");
         m.put("what planet are we at", "current location");
         m.put("current system", "current location");
@@ -596,6 +590,11 @@ public class InputNormalizer {
         m.put("galactic time", "current time");
         m.put("utc time", "current time");
         m.put("earth time", "time on earth");
+
+        // Key bindings - query action; normalize to interrogative so COMMAND/QUERY classifier routes correctly
+        m.put("check key bindings", "what key bindings are missing");
+        m.put("missing key bindings", "what key bindings are missing");
+        m.put("unbound keys", "what keys are unbound");
     }
 
     // ─────────────────────────────────────────────────────────────────────────

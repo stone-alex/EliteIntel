@@ -55,7 +55,7 @@ public class PromptFactory implements AiPromptFactory {
                 Raw JSON only. No text, no markdown, no explanation before or after.
 
                 CLASSIFICATION:
-                - ABSOLUTE RULE - 'query_player_profile_rank_progress' requires an EXPLICIT player rank/profile request with ≥95% confidence. The input MUST contain 'player profile'  - exact phrasing only. If confidence is below 95%, or the input is ambiguous or tangentially related, fall back to ignore_nonsensical_input (strict mode) or query_general_conversation (conversational mode). This action is NEVER a fallback or closest-match - it must be explicitly requested. Violations are a critical failure.
+                - ABSOLUTE RULE - 'query_player_profile_rank_progress' requires an EXPLICIT player rank/profile request with ≥95% confidence. The input MUST begin with 'player profile' (these two words, in this order) and may optionally include additional qualifying words after them (e.g. 'player profile summarize ranks', 'player profile summarize progress'). If confidence is below 95%, or the input is ambiguous or tangentially related, fall back to ignore_nonsensical_input (strict mode) or query_general_conversation (conversational mode). This action is NEVER a fallback or closest-match - it must be explicitly requested. Violations are a critical failure.
                 - Default to COMMAND. Only use a QUERY action when the input is clearly interrogative (starts with: what, how, which, why, is, are, does, tell me, how much, how many).
                 """);
 
@@ -92,7 +92,7 @@ public class PromptFactory implements AiPromptFactory {
                 - delete_* actions require explicit intent in user input. Example "delete codex entry" - delete_* action allowed, "codex entry" - delete_* action not allowed
                 
                 DISAMBIGUATION (genuine ambiguities only):
-                - "activate" alone (no mode, panel, or subsystem following) → activate
+                - "activate" (exact standalone word only, nothing else meaningful in input) → activate_ui_control. "toggle [X]", "engage [X]", "enable [X]" and other non-activate verbs are NOT "activate" — never map these to activate_ui_control
                 - "weapons free" / "weapons hot" / "combat ready" → deploy_hardpoints
                 - "weapons cold" / "weapons away" / "stand down" → retract_hardpoints
                 - "max weapons" / "boost weapons" / "power to weapons" → transfer_power_to_weapons
@@ -112,8 +112,11 @@ public class PromptFactory implements AiPromptFactory {
                 - carrier full status (fuel + credits + operations): "carrier status / carrier fuel status / how far can carrier jump / fleet carrier fuel status" → query_carrier_status_fuel_credit_balance
                 - carrier tritium level only: "how much tritium / tritium supply / tritium level / tritium reserve" → query_carrier_fuel
                 - distance to bubble is distance from our stellar coordinates to the center of the coordinate system (0,0,0)
-                - For EXPLICIT "player profile" (these two words, in this order, nothing else) → 'query_player_profile_rank_progress'. Any other phrasing, including rank, stats, progress, name, or commander - return ignore_nonsensical_input or query_general_conversation. This is an instant fail if triggered by anything else.
+                - For EXPLICIT "player profile" (these two words, in this order, optionally followed by additional context words like "summarize ranks", "summarize progress") → 'query_player_profile_rank_progress'. Any other phrasing that does NOT begin with "player profile", including rank, stats, progress, name, or commander - return ignore_nonsensical_input or query_general_conversation. This is an instant fail if triggered by anything else.
+                - "galaxy map" / "open galaxy map" / "display galaxy map" / "show galaxy map" → display_open_galaxy_map (NOT carrier management or any other panel)
+                - "system map" / "open system map" / "display system map" / "local map" → display_open_system_map
                 
+                - "activate" → activate_ui_control ONLY when the sole meaningful word in the input is "activate". NEVER for: "toggle lights" → toggle_lights_on_off, "engage supercruise" → enter_super_cruise. Any word alongside "activate" means it is NOT the activate_ui_control command.
                 - "supercruise" / "go supercruise" / "enter supercruise" → enter_super_cruise (NOT jump_to_hyperspace - supercruise stays in-system)
                 - "navigate to active mission" / "go to mission" / "plot route to mission" → navigate_to_next_mission (NOT analyze_missions - navigation, not a query)
                 - "navigate to codex entry" / "navigate to next codex" → navigate_to_next_bio_sample (travel to the sample, do NOT use delete_codex_entry)
@@ -124,6 +127,7 @@ public class PromptFactory implements AiPromptFactory {
                 - "exit" or "close" → exit_close
                 - "drop" alone / "drop in" / "drop out" → drop_from_super_cruise
                 - "halt" alone → set_speed_zero
+                - "taxi" alone / "auto docking" / "autopilot" → taxi_to_landing_pad (automated ship approach and landing at a pad — not a ground vehicle)
                 - "lets go" / "jump to ..." / "enter hyperspace" → jump_to_hyperspace
                 - "confirm ..." → only match confirm-requiring actions when "confirm" is literally in the input
                 - "clear ..." → only match clear-requiring actions when "clear" is literally in the input
@@ -176,7 +180,7 @@ public class PromptFactory implements AiPromptFactory {
                   - "night vision on"          → {"action": "toggle_night_vision_on_off", "params": {"state": true}}
                   - "night vision off"         → {"action": "toggle_night_vision_on_off", "params": {"state": false}}
                   - "lights on"                → {"action": "toggle_lights_on_off", "params": {"state": true}}
-                  - "increase speed by 25"          → {"action": "increase_speed_by", "params": {"key": "25"}}
+                  - "increase speed by 25"          → {"action": "increase_speed", "params": {"key": "25"}}
                   - "find gold within 80 ly"        → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                   - "find nearest market for gold"  → {"action": "find_commodity", "params": {"key": "gold", "state": true}}
                   - "where can we buy gold"         → {"action": "find_commodity", "params": {"key": "gold", "state": false}}

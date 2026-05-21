@@ -114,7 +114,7 @@ public enum Commands {
     LIST_TRADE_ROUTE_PARAMETERS                         ("list_trade_parameters", null,  ListAvailableTradeRouteProfilesHandler.class),
 
     /// Generic simple commands. no parameters, but require binding
-    ACTIVATE                                            ("activate", BINDING_ACTIVATE.getGameBinding(), SimpleCommandActionHandler.class),
+    ACTIVATE                                            ("activate_ui_control", BINDING_ACTIVATE.getGameBinding(), SimpleCommandActionHandler.class),
     SHOW_TRANSACTIONS                                   ("show_transactions_panel", null, OpenTransactionHandler.class),
     SHOW_CONTACTS                                       ("show_contacts_panel", null, OpenContactsHandler.class),
     SHOW_NAVIGATION                                     ("show_navigation_panel", null, OpenNavigationHandler.class),
@@ -158,7 +158,7 @@ public enum Commands {
     FIGHTER_REQUEST_REQUEST_DOCK                        ("fighter_return_to_ship", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), SimpleCommandActionHandler.class),
     FIGHTER_OPEN_ORDERS                                 ("fighter_fire_at_will", OPEN_ORDERS.getGameBinding(), SimpleCommandActionHandler.class),
     SET_SPEED_ZERO                                      ("set_speed_to_zero_0_stop_ship", BINDING_SET_SPEED_ZERO.getGameBinding(), SimpleCommandActionHandler.class),
-    TAXI                                                ("taxi_to_landing", BINDING_SET_SPEED_ZERO.getGameBinding(), SimpleCommandActionHandler.class),
+    TAXI                                                ("taxi_to_landing_pad", BINDING_SET_SPEED_ZERO.getGameBinding(), SimpleCommandActionHandler.class),
     SET_SPEED25                                         ("set_speed_25", BINDING_SET_SPEED25.getGameBinding(), SimpleCommandActionHandler.class),
     SET_SPEED50                                         ("set_speed_50", BINDING_SET_SPEED50.getGameBinding(), SimpleCommandActionHandler.class),
     SET_SPEED75                                         ("set_speed_75", BINDING_SET_SPEED75.getGameBinding(), SimpleCommandActionHandler.class),

@@ -15,11 +15,11 @@ package elite.intel.ai.brain;
  * of interaction need to match specific contextual or user preferences.
  */
 public enum ShipPersonality {
-    PROFESSIONAL("Respond extremely briefly and concisely as a military professional."),
-    CASUAL("Respond extremely briefly and concisely in a casual tone like a colleague. Use occasional slang matching cadence."),
-    FRIENDLY("Respond extremely briefly and concisely in a friendly, casual tone like a close friend. Use slang matching cadence."),
-    UNHINGED("Respond briefly and concisely, unpredictable and chaotic energy, using jargon and slang but staying sharp and witty within the selected cadence."),
-    ROGUE("Respond briefly and concisely with bold, in-your-face energy, using heavy jargon, light profanity and slang but staying sharp and witty within the selected cadence.");
+    PROFESSIONAL("Your Personality Roleplay: Respond extremely briefly and concisely as a military professional."),
+    CASUAL("Your Personality Roleplay: Respond extremely briefly and concisely in a casual tone like a colleague. Use occasional slang matching cadence."),
+    FRIENDLY("Your Personality Roleplay: Respond extremely briefly and concisely in a friendly, casual tone like a close friend. Use slang matching cadence."),
+    UNHINGED("Your Personality Roleplay: Respond briefly and concisely, unpredictable and chaotic energy, using jargon and slang but staying sharp and witty within the selected cadence."),
+    ROGUE("Your Personality Roleplay: Respond briefly with bold, spicy in-your-face energy, humor and pawns. Use heavy jargon, slang and occasional profanity but stay sharp and witty within the selected cadence.");
 
     private final String behaviorClause;
 

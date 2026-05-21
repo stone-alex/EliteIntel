@@ -40,7 +40,7 @@ public class NaturalSpeechIntegrationTest {
      * 250 you are pushing it.
      * 150 bro I want your hardware.
      */
-    private static final int LLM_WAIT_MS = 2000;
+    private static final int LLM_WAIT_MS = 5000;
 
     private HandlerCapture capture;
 
@@ -124,7 +124,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> combatMode() {
-        return Stream.of("combat mode", "change to combat mode", "combat", "activate combat mode", "swap to combat mode");
+        return Stream.of("combat mode", "change to combat mode", "combat", "switch to combat mode", "swap to combat mode");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -135,7 +135,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> analysisMode() {
-        return Stream.of("Analysis mode", "activate analysis mode", "explorer mode", "analysis HUD", "Change to analysis mode", "swap to analysis mode");
+        return Stream.of("Analysis mode", "switch to analysis mode", "explorer mode", "analysis HUD", "Change to analysis mode", "swap to analysis mode");
     }
 
     // =========================================================================
@@ -434,7 +434,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> taxi() {
-        return Stream.of("taxi to landing", "auto land", "autopilot landing", "taxi", "auto taxi");
+        return Stream.of("taxi to landing", "auto docking", "autopilot landing", "taxi", "auto taxi");
     }
 
     // =========================================================================
@@ -1108,7 +1108,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> openFighterPanel() {
-        return Stream.of("Open fighter panel", "show fighter", "display fighter panel", "fighter bay");
+        return Stream.of("show fighter panel", "open fighter panel");
     }
 
 

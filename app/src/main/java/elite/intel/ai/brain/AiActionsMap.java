@@ -114,8 +114,8 @@ public class AiActionsMap {
             map.put("switch to combat mode", ACTIVATE_COMBAT_MODE.getAction());
             map.put("switch to analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
             map.put("cargo scoop, open cargo scoop, close cargo scoop, deploy cargo scoop, retract cargo scoop, open cargo bay, close cargo bay", TOGGLE_CARGO_SCOOP.getAction());
-            map.put("night vision, nightvision, turn on night vision, turn off night vision ", NIGHT_VISION_ON_OFF.getAction());
-            map.put("headlights, lights, turn off lights, turn on lights, ship lights, lights on, lights off ", LIGHTS_ON_OFF.getAction());
+            map.put("night vision, nightvision, turn on night vision, turn off night vision {state:true/false}", NIGHT_VISION_ON_OFF.getAction());
+            map.put("headlights, lights, turn off lights, turn on lights, ship lights, lights on, lights off {state:true/false}", LIGHTS_ON_OFF.getAction());
             // UI panels
             map.put("show, open or display commander, central, role panel, open knee board", SHOW_COMMANDER_PANEL.getAction());
             map.put("show, open or display crew panel", SHOW_CREW.getAction());
@@ -223,7 +223,7 @@ public class AiActionsMap {
         map.put("exobiology samples, biology samples, organics at location, what organisms, what's left to scan, remaining organisms, samples left, organisms remaining, exobiology progress, scan remaining, what bio scans completed, what bio scans have we completed, bio scans done, bio scans completed, organics on this planet, biology on this planet, what organisms are here, what organisms are on this planet, bio sample progress on planet, what's been scanned here, what organics do we still have to scan, what organics still to scan, organics still to scan, organics remaining to scan, organics left to scan, what organics remain, biology still to scan, what biology remains, what do we still need to scan here", EXOBIOLOGY_SAMPLES.getAction());
         map.put("distance to last bio sample, how far to sample, how far to last organism, range to bio sample, how far to previous organism, navigate to bio sample", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         map.put("analyze biome, biome analysis, what biome {key:X}, planetary biome, atmosphere analysis, what life is here, biome type", PLANET_BIOME_ANALYSIS.getAction());
-        map.put("stellar objects, planets in system, landable planets, is planet or moon landable, bodies in system, what planets, how many planets, system bodies, stellar bodies", QUERY_STELLAR_OBJETS.getAction());
+        map.put("stellar objects, planets in system, landable planets, is planet or moon landable, bodies in system, what planets, how many planets, system bodies, stellar bodies, ice rings, planetary rings, rings in system, has rings, ring system", QUERY_STELLAR_OBJETS.getAction());
         map.put("signals in system, what signals are in this system, what's in this system, what's detected in system, what signals here, what signals do you see, what signals do you detect, what signals can you see, FSS signals, mining hot spots, resource extraction sites, what signals, conflict zones, emissions, unidentified signals, system signals, detected signals, anomalous signals", QUERY_STELLAR_SIGNALS.getAction());
         map.put("geo signals, geological signals, volcanic signals, geological activity, volcanic activity, geology in system", QUERY_GEO_SIGNALS.getAction());
 

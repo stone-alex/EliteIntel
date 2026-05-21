@@ -1,3 +1,10 @@
+## v-0.0397-rc
+
+### bug fixes / features:
+
+- Prompt adjustments for Mistral
+
+
 ## v-0.0396-rc
 
 ### bug fixes / features:

@@ -51,9 +51,9 @@ public class SystemSession {
 
     public KokoroVoices getKokoroVoice() {
         ShipDao.Ship ship = ShipManager.getInstance().getShip();
-        if (ship == null) return KokoroVoices.GEORGE;
+        if (ship == null) return KokoroVoices.BELLA;
         String voice = ship.getVoice();
-        if (voice == null) return KokoroVoices.GEORGE;
+        if (voice == null) return KokoroVoices.BELLA;
         return KokoroVoices.valueOf(voice);
     }
 

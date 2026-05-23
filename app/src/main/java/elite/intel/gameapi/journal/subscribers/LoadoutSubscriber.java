@@ -44,7 +44,7 @@ public class LoadoutSubscriber {
 
             ShipDao.Ship ship = shipManager.getShipById(event.getShipId());
             if (ship == null) {
-                String shipDefaultVoice = KokoroVoices.GEORGE.name();
+                String shipDefaultVoice = KokoroVoices.BELLA.name();
                 if (!systemSession.useLocalTTS()) {
                     shipDefaultVoice = GoogleVoices.STEVE.name();
                 }

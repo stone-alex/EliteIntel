@@ -51,7 +51,8 @@ Powered by NVIDIA Parakeet. built-in / included.
 - Google Gemini | gemini-3.1-flash-lite
 - Deepseek | deepseek-v4-flash
 - Mistral | mistral-small-latest
-* Mistral is a cloud AI that allows you to run this app for free. [Create KEY in Mistral Console]()https://console.mistral.ai/home) only email required, no credit card.
+** Mistral is a cloud AI that allows you to run this app for free.
+[Create KEY in Mistral Console](https://console.mistral.ai/home) only email required, no credit card.**
 
 ---
 

@@ -52,7 +52,8 @@ Powered by NVIDIA Parakeet. built-in / included.
 - Deepseek | deepseek-v4-flash
 
 ### Cloud Free
-- Mistral | mistral-small-latest
+- Mistral | mistral-small-2506
+
 **Mistral is a cloud AI that allows you to run this app for free, but there is a limit on tokens per hour.
 [Create KEY in Mistral Console](https://console.mistral.ai/home) only email required, no credit card.**
 

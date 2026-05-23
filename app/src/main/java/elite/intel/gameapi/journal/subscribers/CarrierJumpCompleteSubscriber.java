@@ -94,7 +94,8 @@ public class CarrierJumpCompleteSubscriber {
             } else {
                 timeString = estimatedTimeToFinal + " minutes";
             }
-            String remainingRoute = numJumpsRemaining == 0 ? ". Final destination reached!" : ". Remaining " + numJumpsRemaining + " jumps. Estimated time to final " + timeString + " ";
+            String jumpWord = numJumpsRemaining == 1 ? "jump" : "jumps";
+            String remainingRoute = numJumpsRemaining == 0 ? ". Final destination reached!" : ". Remaining " + numJumpsRemaining + " " + jumpWord + ". Estimated time to final " + timeString + " ";
 
             String instructions = """
                         Notify user about new carrier location.

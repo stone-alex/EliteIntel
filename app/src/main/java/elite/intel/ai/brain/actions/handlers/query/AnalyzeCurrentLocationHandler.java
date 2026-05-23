@@ -156,7 +156,9 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
         long hours = totalSec / 3600;
         long minutes = (totalSec % 3600) / 60;
 
-        return String.format("%d hours and %d minutes", hours, minutes);
+        String hourPart = hours + (hours == 1 ? " hour" : " hours");
+        String minutePart = minutes + (minutes == 1 ? " minute" : " minutes");
+        return hourPart + " and " + minutePart;
     }
 
     record DataDto(

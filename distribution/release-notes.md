@@ -1,3 +1,10 @@
+## v-0.0398-rc
+
+### bug fixes / features:
+
+- Changing Mistral model to mistral-small-2506. Limits: Tokens per Minute 2,250,000. Tokens per Month no limit, Requests per Second 5
+
+
 ## v-0.0397-rc
 
 ### bug fixes / features:

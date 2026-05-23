@@ -44,14 +44,16 @@ Powered by NVIDIA Parakeet. built-in / included.
 
 [Why tulu-3.1-8b Supernova specifically](https://github.com/stone-alex/EliteIntel/wiki/Why-Tulu3.1-supernova)
 
-### Cloud
+### Cloud Paid
 - Claude | claude-haiku-4-5
 - Grok | grok-4-1-fast-non-reasoning
 - Open AI | gpt-5.2
 - Google Gemini | gemini-3.1-flash-lite
 - Deepseek | deepseek-v4-flash
+
+### Cloud Free
 - Mistral | mistral-small-latest
-** Mistral is a cloud AI that allows you to run this app for free.
+**Mistral is a cloud AI that allows you to run this app for free, but there is a limit on tokens per hour.
 [Create KEY in Mistral Console](https://console.mistral.ai/home) only email required, no credit card.**
 
 ---

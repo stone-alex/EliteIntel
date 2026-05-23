@@ -28,9 +28,9 @@ Powered by NVIDIA Parakeet. built-in / included.
     - Game takes 9GB
     - LLM takes 6.5GB
 
-- If you do not have the hardware to run your local LLM you can use cloud LLM from Claude, xAI, Google, or Open AI but
-  that comes with a small fee. (about $6 a month)
-  [**Real life Cloud LLM cost breakdown**](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Live-Cost)
+- If you do not have the hardware to run your local LLM you have choices.
+1. Free cloud Mistral. It has hourly limit.
+2. Paid cloud services: Claude, xAI, Google, or Open AI. The cost will very depending on which one you choose.
   
 
 ---

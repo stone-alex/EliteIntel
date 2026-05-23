@@ -1,3 +1,13 @@
+## v-0.0399-rc
+
+### bug fixes / features:
+
+- Changed on-foot map handler to use the on-foot map handler binding instead of navigating pizza menu
+- Adjusted Mistral integration to handle cases where it fails to return JSON formatted analysis response.
+
+
+
+
 ## v-0.0398-rc
 
 ### bug fixes / features:

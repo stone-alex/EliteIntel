@@ -26,13 +26,7 @@ public class OpenLocalMapHandler implements CommandHandler {
         }
 
         if (status.isOnFoot()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_ON_FOOT_WHEEL.getGameBinding(), 500));
-            GameControllerBus.publish(new GameInputEvent(BINDING_UI_LEFT.getGameBinding(), 0));
-            GameControllerBus.publish(new GameInputEvent(BINDING_UI_DOWN.getGameBinding(), 0));
-            GameControllerBus.publish(new GameInputEvent(BINDING_ACTIVATE.getGameBinding(), 0));
-            GameControllerBus.publish(new GameInputEvent(BINDING_UI_RIGHT.getGameBinding(), 0));
-            GameControllerBus.publish(new GameInputEvent(BINDING_UI_DOWN.getGameBinding(), 0));
-            GameControllerBus.publish(new GameInputEvent(BINDING_ACTIVATE.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(BINDING_SYSTEM_MAP_HUMANOID.getGameBinding(), 0));
         }
     }
 }

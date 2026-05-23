@@ -39,6 +39,9 @@ public class MistralClient extends BaseAiClient implements Client {
         JsonObject header = new JsonObject();
         header.addProperty("model", model);
         header.addProperty("temperature", temp);
+        JsonObject responseFormat = new JsonObject();
+        responseFormat.addProperty("type", "json_object");
+        header.add("response_format", responseFormat);
         return header;
     }
 

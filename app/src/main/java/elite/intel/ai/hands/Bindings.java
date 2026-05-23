@@ -47,9 +47,12 @@ public class Bindings {
 
         BINDING_GALAXY_MAP("GalaxyMapOpen"),
         BINDING_GALAXY_MAP_BUGGY("GalaxyMapOpen_Buggy"),
+        BINDING_GALAXY_MAP_HUMANOID("GalaxyMapOpen_Humanoid"),
 
         BINDING_LOCAL_MAP("SystemMapOpen"),
         BINDING_LOCAL_MAP_BUGGY("SystemMapOpen_Buggy"),
+        BINDING_SYSTEM_MAP_HUMANOID("SystemMapOpen_Humanoid"),
+
         BINDING_EXPLORATION_FSSDISCOVERY_SCAN("ExplorationFSSEnter"),
 
         BINDING_CAM_ZOOM_IN("CamZoomIn"),

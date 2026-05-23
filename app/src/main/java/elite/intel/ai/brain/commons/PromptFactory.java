@@ -122,7 +122,7 @@ public class PromptFactory implements AiPromptFactory {
                 - "navigate to codex entry" / "navigate to next codex" → navigate_to_next_bio_sample (travel to the sample, do NOT use delete_codex_entry)
                 - "cargo scoop" / "open cargo scoop" / "deploy cargo scoop" / "close cargo scoop" / "retract cargo scoop" → toggle_cargo_scoop
                 - "unbound keys" / "check key bindings" / "missing bindings" / "keybind check" → key_bindings_analysis (this IS a valid game command, not meta-talk)
-                - "listen" / "listen up" alone → start_listening
+                - "listen" / "listen up" / "wake up" alone → wakeup
                 - "listen [+ any instruction]" → treat as a normal command/query
                 - "exit" or "close" → exit_close
                 - "drop" alone / "drop in" / "drop out" → drop_from_super_cruise

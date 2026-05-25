@@ -25,11 +25,11 @@ Powered by NVIDIA Parakeet. built-in / included.
 - NVIDIA RTX 3090 **24GB VRAM** or equivalent.
 
 - RTX 5090 with only **12GB VRAM will not do**. Not enough VRAM.
-    - Game takes 9GB
+    - Game takes 8GB (or more)
     - LLM takes 6.5GB
 
 - If you do not have the hardware to run your local LLM you have choices.
-1. Free cloud Mistral. It has hourly limit.
+1. Free cloud [**Mistral**](https://console.mistral.ai/home). (some limitations may apply)
 2. Paid cloud services: Claude, xAI, Google, or Open AI. The cost will very depending on which one you choose.
   
 

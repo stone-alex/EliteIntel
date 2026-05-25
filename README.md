@@ -1,4 +1,4 @@
-# Elite Intel - Release Candidate
+# Elite Intel
 
 ## Installation & Setup
 

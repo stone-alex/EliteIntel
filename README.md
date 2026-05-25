@@ -6,7 +6,8 @@
 
 --- 
 
-## Linux and Windows. Can be ran 100% off-line or with various cloud services
+## Linux and Windows.
+### Can be ran 100% off-line or with various cloud services
 
 ---
 

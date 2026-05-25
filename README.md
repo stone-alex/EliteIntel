@@ -30,8 +30,7 @@ Powered by NVIDIA Parakeet. built-in / included.
 
 - If you do not have the hardware to run your local LLM you have choices.
 1. Free cloud [**Mistral**](https://console.mistral.ai/home). (some limitations may apply)
-2. Paid cloud services: Claude, xAI, Google, or Open AI. The cost will very depending on which one you choose.
-  
+2. Paid cloud services: Claude, xAI, Gemini, Deepseek, or Open AI. The cost will very depending on which one you choose.
 
 ---
 

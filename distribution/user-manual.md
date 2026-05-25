@@ -92,7 +92,7 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - Where do I need to go to buy/sell [commodity]?
 - What's in the local market?
 - Data for stations, ports, and settlements in system.
-- Remind me \<blah\> (reads reminders set during trade route run, tells you what station to go to etc.)
+- Remind me [blah] (reads reminders set during trade route run, tells you what station to go to etc.)
 - What is our current trade plan / trade route / trade legs?
 
 ## Trade Profile Setup
@@ -230,7 +230,7 @@ Other panel commands:
 
 - **"Ignore me" / "do not monitor" / "sleep"** → puts the app to sleep (ignores all input).
 - **"Wake up"** → resumes normal listening.
-- **"Listen up \<command\>"** → bypass: passes a single command or query through while the app stays asleep. The "listen up" prefix is stripped before the command reaches the AI. Example: *"Listen up, jump to hyperspace"* executes the jump without waking the app.
+- **"Listen up [command]"** → bypass: passes a single command or query through while the app stays asleep. The "listen up" prefix is stripped before the command reaches the AI. Example: *"Listen up, jump to hyperspace"* executes the jump without waking the app.
 - Set reminder [text]. / Remind me [text].
 - Clear reminders.
 - Toggle route announcements on / off.
@@ -253,7 +253,7 @@ Enable **Conversation Mode** in the Settings tab to turn on free-form chat. When
 command falls back to general conversation — game lore, real-world topics, ship builds, whatever. The AI is not just
 a command parser when you want it to be more.
 
-Local LLMs will respond but will be stiff. Cloud LLMs (Claude, OpenAI, xAI) are recommended for conversation.
+Local LLMs will respond but will be stiff. Cloud LLMs (Claude, OpenAI, xAI, Mistral, Deepseek) are recommended for conversation.
 
 ---
 
@@ -262,5 +262,4 @@ Local LLMs will respond but will be stiff. Cloud LLMs (Claude, OpenAI, xAI) are 
 Fly Dangerous, Commander! o7
 
 ----
-Community 👉[**Matrix**](https://matrix.to/#/#krondor:matrix.org)👈 | Open Source [**GitHub
-**](https://github.com/stone-alex/EliteIntel) | [YouTube](https://www.youtube.com/@SudoKrondor) | [Twitch](https://www.twitch.tv/sudokrondor) | Cretive Commons License |
+Community 👉[**Matrix**](https://matrix.to/#/#krondor:matrix.org)👈 | Open Source [**GitHub**](https://github.com/stone-alex/EliteIntel) | [YouTube](https://www.youtube.com/@SudoKrondor) | [Twitch](https://www.twitch.tv/sudokrondor) | Cretive Commons License |

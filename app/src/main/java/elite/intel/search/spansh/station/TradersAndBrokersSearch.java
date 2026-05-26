@@ -1,6 +1,7 @@
 package elite.intel.search.spansh.station;
 
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.db.managers.ReminderManager;
@@ -41,6 +42,10 @@ public class TradersAndBrokersSearch {
         criteria.setPage(0);
 
         TraderAndBrokerSearchCriteria.ReferenceCoords coordinates = new TraderAndBrokerSearchCriteria.ReferenceCoords();
+        if (galacticCoordinates == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Unable to comply. Galactic coordinates not available"));
+            return null;
+        }
 
         coordinates.setX(galacticCoordinates.x());
         coordinates.setY(galacticCoordinates.y());

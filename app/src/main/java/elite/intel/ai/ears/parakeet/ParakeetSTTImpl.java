@@ -164,14 +164,14 @@ public class ParakeetSTTImpl implements EarsInterface {
         if (!Files.exists(tokensFile)) throw new IllegalStateException("Parakeet tokens missing at: " + tokensFile);
 
         OfflineTransducerModelConfig transducer = OfflineTransducerModelConfig.builder()
-                .setEncoder(encoderFile.toString())
-                .setDecoder(decoderFile.toString())
-                .setJoiner(joinerFile.toString())
+                .setEncoder(AppPaths.toNativePath(encoderFile))
+                .setDecoder(AppPaths.toNativePath(decoderFile))
+                .setJoiner(AppPaths.toNativePath(joinerFile))
                 .build();
 
         OfflineModelConfig modelConfig = OfflineModelConfig.builder()
                 .setTransducer(transducer)
-                .setTokens(tokensFile.toString())
+                .setTokens(AppPaths.toNativePath(tokensFile))
                 .setNumThreads(Math.max(1, Math.min(Runtime.getRuntime().availableProcessors(), systemSession.getSttThreads())))
                 .setDebug(false)
                 .setProvider("cpu")

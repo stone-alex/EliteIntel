@@ -1,5 +1,8 @@
 package elite.intel.util;
 
+import com.sun.jna.Native;
+import com.sun.jna.WString;
+import com.sun.jna.win32.StdCallLibrary;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -131,5 +134,30 @@ public final class AppPaths {
         }
 
         APP_DIR = dir;
+    }
+
+    // -- Native path helpers --------------------------------------------------
+
+    private interface Kernel32 extends StdCallLibrary {
+        int GetShortPathNameW(WString lpszLongPath, char[] lpszShortPath, int cchBuffer);
+    }
+
+    /**
+     * On Windows, converts a path to its 8.3 short form so native libraries that
+     * do not handle non-ASCII characters (e.g. sherpa-onnx on a system with a
+     * non-Latin username) can open the file.  No-op on Linux/macOS.
+     */
+    public static String toNativePath(Path path) {
+        String s = path.toAbsolutePath().toString();
+        if (!System.getProperty("os.name", "").toLowerCase().contains("win")) return s;
+        try {
+            Kernel32 k32 = Native.load("kernel32", Kernel32.class);
+            char[] buf = new char[s.length() + 260];
+            int len = k32.GetShortPathNameW(new WString(s), buf, buf.length);
+            if (len > 0 && len < buf.length) return new String(buf, 0, len);
+        } catch (Throwable ignored) {
+            // fall through — return original path
+        }
+        return s;
     }
 }

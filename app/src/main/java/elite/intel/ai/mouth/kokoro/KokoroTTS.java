@@ -351,10 +351,10 @@ public class KokoroTTS implements MouthInterface {
         }
 
         OfflineTtsKokoroModelConfig kokoro = OfflineTtsKokoroModelConfig.builder()
-                .setModel(modelDir.resolve("model.onnx").toString())
-                .setVoices(modelDir.resolve("voices.bin").toString())
-                .setTokens(modelDir.resolve("tokens.txt").toString())
-                .setDataDir(modelDir.resolve("espeak-ng-data").toString())
+                .setModel(AppPaths.toNativePath(modelDir.resolve("model.onnx")))
+                .setVoices(AppPaths.toNativePath(modelDir.resolve("voices.bin")))
+                .setTokens(AppPaths.toNativePath(modelDir.resolve("tokens.txt")))
+                .setDataDir(AppPaths.toNativePath(modelDir.resolve("espeak-ng-data")))
                 .setLang("en-us")
                 .build();
 

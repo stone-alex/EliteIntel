@@ -722,8 +722,88 @@ public class GameEvents {
         @SerializedName("Horizons")
         private boolean horizons;
         @SerializedName("Items")
-        private List<String> items;
+        private List<OutfittingItem> items;
 
+        public static class OutfittingItem {
+            @SerializedName("id")
+            private Long id;
+            @SerializedName("Name")
+            private String name;
+            @SerializedName("Name_Localised")
+            private String nameLocalised;
+            @SerializedName("BuyPrice")
+            private Long buyPrice;
+            @SerializedName("Stock")
+            private Integer stock;
+            @SerializedName("Category")
+            private String category;
+            @SerializedName("Class")
+            private Integer moduleClass;
+            @SerializedName("Rating")
+            private String rating;
+            @SerializedName("Ship")
+            private String ship;
+            @SerializedName("Hot")
+            private Boolean hot;
+            @SerializedName("EngineerModifications")
+            private String engineerModifications;
+            @SerializedName("Level")
+            private Integer level;
+            @SerializedName("Quality")
+            private Double quality;
+
+            public Long getId() {
+                return id;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public String getNameLocalised() {
+                return nameLocalised;
+            }
+
+            public Long getBuyPrice() {
+                return buyPrice;
+            }
+
+            public Integer getStock() {
+                return stock;
+            }
+
+            public String getCategory() {
+                return category;
+            }
+
+            public Integer getModuleClass() {
+                return moduleClass;
+            }
+
+            public String getRating() {
+                return rating;
+            }
+
+            public String getShip() {
+                return ship;
+            }
+
+            public Boolean getHot() {
+                return hot;
+            }
+
+            public String getEngineerModifications() {
+                return engineerModifications;
+            }
+
+            public Integer getLevel() {
+                return level;
+            }
+
+            public Double getQuality() {
+                return quality;
+            }
+        }
 
         public void setTimestamp(String timestamp) {
             this.timestamp = timestamp;
@@ -749,7 +829,7 @@ public class GameEvents {
             this.horizons = horizons;
         }
 
-        public void setItems(List<String> items) {
+        public void setItems(List<OutfittingItem> items) {
             this.items = items;
         }
 
@@ -778,7 +858,7 @@ public class GameEvents {
             return horizons;
         }
 
-        public List<String> getItems() {
+        public List<OutfittingItem> getItems() {
             return items;
         }
 

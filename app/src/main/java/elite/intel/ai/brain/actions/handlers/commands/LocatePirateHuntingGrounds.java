@@ -28,20 +28,24 @@ public class LocatePirateHuntingGrounds implements CommandHandler {
         
 
         StringBuilder sb = new StringBuilder();
-        if (huntingGrounds.isEmpty()) {
-            sb.append("No mission providers found.");
-        } else {
-            sb.append("Found ").append(huntingGrounds.size()).append(" mission provider");
-            if(huntingGrounds.size() > 1) sb.append("s");
-            sb.append(". ");
-            boolean reconRequired = huntingGrounds.stream().anyMatch(data -> !data.getTarget().isHasResSite());
-            if (reconRequired) {
-                sb.append(" Ask me to navigate to target system. ");
-                sb.append(" Reconnaissance is required.");
+        if (huntingGrounds != null) {
+            if (huntingGrounds.isEmpty()) {
+                sb.append("No mission providers found.");
             } else {
-                sb.append(" Ask me to navigate to mission provider. ");
+                sb.append("Found ").append(huntingGrounds.size()).append(" mission provider");
+                if (huntingGrounds.size() > 1) sb.append("s");
+                sb.append(". ");
+                boolean reconRequired = huntingGrounds.stream().anyMatch(data -> !data.getTarget().isHasResSite());
+                if (reconRequired) {
+                    sb.append(" Ask me to navigate to target system. ");
+                    sb.append(" Reconnaissance is required.");
+                } else {
+                    sb.append(" Ask me to navigate to mission provider. ");
+                }
             }
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent(sb.toString()));
+        } else {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Failed to retrieve hunting grounds data."));
         }
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent(sb.toString()));
     }
 }

@@ -20,8 +20,8 @@ import java.time.Duration;
 public class GrokClient extends BaseAiClient implements Client {
 
     /// use the same non-reasoning model for commands and queries for now.
-    public static final String MODEL_GROK_NON_REASONING = "grok-4-1-fast-non-reasoning";
-    public static final String MODEL_GROK_REASONING = "grok-4-1-fast-non-reasoning";
+    public static final String MODEL_GROK_NON_REASONING = "grok-4.20-non-reasoning";
+    public static final String MODEL_GROK_REASONING = "grok-4.20-non-reasoning";
 
     ///
     public static final boolean IS_STREAM = false;

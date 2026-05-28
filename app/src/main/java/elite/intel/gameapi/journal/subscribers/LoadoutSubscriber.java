@@ -12,6 +12,7 @@ import elite.intel.gameapi.journal.events.dto.shiploadout.LoadoutConverter;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.ShipProfileChangedEvent;
 import elite.intel.util.Ranks;
 
 import java.util.Objects;
@@ -49,11 +50,14 @@ public class LoadoutSubscriber {
                     shipDefaultVoice = GoogleVoices.STEVE.name();
                 }
                 shipManager.save(event.getShipId(), shipName, event.getCargoCapacity(), event.getShip(), shipDefaultVoice);
+                EventBusManager.publish(new ShipProfileChangedEvent());  // ← add this
+
             } else {
                 ship.setCargoCapacity(event.getCargoCapacity());
                 ship.setShipIdentifier(event.getShip());
                 ship.setShipName(shipName);
                 shipManager.saveShip(ship);
+                EventBusManager.publish(new ShipProfileChangedEvent());
             }
 
             if (Status.getInstance().isOkToAnnounceLoadout()) {

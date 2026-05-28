@@ -10,6 +10,7 @@ import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+
 public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterface {
     private static final Logger logger = LogManager.getLogger(GrokAnalysisEndpoint.class);
     private final Gson gson = GsonFactory.getGson();
@@ -30,6 +31,9 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
             String systemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt();
 
             JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_REASONING, 0.8f);
+            JsonObject responseFormat = new JsonObject();
+            responseFormat.addProperty("type", "json_object");
+            prompt.add("response_format", responseFormat);
 
             JsonObject systemMessage1 = new JsonObject();
             systemMessage1.addProperty("role", AIConstants.ROLE_SYSTEM);
@@ -88,4 +92,5 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
             return GrokClient.getInstance().createErrorResponse("Analysis error. Check logs.");
         }
     }
+
 }

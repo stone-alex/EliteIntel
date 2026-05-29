@@ -57,25 +57,20 @@ Powered by NVIDIA Parakeet. built-in / included.
 **✅ Local off-line private LLMs are now supported**
 [Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/installing-local-llms)
 
-- If you do not have the hardware to run your local LLM you have choices.
 ## Free cloud (if you don't have hardware for local LLM)
-[**Mistral**](https://console.mistral.ai/home). (some limitations may apply)
+- [**Mistral**](https://console.mistral.ai/home). (some limitations may apply)
 
-Paid cloud services: Claude, xAI, Gemini, Deepseek, or Open AI. The cost will very depending on which one you choose.
+## Paid cloud services
+- Claude, xAI, Gemini, Deepseek, or Open AI. The cost will very depending on which one you choose.
 
 ---
 
-## Minimum requirements for **running the game and the LLM on the same GPU**
+## Minimum requirements for **running the game **and** the Local LLM on the same GPU**
 - NVIDIA RTX 3090 **24GB VRAM** or equivalent.
 
 - RTX 5090 with only **12GB VRAM will not do**. Not enough VRAM.
     - Game takes 8GB (or more)
     - LLM takes 6.5GB
-
-
-
-
-
 ---
 
 ## 🧠 LLMs (Larger Language Models)

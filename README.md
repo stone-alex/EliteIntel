@@ -14,11 +14,12 @@
 ## Windows 🪟
 1. Download the [👉**installer**👈](https://github.com/stone-alex/EliteIntel/releases).
 2. Run the installer and follow the on-screen prompts.
+
 ---
 
 ## Linux 🐧
-### Installation (no sudo required)
-Do not use zip file from the artifacts. That is for updates.
+- Do not use zip file from the artifacts. That is for updates.
+- NO sudo required!
 
 1. Download the installer script:
 ```shell
@@ -33,9 +34,8 @@ chmod +x installer.sh
 The app installs to `~/.var/app/elite.intel.app`.
 Setup complete. Look for shortcut under games or utilities called Elite Intel.
 
+---
 
-
-- If you do not have the hardware to run your local LLM you have choices.
 ## 👉[Free cloud if you don't have hardware for local LLM](https://console.mistral.ai/home)👈
 
 - You may experience some occasional timeouts or lag, but for the most part it is fine.
@@ -51,25 +51,13 @@ The cost will very depending on which one you choose.
 
 ---
 
-**✅ The off-line TTS. (Linux and Windows)**
-Powered by Kokoro. built-in / included.
-
-**✅ The off-line STT. (Linux and Windows)**
-Powered by NVIDIA Parakeet. built-in / included.
-
-**✅ Local off-line private LLM**
-[Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/installing-local-llms)
-
----
-
-## 🧠 LLMs (Larger Language Models)
+## Local LLM
 - **LMStudio (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
 - **Ollama (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
 
 [Why tulu-3.1-8b Supernova specifically](https://github.com/stone-alex/EliteIntel/wiki/Why-Tulu3.1-supernova)
 
-## Local LLM
-Minimum requirements for **running the game **and** the Local LLM on the same GPU**
+### Minimum requirements for **running the game **and** the Local LLM on the same GPU**
 
 - NVIDIA RTX 3090 **24GB VRAM** or equivalent.
 
@@ -83,6 +71,15 @@ Minimum requirements for **running the game **and** the Local LLM on the same GP
 See [**Configure the app**](UI-and-Configuration-Options) for next steps.
 
 ## Overview
+
+**✅ The off-line TTS. (Linux and Windows)**
+Powered by Kokoro. built-in / included.
+
+**✅ The off-line STT. (Linux and Windows)**
+Powered by NVIDIA Parakeet. built-in / included.
+
+**✅ Local off-line private LLM**
+[Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/installing-local-llms)
 
 Elite Intel is your AI-powered, sidekick for *Elite Dangerous*.
 It's a Quality of Life (QoL) app that enhances gameplay with voice-activated commands 

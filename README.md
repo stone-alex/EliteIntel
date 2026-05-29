@@ -1,19 +1,16 @@
 # Elite Intel
 
-## Installation & Setup
-
 ### ⚙️ [INSTALL](https://github.com/stone-alex/EliteIntel/wiki/Installation-and-Configuration) | 🎓 [**WIKI**](https://github.com/stone-alex/eliteintel/wiki) | 💻[TECH STUFF](https://github.com/stone-alex/EliteIntel/blob/master/TECHNICAL.md)
 
 --- 
 
-## Linux and Windows.
 Can be ran 100% off-line or with various cloud services
 
-## Windows 🪟
+### Windows 🪟
 1. Download the [👉**installer**👈](https://github.com/stone-alex/EliteIntel/releases).
 2. Run the installer and follow the on-screen prompts.
 
-## Linux 🐧
+### Linux 🐧
 - Do not use zip file from the artifacts. That is for updates.
 - NO sudo required!
 
@@ -30,11 +27,11 @@ chmod +x installer.sh
 The app installs to `~/.var/app/elite.intel.app`.
 Setup complete. Look for shortcut under games or utilities called Elite Intel.
 
-## 👉[Free cloud if you don't have hardware for local LLM](https://console.mistral.ai/home)👈
+### 👉[Free cloud if you don't have hardware for local LLM](https://console.mistral.ai/home)👈
 
 - You may experience some occasional timeouts or lag, but for the most part it is fine.
 
-## Paid cloud services
+### Paid cloud services
 - Claude | claude-haiku-4-5
 - Grok | grok-4-1-fast-non-reasoning
 - Open AI | gpt-5.2
@@ -43,7 +40,7 @@ Setup complete. Look for shortcut under games or utilities called Elite Intel.
 
 The cost will very depending on which one you choose.
 
-## Local LLM
+### Local LLM
 - **LMStudio (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
 - **Ollama (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
 

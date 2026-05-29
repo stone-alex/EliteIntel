@@ -19,8 +19,9 @@
 
 ## Linux 🐧
 ### Installation (no sudo required)
-1. Download the installer script:
+Do not use zip file from the artifacts. That is for updates.
 
+1. Download the installer script:
 ```shell
 curl -L -o installer.sh https://raw.githubusercontent.com/stone-alex/EliteIntel/refs/heads/master/distribution/installer.sh
 ```
@@ -36,8 +37,8 @@ Both **Parakeet STT** and **Kokoro TTS** are bundled with the app. No additional
 Setup complete. See [**Configure the app**](UI-and-Configuration-Options) for next steps.
 
 - If you do not have the hardware to run your local LLM you have choices.
-## Free cloud (if you don't have hardware for local LLM)
-[**Mistral**](https://console.mistral.ai/home). (some limitations may apply)
+## 👉Free cloud (if you don't have hardware for local LLM)👈
+[**Mistral**](https://console.mistral.ai/home) (some limitations may apply)
 
 ---
 

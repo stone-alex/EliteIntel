@@ -9,13 +9,9 @@
 ## Linux and Windows.
 Can be ran 100% off-line or with various cloud services
 
----
-
 ## Windows 🪟
 1. Download the [👉**installer**👈](https://github.com/stone-alex/EliteIntel/releases).
 2. Run the installer and follow the on-screen prompts.
-
----
 
 ## Linux 🐧
 - Do not use zip file from the artifacts. That is for updates.
@@ -34,8 +30,6 @@ chmod +x installer.sh
 The app installs to `~/.var/app/elite.intel.app`.
 Setup complete. Look for shortcut under games or utilities called Elite Intel.
 
----
-
 ## 👉[Free cloud if you don't have hardware for local LLM](https://console.mistral.ai/home)👈
 
 - You may experience some occasional timeouts or lag, but for the most part it is fine.
@@ -48,8 +42,6 @@ Setup complete. Look for shortcut under games or utilities called Elite Intel.
 - Deepseek | deepseek-v4-flash
 
 The cost will very depending on which one you choose.
-
----
 
 ## Local LLM
 - **LMStudio (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
@@ -64,11 +56,9 @@ The cost will very depending on which one you choose.
 - RTX 5090 with only **12GB VRAM will not do**. Not enough VRAM.
     - Game takes 8GB (or more)
     - LLM takes 6.5GB
----
-
-
----
 See [**Configure the app**](UI-and-Configuration-Options) for next steps.
+
+---
 
 ## Overview
 

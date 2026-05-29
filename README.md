@@ -14,7 +14,6 @@
 ## Windows 🪟
 1. Download the [👉**installer**👈](https://github.com/stone-alex/EliteIntel/releases).
 2. Run the installer and follow the on-screen prompts.
-   - **Parakeet STT** (local speech recognition) and **Kokoro TTS** (local text-to-speech) are both included. No additional steps or services are required.
 ---
 
 ## Linux 🐧
@@ -32,11 +31,8 @@ chmod +x installer.sh
 ./installer.sh
 ```
 The app installs to `~/.var/app/elite.intel.app`.
-Both **Parakeet STT** and **Kokoro TTS** are bundled with the app. No additional installation is needed.
-
 Setup complete. Look for shortcut under games or utilities called Elite Intel.
 
-See [**Configure the app**](UI-and-Configuration-Options) for next steps.
 
 
 - If you do not have the hardware to run your local LLM you have choices.
@@ -69,9 +65,6 @@ Powered by NVIDIA Parakeet. built-in / included.
 ---
 
 ## 🧠 LLMs (Larger Language Models)
-
-### Local
-
 - **LMStudio (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
 - **Ollama (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
 
@@ -87,25 +80,15 @@ Powered by NVIDIA Parakeet. built-in / included.
 ### Cloud Free
 - Mistral | mistral-small-2506
 
-**Mistral is a cloud AI that allows you to run this app for free, but there is a limit on tokens per hour.
-[Create KEY in Mistral Console](https://console.mistral.ai/home) only email required, no credit card.**
-
 ---
-
-## 🎤 STT (Speech To Text)
-
-- **NVIDIA Parakeet (Local - off-line)**
-
-## 🔊 TTS (Text To Speech)
-
-- **Kokoro (Local - off-line)**
-- Google (Cloud)
+See [**Configure the app**](UI-and-Configuration-Options) for next steps.
 
 ## Overview
 
 Elite Intel is your AI-powered, sidekick for *Elite Dangerous*.
 It's a Quality of Life (QoL) app that enhances gameplay with voice-activated commands 
 **uttered in natural language**,
+
 real-time journal parsing, and smart AI assistance-all while staying fully compliant
 with Frontier Developments' Terms of Service. No AFK play, and no unfair advantages;
 everything requires your input.

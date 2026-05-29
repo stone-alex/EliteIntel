@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE game_session
+    ADD COLUMN aiLanguage VARCHAR(10) NOT NULL DEFAULT 'EN';
+
+COMMIT;

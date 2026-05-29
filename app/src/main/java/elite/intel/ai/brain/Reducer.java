@@ -54,18 +54,65 @@ public class Reducer {
      * @return a reduced map containing only the entries whose keys match significant words from the normalized input;
      *         may return a map with fallback values if the input is empty or irrelevant
      */
-    public static Map<String, String> reduce(String normalizedInput, Map<String, String> full, boolean isConversationMode) {
-        if (normalizedInput == null || normalizedInput.isBlank()) return full;
+    public static Map<String, String> reduce(
+            String normalizedInput,
+            Map<String, String> full,
+            boolean isConversationMode
+    ) {
+        if (normalizedInput == null || normalizedInput.isBlank()) {
+            return full;
+        }
 
-        Set<String> inputWords = Arrays.stream(normalizedInput.toLowerCase().split("\\W+"))
+        // Preserve an exact alias match as a high-confidence candidate.
+        // This must not replace semantic classification; it only prevents
+        // the reducer from accidentally removing a valid action before the LLM sees it.
+        String directAction = full.get(normalizedInput);
+
+        // Use Unicode-aware tokenization.
+        // "\\W+" is too ASCII-centric and does not work reliably with Cyrillic,
+        // Ukrainian, German umlauts, and other non-English input.
+        Set<String> inputWords = Arrays.stream(
+                        normalizedInput
+                                .toLowerCase(Locale.ROOT)
+                                .split("[^\\p{L}\\p{N}_]+")
+                )
                 .filter(w -> w.length() > 2)
                 .filter(w -> !STOP_WORDS.contains(w))
                 .collect(Collectors.toSet());
 
-
         Map<String, String> result = new LinkedHashMap<>();
-        /// Ensure an escape hatch is present
-        if (inputWords.isEmpty()) {
+
+        // Add all actions whose trigger phrases share meaningful words
+        // with the normalized user input.
+        for (Map.Entry<String, String> entry : full.entrySet()) {
+            String trigger = entry.getKey();
+            String action = entry.getValue();
+
+            Set<String> triggerWords = Arrays.stream(
+                            trigger
+                                    .toLowerCase(Locale.ROOT)
+                                    .split("[^\\p{L}\\p{N}_]+")
+                    )
+                    .filter(w -> w.length() > 2)
+                    .filter(w -> !STOP_WORDS.contains(w))
+                    .collect(Collectors.toSet());
+
+            boolean hasOverlap = triggerWords.stream().anyMatch(inputWords::contains);
+
+            if (hasOverlap) {
+                result.put(trigger, action);
+            }
+        }
+
+        // If the user input exactly matches an alias from the action map,
+        // keep that action in the reduced candidate list.
+        // It is still only a candidate; the LLM remains responsible for final intent selection.
+        if (directAction != null) {
+            result.put(normalizedInput, directAction);
+        }
+
+        // If no candidate survived reduction, fall back according to the current mode.
+        if (result.isEmpty()) {
             if (isConversationMode) {
                 result.put(GENERAL_CONVERSATION.getAction(), GENERAL_CONVERSATION.getAction());
             } else {
@@ -73,17 +120,6 @@ public class Reducer {
             }
         }
 
-        for (Map.Entry<String, String> entry : full.entrySet()) {
-            // Strip param templates like {key:X, max_distance:Y} before matching to avoid
-            // false positives (e.g. "distance" matching "max_distance" in a param template).
-            String keyLower = entry.getKey().toLowerCase().replaceAll("\\{[^}]*\\}", "");
-            for (String word : inputWords) {
-                if (keyLower.contains(word)) {
-                    result.put(entry.getKey(), entry.getValue());
-                    break;
-                }
-            }
-        }
         return result;
     }
 

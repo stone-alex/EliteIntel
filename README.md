@@ -15,10 +15,6 @@
 1. Download the [👉**installer**👈](https://github.com/stone-alex/EliteIntel/releases).
 2. Run the installer and follow the on-screen prompts.
    - **Parakeet STT** (local speech recognition) and **Kokoro TTS** (local text-to-speech) are both included. No additional steps or services are required.
-3. Set up an LLM. Two options are available:
-   - **Local LLM** (free, offline): See the [**Local LLM guide**](installing-local-llms). Requires capable GPU hardware.
-   - **Cloud LLM** (easier to set up): See the [**Configure the app**](UI-and-Configuration-Options) guide for API key setup.
-
 ---
 
 ## Linux 🐧
@@ -37,12 +33,17 @@ chmod +x installer.sh
 The app installs to `~/.var/app/elite.intel.app`.
 Both **Parakeet STT** and **Kokoro TTS** are bundled with the app. No additional installation is needed. Enable them in the app via the **Settings tab ☑ Use** checkboxes.
 
-3. Set up an LLM. Two options are available:
-   - **Local LLM** (free, offline): See the [**Local LLM guide**](installing-local-llms). Requires capable GPU hardware.
-   - **Cloud LLM** (easier to set up): See the [**Configure the app**](UI-and-Configuration-Options) guide for API key setup.
-
 Setup complete. See [**Configure the app**](UI-and-Configuration-Options) for next steps.
 
+- If you do not have the hardware to run your local LLM you have choices.
+## Free cloud (if you don't have hardware for local LLM)
+[**Mistral**](https://console.mistral.ai/home). (some limitations may apply)
+
+---
+
+## Set up an LLM. Two options are available:
+   - **Local LLM** (free, offline): See the [**Local LLM guide**](installing-local-llms). Requires capable GPU hardware.
+   - **Cloud LLM** (easier to set up): See the [**Configure the app**](UI-and-Configuration-Options) guide for API key setup.
 
 Latest [release notes](https://github.com/stone-alex/EliteIntel/blob/master/distribution/release-notes.md)
 

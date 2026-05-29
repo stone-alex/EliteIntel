@@ -34,7 +34,9 @@ chmod +x installer.sh
 The app installs to `~/.var/app/elite.intel.app`.
 Both **Parakeet STT** and **Kokoro TTS** are bundled with the app. No additional installation is needed. Enable them in the app via the **Settings tab ☑ Use** checkboxes.
 
-Setup complete. See [**Configure the app**](UI-and-Configuration-Options) for next steps.
+Setup complete. Look for shortcut under games or utilities called Elite Intel.
+See [**Configure the app**](UI-and-Configuration-Options) for next steps.
+
 
 - If you do not have the hardware to run your local LLM you have choices.
 ## 👉Free cloud (if you don't have hardware for local LLM)👈

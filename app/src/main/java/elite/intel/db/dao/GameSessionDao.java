@@ -22,7 +22,8 @@ public interface GameSessionDao {
                                                              useLocalCommandLlm, useLocalQueryLlm, useLocalTTS, notificationVolume, sttThreads, voiceVolume,
                                                              localLlmProvider, localLlmAddress, conversationModeOn,
                                                              ollamaAddress, ollamaCommandModel, ollamaQueryModel,
-                                                             lmStudioAddress, lmStudioCommandModel, lmStudioQueryModel
+                                                             lmStudioAddress, lmStudioCommandModel, lmStudioQueryModel,
+                                                             aiLanguage
                                                 )
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey,
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh,
@@ -31,7 +32,8 @@ public interface GameSessionDao {
                                                       :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS, :notificationVolume, :sttThreads, :voiceVolume,
                                                       :localLlmProvider, :localLlmAddress, :conversationModeOn,
                                                       :ollamaAddress, :ollamaCommandModel, :ollamaQueryModel,
-                                                      :lmStudioAddress, :lmStudioCommandModel, :lmStudioQueryModel
+                                                      :lmStudioAddress, :lmStudioCommandModel, :lmStudioQueryModel,
+                                                      :aiLanguage
                                           )
             """)
     void save(@BindBean GameSessionDao.GameSession data);
@@ -83,6 +85,7 @@ public interface GameSessionDao {
             session.setLmStudioAddress(rs.getString("lmStudioAddress"));
             session.setLmStudioCommandModel(rs.getString("lmStudioCommandModel"));
             session.setLmStudioQueryModel(rs.getString("lmStudioQueryModel"));
+            session.setAiLanguage(rs.getString("aiLanguage"));
             return session;
         }
     }
@@ -125,6 +128,7 @@ public interface GameSessionDao {
         private String lmStudioAddress;
         private String lmStudioCommandModel;
         private String lmStudioQueryModel;
+        private String aiLanguage;
 
 
         public String getAiPersonality() {
@@ -383,6 +387,14 @@ public interface GameSessionDao {
 
         public void setLmStudioQueryModel(String lmStudioQueryModel) {
             this.lmStudioQueryModel = lmStudioQueryModel;
+        }
+
+        public String getAiLanguage() {
+            return aiLanguage;
+        }
+
+        public void setAiLanguage(String aiLanguage) {
+            this.aiLanguage = aiLanguage;
         }
     }
 }

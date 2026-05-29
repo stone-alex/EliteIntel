@@ -3,6 +3,7 @@ package elite.intel.session;
 import elite.intel.ai.brain.LocalLlmProvider;
 import elite.intel.ai.brain.ShipCadence;
 import elite.intel.ai.brain.ShipPersonality;
+import elite.intel.ai.brain.i18n.AiActionLanguage;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.db.dao.ChatHistoryDao;
@@ -377,6 +378,24 @@ public class SystemSession {
 
     public String getLmStudioQueryModel() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getLmStudioQueryModel());
+    }
+
+    public AiActionLanguage getAiLanguage() {
+        String raw = Database.withDao(GameSessionDao.class, dao -> dao.get().getAiLanguage());
+        try {
+            return AiActionLanguage.valueOf(raw);
+        } catch (Exception e) {
+            return AiActionLanguage.EN;
+        }
+    }
+
+    public void setAiLanguage(AiActionLanguage language) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setAiLanguage(language.name());
+            dao.save(session);
+            return null;
+        });
     }
 
     public void setConversationalMode(boolean b) {

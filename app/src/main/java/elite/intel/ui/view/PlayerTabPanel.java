@@ -2,6 +2,7 @@ package elite.intel.ui.view;
 
 import elite.intel.ai.brain.ShipCadence;
 import elite.intel.ai.brain.ShipPersonality;
+import elite.intel.ai.brain.i18n.AiActionLanguage;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.ai.mouth.subscribers.events.AiVoxDemoEvent;
@@ -37,6 +38,7 @@ public class PlayerTabPanel extends JPanel {
     private JTextField bindingsDirField;
     private JScrollPane fleetScrollPane;
     private JCheckBox conversationModeCheckBox;
+    private JComboBox<String> languageCombo;
 
     public PlayerTabPanel() {
         buildUi();
@@ -103,7 +105,19 @@ public class PlayerTabPanel extends JPanel {
         });
         addField(this, selectBindingsDirButton, gbc, 2, 0.2);
 
-        // Row 3: Save button
+        // Row 3: Command Language
+        nextRow(gbc);
+        addLabel(this, "Command Language:", gbc);
+        String[] languageOptions = Arrays.stream(AiActionLanguage.values()).map(Enum::name).toArray(String[]::new);
+        languageCombo = makeCombo(languageOptions, systemSession.getAiLanguage().name());
+        languageCombo.setToolTipText("Language of voice commands used to control the ship");
+        languageCombo.addActionListener(e -> {
+            String selected = (String) languageCombo.getSelectedItem();
+            if (selected != null) systemSession.setAiLanguage(AiActionLanguage.valueOf(selected));
+        });
+        addField(this, languageCombo, gbc, 1, 1.0);
+
+        // Row 4: Save button
         nextRow(gbc);
         gbc.gridx = 0;
         gbc.gridwidth = 3;
@@ -158,6 +172,7 @@ public class PlayerTabPanel extends JPanel {
         journalDirField.setText(playerSession.getJournalPath().toString());
         bindingsDirField.setText(playerSession.getBindingsDir().toString());
         conversationModeCheckBox.setSelected(systemSession.conversationalModeOn());
+        languageCombo.setSelectedItem(systemSession.getAiLanguage().name());
 
         List<ShipDao.Ship> ships = ShipManager.getInstance().getAllShips();
         ships.sort((a, b) -> {

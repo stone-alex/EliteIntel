@@ -36,11 +36,18 @@ Setup complete. Look for shortcut under games or utilities called Elite Intel.
 
 
 - If you do not have the hardware to run your local LLM you have choices.
-## 👉Free cloud (if you don't have hardware for local LLM)👈
-[**Mistral**](https://console.mistral.ai/home) (some limitations may apply)
+## 👉[Free cloud if you don't have hardware for local LLM](https://console.mistral.ai/home)👈
+
+- You may experience some occasional timeouts or lag, but for the most part it is fine.
 
 ## Paid cloud services
-- Claude, xAI, Gemini, Deepseek, or Open AI. The cost will very depending on which one you choose.
+- Claude | claude-haiku-4-5
+- Grok | grok-4-1-fast-non-reasoning
+- Open AI | gpt-5.2
+- Google Gemini | gemini-3.1-flash-lite
+- Deepseek | deepseek-v4-flash
+
+The cost will very depending on which one you choose.
 
 ---
 
@@ -60,17 +67,6 @@ Powered by NVIDIA Parakeet. built-in / included.
 - **Ollama (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
 
 [Why tulu-3.1-8b Supernova specifically](https://github.com/stone-alex/EliteIntel/wiki/Why-Tulu3.1-supernova)
-
-### Cloud Paid
-- Claude | claude-haiku-4-5
-- Grok | grok-4-1-fast-non-reasoning
-- Open AI | gpt-5.2
-- Google Gemini | gemini-3.1-flash-lite
-- Deepseek | deepseek-v4-flash
-
-### Cloud Free
-- Mistral | mistral-small-2506
-
 
 ## Local LLM
 Minimum requirements for **running the game **and** the Local LLM on the same GPU**

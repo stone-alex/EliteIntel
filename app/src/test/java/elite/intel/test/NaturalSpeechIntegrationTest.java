@@ -1,18 +1,21 @@
 package elite.intel.test;
 
 import elite.intel.ai.brain.commons.HandlerDispatchedEvent;
+import elite.intel.ai.brain.i18n.AiActionLanguage;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.ws.WebSocketBroadcaster;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
 import static elite.intel.ai.brain.actions.Commands.*;
 import static elite.intel.ai.brain.actions.Queries.*;
+import static elite.intel.ai.brain.i18n.AiActionLanguage.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -47,6 +50,7 @@ public class NaturalSpeechIntegrationTest {
     @BeforeAll
     void bootstrap() throws InterruptedException {
         SystemSession.getInstance().setConversationalMode(false);
+        SystemSession.getInstance().setAiLanguage(AiActionLanguage.EN);
         HeadlessBootstrap.start();
         WebSocketBroadcaster.getInstance().start();
         capture = new HandlerCapture();
@@ -59,6 +63,7 @@ public class NaturalSpeechIntegrationTest {
 
     @AfterAll
     void teardown() {
+        SystemSession.getInstance().setAiLanguage(AiActionLanguage.EN);
         HeadlessBootstrap.stop();
     }
 
@@ -1146,5 +1151,344 @@ public class NaturalSpeechIntegrationTest {
         return Stream.of("youtube stream is at 5 tomorrow", "what time should we meet", "most to the time it should pay no attention to bogus data", "the response time is fast", "what is the meaning of life", "some other crap", "have to navigate though the potholes");
     }
 */
+
+    // =========================================================================
+    // Multi-language routing: each language gets its own native-language input.
+    // DE input → DE alias map, RU input → RU alias map, etc.
+    // Language is reset to EN in @AfterAll.
+    // =========================================================================
+
+    @ParameterizedTest(name = "[{index}] [{0}] \"{1}\"")
+    @Order(500)
+    @MethodSource("allLanguageCases")
+    void routingPerLanguage(AiActionLanguage lang, String input, String expectedAction) throws InterruptedException {
+        SystemSession.getInstance().setAiLanguage(lang);
+        assertRouted(input, expectedAction);
+    }
+
+    static Stream<Arguments> allLanguageCases() {
+        return Stream.of(deNativeCases(), ruNativeCases(), ukNativeCases()).flatMap(s -> s);
+    }
+
+    // -- German ---------------------------------------------------------------
+
+    private static Stream<Arguments> deNativeCases() {
+        return Stream.of(
+                // Attention / control
+                Arguments.of(DE, "wach auf", WAKEUP.getAction()),
+                Arguments.of(DE, "schlaf", SLEEP.getAction()),
+                Arguments.of(DE, "unterbrich", INTERRUPT_TTS.getAction()),
+                Arguments.of(DE, "in den kampfmodus wechseln", ACTIVATE_COMBAT_MODE.getAction()),
+                Arguments.of(DE, "in den analysemodus wechseln", ACTIVATE_ANALYSIS_MODE.getAction()),
+                // Speed / throttle
+                Arguments.of(DE, "triebwerke stoppen", SET_SPEED_ZERO.getAction()),
+                Arguments.of(DE, "viertel schub", SET_SPEED25.getAction()),
+                Arguments.of(DE, "halber schub", SET_SPEED50.getAction()),
+                Arguments.of(DE, "drei viertel schub", SET_SPEED75.getAction()),
+                Arguments.of(DE, "voller schub", SET_SPEED100.getAction()),
+                Arguments.of(DE, "geschwindigkeit erhöhen um 10", INCREASE_SPEED_BY.getAction()),
+                Arguments.of(DE, "geschwindigkeit verringern um 10", DECREASE_SPEED_BY.getAction()),
+                Arguments.of(DE, "optimale geschwindigkeit setzen", SET_OPTIMAL_SPEED.getAction()),
+                // Navigation
+                Arguments.of(DE, "sprung in den hyperraum", JUMP_TO_HYPERSPACE.getAction()),
+                Arguments.of(DE, "in supercruise gehen", ENTER_SUPER_CRUISE.getAction()),
+                Arguments.of(DE, "aus dem supercruise fallen", DROP_FROM_SUPER_CRUISE.getAction()),
+                Arguments.of(DE, "navigiere zur aktiven mission", NAVIGATE_TO_NEXT_MISSION.getAction()),
+                Arguments.of(DE, "navigiere zum fleet carrier", NAVIGATE_TO_CARRIER.getAction()),
+                Arguments.of(DE, "navigation abbrechen", NAVIGATION_OFF.getAction()),
+                Arguments.of(DE, "navigiere zur landezone", GET_HEADING_TO_LZ.getAction()),
+                Arguments.of(DE, "fsd ziel auswählen", TARGET_DESTINATION.getAction()),
+                Arguments.of(DE, "navigiere zum nächsten handelsstopp", NAVIGATE_TO_NEXT_TRADE_STOP.getAction()),
+                // Flight / ship systems
+                Arguments.of(DE, "fahrwerk ausfahren", DEPLOY_LANDING_GEAR.getAction()),
+                Arguments.of(DE, "fahrwerk einfahren", RETRACT_LANDING_GEAR.getAction()),
+                Arguments.of(DE, "landeerlaubnis anfragen", REQUEST_DOCKING.getAction()),
+                Arguments.of(DE, "frachtschaufel öffnen", TOGGLE_CARGO_SCOOP.getAction()),
+                Arguments.of(DE, "nachtsicht", NIGHT_VISION_ON_OFF.getAction()),
+                Arguments.of(DE, "licht einschalten", LIGHTS_ON_OFF.getAction()),
+                Arguments.of(DE, "schiff wegschicken", DISMISS_SHIP.getAction()),
+                Arguments.of(DE, "taxi zur landung", TAXI.getAction()),
+                // Combat / hardpoints
+                Arguments.of(DE, "waffen ausfahren", DEPLOY_HARDPOINTS.getAction()),
+                Arguments.of(DE, "waffen einfahren", RETRACT_HARDPOINTS.getAction()),
+                Arguments.of(DE, "heat sink abwerfen", DEPLOY_HEAT_SINK.getAction()),
+                Arguments.of(DE, "höchste bedrohung anvisieren", SELECT_HIGHEST_THREAT.getAction()),
+                // Power management
+                Arguments.of(DE, "energie auf schilde", INCREASE_SHIELDS_POWER.getAction()),
+                Arguments.of(DE, "energie auf triebwerke", INCREASE_ENGINES_POWER.getAction()),
+                Arguments.of(DE, "energie auf waffen", INCREASE_WEAPONS_POWER.getAction()),
+                Arguments.of(DE, "energie ausgleichen", RESET_POWER.getAction()),
+                // Science / exploration / mining
+                Arguments.of(DE, "system scannen", OPEN_FSS_AND_SCAN.getAction()),
+                Arguments.of(DE, "zum nächsten bio sample navigieren", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction()),
+                Arguments.of(DE, "mining site finden", FIND_MINING_SITE.getAction()),
+                // Fleet carrier
+                Arguments.of(DE, "carrier ziel eingeben", ENTER_FLEET_CARRIER_DESTINATION.getAction()),
+                Arguments.of(DE, "nächsten fleet carrier finden", FIND_NEAREST_FLEET_CARRIER.getAction()),
+                // App settings
+                Arguments.of(DE, "alle ansagen deaktivieren", DISABLE_ALL_ANNOUNCEMENTS.getAction()),
+                Arguments.of(DE, "erinnerung setzen refuel beim nächsten stopp", SET_REMINDER.getAction()),
+                // UI panels
+                Arguments.of(DE, "galaxiekarte öffnen", OPEN_GALAXY_MAP.getAction()),
+                Arguments.of(DE, "systemkarte öffnen", OPEN_SYSTEM_MAP.getAction()),
+                Arguments.of(DE, "navigation anzeigen", SHOW_NAVIGATION.getAction()),
+                Arguments.of(DE, "module panel anzeigen", SHOW_MODULES_PANEL.getAction()),
+                Arguments.of(DE, "status anzeigen", SHOW_STATUS_PANEL.getAction()),
+                Arguments.of(DE, "inventar anzeigen", SHOW_INVENTORY_PANEL.getAction()),
+                Arguments.of(DE, "panel schließen", EXIT_CLOSE.getAction()),
+                // Queries
+                Arguments.of(DE, "aktueller standort", CURRENT_LOCATION.getAction()),
+                Arguments.of(DE, "schiff loadout", SHIP_LOADOUT.getAction()),
+                Arguments.of(DE, "was ist im frachtraum", CARGO_HOLD_CONTENTS.getAction()),
+                Arguments.of(DE, "geplante route", PLOTTED_ROUTE_ANALYSIS.getAction()),
+                Arguments.of(DE, "stationen im system", QUERY_STATIONS.getAction()),
+                Arguments.of(DE, "stellare objekte", QUERY_STELLAR_OBJETS.getAction()),
+                Arguments.of(DE, "signale im system", QUERY_STELLAR_SIGNALS.getAction()),
+                Arguments.of(DE, "bio signale im system", BIO_SAMPLE_IN_STAR_SYSTEM.getAction()),
+                Arguments.of(DE, "exobiologie proben", EXOBIOLOGY_SAMPLES.getAction()),
+                Arguments.of(DE, "spielerprofil", PLAYER_PROFILE_ANALYSIS.getAction()),
+                Arguments.of(DE, "carrier status", CARRIER_STATUS.getAction()),
+                Arguments.of(DE, "carrier tritium", CARRIER_TRITIUM_SUPPLY.getAction()),
+                Arguments.of(DE, "entfernung zum carrier", DISTANCE_TO_CARRIER.getAction()),
+                Arguments.of(DE, "fsd ziel info", FSD_TARGET_ANALYSIS.getAction()),
+                Arguments.of(DE, "explorationsgewinn", EXPLORATION_PROFITS.getAction()),
+                Arguments.of(DE, "aktuelle zeit", TIME_IN_ZONE.getAction()),
+                Arguments.of(DE, "systemsicherheit", SYSTEM_SECURITY_ANALYSIS.getAction()),
+                Arguments.of(DE, "stationsdetails", STATION_DETAILS.getAction()),
+                Arguments.of(DE, "material inventar eisen", MATERIALS_INVENTORY.getAction()),
+                Arguments.of(DE, "planetenmaterialien", PLANET_MATERIALS.getAction()),
+                Arguments.of(DE, "entfernung zur bubble", DISTANCE_TO_BUBBLE.getAction()),
+                Arguments.of(DE, "letzter scan", LAST_SCAN_ANALYSIS.getAction()),
+                Arguments.of(DE, "erinnerung", REMINDER.getAction()),
+                Arguments.of(DE, "carrier eta", CARRIER_ETA.getAction()),
+                Arguments.of(DE, "geosignale", QUERY_GEO_SIGNALS.getAction()),
+                Arguments.of(DE, "lokale märkte", ANALYZE_MARKETS.getAction()),
+                Arguments.of(DE, "kopfgelder", TOTAL_BOUNTIES.getAction()),
+                Arguments.of(DE, "key bindings prüfen", KEY_BINDINGS_ANALYSIS.getAction()),
+                Arguments.of(DE, "biom analysieren", PLANET_BIOME_ANALYSIS.getAction()),
+                Arguments.of(DE, "entfernung zur letzten bio probe", DISTANCE_TO_LAST_BIO_SAMPLE.getAction()),
+                Arguments.of(DE, "wie viele sprünge auf der carrier route", CARRIER_ROUTE_ANALYSIS.getAction()),
+                Arguments.of(DE, "carrier treibstoffreserve setzen 5000", SET_CARRIER_FUEL_RESERVE.getAction()),
+                Arguments.of(DE, "aussteigen", DISEMBARK.getAction()),
+                Arguments.of(DE, "commander panel anzeigen", SHOW_COMMANDER_PANEL.getAction()),
+                Arguments.of(DE, "jäger panel anzeigen", SHOW_FIGHTER_PANEL.getAction()),
+                Arguments.of(DE, "jäger feuer frei", FIGHTER_OPEN_ORDERS.getAction()),
+                Arguments.of(DE, "jäger greife mein ziel an", FIGHTER_REQUEST_FOCUS_TARGET.getAction())
+        );
+    }
+
+    // -- Russian --------------------------------------------------------------
+
+    private static Stream<Arguments> ruNativeCases() {
+        return Stream.of(
+                // Attention / control
+                Arguments.of(RU, "проснись", WAKEUP.getAction()),
+                Arguments.of(RU, "спи", SLEEP.getAction()),
+                Arguments.of(RU, "перебей", INTERRUPT_TTS.getAction()),
+                Arguments.of(RU, "переключись в боевой режим", ACTIVATE_COMBAT_MODE.getAction()),
+                Arguments.of(RU, "переключись в режим анализа", ACTIVATE_ANALYSIS_MODE.getAction()),
+                // Speed / throttle
+                Arguments.of(RU, "останови двигатели", SET_SPEED_ZERO.getAction()),
+                Arguments.of(RU, "четверть тяги", SET_SPEED25.getAction()),
+                Arguments.of(RU, "половина тяги", SET_SPEED50.getAction()),
+                Arguments.of(RU, "три четверти тяги", SET_SPEED75.getAction()),
+                Arguments.of(RU, "полная тяга", SET_SPEED100.getAction()),
+                Arguments.of(RU, "увеличь скорость на 10", INCREASE_SPEED_BY.getAction()),
+                Arguments.of(RU, "уменьши скорость на 10", DECREASE_SPEED_BY.getAction()),
+                Arguments.of(RU, "установи оптимальную скорость", SET_OPTIMAL_SPEED.getAction()),
+                // Navigation
+                Arguments.of(RU, "прыжок в гиперпространство", JUMP_TO_HYPERSPACE.getAction()),
+                Arguments.of(RU, "войти в суперкруиз", ENTER_SUPER_CRUISE.getAction()),
+                Arguments.of(RU, "выйти из суперкруиза", DROP_FROM_SUPER_CRUISE.getAction()),
+                Arguments.of(RU, "навигация к активной миссии", NAVIGATE_TO_NEXT_MISSION.getAction()),
+                Arguments.of(RU, "лети к авианосцу", NAVIGATE_TO_CARRIER.getAction()),
+                Arguments.of(RU, "отмени навигацию", NAVIGATION_OFF.getAction()),
+                Arguments.of(RU, "навигация к зоне посадки", GET_HEADING_TO_LZ.getAction()),
+                Arguments.of(RU, "выбери fsd пункт назначения", TARGET_DESTINATION.getAction()),
+                Arguments.of(RU, "навигация к следующей торговой остановке", NAVIGATE_TO_NEXT_TRADE_STOP.getAction()),
+                // Flight / ship systems
+                Arguments.of(RU, "выпусти шасси", DEPLOY_LANDING_GEAR.getAction()),
+                Arguments.of(RU, "убери шасси", RETRACT_LANDING_GEAR.getAction()),
+                Arguments.of(RU, "запроси стыковку", REQUEST_DOCKING.getAction()),
+                Arguments.of(RU, "открой грузовой ковш", TOGGLE_CARGO_SCOOP.getAction()),
+                Arguments.of(RU, "ночное видение", NIGHT_VISION_ON_OFF.getAction()),
+                Arguments.of(RU, "фары", LIGHTS_ON_OFF.getAction()),
+                Arguments.of(RU, "отправь корабль", DISMISS_SHIP.getAction()),
+                Arguments.of(RU, "такси к посадке", TAXI.getAction()),
+                // Combat / hardpoints
+                Arguments.of(RU, "выпусти оружие", DEPLOY_HARDPOINTS.getAction()),
+                Arguments.of(RU, "убери оружие", RETRACT_HARDPOINTS.getAction()),
+                Arguments.of(RU, "выпусти теплоотвод", DEPLOY_HEAT_SINK.getAction()),
+                Arguments.of(RU, "приоритетная цель", SELECT_HIGHEST_THREAT.getAction()),
+                // Power management
+                Arguments.of(RU, "энергию на щиты", INCREASE_SHIELDS_POWER.getAction()),
+                Arguments.of(RU, "энергию на двигатели", INCREASE_ENGINES_POWER.getAction()),
+                Arguments.of(RU, "энергию на оружие", INCREASE_WEAPONS_POWER.getAction()),
+                Arguments.of(RU, "сбалансируй энергию", RESET_POWER.getAction()),
+                // Science / exploration / mining
+                Arguments.of(RU, "просканируй систему", OPEN_FSS_AND_SCAN.getAction()),
+                Arguments.of(RU, "навигация к следующему биосэмплу", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction()),
+                Arguments.of(RU, "найди место добычи", FIND_MINING_SITE.getAction()),
+                // Fleet carrier
+                Arguments.of(RU, "введи пункт назначения авианосца", ENTER_FLEET_CARRIER_DESTINATION.getAction()),
+                Arguments.of(RU, "найди ближайший авианосец", FIND_NEAREST_FLEET_CARRIER.getAction()),
+                // App settings
+                Arguments.of(RU, "отключи все объявления", DISABLE_ALL_ANNOUNCEMENTS.getAction()),
+                Arguments.of(RU, "установи напоминание дозаправиться на следующей остановке", SET_REMINDER.getAction()),
+                // UI panels
+                Arguments.of(RU, "открой карту галактики", OPEN_GALAXY_MAP.getAction()),
+                Arguments.of(RU, "открой карту системы", OPEN_SYSTEM_MAP.getAction()),
+                Arguments.of(RU, "покажи панель навигации", SHOW_NAVIGATION.getAction()),
+                Arguments.of(RU, "покажи панель модулей", SHOW_MODULES_PANEL.getAction()),
+                Arguments.of(RU, "покажи статус", SHOW_STATUS_PANEL.getAction()),
+                Arguments.of(RU, "покажи инвентарь", SHOW_INVENTORY_PANEL.getAction()),
+                Arguments.of(RU, "закрыть панель", EXIT_CLOSE.getAction()),
+                // Queries
+                Arguments.of(RU, "где я нахожусь", CURRENT_LOCATION.getAction()),
+                Arguments.of(RU, "компоновка корабля", SHIP_LOADOUT.getAction()),
+                Arguments.of(RU, "что в грузовом отсеке", CARGO_HOLD_CONTENTS.getAction()),
+                Arguments.of(RU, "проложенный маршрут", PLOTTED_ROUTE_ANALYSIS.getAction()),
+                Arguments.of(RU, "станции в системе", QUERY_STATIONS.getAction()),
+                Arguments.of(RU, "звездные объекты", QUERY_STELLAR_OBJETS.getAction()),
+                Arguments.of(RU, "сигналы в системе", QUERY_STELLAR_SIGNALS.getAction()),
+                Arguments.of(RU, "биосигналы в системе", BIO_SAMPLE_IN_STAR_SYSTEM.getAction()),
+                Arguments.of(RU, "экзобиологические образцы", EXOBIOLOGY_SAMPLES.getAction()),
+                Arguments.of(RU, "профиль игрока", PLAYER_PROFILE_ANALYSIS.getAction()),
+                Arguments.of(RU, "статус авианосца", CARRIER_STATUS.getAction()),
+                Arguments.of(RU, "тритий авианосца", CARRIER_TRITIUM_SUPPLY.getAction()),
+                Arguments.of(RU, "расстояние до авианосца", DISTANCE_TO_CARRIER.getAction()),
+                Arguments.of(RU, "информация о цели fsd", FSD_TARGET_ANALYSIS.getAction()),
+                Arguments.of(RU, "прибыль исследования", EXPLORATION_PROFITS.getAction()),
+                Arguments.of(RU, "текущее время", TIME_IN_ZONE.getAction()),
+                Arguments.of(RU, "безопасность системы", SYSTEM_SECURITY_ANALYSIS.getAction()),
+                Arguments.of(RU, "детали станции", STATION_DETAILS.getAction()),
+                Arguments.of(RU, "инвентарь материалов железо", MATERIALS_INVENTORY.getAction()),
+                Arguments.of(RU, "материалы планеты", PLANET_MATERIALS.getAction()),
+                Arguments.of(RU, "расстояние до пузыря", DISTANCE_TO_BUBBLE.getAction()),
+                Arguments.of(RU, "последний скан", LAST_SCAN_ANALYSIS.getAction()),
+                Arguments.of(RU, "напоминание", REMINDER.getAction()),
+                Arguments.of(RU, "eta авианосца", CARRIER_ETA.getAction()),
+                Arguments.of(RU, "геосигналы", QUERY_GEO_SIGNALS.getAction()),
+                Arguments.of(RU, "локальные рынки", ANALYZE_MARKETS.getAction()),
+                Arguments.of(RU, "награды за головы", TOTAL_BOUNTIES.getAction()),
+                Arguments.of(RU, "проверь бинды", KEY_BINDINGS_ANALYSIS.getAction()),
+                Arguments.of(RU, "анализ биома", PLANET_BIOME_ANALYSIS.getAction()),
+                Arguments.of(RU, "расстояние до последнего биосэмпла", DISTANCE_TO_LAST_BIO_SAMPLE.getAction()),
+                Arguments.of(RU, "сколько прыжков на маршруте авианосца", CARRIER_ROUTE_ANALYSIS.getAction()),
+                Arguments.of(RU, "установи резерв топлива авианосца 5000", SET_CARRIER_FUEL_RESERVE.getAction()),
+                Arguments.of(RU, "выйти из корабля", DISEMBARK.getAction()),
+                Arguments.of(RU, "покажи панель командира", SHOW_COMMANDER_PANEL.getAction()),
+                Arguments.of(RU, "покажи панель истребителя", SHOW_FIGHTER_PANEL.getAction()),
+                Arguments.of(RU, "истребитель свободный огонь", FIGHTER_OPEN_ORDERS.getAction()),
+                Arguments.of(RU, "истребитель атакуй мою цель", FIGHTER_REQUEST_FOCUS_TARGET.getAction())
+        );
+    }
+
+    // -- Ukrainian ------------------------------------------------------------
+
+    private static Stream<Arguments> ukNativeCases() {
+        return Stream.of(
+                // Attention / control
+                Arguments.of(UK, "прокинься", WAKEUP.getAction()),
+                Arguments.of(UK, "спи", SLEEP.getAction()),
+                Arguments.of(UK, "перебий", INTERRUPT_TTS.getAction()),
+                Arguments.of(UK, "перемкнись у бойовий режим", ACTIVATE_COMBAT_MODE.getAction()),
+                Arguments.of(UK, "перемкнись у режим аналізу", ACTIVATE_ANALYSIS_MODE.getAction()),
+                // Speed / throttle
+                Arguments.of(UK, "зупини двигуни", SET_SPEED_ZERO.getAction()),
+                Arguments.of(UK, "чверть тяги", SET_SPEED25.getAction()),
+                Arguments.of(UK, "половина тяги", SET_SPEED50.getAction()),
+                Arguments.of(UK, "три чверті тяги", SET_SPEED75.getAction()),
+                Arguments.of(UK, "повна тяга", SET_SPEED100.getAction()),
+                Arguments.of(UK, "збільш швидкість на 10", INCREASE_SPEED_BY.getAction()),
+                Arguments.of(UK, "зменш швидкість на 10", DECREASE_SPEED_BY.getAction()),
+                Arguments.of(UK, "встанови оптимальну швидкість", SET_OPTIMAL_SPEED.getAction()),
+                // Navigation
+                Arguments.of(UK, "стрибок у гіперпростір", JUMP_TO_HYPERSPACE.getAction()),
+                Arguments.of(UK, "увійти в суперкруїз", ENTER_SUPER_CRUISE.getAction()),
+                Arguments.of(UK, "вийти із суперкруїзу", DROP_FROM_SUPER_CRUISE.getAction()),
+                Arguments.of(UK, "навігація до активної місії", NAVIGATE_TO_NEXT_MISSION.getAction()),
+                Arguments.of(UK, "лети до авіаносця", NAVIGATE_TO_CARRIER.getAction()),
+                Arguments.of(UK, "скасуй навігацію", NAVIGATION_OFF.getAction()),
+                Arguments.of(UK, "навігація до зони посадки", GET_HEADING_TO_LZ.getAction()),
+                Arguments.of(UK, "вибери fsd пункт призначення", TARGET_DESTINATION.getAction()),
+                Arguments.of(UK, "навігація до наступної торгової зупинки", NAVIGATE_TO_NEXT_TRADE_STOP.getAction()),
+                // Flight / ship systems
+                Arguments.of(UK, "випусти шасі", DEPLOY_LANDING_GEAR.getAction()),
+                Arguments.of(UK, "прибери шасі", RETRACT_LANDING_GEAR.getAction()),
+                Arguments.of(UK, "запроси стикування", REQUEST_DOCKING.getAction()),
+                Arguments.of(UK, "відкрий вантажний ківш", TOGGLE_CARGO_SCOOP.getAction()),
+                Arguments.of(UK, "нічне бачення", NIGHT_VISION_ON_OFF.getAction()),
+                Arguments.of(UK, "фари", LIGHTS_ON_OFF.getAction()),
+                Arguments.of(UK, "відправ корабель", DISMISS_SHIP.getAction()),
+                Arguments.of(UK, "таксі до посадки", TAXI.getAction()),
+                // Combat / hardpoints
+                Arguments.of(UK, "випусти зброю", DEPLOY_HARDPOINTS.getAction()),
+                Arguments.of(UK, "прибери зброю", RETRACT_HARDPOINTS.getAction()),
+                Arguments.of(UK, "випусти тепловідвід", DEPLOY_HEAT_SINK.getAction()),
+                Arguments.of(UK, "пріоритетна ціль", SELECT_HIGHEST_THREAT.getAction()),
+                // Power management
+                Arguments.of(UK, "енергію на щити", INCREASE_SHIELDS_POWER.getAction()),
+                Arguments.of(UK, "енергію на двигуни", INCREASE_ENGINES_POWER.getAction()),
+                Arguments.of(UK, "енергію на зброю", INCREASE_WEAPONS_POWER.getAction()),
+                Arguments.of(UK, "збалансуй енергію", RESET_POWER.getAction()),
+                // Science / exploration / mining
+                Arguments.of(UK, "проскануй систему", OPEN_FSS_AND_SCAN.getAction()),
+                Arguments.of(UK, "навігація до наступного біозразка", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction()),
+                Arguments.of(UK, "знайди місце видобутку", FIND_MINING_SITE.getAction()),
+                // Fleet carrier
+                Arguments.of(UK, "введи пункт призначення авіаносця", ENTER_FLEET_CARRIER_DESTINATION.getAction()),
+                Arguments.of(UK, "знайди найближчий авіаносець", FIND_NEAREST_FLEET_CARRIER.getAction()),
+                // App settings
+                Arguments.of(UK, "вимкни всі оголошення", DISABLE_ALL_ANNOUNCEMENTS.getAction()),
+                Arguments.of(UK, "встанови нагадування дозаправитися на наступній зупинці", SET_REMINDER.getAction()),
+                // UI panels
+                Arguments.of(UK, "відкрий карту галактики", OPEN_GALAXY_MAP.getAction()),
+                Arguments.of(UK, "відкрий карту системи", OPEN_SYSTEM_MAP.getAction()),
+                Arguments.of(UK, "покажи панель навігації", SHOW_NAVIGATION.getAction()),
+                Arguments.of(UK, "покажи панель модулів", SHOW_MODULES_PANEL.getAction()),
+                Arguments.of(UK, "покажи статус", SHOW_STATUS_PANEL.getAction()),
+                Arguments.of(UK, "покажи інвентар", SHOW_INVENTORY_PANEL.getAction()),
+                Arguments.of(UK, "закрий панель", EXIT_CLOSE.getAction()),
+                // Queries
+                Arguments.of(UK, "де я знаходжуся", CURRENT_LOCATION.getAction()),
+                Arguments.of(UK, "компонування корабля", SHIP_LOADOUT.getAction()),
+                Arguments.of(UK, "що у вантажному відсіку", CARGO_HOLD_CONTENTS.getAction()),
+                Arguments.of(UK, "прокладений маршрут", PLOTTED_ROUTE_ANALYSIS.getAction()),
+                Arguments.of(UK, "станції в системі", QUERY_STATIONS.getAction()),
+                Arguments.of(UK, "зоряні об'єкти", QUERY_STELLAR_OBJETS.getAction()),
+                Arguments.of(UK, "сигнали в системі", QUERY_STELLAR_SIGNALS.getAction()),
+                Arguments.of(UK, "біосигнали в системі", BIO_SAMPLE_IN_STAR_SYSTEM.getAction()),
+                Arguments.of(UK, "екзобіологічні зразки", EXOBIOLOGY_SAMPLES.getAction()),
+                Arguments.of(UK, "профіль гравця", PLAYER_PROFILE_ANALYSIS.getAction()),
+                Arguments.of(UK, "статус авіаносця", CARRIER_STATUS.getAction()),
+                Arguments.of(UK, "тритій авіаносця", CARRIER_TRITIUM_SUPPLY.getAction()),
+                Arguments.of(UK, "відстань до авіаносця", DISTANCE_TO_CARRIER.getAction()),
+                Arguments.of(UK, "інформація про ціль fsd", FSD_TARGET_ANALYSIS.getAction()),
+                Arguments.of(UK, "прибуток дослідження", EXPLORATION_PROFITS.getAction()),
+                Arguments.of(UK, "поточний час", TIME_IN_ZONE.getAction()),
+                Arguments.of(UK, "безпека системи", SYSTEM_SECURITY_ANALYSIS.getAction()),
+                Arguments.of(UK, "деталі станції", STATION_DETAILS.getAction()),
+                Arguments.of(UK, "інвентар матеріалів залізо", MATERIALS_INVENTORY.getAction()),
+                Arguments.of(UK, "матеріали планети", PLANET_MATERIALS.getAction()),
+                Arguments.of(UK, "відстань до бульбашки", DISTANCE_TO_BUBBLE.getAction()),
+                Arguments.of(UK, "останній скан", LAST_SCAN_ANALYSIS.getAction()),
+                Arguments.of(UK, "нагадування", REMINDER.getAction()),
+                Arguments.of(UK, "eta авіаносця", CARRIER_ETA.getAction()),
+                Arguments.of(UK, "геосигнали", QUERY_GEO_SIGNALS.getAction()),
+                Arguments.of(UK, "локальні ринки", ANALYZE_MARKETS.getAction()),
+                Arguments.of(UK, "нагороди за голови", TOTAL_BOUNTIES.getAction()),
+                Arguments.of(UK, "перевір бинди", KEY_BINDINGS_ANALYSIS.getAction()),
+                Arguments.of(UK, "аналіз біому", PLANET_BIOME_ANALYSIS.getAction()),
+                Arguments.of(UK, "відстань до останнього біозразка", DISTANCE_TO_LAST_BIO_SAMPLE.getAction()),
+                Arguments.of(UK, "скільки стрибків на маршруті авіаносця", CARRIER_ROUTE_ANALYSIS.getAction()),
+                Arguments.of(UK, "встанови резерв палива авіаносця 5000", SET_CARRIER_FUEL_RESERVE.getAction()),
+                Arguments.of(UK, "вийти з корабля", DISEMBARK.getAction()),
+                Arguments.of(UK, "покажи панель командира", SHOW_COMMANDER_PANEL.getAction()),
+                Arguments.of(UK, "покажи панель винищувача", SHOW_FIGHTER_PANEL.getAction()),
+                Arguments.of(UK, "винищувач вільний вогонь", FIGHTER_OPEN_ORDERS.getAction()),
+                Arguments.of(UK, "винищувач атакуй мою ціль", FIGHTER_REQUEST_FOCUS_TARGET.getAction())
+        );
+    }
 
 }

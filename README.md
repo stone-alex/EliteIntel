@@ -63,7 +63,10 @@ Powered by NVIDIA Parakeet. built-in / included.
     - LLM takes 6.5GB
 
 - If you do not have the hardware to run your local LLM you have choices.
-1. Free cloud [**Mistral**](https://console.mistral.ai/home). (some limitations may apply)
+## Free cloud (if you don't have hardware for local LLM)
+[**Mistral**](https://console.mistral.ai/home). (some limitations may apply)
+
+
 2. Paid cloud services: Claude, xAI, Gemini, Deepseek, or Open AI. The cost will very depending on which one you choose.
 
 ---

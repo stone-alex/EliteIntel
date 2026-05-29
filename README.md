@@ -32,9 +32,10 @@ chmod +x installer.sh
 ./installer.sh
 ```
 The app installs to `~/.var/app/elite.intel.app`.
-Both **Parakeet STT** and **Kokoro TTS** are bundled with the app. No additional installation is needed. Enable them in the app via the **Settings tab ☑ Use** checkboxes.
+Both **Parakeet STT** and **Kokoro TTS** are bundled with the app. No additional installation is needed.
 
 Setup complete. Look for shortcut under games or utilities called Elite Intel.
+
 See [**Configure the app**](UI-and-Configuration-Options) for next steps.
 
 
@@ -42,13 +43,10 @@ See [**Configure the app**](UI-and-Configuration-Options) for next steps.
 ## 👉Free cloud (if you don't have hardware for local LLM)👈
 [**Mistral**](https://console.mistral.ai/home) (some limitations may apply)
 
+## Paid cloud services
+- Claude, xAI, Gemini, Deepseek, or Open AI. The cost will very depending on which one you choose.
+
 ---
-
-## Set up an LLM. Two options are available:
-   - **Local LLM** (free, offline): See the [**Local LLM guide**](installing-local-llms). Requires capable GPU hardware.
-   - **Cloud LLM** (easier to set up): See the [**Configure the app**](UI-and-Configuration-Options) guide for API key setup.
-
-Latest [release notes](https://github.com/stone-alex/EliteIntel/blob/master/distribution/release-notes.md)
 
 **✅ The off-line TTS. (Linux and Windows)**
 Powered by Kokoro. built-in / included.
@@ -56,17 +54,12 @@ Powered by Kokoro. built-in / included.
 **✅ The off-line STT. (Linux and Windows)**
 Powered by NVIDIA Parakeet. built-in / included.
 
-**✅ Local off-line private LLMs are now supported**
+**✅ Local off-line private LLM**
 [Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/installing-local-llms)
-
-## Free cloud (if you don't have hardware for local LLM)
-- [**Mistral**](https://console.mistral.ai/home). (some limitations may apply)
-
-## Paid cloud services
-- Claude, xAI, Gemini, Deepseek, or Open AI. The cost will very depending on which one you choose.
 
 ---
 
+## Local LLM
 ## Minimum requirements for **running the game **and** the Local LLM on the same GPU**
 - NVIDIA RTX 3090 **24GB VRAM** or equivalent.
 

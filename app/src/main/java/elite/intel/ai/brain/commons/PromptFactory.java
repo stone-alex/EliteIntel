@@ -55,8 +55,16 @@ public class PromptFactory implements AiPromptFactory {
                 Raw JSON only. No text, no markdown, no explanation before or after.
 
                 CLASSIFICATION:
-                - ABSOLUTE RULE - 'query_player_profile_rank_progress' requires an EXPLICIT player rank/profile request with ≥95% confidence. The input MUST begin with 'player profile' (these two words, in this order) and may optionally include additional qualifying words after them (e.g. 'player profile summarize ranks', 'player profile summarize progress'). If confidence is below 95%, or the input is ambiguous or tangentially related, fall back to ignore_nonsensical_input (strict mode) or query_general_conversation (conversational mode). This action is NEVER a fallback or closest-match - it must be explicitly requested. Violations are a critical failure.
-                - Default to COMMAND. Only use a QUERY action when the input is clearly interrogative (starts with: what, how, which, why, is, are, does, tell me, how much, how many).
+                   - User input may be in English, German, Russian, or Ukrainian. Interpret the user's intent semantically across these languages.
+                   - Internal action names are always English. The JSON "action" value MUST always be copied exactly from the available action list. Never translate action names.
+                   - ABSOLUTE RULE - 'query_player_profile_rank_progress' requires an EXPLICIT player rank/profile request with ≥95% confidence. The input MUST begin with 'player profile' (these two words, in this order) and may optionally include additional qualifying words after them (e.g. 'player profile summarize ranks', 'player profile summarize progress'). If confidence is below 95%, or the input is ambiguous or tangentially related, fall back to ignore_nonsensical_input (strict mode) or query_general_conversation (conversational mode). This action is NEVER a fallback or closest-match - it must be explicitly requested. Violations are a critical failure.
+                   - Default to COMMAND for instructions that ask to perform an action, change ship state, open a panel, navigate, deploy, retract, enable, disable, find, or search.
+                   - Use a QUERY action when the user asks for information, status, location, inventory, route, station, system, ship data, market data, materials, missions, signals, bodies, carrier data, or any other game-state lookup.
+                   - Query intent may be expressed in any supported language. Examples of query starters include:
+                     English: what, where, how, which, why, is, are, does, tell me, how much, how many
+                     German: was, wo, wie, welcher, welche, welches, warum, ist, sind, gibt es, wie viel, wie viele, auf welcher, in welchem
+                     Russian: что, где, как, какой, какая, какие, почему, есть ли, сколько, на какой, в какой, расскажи
+                     Ukrainian: що, де, як, який, яка, які, чому, чи є, скільки, на якій, в якій, розкажи
                 """);
 
         if (systemSession.conversationalModeOn()) {
@@ -87,9 +95,15 @@ public class PromptFactory implements AiPromptFactory {
         }
         sb.append("""
                 VERB INTENT (apply first, before matching any action):
-                - show / display / open / access / find / search / locate / activate → COMMANDS (open a panel or map, find commodities, missions etc.)
-                - where / tell me / how much / any → lookup QUERY (search data, speak result)
-                - delete_* actions require explicit intent in user input. Example "delete codex entry" - delete_* action allowed, "codex entry" - delete_* action not allowed
+                 - Action verbs usually mean COMMANDS: show / display / open / access / find / search / locate / activate / navigate / plot / deploy / retract / enable / disable / turn on / turn off.
+                 - German command verbs include: zeige / öffne / suche / finde / aktiviere / deaktiviere / navigiere / setze route / fahre aus / fahre ein / schalte ein / schalte aus.
+                 - Russian command verbs include: покажи / открой / найди / ищи / активируй / отключи / проложи маршрут / выпусти / убери / включи / выключи.
+                 - Ukrainian command verbs include: покажи / відкрий / знайди / шукай / активуй / вимкни / проклади маршрут / випусти / прибери / увімкни / вимкни.
+                 - Lookup/question phrases mean QUERY: where / tell me / how much / how many / any / what is / what are.
+                 - German query phrases include: wo / was / wie viel / wie viele / gibt es / welche / welcher / welches / auf welcher station / in welchem system.
+                 - Russian query phrases include: где / что / сколько / есть ли / какой / какая / какие / на какой станции / в какой системе.
+                 - Ukrainian query phrases include: де / що / скільки / чи є / який / яка / які / на якій станції / в якій системі.
+                 - delete_* actions require explicit intent in user input. Example "delete codex entry" - delete_* action allowed, "codex entry" - delete_* action not allowed.
                 
                 DISAMBIGUATION (genuine ambiguities only):
                 - "activate" (exact standalone word only, nothing else meaningful in input) → activate_ui_control. "toggle [X]", "engage [X]", "enable [X]" and other non-activate verbs are NOT "activate" — never map these to activate_ui_control
@@ -199,7 +213,10 @@ public class PromptFactory implements AiPromptFactory {
     protected Map<String, String> reduce(String rawUserInput) {
         Map<String, String> fullMap = actionsMap.actionMap(isDryRun);
         sttVocabulary = SttCorrector.extractVocabulary(fullMap);
-        String normalizedInput = normalizer.normalize(SttCorrector.correct(rawUserInput, sttVocabulary));
+
+        String corrected = SttCorrector.correct(rawUserInput, sttVocabulary);
+        String normalizedInput = normalizer.normalize(corrected);
+
         return Reducer.reduce(normalizedInput, fullMap, systemSession.conversationalModeOn());
     }
 

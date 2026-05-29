@@ -55,15 +55,6 @@ Powered by NVIDIA Parakeet. built-in / included.
 
 ---
 
-## Local LLM
-## Minimum requirements for **running the game **and** the Local LLM on the same GPU**
-- NVIDIA RTX 3090 **24GB VRAM** or equivalent.
-
-- RTX 5090 with only **12GB VRAM will not do**. Not enough VRAM.
-    - Game takes 8GB (or more)
-    - LLM takes 6.5GB
----
-
 ## 🧠 LLMs (Larger Language Models)
 - **LMStudio (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
 - **Ollama (Local off-line Model matrixportalx/tulu-3.1-8b-supernova)**
@@ -79,6 +70,18 @@ Powered by NVIDIA Parakeet. built-in / included.
 
 ### Cloud Free
 - Mistral | mistral-small-2506
+
+
+## Local LLM
+Minimum requirements for **running the game **and** the Local LLM on the same GPU**
+
+- NVIDIA RTX 3090 **24GB VRAM** or equivalent.
+
+- RTX 5090 with only **12GB VRAM will not do**. Not enough VRAM.
+    - Game takes 8GB (or more)
+    - LLM takes 6.5GB
+---
+
 
 ---
 See [**Configure the app**](UI-and-Configuration-Options) for next steps.

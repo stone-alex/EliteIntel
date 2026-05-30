@@ -42,6 +42,11 @@ public class KeyBindingExecutor {
             ELITE_TO_KEYPROCESSOR_MAP.put("KEY_APPS", KeyProcessor.KEY_MENU);
             // Elite uses "Key_Grave" for the backtick/grave key; KeyProcessor defines it as KEY_GRAVEACCENT
             ELITE_TO_KEYPROCESSOR_MAP.put("KEY_GRAVE", KeyProcessor.KEY_GRAVEACCENT);
+            // On UK (ISO) keyboards the # key is a dedicated physical key at PS/2 scan 0x2B
+            // the same hardware position as the US \| key. Elite records it as "Key_Hash", but
+            // VK_BACK_SLASH is the Java/Windows VK code that maps to scan 0x2B, so we override
+            // the auto-reflected KEY_HASH→VK_3 (which is the US "Shift+3 = #" mapping and wrong).
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_HASH", KeyProcessor.KEY_BACKSLASH);
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Failed to initialize key mappings", e);
         }

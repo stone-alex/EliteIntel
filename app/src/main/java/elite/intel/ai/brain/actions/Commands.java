@@ -146,6 +146,7 @@ public enum Commands {
     CYCLE_PREVIOUS_PANEL                                ("cycle_previous_panel", BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding(), SimpleCommandActionHandler.class),
 
     DEPLOY_HEAT_SINK                                    ("deploy_heat_sink", BINDING_DEPLOY_HEAT_SINK.getGameBinding(), SimpleCommandActionHandler.class),
+    DEPLOY_SHIELD_CELL                                  ("deploy_shield_cell", BINDING_USE_SHIELD_CELL.getGameBinding(), SimpleCommandActionHandler.class),
     DRIVE_ASSIST                                        ("drive_assist", BINDING_DRIVE_ASSIST.getGameBinding(), SimpleCommandActionHandler.class),
 
     TARGET_SUB_SYSTEM                                   ("target_subsystem", null, TargetSubSystemHandler.class),

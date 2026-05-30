@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.controller.AiTabController;
+import elite.intel.ui.event.LanguageChangedEvent;
 import elite.intel.ui.event.ShipProfileChangedEvent;
 import elite.intel.ui.event.SystemShutDownEvent;
 import elite.intel.ui.event.UpdateAvailableEvent;
@@ -17,9 +18,12 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Objects;
 
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
+
 public class AppView extends JFrame implements AppViewInterface {
 
     private static final Logger log = LoggerFactory.getLogger(AppView.class);
+    private static final String UI_FONT_FAMILY = Font.SANS_SERIF;
     private static final String ICON_AI = "/images/ai.png";
     private static final String ICON_PLAYER = "/images/controller.png";
     private static final String ICON_SETTINGS = "/images/settings.png";
@@ -28,17 +32,18 @@ public class AppView extends JFrame implements AppViewInterface {
     private static final String MANUAL_ICON = "/images/manual.png";
 
     private final SystemSession systemSession = SystemSession.getInstance();
-    private final AiTabPanel aiTabPanel;
-    private final PlayerTabPanel playerTabPanel;
-    private final SettingsTabPanel settingsTabPanel;
-    private final UsageStatsTabPanel usageStatsTabPanel;
-    private final MarkdownViewPanel creditsPanel;
-    private final MarkdownViewPanel userManualPanel;
+    private Font monoFont;
+    private AiTabPanel aiTabPanel;
+    private PlayerTabPanel playerTabPanel;
+    private SettingsTabPanel settingsTabPanel;
+    private UsageStatsTabPanel usageStatsTabPanel;
+    private MarkdownViewPanel creditsPanel;
+    private MarkdownViewPanel userManualPanel;
+    private AiTabController aiTabController;
 
     public AppView() {
         super("--");
-        setTitle("Elite Intel " + systemSession.readVersionFromResources());
-        Font monoFont = loadCustomFont();
+        monoFont = loadCustomFont();
         installDarkDefaults();
         EventBusManager.register(this);
 
@@ -48,11 +53,18 @@ public class AppView extends JFrame implements AppViewInterface {
         setSize(new Dimension(1200, 900));
         setLocationRelativeTo(null);
 
+        buildUi();
+        initData();
+    }
+
+    private void buildUi() {
+        setTitle(getText("app.title", systemSession.readVersionFromResources()));
+
         JPanel root = new JPanel(new BorderLayout());
         root.setBorder(new EmptyBorder(10, 10, 10, 10));
         setContentPane(root);
 
-        JLabel titleLabel = new JLabel("Elite Intel", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel(getText("app.name"), SwingConstants.CENTER);
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, titleLabel.getFont().getSize2D() + 3f));
         root.add(titleLabel, BorderLayout.NORTH);
 
@@ -73,19 +85,17 @@ public class AppView extends JFrame implements AppViewInterface {
         creditsPanel = new MarkdownViewPanel("credits.md");
         userManualPanel = new MarkdownViewPanel("user-manual.md");
 
-        tabs.addTab("Ai", aiIcon, aiTabPanel);
-        tabs.addTab("Player", playerIcon, playerTabPanel);
-        tabs.addTab("Settings", settingsIcon, settingsTabPanel);
-        tabs.addTab("Stats", statsIcon, usageStatsTabPanel);
-        tabs.addTab("Manual", manualIcon, userManualPanel);
+        tabs.addTab(getText("tab.ai"), aiIcon, aiTabPanel);
+        tabs.addTab(getText("tab.player"), playerIcon, playerTabPanel);
+        tabs.addTab(getText("tab.settings"), settingsIcon, settingsTabPanel);
+        tabs.addTab(getText("tab.stats"), statsIcon, usageStatsTabPanel);
+        tabs.addTab(getText("tab.manual"), manualIcon, userManualPanel);
         //tabs.addTab("Credits", creditsIcon, creditsPanel);
 
         root.add(tabs, BorderLayout.CENTER);
         AppTheme.applyDarkPalette(getContentPane());
 
-        new AiTabController(aiTabPanel);
-
-        initData();
+        aiTabController = new AiTabController(aiTabPanel);
     }
 
     private ImageIcon scaledIcon(String resource) {
@@ -108,6 +118,24 @@ public class AppView extends JFrame implements AppViewInterface {
         SwingUtilities.invokeLater(this::initData);
     }
 
+    @Subscribe
+    public void onLanguageChangedEvent(LanguageChangedEvent event) {
+        // Most Swing labels are constructed once, so changing language rebuilds the tree instead of chasing component references.
+        SwingUtilities.invokeLater(this::rebuildUi);
+    }
+
+    private void rebuildUi() {
+        // Rebuilt panels/controllers register with EventBus; dispose old instances first to avoid duplicate subscribers.
+        if (aiTabController != null) aiTabController.dispose();
+        if (aiTabPanel != null) aiTabPanel.dispose();
+        if (settingsTabPanel != null) settingsTabPanel.dispose();
+        if (usageStatsTabPanel != null) usageStatsTabPanel.dispose();
+        buildUi();
+        initData();
+        revalidate();
+        repaint();
+    }
+
     @Override
     public JFrame getUiComponent() {
         return this;
@@ -115,7 +143,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
     @Subscribe
     public void onUpdateAvailableEvent(UpdateAvailableEvent event) {
-        SwingUtilities.invokeLater(() -> setTitle("New version available."));
+        SwingUtilities.invokeLater(() -> setTitle(getText("app.updateAvailable.title")));
     }
 
     @Subscribe
@@ -128,16 +156,13 @@ public class AppView extends JFrame implements AppViewInterface {
 
     private Font loadCustomFont() {
         Font mono = new Font(Font.MONOSPACED, Font.PLAIN, 20);
+        // Use platform sans-serif for UI labels because the previous custom font did not cover Cyrillic glyphs reliably.
+        UIManager.put("defaultFont", new FontUIResource(new Font(UI_FONT_FAMILY, Font.PLAIN, 18)));
         try {
-            Font electrolize = Font.createFont(Font.TRUETYPE_FONT,
-                            Objects.requireNonNull(getClass().getResourceAsStream("/fonts/Electrolize-Regular.ttf")))
-                    .deriveFont(18f);
             mono = Font.createFont(Font.TRUETYPE_FONT,
                             Objects.requireNonNull(getClass().getResourceAsStream("/fonts/UbuntuSansMono-Regular.ttf")))
                     .deriveFont(20f);
-            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(electrolize);
             GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(mono);
-            UIManager.put("defaultFont", new FontUIResource(electrolize));
             UIManager.put("monospaceFont", new FontUIResource(mono));
             SwingUtilities.updateComponentTreeUI(this);
         } catch (FontFormatException | IOException e) {

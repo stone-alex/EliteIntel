@@ -3,7 +3,6 @@ package elite.intel.session;
 import elite.intel.ai.brain.LocalLlmProvider;
 import elite.intel.ai.brain.ShipCadence;
 import elite.intel.ai.brain.ShipPersonality;
-import elite.intel.ai.brain.i18n.AiActionLanguage;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.db.dao.ChatHistoryDao;
@@ -11,6 +10,7 @@ import elite.intel.db.dao.GameSessionDao;
 import elite.intel.db.dao.ShipDao;
 import elite.intel.db.managers.ShipManager;
 import elite.intel.db.util.Database;
+import elite.intel.i18n.Language;
 import elite.intel.util.Cypher;
 
 import java.io.BufferedReader;
@@ -380,16 +380,17 @@ public class SystemSession {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getLmStudioQueryModel());
     }
 
-    public AiActionLanguage getAiLanguage() {
+    // Language is shared by GUI and command aliases, but still persisted in the legacy aiLanguage column.
+    public Language getLanguage() {
         String raw = Database.withDao(GameSessionDao.class, dao -> dao.get().getAiLanguage());
         try {
-            return AiActionLanguage.valueOf(raw);
+            return Language.valueOf(raw);
         } catch (Exception e) {
-            return AiActionLanguage.EN;
+            return Language.EN;
         }
     }
 
-    public void setAiLanguage(AiActionLanguage language) {
+    public void setLanguage(Language language) {
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             session.setAiLanguage(language.name());

@@ -7,12 +7,14 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
+
 public class ShipSettingsPopup {
 
     public static SettingsPopup create(Component parent, String identifier, ShipSettingsDao.ShipSettings shipSettings) {
         List<SettingRow> rows = new ArrayList<>();
         rows.add(new HonkSystemSettingsPanel(
-                "Honk system on entry",
+                getText("automation.honkSystemOnEntry"),
                 shipSettings::isHonkOnJump,
                 shipSettings::setHonkOnJump,
 
@@ -25,7 +27,7 @@ public class ShipSettingsPopup {
                 shipSettings::setHonkTrigger
         ));
 
-        String title = identifier != null ? identifier + " Settings" : "Ship Settings";
+        String title = identifier != null ? getText("popup.shipSettings", identifier) : getText("popup.shipSettings.default");
         return new SettingsPopup(parent, title, rows,
                 () -> ShipSettingsManager.getInstance().saveShipSettings(shipSettings)
         );

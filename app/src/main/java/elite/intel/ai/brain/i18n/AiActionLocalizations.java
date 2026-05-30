@@ -11,7 +11,7 @@ public final class AiActionLocalizations {
     }
 
     public static void addAliases(Map<String, String> map, Status status, boolean isDryRun) {
-        AiActionLanguage language = SystemSession.getInstance().getAiLanguage();
+        elite.intel.i18n.Language language = SystemSession.getInstance().getLanguage();
         AiActionAliasProvider provider = switch (language) {
             case EN -> new EnglishAiActionAliases();
             case RU -> new RussianAiActionAliases();

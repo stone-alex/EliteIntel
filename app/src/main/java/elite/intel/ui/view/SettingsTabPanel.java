@@ -16,6 +16,7 @@ import java.util.Objects;
 
 import static elite.intel.ui.view.AppTheme.makeButtonSubtle;
 import static elite.intel.ui.view.AppTheme.styleTabbedPane;
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 public class SettingsTabPanel extends JPanel {
 
@@ -34,29 +35,33 @@ public class SettingsTabPanel extends JPanel {
         audioPanel.setOnLocalTtsChanged(() -> cloudPanel.syncUseCheckboxes());
     }
 
+    public void dispose() {
+        EventBusManager.unregister(this);
+    }
+
     private void buildUi() {
         setLayout(new BorderLayout());
 
         JTabbedPane tabs = new JTabbedPane();
         tabs.setTabPlacement(JTabbedPane.TOP);
         styleTabbedPane(tabs);
-        tabs.addTab("Local LLM", scaledIcon("/images/local-llm.png"), localLlmPanel);
-        tabs.addTab("Audio", scaledIcon("/images/audio.png"), audioPanel);
-        tabs.addTab("Cloud Services", scaledIcon("/images/cloud.png"), cloudPanel);
+        tabs.addTab(getText("settings.tab.localLlm"), scaledIcon("/images/local-llm.png"), localLlmPanel);
+        tabs.addTab(getText("settings.tab.audio"), scaledIcon("/images/audio.png"), audioPanel);
+        tabs.addTab(getText("settings.tab.cloudServices"), scaledIcon("/images/cloud.png"), cloudPanel);
 
-        updateAppButton = makeButtonSubtle("App is Up to Date");
+        updateAppButton = makeButtonSubtle(getText("settings.update.upToDate"));
         updateAppButton.setEnabled(false);
         updateAppButton.setIcon(scaledIcon("/images/update.png"));
         updateAppButton.addActionListener(e -> {
             updateAppButton.setEnabled(false);
-            updateAppButton.setText("Updating…");
+            updateAppButton.setText(getText("settings.update.updating"));
             Updater.performUpdateAsync().thenAccept(launched -> {
                 if (launched) {
                     EventBusManager.publish(new SystemShutDownEvent());
                 } else {
                     SwingUtilities.invokeLater(() -> {
                         updateAppButton.setEnabled(true);
-                        updateAppButton.setText("Update Available");
+                        updateAppButton.setText(getText("settings.update.available"));
                     });
                     EventBusManager.publish(new AppLogEvent(
                             "Could not launch updater - is elite_intel_updater.jar present?"));
@@ -82,7 +87,7 @@ public class SettingsTabPanel extends JPanel {
     public void onUpdateAvailableEvent(UpdateAvailableEvent event) {
         SwingUtilities.invokeLater(() -> {
             updateAppButton.setEnabled(true);
-            updateAppButton.setText("Update Available");
+            updateAppButton.setText(getText("settings.update.available"));
         });
     }
 

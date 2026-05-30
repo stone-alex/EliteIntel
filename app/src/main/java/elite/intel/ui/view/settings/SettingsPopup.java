@@ -9,6 +9,7 @@ import java.util.List;
 
 import static elite.intel.ui.view.AppTheme.BG;
 import static elite.intel.ui.view.AppTheme.FG_MUTED;
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 public class SettingsPopup extends JDialog {
 
@@ -25,7 +26,7 @@ public class SettingsPopup extends JDialog {
         content.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         if (rows.isEmpty()) {
-            JLabel placeholder = new JLabel("No settings configured yet.");
+            JLabel placeholder = new JLabel(getText("popup.noSettings"));
             placeholder.setForeground(FG_MUTED);
             placeholder.setBorder(BorderFactory.createEmptyBorder(12, 4, 12, 4));
             placeholder.setAlignmentX(Component.LEFT_ALIGNMENT);

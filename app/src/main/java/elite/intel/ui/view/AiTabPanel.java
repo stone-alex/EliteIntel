@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 import static elite.intel.ui.view.AppTheme.*;
 
 public class AiTabPanel extends JPanel {
@@ -28,6 +29,10 @@ public class AiTabPanel extends JPanel {
         buildUi(monoFont);
     }
 
+    public void dispose() {
+        EventBusManager.unregister(this);
+    }
+
     private void buildUi(Font monoFont) {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = baseGbc();
@@ -44,27 +49,27 @@ public class AiTabPanel extends JPanel {
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.setOpaque(false);
 
-        startStopServicesButton = makeToggleButton("Start Services");
+        startStopServicesButton = makeToggleButton(getText("button.startServices"));
         startStopServicesButton.addActionListener(e -> {
             EventBusManager.publish(new ToggleServicesEvent(!isServiceRunning.get()));
             startStopServicesButton.setEnabled(false);
         });
 
-        JCheckBox showDetailedLog = new JCheckBox("Detailed Log", false);
+        JCheckBox showDetailedLog = new JCheckBox(getText("ai.detailedLog"), false);
         showDetailedLog.addActionListener(
                 e -> EventBusManager.publish(new ToggleDetailedLogEvent(showDetailedLog.isSelected())));
         showDetailedLog.setForeground(ACCENT);
 
-        toggleWakeWordOnOff = new JCheckBox("Sleep / Wake Up", false);
+        toggleWakeWordOnOff = new JCheckBox(getText("ai.sleepWake"), false);
         toggleWakeWordOnOff.addActionListener(
                 e -> EventBusManager.publish(new ToggleWakeWordEvent(toggleWakeWordOnOff.isSelected())));
         toggleWakeWordOnOff.setEnabled(false);
         toggleWakeWordOnOff.setForeground(ACCENT);
 
         final OBSOverlayWindow[] obsOverlay = {null};
-        JCheckBox toggleObsOverlay = new JCheckBox("OBS Overlay", false);
+        JCheckBox toggleObsOverlay = new JCheckBox(getText("ai.obsOverlay"), false);
         toggleObsOverlay.setForeground(ACCENT);
-        toggleObsOverlay.setToolTipText("Open a chroma-key green overlay window for OBS capture");
+        toggleObsOverlay.setToolTipText(getText("ai.obsOverlay.tooltip"));
         toggleObsOverlay.addActionListener(e -> SwingUtilities.invokeLater(() -> {
             if (toggleObsOverlay.isSelected()) {
                 if (obsOverlay[0] == null) obsOverlay[0] = new OBSOverlayWindow();
@@ -74,7 +79,7 @@ public class AiTabPanel extends JPanel {
             }
         }));
 
-        recalibrateAudioButton = makeButton("Calibrate Audio");
+        recalibrateAudioButton = makeButton(getText("button.calibrateAudio"));
         recalibrateAudioButton.setForeground(DISABLED_FG);
         recalibrateAudioButton.setEnabled(false);
         recalibrateAudioButton.addActionListener(e -> EventBusManager.publish(new RecalibrateAudioEvent()));
@@ -101,19 +106,19 @@ public class AiTabPanel extends JPanel {
         gbc.fill = GridBagConstraints.BOTH;
 
         userPanel = new LogPanel(
-                "USER",
+                getText("ai.log.user"),
                 new Color(0x252035), new Color(0xD4985A),
                 new Color(0x1A1628), new Color(0xD4B087),
                 monoFont, 30, false);
 
         aiPanel = new LogPanel(
-                "AI",
+                getText("ai.log.ai"),
                 new Color(0x1A2520), ACCENT,
                 new Color(0x141E18), new Color(0xA8D4B8),
                 monoFont, 25, false);
 
         systemPanel = new LogPanel(
-                "SYSTEM",
+                getText("ai.log.system"),
                 new Color(0x1A1E30), new Color(0x5A8AAA),
                 new Color(0x161825), new Color(0x849AB4),
                 monoFont, 12, true);
@@ -154,7 +159,7 @@ public class AiTabPanel extends JPanel {
         SwingUtilities.invokeLater(() -> {
             SleepNoThrow.sleep(1000);
             isServiceRunning.set(event.isRunning());
-            startStopServicesButton.setText(event.isRunning() ? "Stop Services" : "Start Services");
+            startStopServicesButton.setText(event.isRunning() ? getText("button.stopServices") : getText("button.startServices"));
             startStopServicesButton.setForeground(BUTTON_FG);
             startStopServicesButton.setBackground(BUTTON_BG);
             startStopServicesButton.setEnabled(true);

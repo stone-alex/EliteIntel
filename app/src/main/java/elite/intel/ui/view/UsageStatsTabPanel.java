@@ -16,6 +16,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
+
 public class UsageStatsTabPanel extends JPanel {
 
     private Instant sessionStart = Instant.now();
@@ -46,6 +48,11 @@ public class UsageStatsTabPanel extends JPanel {
         buildUi();
         clockTimer = new Timer(1_000, e -> tickClock());
         clockTimer.start();
+    }
+
+    public void dispose() {
+        clockTimer.stop();
+        EventBusManager.unregister(this);
     }
 
     @Subscribe
@@ -87,11 +94,11 @@ public class UsageStatsTabPanel extends JPanel {
         header.setOpaque(false);
         header.setBorder(new EmptyBorder(8, 0, 0, 0));
 
-        providerLabel = new JLabel("LLM: N/A");
+        providerLabel = new JLabel(getText("stats.llm.na"));
         providerLabel.setFont(providerLabel.getFont().deriveFont(Font.BOLD, 16f));
         providerLabel.setForeground(AppTheme.FG);
 
-        sessionTimeLabel = new JLabel("Session time: 00:00:00");
+        sessionTimeLabel = new JLabel(getText("stats.sessionTime.initial"));
         sessionTimeLabel.setForeground(AppTheme.FG_MUTED);
 
         header.add(providerLabel);
@@ -111,17 +118,17 @@ public class UsageStatsTabPanel extends JPanel {
         footer.setPreferredSize(new Dimension(super.getPreferredSize().width, 180));
 
         if (usingLocalLLMs) {
-            totalLabel = new JLabel("Total tokens used (free):  0");
+            totalLabel = new JLabel(getText("stats.total.free", 0));
         } else {
-            totalLabel = new JLabel("Total tokens used (chargeable):  0");
+            totalLabel = new JLabel(getText("stats.total.chargeable", 0));
         }
         totalLabel.setFont(totalLabel.getFont().deriveFont(Font.BOLD));
         totalLabel.setForeground(AppTheme.ACCENT);
 
-        savedLabel = new JLabel("Tokens saved by caching:  0");
+        savedLabel = new JLabel(getText("stats.cacheSaved", 0));
         savedLabel.setForeground(AppTheme.FG_MUTED);
 
-        tphLabel = new JLabel("Tokens / Hour (estimate this session):  -");
+        tphLabel = new JLabel(getText("stats.tokensPerHour"));
         tphLabel.setForeground(AppTheme.FG_MUTED);
 
         totalLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -137,7 +144,7 @@ public class UsageStatsTabPanel extends JPanel {
         add(header);
         add(chart);
         if (usingLocalLLMs) {
-            add(new JLabel("Local inference services caches automatically via llama.cpp's KV cache but does not expose the numbers for tracking"));
+            add(new JLabel(getText("stats.localCacheNote")));
         }
         add(Box.createVerticalGlue());
         add(footer);
@@ -160,14 +167,14 @@ public class UsageStatsTabPanel extends JPanel {
 
     private void tickClock() {
         Duration d = Duration.between(sessionStart, Instant.now());
-        sessionTimeLabel.setText(String.format("Session time: %02d:%02d:%02d",
-                d.toHours(), d.toMinutesPart(), d.toSecondsPart()));
+        sessionTimeLabel.setText(getText("stats.sessionTime", String.format("%02d:%02d:%02d",
+                d.toHours(), d.toMinutesPart(), d.toSecondsPart())));
         refreshTph();
     }
 
     private void refresh() {
         if (!seenModels.isEmpty()) {
-            providerLabel.setText("LLM: " + String.join(" / ", seenModels));
+            providerLabel.setText(getText("stats.llm", String.join(" / ", seenModels)));
         }
         int hits = totalCachedHits.get();
         int written = totalCacheWritten.get();
@@ -175,13 +182,13 @@ public class UsageStatsTabPanel extends JPanel {
 
         chart.update(lastPrompt, lastCompletion, hits, written, lastTps);
         if (systemSession.useLocalCommandLlm() && systemSession.useLocalQueryLlm()) {
-            totalLabel.setText("Total tokens used (FREE):  " + total);
+            totalLabel.setText(getText("stats.total.free.upper", total));
         } else {
-            totalLabel.setText("Total tokens used (chargeable):  " + total);
+            totalLabel.setText(getText("stats.total.chargeable", total));
         }
         savedLabel.setText(hits > 0
-                ? "Tokens saved by caching:  " + hits + "  (served at reduced rate)"
-                : "Tokens saved by caching:  0");
+                ? getText("stats.cacheSavedReduced", hits)
+                : getText("stats.cacheSaved", 0));
         refreshTph();
     }
 
@@ -193,12 +200,12 @@ public class UsageStatsTabPanel extends JPanel {
         int total = prompt + completion + hits;
         long elapsedSeconds = Duration.between(sessionStart, Instant.now()).toSeconds();
         if (elapsedSeconds < 600) {
-            tphLabel.setText("Tokens / Hour (estimate this session):  - (collecting data...)");
+            tphLabel.setText(getText("stats.tokensPerHour.collecting"));
         } else if (total > 0) {
             long tph = Math.round(total / (elapsedSeconds / 3600.0));
-            tphLabel.setText("Tokens / Hour (estimate this session including cached):  " + tph);
+            tphLabel.setText(getText("stats.tokensPerHour.cached", tph));
         } else {
-            tphLabel.setText("Tokens / Hour (estimate this session):  -");
+            tphLabel.setText(getText("stats.tokensPerHour"));
         }
     }
 
@@ -207,10 +214,10 @@ public class UsageStatsTabPanel extends JPanel {
     private static final class BarChart extends JPanel {
 
         private static final String[] LABELS = {
-                "Last Prompt",
-                "Last Completion",
-                "Cache Hits Total",
-                "Cache Written Total"
+                getText("stats.chart.lastPrompt"),
+                getText("stats.chart.lastCompletion"),
+                getText("stats.chart.cacheHitsTotal"),
+                getText("stats.chart.cacheWrittenTotal")
         };
         private static final Color[] COLORS = {
                 new Color(0x03529F),   // blue   – prompt

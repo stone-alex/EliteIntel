@@ -34,6 +34,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
             map.put("выйти из суперкруиза, выйти здесь, сбросить суперкруиз, выйти из сверхсвета, сбросься здесь", DROP_FROM_SUPER_CRUISE.getAction());
             map.put("войти в суперкруиз, суперкруиз, включи суперкруиз", ENTER_SUPER_CRUISE.getAction());
             map.put("запусти корабль, старт, отстыковаться, покинуть станцию, выйти из порта", LAUNCH_SHIP.getAction());
+            map.put("применить щитовую ячейку, запустить щитовую ячейку, активировать щитовую ячейку, банк щитовых ячеек, применить энергоячейку, использовать щитовую ячейку", DEPLOY_SHIELD_CELL.getAction());
 
             // speed / throttle
             map.put("останови двигатели, стоп, полный стоп, остановись, заглуши двигатели, сбрось тягу, нулевая тяга, останови корабль", SET_SPEED_ZERO.getAction());

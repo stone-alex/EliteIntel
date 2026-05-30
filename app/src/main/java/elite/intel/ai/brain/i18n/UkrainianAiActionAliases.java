@@ -34,6 +34,7 @@ public class UkrainianAiActionAliases implements AiActionAliasProvider {
             map.put("вийти із суперкруїзу, вийди тут, скинути суперкруїз, вийти зі надсвітла, скинься тут", DROP_FROM_SUPER_CRUISE.getAction());
             map.put("увійти в суперкруїз, суперкруїз, увімкни суперкруїз", ENTER_SUPER_CRUISE.getAction());
             map.put("запусти корабель, старт, відстикуватись, покинути станцію, вийти з порту", LAUNCH_SHIP.getAction());
+            map.put("застосувати щитову комірку, запустити щитову комірку, активувати щитову комірку, банк щитових комірок, застосувати енергетичну комірку, використати щитову комірку", DEPLOY_SHIELD_CELL.getAction());
 
             // speed / throttle
             map.put("зупини двигуни, стоп, повний стоп, зупинись, заглуши двигуни, скинь тягу, нульова тяга, зупини корабель", SET_SPEED_ZERO.getAction());

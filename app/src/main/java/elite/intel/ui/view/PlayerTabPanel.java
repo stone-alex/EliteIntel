@@ -32,6 +32,7 @@ import java.util.function.Function;
 
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 import static elite.intel.ui.view.AppTheme.*;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 public class PlayerTabPanel extends JPanel {
 
@@ -253,7 +254,10 @@ public class PlayerTabPanel extends JPanel {
             voiceCombo.addActionListener(e -> {
                 String voiceName = (String) voiceCombo.getSelectedItem();
                 ship.setVoice(voiceName);
-                String tts = "Hello " + playerSession.getPlayerName() + ", I am " + ship.getShipName() + ", at your service " + Ranks.getPlayerHonorific();
+                // The preview introduces the ship when named; otherwise it identifies the selected voice model.
+                String speakerName = trimToNull(ship.getShipName());
+                if (speakerName == null) speakerName = voiceName;
+                String tts = "Hello " + playerSession.getConfiguredPlayerName() + ", I am " + speakerName + ", at your service " + Ranks.getPlayerHonorific();
                 EventBusManager.publish(new AiVoxDemoEvent(tts, voiceName));
                 ShipManager.getInstance().saveShip(ship);
             });

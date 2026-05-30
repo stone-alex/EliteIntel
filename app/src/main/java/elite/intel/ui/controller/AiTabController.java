@@ -17,6 +17,10 @@ public class AiTabController {
         EventBusManager.register(this);
     }
 
+    public void dispose() {
+        EventBusManager.unregister(this);
+    }
+
     @Subscribe
     public void onToggleDetailedLogEvent(ToggleDetailedLogEvent event) {
         showDetailedLog.set(event.isDetailed());

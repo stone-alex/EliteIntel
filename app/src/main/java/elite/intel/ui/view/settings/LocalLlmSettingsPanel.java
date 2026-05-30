@@ -11,6 +11,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 
 import static elite.intel.ui.view.AppTheme.*;
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 public class LocalLlmSettingsPanel extends JPanel {
 
@@ -41,23 +42,23 @@ public class LocalLlmSettingsPanel extends JPanel {
         JPanel fields = new JPanel(new GridBagLayout());
         GridBagConstraints gc = baseGbc();
 
-        addLabel(fields, "Local LLM Address:", gc);
+        addLabel(fields, getText("settings.localLlm.address"), gc);
         localLlmAddressField = new JTextField();
         addField(fields, localLlmAddressField, gc, 1, 1.0);
 
         nextRow(gc);
-        addLabel(fields, "Local Command LLM:", gc);
+        addLabel(fields, getText("settings.localLlm.command"), gc);
         localLlmModelCommandField = new JTextField();
         addField(fields, localLlmModelCommandField, gc, 1, 1.0);
-        useLocalCommandLLMCheck = new JCheckBox("Use", false);
+        useLocalCommandLLMCheck = new JCheckBox(getText("settings.cloud.use"), false);
         useLocalCommandLLMCheck.addActionListener(e -> onCheckboxToggled());
         addCheck(fields, useLocalCommandLLMCheck, gc);
 
         nextRow(gc);
-        addLabel(fields, "Local Query LLM:", gc);
+        addLabel(fields, getText("settings.localLlm.query"), gc);
         localLlmModelQueryField = new JTextField();
         addField(fields, localLlmModelQueryField, gc, 1, 1.0);
-        useLocalQueryLLMCheck = new JCheckBox("Use", false);
+        useLocalQueryLLMCheck = new JCheckBox(getText("settings.cloud.use"), false);
         useLocalQueryLLMCheck.addActionListener(e -> onCheckboxToggled());
         addCheck(fields, useLocalQueryLLMCheck, gc);
 
@@ -66,8 +67,8 @@ public class LocalLlmSettingsPanel extends JPanel {
                 BorderFactory.createEmptyBorder(8, 8, 8, 8)
         ));
 
-        ollamaRadio = new JRadioButton("Ollama");
-        lmStudioRadio = new JRadioButton("LM Studio");
+        ollamaRadio = new JRadioButton(getText("settings.localLlm.ollama"));
+        lmStudioRadio = new JRadioButton(getText("settings.localLlm.lmStudio"));
         ButtonGroup providerGroup = new ButtonGroup();
         providerGroup.add(ollamaRadio);
         providerGroup.add(lmStudioRadio);
@@ -76,17 +77,17 @@ public class LocalLlmSettingsPanel extends JPanel {
 
         JPanel providerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         providerPanel.setOpaque(false);
-        providerPanel.add(new JLabel("LLM Host:"));
+        providerPanel.add(new JLabel(getText("settings.localLlm.host")));
         providerPanel.add(ollamaRadio);
         providerPanel.add(lmStudioRadio);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         buttons.setOpaque(false);
 
-        JButton saveButton = makeButton("Save");
+        JButton saveButton = makeButton(getText("button.save"));
         saveButton.addActionListener(e -> save());
 
-        JButton restoreButton = makeButton("Restore Defaults");
+        JButton restoreButton = makeButton(getText("button.restoreDefaults"));
         restoreButton.addActionListener(e -> SwingUtilities.invokeLater(() -> {
             setDefaults();
         }));

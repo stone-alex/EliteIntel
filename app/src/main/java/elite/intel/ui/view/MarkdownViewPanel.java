@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
+
 /**
  * Scrollable, read-only Markdown viewer panel.
  * Converts a subset of Markdown to HTML and renders it via JEditorPane.
@@ -53,7 +55,7 @@ public class MarkdownViewPanel extends JPanel {
         scrollPane.setBackground(AppTheme.BG);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-        JButton reloadButton = AppTheme.makeButtonSubtle("Reload");
+        JButton reloadButton = AppTheme.makeButtonSubtle(getText("button.reload"));
         reloadButton.addActionListener(e -> loadContent());
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
         toolbar.setOpaque(false);

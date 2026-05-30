@@ -95,6 +95,7 @@ sourceSets {
         resources {
             srcDirs = ['src/main/resources']
             include '**/*.json'
+            include '**/*.properties'
             include '**/*.conf'
             include '**/*.css'
             include '**/*.png'

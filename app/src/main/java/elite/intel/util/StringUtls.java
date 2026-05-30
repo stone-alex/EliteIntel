@@ -3,6 +3,7 @@ package elite.intel.util;
 import elite.intel.session.PlayerSession;
 
 import javax.annotation.Nullable;
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -67,9 +68,7 @@ public class StringUtls {
     }
 
     public static String greeting(String playerName) {
-        if (playerName == null || playerName.isEmpty()) {
-            return "Hello, Commander!";
-        }
+        String spokenName = asciiTtsNameOrCommander(playerName);
 
         int hour = getHourOfDay();
         String timeGreeting;
@@ -84,7 +83,21 @@ public class StringUtls {
             timeGreeting = "Good evening";
         }
 
-        return timeGreeting + ", " + playerName + "!";
+        return timeGreeting + ", " + spokenName + "!";
+    }
+
+    private static String asciiTtsNameOrCommander(String playerName) {
+        if (playerName == null || playerName.isBlank()) {
+            return "Commander";
+        }
+        String normalized = Normalizer.normalize(playerName, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        String ascii = normalized
+                .replaceAll("[^\\x00-\\x7F]", "")
+                .replaceAll("[^A-Za-z0-9 .'-]", " ")
+                .replaceAll("\\s{2,}", " ")
+                .trim();
+        return ascii.isBlank() ? "Commander" : ascii;
     }
 
 

@@ -14,6 +14,7 @@ import java.awt.*;
 
 import static elite.intel.ui.view.AppTheme.BUTTON_BG;
 import static elite.intel.ui.view.AppTheme.baseGbc;
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 public class AudioSettingsPanel extends JPanel {
 
@@ -46,7 +47,7 @@ public class AudioSettingsPanel extends JPanel {
         ag.gridx = 0;
         ag.weightx = 0;
         ag.fill = GridBagConstraints.NONE;
-        JLabel lblSpeechVol = new JLabel("Speech Volume");
+        JLabel lblSpeechVol = new JLabel(getText("settings.audio.speechVolume"));
         lblSpeechVol.setPreferredSize(new Dimension(140, 42));
         grid.add(lblSpeechVol, ag);
 
@@ -61,7 +62,7 @@ public class AudioSettingsPanel extends JPanel {
         ag.weightx = 0;
         ag.fill = GridBagConstraints.NONE;
         ag.insets = new Insets(6, 24, 6, 6);
-        JLabel lblBeepVol = new JLabel("Beep Volume");
+        JLabel lblBeepVol = new JLabel(getText("settings.audio.beepVolume"));
         lblBeepVol.setPreferredSize(new Dimension(120, 42));
         grid.add(lblBeepVol, ag);
 
@@ -78,7 +79,7 @@ public class AudioSettingsPanel extends JPanel {
         ag.gridx = 0;
         ag.weightx = 0;
         ag.fill = GridBagConstraints.NONE;
-        JLabel lblTtsSpeed = new JLabel("TTS Voice Speed");
+        JLabel lblTtsSpeed = new JLabel(getText("settings.audio.ttsVoiceSpeed"));
         lblTtsSpeed.setPreferredSize(new Dimension(140, 42));
         grid.add(lblTtsSpeed, ag);
 
@@ -93,7 +94,7 @@ public class AudioSettingsPanel extends JPanel {
         ag.weightx = 0;
         ag.fill = GridBagConstraints.NONE;
         ag.insets = new Insets(6, 24, 6, 6);
-        JLabel lblSttThreads = new JLabel("STT Threads");
+        JLabel lblSttThreads = new JLabel(getText("settings.audio.sttThreads"));
         lblSttThreads.setPreferredSize(new Dimension(120, 42));
         grid.add(lblSttThreads, ag);
 
@@ -111,7 +112,7 @@ public class AudioSettingsPanel extends JPanel {
         ag.gridwidth = 4;
         ag.weightx = 0;
         ag.fill = GridBagConstraints.NONE;
-        useLocalTTSCheck = new JCheckBox("Use Local Text To Speech", false);
+        useLocalTTSCheck = new JCheckBox(getText("settings.audio.useLocalTts"), false);
         useLocalTTSCheck.addActionListener(a -> saveLocalTts());
         grid.add(useLocalTTSCheck, ag);
 
@@ -138,19 +139,7 @@ public class AudioSettingsPanel extends JPanel {
         helpLabels.setOpaque(false);
         helpLabels.setAlignmentX(Component.LEFT_ALIGNMENT);
         helpLabels.add(Box.createVerticalStrut(18));
-        JLabel graphLabel = new JLabel("""
-                <html><div style='text-align: left; white-space: pre-wrap;'>
-                <center><h1>When you speak you should see <span style="color:#44CC66FF;">green</span>, else <span style="color:#FF4444FF;">red</span></h1></center>
-                <ul>
-                <li> <b><span style="color:#FF4444FF;">RED</b></span> mic gate is closed - we are not sending audio<br>
-                <li> <b><span style="color:#FF8C00FF;">AMBER</b></span> gate opens sometimes, but cuts off your words - expect incorrect transcriptions<br>
-                <li> <b><span style="color:#44CC66FF;">GREEN</b></span> with <span style="color:#FF4444FF;">red</span> clipping indicator means your mic is too hot - expect transcription errors <br>
-                <li> <b><span style="color:#44CC66FF;">GREEN</b></span> All good <br>
-                </ul>
-                <hr style="color:#1E2035FF;"/>
-                <p style="font-size:12pt;"><b>STT Threads</b> Request processor (CPU) to allocate threads for speech recognition. This is a min/max setting. Meaning you can request 11 threads, but only 4 will be used. This setting does not improve quality, only speed. Switching to Cloud TTS or to Local TTS will reset all ship voices to EMMA. Personalities and cadences will be preserved.</p>
-                </div></html>
-                """);
+        JLabel graphLabel = new JLabel(getText("settings.audio.micHelp"));
         helpLabels.add(graphLabel);
         content.add(helpLabels);
 
@@ -177,11 +166,8 @@ public class AudioSettingsPanel extends JPanel {
         if (newValue != oldValue) {
             int confirm = JOptionPane.showConfirmDialog(
                     this,
-                    "Switching TTS engine will reset all ship voices to EMMA.\n"
-                            + "Personalities and cadences will be preserved.\n\n"
-                            + "You will need to re-configure your fleet voices.\n"
-                            + "Continue?",
-                    "Switch TTS Engine",
+                    getText("settings.audio.switchTts.message"),
+                    getText("settings.audio.switchTts.title"),
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             if (confirm != JOptionPane.YES_OPTION) {

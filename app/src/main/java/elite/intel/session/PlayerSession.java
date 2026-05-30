@@ -842,19 +842,30 @@ public class PlayerSession {
     }
 
     public String getVariablePlayerName() {
-        String alternativeName = getAlternativeName();
-        String playerName = trimToNull(alternativeName) != null ? alternativeName : getPlayerName();
+        String alternativeName = trimToNull(getAlternativeName());
+        String playerName = alternativeName != null ? alternativeName : trimToNull(getPlayerName());
         String playerMilitaryRank = getPlayerHighestMilitaryRank();
         String playerHonorific = Ranks.getPlayerHonorific();
 
         List<String> result = Arrays.stream(
                 new String[]{alternativeName, playerHonorific, playerName, playerMilitaryRank}
-        ).filter(Objects::nonNull).toList();
+        ).map(name -> trimToNull(name)).filter(Objects::nonNull).toList();
         if (result.isEmpty()) {
             return "Commander";
         }
 
         return result.get(new Random().nextInt(result.size()));
+    }
+
+    public String getConfiguredPlayerName() {
+        String alternativeName = trimToNull(getAlternativeName());
+        if (alternativeName != null) return alternativeName;
+
+        String playerName = trimToNull(getPlayerName());
+        if (playerName != null) return playerName;
+
+        String inGameName = trimToNull(getInGameName());
+        return inGameName != null ? inGameName : "Commander";
     }
 
     public void setShipAutoDeparted(boolean isDeparted) {

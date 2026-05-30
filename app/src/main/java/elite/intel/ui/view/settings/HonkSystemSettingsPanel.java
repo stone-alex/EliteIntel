@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static elite.intel.ui.view.AppTheme.*;
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 public class HonkSystemSettingsPanel implements SettingRow {
 
@@ -103,9 +104,9 @@ public class HonkSystemSettingsPanel implements SettingRow {
 
 
         row.add(cb); /// Check box has label that explain action
-        row.add(new JLabel("Fire Group"));
+        row.add(new JLabel(getText("automation.fireGroup")));
         row.add(fireGroupComboBox);
-        row.add(new JLabel("Trigger"));
+        row.add(new JLabel(getText("automation.trigger")));
         row.add(triggerGroupComboBox);
 
         return row;

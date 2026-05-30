@@ -2,18 +2,20 @@ package elite.intel.ui.view;
 
 import elite.intel.ai.brain.ShipCadence;
 import elite.intel.ai.brain.ShipPersonality;
-import elite.intel.ai.brain.i18n.AiActionLanguage;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.ai.mouth.subscribers.events.AiVoxDemoEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.ShipDao;
 import elite.intel.db.dao.ShipSettingsDao;
 import elite.intel.db.managers.ShipManager;
 import elite.intel.db.managers.ShipSettingsManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.i18n.Language;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.LanguageChangedEvent;
 import elite.intel.ui.view.settings.GlobalSettingsPopup;
 import elite.intel.ui.view.settings.ShipSettingsPopup;
 import elite.intel.util.Ranks;
@@ -24,9 +26,13 @@ import java.awt.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Function;
 
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 import static elite.intel.ui.view.AppTheme.*;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 public class PlayerTabPanel extends JPanel {
 
@@ -38,7 +44,7 @@ public class PlayerTabPanel extends JPanel {
     private JTextField bindingsDirField;
     private JScrollPane fleetScrollPane;
     private JCheckBox conversationModeCheckBox;
-    private JComboBox<String> languageCombo;
+    private JComboBox<LanguageOption> languageCombo;
 
     public PlayerTabPanel() {
         buildUi();
@@ -49,27 +55,25 @@ public class PlayerTabPanel extends JPanel {
         GridBagConstraints gbc = baseGbc();
 
         // Row 0: Commander Name
-        addLabel(this, "Commander Name:", gbc);
+        addLabel(this, getText("player.commanderName"), gbc);
         playerAltNameField = new JTextField();
-        playerAltNameField.setToolTipText("If you want Elite Intel refer to you by name once in a while.");
+        playerAltNameField.setToolTipText(getText("player.commanderName.tooltip"));
         playerAltNameField.setPreferredSize(new Dimension(200, 42));
         addField(this, playerAltNameField, gbc, 1, 1.0);
 
         // Row 1: Journal Directory
         nextRow(gbc);
-        addLabel(this, "Journal Directory:", gbc);
+        addLabel(this, getText("player.journalDirectory"), gbc);
         journalDirField = new JTextField();
         journalDirField.setEditable(false);
         journalDirField.setPreferredSize(new Dimension(200, 42));
-        journalDirField.setToolTipText(
-                "Custom directory for Elite Dangerous journal files "
-                        + "(optional; defaults to standard location if blank)");
+        journalDirField.setToolTipText(getText("player.journalDirectory.tooltip"));
         addField(this, journalDirField, gbc, 1, 0.8);
-        JButton selectJournalDirButton = makeButton("Select...");
+        JButton selectJournalDirButton = makeButton(getText("button.select"));
         selectJournalDirButton.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            chooser.setDialogTitle("Select Elite Dangerous Journal Directory");
+            chooser.setDialogTitle(getText("player.journalDirectory.dialog"));
             String current = playerSession.getJournalPath().toString();
             if (!current.isBlank()) chooser.setCurrentDirectory(new File(current).getParentFile());
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -82,19 +86,17 @@ public class PlayerTabPanel extends JPanel {
 
         // Row 2: Bindings Directory
         nextRow(gbc);
-        addLabel(this, "Bindings Directory:", gbc);
+        addLabel(this, getText("player.bindingsDirectory"), gbc);
         bindingsDirField = new JTextField();
         bindingsDirField.setEditable(false);
         bindingsDirField.setPreferredSize(new Dimension(200, 42));
-        bindingsDirField.setToolTipText(
-                "Custom directory for Elite Dangerous key bindings files "
-                        + "(optional; defaults to standard location if blank)");
+        bindingsDirField.setToolTipText(getText("player.bindingsDirectory.tooltip"));
         addField(this, bindingsDirField, gbc, 1, 0.8);
-        JButton selectBindingsDirButton = makeButton("Select...");
+        JButton selectBindingsDirButton = makeButton(getText("button.select"));
         selectBindingsDirButton.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            chooser.setDialogTitle("Select Elite Dangerous Bindings Directory");
+            chooser.setDialogTitle(getText("player.bindingsDirectory.dialog"));
             String current = playerSession.getBindingsDir().toString();
             if (!current.isBlank()) chooser.setCurrentDirectory(new File(current).getParentFile());
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -107,13 +109,18 @@ public class PlayerTabPanel extends JPanel {
 
         // Row 3: Command Language
         nextRow(gbc);
-        addLabel(this, "Command Language:", gbc);
-        String[] languageOptions = Arrays.stream(AiActionLanguage.values()).map(Enum::name).toArray(String[]::new);
-        languageCombo = makeCombo(languageOptions, systemSession.getAiLanguage().name());
-        languageCombo.setToolTipText("Language of voice commands used to control the ship");
+        addLabel(this, getText("player.commandLanguage"), gbc);
+        languageCombo = makeLanguageCombo(systemSession.getLanguage());
+        languageCombo.setToolTipText(getText("player.commandLanguage.tooltip"));
         languageCombo.addActionListener(e -> {
-            String selected = (String) languageCombo.getSelectedItem();
-            if (selected != null) systemSession.setAiLanguage(AiActionLanguage.valueOf(selected));
+            LanguageOption selected = (LanguageOption) languageCombo.getSelectedItem();
+            if (selected == null) return;
+            Language language = selected.language();
+            if (language == systemSession.getLanguage()) return;
+            systemSession.setLanguage(language);
+            EventBusManager.publish(new LanguageChangedEvent());
+            SwingUtilities.invokeLater(() -> EventBusManager.publish(new MissionCriticalAnnouncementEvent(
+                    "Language changed to " + englishLanguageLabel(language) + ".")));
         });
         addField(this, languageCombo, gbc, 1, 1.0);
 
@@ -126,7 +133,7 @@ public class PlayerTabPanel extends JPanel {
         gbc.anchor = GridBagConstraints.WEST;
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         btns.setOpaque(false);
-        JButton saveButton = makeButton("Save");
+        JButton saveButton = makeButton(getText("button.save"));
         saveButton.addActionListener(e -> savePlayerConfig());
         btns.add(saveButton);
 
@@ -135,7 +142,7 @@ public class PlayerTabPanel extends JPanel {
         automationButton.addActionListener(e -> GlobalSettingsPopup.create(this).setVisible(true));
         btns.add(automationButton);
 
-        conversationModeCheckBox = new JCheckBox("Conversation Mode");
+        conversationModeCheckBox = new JCheckBox(getText("player.conversationMode"));
         conversationModeCheckBox.addActionListener(e -> systemSession.setConversationalMode(conversationModeCheckBox.isSelected()));
         btns.add(conversationModeCheckBox);
 
@@ -149,7 +156,7 @@ public class PlayerTabPanel extends JPanel {
         gbc.weighty = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(16, 6, 4, 6);
-        JLabel fleetLabel = new JLabel("Fleet Management");
+        JLabel fleetLabel = new JLabel(getText("player.fleetManagement"));
         fleetLabel.setFont(fleetLabel.getFont().deriveFont(Font.BOLD, 13f));
         fleetLabel.setForeground(ACCENT);
         fleetLabel.setBorder(new MatteBorder(0, 0, 1, 0, BUTTON_BG));
@@ -172,7 +179,7 @@ public class PlayerTabPanel extends JPanel {
         journalDirField.setText(playerSession.getJournalPath().toString());
         bindingsDirField.setText(playerSession.getBindingsDir().toString());
         conversationModeCheckBox.setSelected(systemSession.conversationalModeOn());
-        languageCombo.setSelectedItem(systemSession.getAiLanguage().name());
+        selectLanguage(systemSession.getLanguage());
 
         List<ShipDao.Ship> ships = ShipManager.getInstance().getAllShips();
         ships.sort((a, b) -> {
@@ -203,16 +210,16 @@ public class PlayerTabPanel extends JPanel {
         c.gridy = 0;
         c.weightx = 0.30;
         c.gridx = 0;
-        panel.add(makeColHeader("Ship"), c);
+        panel.add(makeColHeader(getText("player.fleet.ship")), c);
         c.weightx = 0.24;
         c.gridx = 1;
-        panel.add(makeColHeader("Voice"), c);
+        panel.add(makeColHeader(getText("player.fleet.voice")), c);
         c.weightx = 0.24;
         c.gridx = 2;
-        panel.add(makeColHeader("Personality"), c);
+        panel.add(makeColHeader(getText("player.fleet.personality")), c);
         c.weightx = 0.14;
         c.gridx = 3;
-        panel.add(makeColHeader("Cadence"), c);
+        panel.add(makeColHeader(getText("player.fleet.cadence")), c);
         c.weightx = 0.08;
         c.gridx = 4;
         panel.add(makeColHeader(""), c);
@@ -237,7 +244,7 @@ public class PlayerTabPanel extends JPanel {
             c.gridy = gridRow;
             c.gridx = 0;
             c.weightx = 0.30;
-            JLabel nameLabel = new JLabel(ship.getShipName() != null ? ship.getShipName() : "Unknown");
+            JLabel nameLabel = new JLabel(ship.getShipName() != null ? ship.getShipName() : getText("player.fleet.unknown"));
             nameLabel.setForeground(FG);
             panel.add(nameLabel, c);
 
@@ -247,7 +254,10 @@ public class PlayerTabPanel extends JPanel {
             voiceCombo.addActionListener(e -> {
                 String voiceName = (String) voiceCombo.getSelectedItem();
                 ship.setVoice(voiceName);
-                String tts = "Hello " + playerSession.getPlayerName() + ", I am " + ship.getShipName() + ", at your service " + Ranks.getPlayerHonorific();
+                // The preview introduces the ship when named; otherwise it identifies the selected voice model.
+                String speakerName = trimToNull(ship.getShipName());
+                if (speakerName == null) speakerName = voiceName;
+                String tts = "Hello " + playerSession.getConfiguredPlayerName() + ", I am " + speakerName + ", at your service " + Ranks.getPlayerHonorific();
                 EventBusManager.publish(new AiVoxDemoEvent(tts, voiceName));
                 ShipManager.getInstance().saveShip(ship);
             });
@@ -255,7 +265,8 @@ public class PlayerTabPanel extends JPanel {
 
             c.gridx = 2;
             c.weightx = 0.24;
-            JComboBox<String> personalityCombo = makeCombo(personalityOptions, ship.getPersonality());
+            JComboBox<String> personalityCombo = makeCombo(personalityOptions, ship.getPersonality(),
+                    value -> getText(enumDisplayKey("ship.personality", value)));
             personalityCombo.addActionListener(e -> {
                 ship.setPersonality((String) personalityCombo.getSelectedItem());
                 ShipManager.getInstance().saveShip(ship);
@@ -264,7 +275,8 @@ public class PlayerTabPanel extends JPanel {
 
             c.gridx = 3;
             c.weightx = 0.14;
-            JComboBox<String> cadenceCombo = makeCombo(cadenceOptions, ship.getCadence());
+            JComboBox<String> cadenceCombo = makeCombo(cadenceOptions, ship.getCadence(),
+                    value -> getText(enumDisplayKey("ship.cadence", value)));
             cadenceCombo.addActionListener(e -> {
                 ship.setCadence((String) cadenceCombo.getSelectedItem());
                 ShipManager.getInstance().saveShip(ship);
@@ -300,9 +312,19 @@ public class PlayerTabPanel extends JPanel {
     }
 
     private JComboBox<String> makeCombo(String[] options, String selected) {
+        return makeCombo(options, selected, Function.identity());
+    }
+
+    private JComboBox<String> makeCombo(String[] options, String selected, Function<String, String> displayText) {
         JComboBox<String> combo = new JComboBox<>(options);
         combo.setBackground(BG_PANEL);
         combo.setForeground(FG);
+        combo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            JLabel label = (JLabel) new DefaultListCellRenderer()
+                    .getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            label.setText(value == null ? "" : displayText.apply(value));
+            return label;
+        });
         if (selected != null) {
             for (String opt : options) {
                 if (opt.equals(selected)) {
@@ -312,6 +334,54 @@ public class PlayerTabPanel extends JPanel {
             }
         }
         return combo;
+    }
+
+    private String enumDisplayKey(String prefix, String value) {
+        return prefix + "." + value.toLowerCase(Locale.ROOT);
+    }
+
+    private JComboBox<LanguageOption> makeLanguageCombo(Language selected) {
+        JComboBox<LanguageOption> combo = new JComboBox<>(new LanguageOption[]{
+                new LanguageOption(getText("language.english"), Language.EN),
+                new LanguageOption(getText("language.russian"), Language.RU),
+                new LanguageOption(getText("language.ukrainian"), Language.UK),
+                new LanguageOption(getText("language.german"), Language.DE)
+        });
+        combo.setBackground(BG_PANEL);
+        combo.setForeground(FG);
+        selectLanguage(combo, selected);
+        return combo;
+    }
+
+    private void selectLanguage(Language language) {
+        selectLanguage(languageCombo, language);
+    }
+
+    private void selectLanguage(JComboBox<LanguageOption> combo, Language language) {
+        for (int i = 0; i < combo.getItemCount(); i++) {
+            LanguageOption option = combo.getItemAt(i);
+            if (option.language() == language) {
+                combo.setSelectedIndex(i);
+                return;
+            }
+        }
+        combo.setSelectedIndex(0);
+    }
+
+    private record LanguageOption(String label, Language language) {
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
+
+    private String englishLanguageLabel(Language language) {
+        return switch (language) {
+            case EN -> "English";
+            case RU -> "Russian";
+            case UK -> "Ukrainian";
+            case DE -> "German";
+        };
     }
 
     private void savePlayerConfig() {

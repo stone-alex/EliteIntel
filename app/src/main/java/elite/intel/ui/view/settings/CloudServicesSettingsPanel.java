@@ -10,6 +10,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 
 import static elite.intel.ui.view.AppTheme.*;
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 public class CloudServicesSettingsPanel extends JPanel {
 
@@ -49,13 +50,13 @@ public class CloudServicesSettingsPanel extends JPanel {
         JPanel fields = new JPanel(new GridBagLayout());
         GridBagConstraints gc = baseGbc();
 
-        addLabel(fields, "Cloud LLM Key: (optional)", gc);
+        addLabel(fields, getText("settings.cloud.llmKey"), gc);
         llmApiKeyField = new JPasswordField();
         llmApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(fields, llmApiKeyField, gc, 1, 0.8);
-        llmLockedCheck = new JCheckBox("Locked", true);
+        llmLockedCheck = new JCheckBox(getText("settings.cloud.locked"), true);
         addCheck(fields, llmLockedCheck, gc);
-        useCloudLlmCheck = new JCheckBox("Use", false);
+        useCloudLlmCheck = new JCheckBox(getText("settings.cloud.use"), false);
         useCloudLlmCheck.addActionListener(e -> onUseCloudLlm());
         gc.gridx = 3;
         gc.weightx = 0.2;
@@ -63,13 +64,13 @@ public class CloudServicesSettingsPanel extends JPanel {
         fields.add(useCloudLlmCheck, gc);
 
         nextRow(gc);
-        addLabel(fields, "Google TTS Key: (optional)", gc);
+        addLabel(fields, getText("settings.cloud.ttsKey"), gc);
         ttsApiKeyField = new JPasswordField();
         ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(fields, ttsApiKeyField, gc, 1, 0.8);
-        ttsLockedCheck = new JCheckBox("Locked", true);
+        ttsLockedCheck = new JCheckBox(getText("settings.cloud.locked"), true);
         addCheck(fields, ttsLockedCheck, gc);
-        useCloudTtsCheck = new JCheckBox("Use", false);
+        useCloudTtsCheck = new JCheckBox(getText("settings.cloud.use"), false);
         useCloudTtsCheck.addActionListener(e -> onUseCloudTts());
         gc.gridx = 3;
         gc.weightx = 0.2;
@@ -84,7 +85,7 @@ public class CloudServicesSettingsPanel extends JPanel {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         buttons.setOpaque(false);
 
-        JButton saveButton = makeButton("Save");
+        JButton saveButton = makeButton(getText("button.save"));
         saveButton.addActionListener(e -> save());
         buttons.add(saveButton);
 
@@ -92,9 +93,9 @@ public class CloudServicesSettingsPanel extends JPanel {
         supportedLLMsPanel.setOpaque(false);
 
         buttons.add(Box.createVerticalGlue());
-        buttons.add(new JLabel(" Supported Cloud LLMS:"));
-        buttons.add(new JLabel(" Gemini, Grok, OpenAI, Claude, Deepseek, Mistral"));
-        buttons.add(new JLabel(" Model will be selected automatically based on your key."));
+        buttons.add(new JLabel(" " + getText("settings.cloud.supportedLlms")));
+        buttons.add(new JLabel(" " + getText("settings.cloud.supportedLlms.names")));
+        buttons.add(new JLabel(" " + getText("settings.cloud.modelAutoSelected")));
 
 
         JPanel content = new JPanel();

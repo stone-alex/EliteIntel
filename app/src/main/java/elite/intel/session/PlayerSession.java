@@ -40,6 +40,7 @@ public class PlayerSession {
     private final StationMarketsManager markets = StationMarketsManager.getInstance();
     private final RankAndProgressManager rankAndProgress = RankAndProgressManager.getInstance();
     private final FleetCarrierManager fleetCarriers = FleetCarrierManager.getInstance();
+    private final SquadronCarrierManager squadronCarriers = SquadronCarrierManager.getInstance();
     private final BioSamplesManager bioSamples = BioSamplesManager.getInstance();
     private final ShipLoadoutManager shipLoadouts = ShipLoadoutManager.getInstance();
     private final GenusAnnouncementManager genusAnouncements = GenusAnnouncementManager.getInstance();
@@ -824,8 +825,12 @@ public class PlayerSession {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getCurrentGenus());
     }
 
+    public CarrierDataDto getSquadronCarrierData() {
+        return squadronCarriers.get();
+    }
+
     public void setSquadronCarrierData(CarrierDataDto carrierData) {
-        /// implement squadron carrier dao etc. see fleetCarriers manager
+        squadronCarriers.save(carrierData);
     }
 
     public boolean isRadarContactAnnouncementOn() {

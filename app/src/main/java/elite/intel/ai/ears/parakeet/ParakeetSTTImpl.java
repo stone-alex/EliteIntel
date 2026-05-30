@@ -10,6 +10,8 @@ import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AppPaths;
+import elite.intel.util.SherpaOnnxNatives;
+import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
@@ -105,11 +107,11 @@ public class ParakeetSTTImpl implements EarsInterface {
         processingThread.start();
 
         if (RMS_THRESHOLD_HIGH == 0 || NOISE_FLOOR == 0) {
-            EventBusManager.publish(new AiVoxResponseEvent("Audio calibration required"));
+            EventBusManager.publish(new AiVoxResponseEvent(StringUtls.localizedSpeech("speech.audioCalibrationRequired")));
         } else if (RMS_THRESHOLD_HIGH < 250 || RMS_THRESHOLD_HIGH - NOISE_FLOOR < MINIMUM_NOISE_FLOOR_TO_RMS_RATIO) {
-            EventBusManager.publish(new AiVoxResponseEvent("Voice input enabled. WARNING: Insufficient noise floor to input signal ratio. The communication may be compromised. Please adjust microphone settings."));
+            EventBusManager.publish(new AiVoxResponseEvent(StringUtls.localizedSpeech("speech.voiceInputEnabledWarning")));
         } else {
-            EventBusManager.publish(new AiVoxResponseEvent("Voice input enabled"));
+            EventBusManager.publish(new AiVoxResponseEvent(StringUtls.localizedSpeech("speech.voiceInputEnabled")));
         }
     }
 
@@ -133,10 +135,16 @@ public class ParakeetSTTImpl implements EarsInterface {
             recognizer = null;
         }
         isStopping.set(false);
-        EventBusManager.publish(new AiVoxResponseEvent("Voice input disabled."));
+        EventBusManager.publish(new AiVoxResponseEvent(StringUtls.localizedSpeech("speech.voiceInputDisabled")));
     }
 
     private OfflineRecognizer buildRecognizer() {
+        try {
+            SherpaOnnxNatives.load();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to load sherpa-onnx native libraries", e);
+        }
+
         // Windows DLL hell: another app (e.g. LM Studio) may have installed a different
         // onnxruntime.dll into System32. System32 is searched before our native dir for
         // transitive DLL dependencies, so we preload the bundled copy first to win the race.
@@ -306,7 +314,7 @@ public class ParakeetSTTImpl implements EarsInterface {
             } catch (java.util.concurrent.TimeoutException e) {
                 future.cancel(true);
                 log.error("Speech To Text hung after {}s - replacing executor", INFERENCE_TIMEOUT_SEC);
-                EventBusManager.publish(new AiVoxResponseEvent("STT hung. Restarting process."));
+                EventBusManager.publish(new AiVoxResponseEvent(StringUtls.localizedSpeech("speech.sttHungRestarting")));
                 transcriptionExecutor.shutdownNow();
                 transcriptionExecutor = Executors.newSingleThreadExecutor(r -> {
                     Thread t = new Thread(r, "Parakeet-Transcription");

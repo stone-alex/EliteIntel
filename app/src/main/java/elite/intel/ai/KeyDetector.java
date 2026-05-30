@@ -65,6 +65,9 @@ public class KeyDetector {
      * @return The matched ProviderEnum or UNKNOWN if no match.
      */
     public static ProviderEnum detectProvider(String key, String category) {
+        if (key == null || key.isBlank()) {
+            return ProviderEnum.UNKNOWN;
+        }
         List<ProviderEnum> matches = new ArrayList<>();
         for (Map.Entry<ProviderEnum, Pattern> entry : PATTERNS.entrySet()) {
             if (entry.getValue().matcher(key).matches() && entry.getKey().supportsCategory(category)) {

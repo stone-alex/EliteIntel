@@ -4,10 +4,12 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.ui.event.RestartBrainEvent;
+import elite.intel.ui.event.RestartMouthEvent;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.util.Objects;
 
 import static elite.intel.ui.view.AppTheme.*;
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
@@ -147,10 +149,17 @@ public class CloudServicesSettingsPanel extends JPanel {
     }
 
     private void save() {
-        systemSession.setAiApiKey(new String(llmApiKeyField.getPassword()));
-        systemSession.setTtsApiKey(new String(ttsApiKeyField.getPassword()));
+        String oldAiKey = systemSession.getAiApiKey();
+        String oldTtsKey = systemSession.getTtsApiKey();
+        boolean useLocalTts = systemSession.useLocalTTS();
+        String newAiKey = new String(llmApiKeyField.getPassword());
+        String newTtsKey = new String(ttsApiKeyField.getPassword());
+
+        systemSession.setAiApiKey(newAiKey);
+        systemSession.setTtsApiKey(newTtsKey);
         EventBusManager.publish(new AppLogEvent("Cloud services config saved"));
-        EventBusManager.publish(new RestartBrainEvent());
+        if (!Objects.equals(oldAiKey, newAiKey)) EventBusManager.publish(new RestartBrainEvent());
+        if (!useLocalTts && !Objects.equals(oldTtsKey, newTtsKey)) EventBusManager.publish(new RestartMouthEvent());
         initData();
     }
 }

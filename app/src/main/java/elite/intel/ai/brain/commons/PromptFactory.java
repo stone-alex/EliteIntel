@@ -2,6 +2,7 @@ package elite.intel.ai.brain.commons;
 
 import elite.intel.ai.brain.*;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.i18n.Language;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.NormalizedUserInputEvent;
@@ -236,6 +237,7 @@ public class PromptFactory implements AiPromptFactory {
             sb.append(appendLocalBehavior());
         }
         sb.append("Respond with JSON only. Set \"text_to_speech_response\" to your answer.\n\n");
+        sb.append(responseLanguageRule());
         sb.append(ttsResponseRules());
         sb.append("""
                 - Spell out numerals (e.g., twenty-three, not 23).
@@ -283,6 +285,7 @@ public class PromptFactory implements AiPromptFactory {
     public String generateSensorPrompt() {
         StringBuilder sb = new StringBuilder();
         youAre(sb);
+        sb.append(responseLanguageRule());
         sb.append(ttsResponseRules());
         sb.append("""
                 Instructions:
@@ -366,6 +369,20 @@ public class PromptFactory implements AiPromptFactory {
 
     public static String ttsResponseRules() {
         return "text_to_speech_response must be plain spoken sentences. No markdown, no lists, no symbols.\n";
+    }
+
+    private String responseLanguageRule() {
+        Language language = AiResponseLanguagePolicy.resolveEffectiveAiResponseLanguage(systemSession);
+        return "Write text_to_speech_response in " + languageDisplayName(language) + ".\n";
+    }
+
+    private static String languageDisplayName(Language language) {
+        return switch (language) {
+            case EN -> "English";
+            case RU -> "Russian";
+            case UK -> "Ukrainian";
+            case DE -> "German";
+        };
     }
 
 }

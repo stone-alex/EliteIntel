@@ -138,8 +138,9 @@ public class AiTabPanel extends JPanel {
         add(mainSplit, gbc);
     }
 
-    public void initData(boolean streamingModeOn) {
+    public void initData(boolean streamingModeOn, boolean servicesRunning) {
         toggleWakeWordOnOff.setSelected(streamingModeOn);
+        applyServiceState(servicesRunning);
     }
 
     public void addUserMessage(String text) {
@@ -158,14 +159,18 @@ public class AiTabPanel extends JPanel {
     public void onServiceStatusEvent(ServicesStateEvent event) {
         SwingUtilities.invokeLater(() -> {
             SleepNoThrow.sleep(1000);
-            isServiceRunning.set(event.isRunning());
-            startStopServicesButton.setText(event.isRunning() ? getText("button.stopServices") : getText("button.startServices"));
-            startStopServicesButton.setForeground(BUTTON_FG);
-            startStopServicesButton.setBackground(BUTTON_BG);
-            startStopServicesButton.setEnabled(true);
-            recalibrateAudioButton.setEnabled(event.isRunning());
-            toggleWakeWordOnOff.setEnabled(event.isRunning());
+            applyServiceState(event.isRunning());
         });
+    }
+
+    private void applyServiceState(boolean running) {
+        isServiceRunning.set(running);
+        startStopServicesButton.setText(running ? getText("button.stopServices") : getText("button.startServices"));
+        startStopServicesButton.setForeground(BUTTON_FG);
+        startStopServicesButton.setBackground(BUTTON_BG);
+        startStopServicesButton.setEnabled(true);
+        recalibrateAudioButton.setEnabled(running);
+        toggleWakeWordOnOff.setEnabled(running);
     }
 
     @Subscribe

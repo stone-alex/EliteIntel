@@ -4,6 +4,7 @@ import elite.intel.db.managers.ShipManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.NotificationVolumeChangedEvent;
+import elite.intel.ui.event.RestartMouthEvent;
 import elite.intel.ui.event.SpeechSpeedChangeEvent;
 import elite.intel.ui.event.SttThreadsChangedEvent;
 import elite.intel.ui.event.SttVolumeChangedEvent;
@@ -174,9 +175,10 @@ public class AudioSettingsPanel extends JPanel {
                 useLocalTTSCheck.setSelected(oldValue);
                 return;
             }
-            ShipManager.getInstance().resetAllVoicesToDefault();
+            ShipManager.getInstance().resetAllVoicesToDefault(newValue);
         }
         systemSession.setUseLocalTTS(newValue);
+        if (newValue != oldValue) EventBusManager.publish(new RestartMouthEvent());
         if (onLocalTtsChanged != null) onLocalTtsChanged.run();
     }
 

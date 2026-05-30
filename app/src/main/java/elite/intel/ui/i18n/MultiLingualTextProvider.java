@@ -19,12 +19,17 @@ public final class MultiLingualTextProvider {
     }
 
     public static String getText(String key, Object... args) {
-        String pattern = resolveText(key);
+        String pattern = resolveText(locale(), key);
         return args.length == 0 ? pattern : MessageFormat.format(pattern, args);
     }
 
-    private static String resolveText(String key) {
-        ResourceBundle selectedBundle = getBundle(locale());
+    public static String getText(Language language, String key, Object... args) {
+        String pattern = resolveText(locale(language), key);
+        return args.length == 0 ? pattern : MessageFormat.format(pattern, args);
+    }
+
+    private static String resolveText(Locale locale, String key) {
+        ResourceBundle selectedBundle = getBundle(locale);
         if (selectedBundle.containsKey(key)) {
             return selectedBundle.getString(key);
         }
@@ -48,6 +53,10 @@ public final class MultiLingualTextProvider {
 
     private static Locale locale() {
         Language language = SystemSession.getInstance().getLanguage();
+        return locale(language);
+    }
+
+    private static Locale locale(Language language) {
         return switch (language) {
             case RU -> Locale.forLanguageTag("ru");
             case UK -> Locale.forLanguageTag("uk");

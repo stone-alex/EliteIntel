@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS squadron_carrier
+(
+    id   INTEGER PRIMARY KEY AUTOINCREMENT,
+    json TEXT
+);

@@ -91,6 +91,7 @@ public class Bindings {
 
         BINDING_DEPLOY_HEAT_SINK("DeployHeatSink"),
         BINDING_USE_SHIELD_CELL("UseShieldCell"),
+        BINDING_FIRE_CHAFF_LAUNCHER("FireChaffLauncher"),
         BINDING_DRIVE_ASSIST("ToggleDriveAssist"),
         BINDING_EXPLORATION_FSSQUIT("ExplorationFSSQuit"),
 

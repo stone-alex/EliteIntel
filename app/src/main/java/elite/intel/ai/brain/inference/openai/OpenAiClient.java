@@ -18,7 +18,7 @@ import java.time.Duration;
 
 public class OpenAiClient extends BaseAiClient implements Client {
 
-    public static final String MODEL_GPT = "gpt-5.2";
+    public static final String MODEL_GPT = "gpt-5.4-mini";
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
     private static OpenAiClient instance;
     private final PlayerSession playerSession = PlayerSession.getInstance();

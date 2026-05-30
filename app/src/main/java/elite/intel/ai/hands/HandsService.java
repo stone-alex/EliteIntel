@@ -2,6 +2,7 @@ package elite.intel.ai.hands;
 
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.GameControllerBus;
 import elite.intel.ui.controller.ManagedService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,11 +12,12 @@ import java.io.IOException;
 public class HandsService implements ManagedService {
     private static final Logger log = LogManager.getLogger(HandsService.class);
     private final BindingsMonitor monitor;
+    private final HandsSubscriber subscriber;
     private Thread processingThread;
 
     public HandsService() {
         this.monitor = BindingsMonitor.getInstance();
-        new HandsSubscriber();
+        this.subscriber = new HandsSubscriber();
         log.info("HandsService initialized");
     }
 
@@ -32,6 +34,7 @@ public class HandsService implements ManagedService {
 
     @Override
     public synchronized void stop() {
+        GameControllerBus.unregister(subscriber);
         if (processingThread == null || !processingThread.isAlive()) {
             log.warn("HandsService is not running");
             return;

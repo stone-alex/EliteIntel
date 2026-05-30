@@ -17,6 +17,7 @@ public class StatusEventSubscriber {
     private boolean lowOxygenAnnounced = false;
     private boolean lowHealthAnnounced = false;
     private boolean glideAnnounced = false;
+    private String lastAnnouncedLegalState = null;
 
     // Track previous GuiFocus to detect transitions, not just current state
     private GuiFocus previousGuiFocus = GuiFocus.NO_FOCUS;
@@ -24,12 +25,9 @@ public class StatusEventSubscriber {
     @Subscribe
     public void onStatusChangedEvent(GameEvents.StatusEvent event) {
         Status status = Status.getInstance();
-        GameEvents.StatusEvent oldStatus = status.getStatus();
-        String legalStatusBeforeChange = oldStatus == null ? null : oldStatus.getLegalState();
 
         // --------------------------------------------------------------------------------------
-        // GuiFocus transition - must run before setStatus() so we compare against
-        // the genuinely previous state, not the one we're about to overwrite.
+        // GuiFocus transition - must run before setStatus() so we compare against the previous state.
         GuiFocus currentGuiFocus = GuiFocus.fromValue(event.getGuiFocus());
         if (currentGuiFocus != previousGuiFocus) {
             PanelStateTracker.getInstance().onGuiFocusChanged(currentGuiFocus);
@@ -37,14 +35,15 @@ public class StatusEventSubscriber {
         }
 
         // --------------------------------------------------------------------------------------
-        // Legal state change alert
-        if (legalStatusBeforeChange != null) {
-            String legalState = event.getLegalState();
-            if (legalState != null && !legalStatusBeforeChange.equalsIgnoreCase(legalState)) {
-                if (!"Speeding".equalsIgnoreCase(legalState)) {
-                    EventBusManager.publish(new MissionCriticalAnnouncementEvent("Legal status: " + legalState + ". "));
-                }
-            }
+        // Legal state change alert — suppress Speeding (transient) and deduplicate against
+        // the last state we actually announced so rapid oscillation doesn't repeat the alert.
+        String legalState = event.getLegalState();
+        if (legalState != null
+                && !"Speeding".equalsIgnoreCase(legalState)
+                && !"Clean".equalsIgnoreCase(legalState)
+                && !legalState.equalsIgnoreCase(lastAnnouncedLegalState)) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Legal status: " + legalState + ". "));
+            lastAnnouncedLegalState = legalState;
         }
 
         status.setStatus(event);

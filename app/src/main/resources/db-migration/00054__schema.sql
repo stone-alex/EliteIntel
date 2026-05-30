@@ -4,3 +4,9 @@ ALTER TABLE game_session
     ADD COLUMN aiLanguage VARCHAR(10) NOT NULL DEFAULT 'EN';
 
 COMMIT;
+
+CREATE TABLE IF NOT EXISTS squadron_carrier
+(
+    id   INTEGER PRIMARY KEY AUTOINCREMENT,
+    json TEXT
+);

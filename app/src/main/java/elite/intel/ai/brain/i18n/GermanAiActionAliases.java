@@ -35,6 +35,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
             map.put("in supercruise gehen, supercruise, supercruise aktivieren", ENTER_SUPER_CRUISE.getAction());
             map.put("schiff starten, starten, abdocken, station verlassen, hafen verlassen", LAUNCH_SHIP.getAction());
             map.put("schildzelle einsetzen, schildzelle verwenden, schildzelle aktivieren, schildzellenbank, energiezelle einsetzen, schildzelle auslösen", DEPLOY_SHIELD_CELL.getAction());
+            map.put("täuschkörper einsetzen, täuschkörper abwerfen, täuschkörper verwenden, täuschkörper auslösen, leuchtraketen abwerfen, leuchtraketen einsetzen", DEPLOY_CHAFF.getAction());
             // speed / throttle
             map.put("triebwerke stoppen, stopp, voller stopp, halt, triebwerke aus, schub auf null, null schub, schiff stoppen", SET_SPEED_ZERO.getAction());
             map.put("taxi zur landung, taxi, automatisch landen, autopilot landung, autolandung", TAXI.getAction());

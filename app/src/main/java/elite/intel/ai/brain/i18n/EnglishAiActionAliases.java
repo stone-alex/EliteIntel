@@ -51,6 +51,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
             // UI panels
             map.put("show, open or display fighter panel", SHOW_FIGHTER_PANEL.getAction());
             map.put("deploy shield cell, use shield cell, activate shield cell, shield cell bank, deploy power cell, fire shield cell", DEPLOY_SHIELD_CELL.getAction());
+            map.put("deploy chaff, launch chaff, use chaff, fire chaff, launch flares, deploy flares", DEPLOY_CHAFF.getAction());
             // combat
             map.put("deploy hardpoints, weapons hot, combat ready, weapons free, weapons out, arm weapons, weapons ready", DEPLOY_HARDPOINTS.getAction());
             map.put("retract hardpoints, weapons cold, weapons away, stand down, holster weapons, weapons down, safe weapons", RETRACT_HARDPOINTS.getAction());

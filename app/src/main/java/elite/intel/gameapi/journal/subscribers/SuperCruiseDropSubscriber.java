@@ -2,7 +2,6 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.brain.actions.handlers.CommandHandlerFactory;
-import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
@@ -11,9 +10,6 @@ import elite.intel.gameapi.journal.events.SupercruiseDestinationDropEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.StringUtls;
-
-import static elite.intel.ai.brain.actions.Commands.ACTIVATE_ANALYSIS_MODE;
-import static elite.intel.ai.brain.actions.Commands.ACTIVATE_COMBAT_MODE;
 
 public class SuperCruiseDropSubscriber {
 
@@ -33,13 +29,6 @@ public class SuperCruiseDropSubscriber {
                             - level 6 - 8 threat level high
                         """;
                 EventBusManager.publish(new SensorDataEvent(" Dropped from supercruise. Threat level: " + event.getThreat() + ". ", instructions));
-                if (event.getThreat() > 2) {
-                    CommandHandler activateCombatMode = commandHandlerFactory.getCommandHandlers().get(ACTIVATE_COMBAT_MODE.getAction());
-                    new Thread(() -> activateCombatMode.handle(ACTIVATE_COMBAT_MODE.getAction(), null, "")).start();
-                }
-            } else if (event.getThreat() < 3) {
-                CommandHandler activateCombatMode = commandHandlerFactory.getCommandHandlers().get(ACTIVATE_ANALYSIS_MODE.getAction());
-                new Thread(() -> activateCombatMode.handle(ACTIVATE_ANALYSIS_MODE.getAction(), null, "")).start();
             }
 
 

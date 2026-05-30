@@ -17,21 +17,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * Integration test class for verifying the interaction between the application and the NaturalSpeech system.
- * This class contains a series of parameterized tests designed to validate the proper routing of input commands
- * to corresponding actions in the system. It covers various scenarios such as navigation, speed control,
+ * Integration test class for verifying the interaction between the application
+ * and the NaturalSpeech system.
+ * This class contains a series of parameterized tests designed to validate the
+ * proper routing of input commands
+ * to corresponding actions in the system. It covers various scenarios such as
+ * navigation, speed control,
  * operational modes, and other gameplay-related actions.
  * <p>
  * REQUIREMENTS
  * 1) Have local LLM installed and configured with the supported model.
  * 2) Start the app at least once and have the game running for some basic data
- * 3) Ensure that the LLM is responsive and capable of handling the test scenarios within the allocated time.
+ * 3) Ensure that the LLM is responsive and capable of handling the test
+ * scenarios within the allocated time.
  */
 @Tag("local-integration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class NaturalSpeechIntegrationTest {
-
 
     /**
      * Pause between each test phrase. Increase if your LLM is slow.
@@ -52,7 +55,8 @@ public class NaturalSpeechIntegrationTest {
         capture = new HandlerCapture();
         // Let any startup noise (connection check etc.) settle
         Thread.sleep(2000);
-        /// this allows LLM to cache the prompt header / same request runs on app startup.
+        /// this allows LLM to cache the prompt header / same request runs on app
+        /// startup.
         EventBusManager.publish(new UserInputEvent("command_verify_connection"));
         Thread.sleep(4000);
     }
@@ -124,7 +128,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> combatMode() {
-        return Stream.of("combat mode", "change to combat mode", "combat", "switch to combat mode", "swap to combat mode");
+        return Stream.of("combat mode", "change to combat mode", "combat", "switch to combat mode",
+                "swap to combat mode");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -135,11 +140,12 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> analysisMode() {
-        return Stream.of("Analysis mode", "switch to analysis mode", "explorer mode", "analysis HUD", "Change to analysis mode", "swap to analysis mode");
+        return Stream.of("Analysis mode", "switch to analysis mode", "explorer mode", "analysis HUD",
+                "Change to analysis mode", "swap to analysis mode");
     }
 
     // =========================================================================
-    // Speed / throttle  - highest collision risk group
+    // Speed / throttle - highest collision risk group
     // =========================================================================
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -150,7 +156,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> speedZero() {
-        return Stream.of("stop engines", "full stop", "all stop", "kill engines", "cut throttle", "zero throttle", "stop ship");
+        return Stream.of("stop engines", "full stop", "all stop", "kill engines", "cut throttle", "zero throttle",
+                "stop ship");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -276,7 +283,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> navigateToMission() {
-        return Stream.of("navigate to active mission", "plot route to active mission", "go to active mission", "navigate to mission", "go to mission");
+        return Stream.of("navigate to active mission", "plot route to active mission", "go to active mission",
+                "navigate to mission", "go to mission");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -323,17 +331,20 @@ public class NaturalSpeechIntegrationTest {
         return Stream.of("target destination", "select destination");
     }
 
-    /*  @ParameterizedTest(name = "[{index}] \"{0}\"")
-      @Order(38)
-      @MethodSource
-      void navigateFromMemory(String input) throws InterruptedException {
-          assertRouted(input, NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
-      }
-
-      static Stream<String> navigateFromMemory() {
-          return Stream.of("navigate from memory", "paste from memory");
-      }
-  */
+    /*
+     * @ParameterizedTest(name = "[{index}] \"{0}\"")
+     * 
+     * @Order(38)
+     * 
+     * @MethodSource
+     * void navigateFromMemory(String input) throws InterruptedException {
+     * assertRouted(input, NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
+     * }
+     * 
+     * static Stream<String> navigateFromMemory() {
+     * return Stream.of("navigate from memory", "paste from memory");
+     * }
+     */
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(39)
     @MethodSource
@@ -379,7 +390,9 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> requestDocking() {
-        return Stream.of("request docking", "dock at station", "docking request", "request landing", "contact tower and get us landing pad", "request landing permission", "request landing pad", "request landing clearance");
+        return Stream.of("request docking", "dock at station", "docking request", "request landing",
+                "contact tower and get us landing pad", "request landing permission", "request landing pad",
+                "request landing clearance");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -485,7 +498,6 @@ public class NaturalSpeechIntegrationTest {
         return Stream.of("priority target", "target highest threat", "next enemy", "select enemy");
     }
 
-
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(54)
     @MethodSource
@@ -494,7 +506,19 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> deployShieldPowerCell() {
-        return Stream.of("deploy shield cell", "use shield cell", "activate shield cell", "shield cell bank", "deploy power cell", "fire shield cell");
+        return Stream.of("deploy shield cell", "use shield cell", "activate shield cell", "shield cell bank",
+                "deploy power cell", "fire shield cell");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(55)
+    @MethodSource
+    void deployChaff(String input) throws InterruptedException {
+        assertRouted(input, DEPLOY_CHAFF.getAction());
+    }
+
+    static Stream<String> deployChaff() {
+        return Stream.of("deploy chaff", "launch chaff", "use chaff", "fire chaff", "launch flares", "deploy flares");
     }
 
     // =========================================================================
@@ -557,7 +581,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> openFss() {
-        return Stream.of("Open FSS and scan.", "Perform filtered spectrum scan", "full spectrum scan", "honk", "discovery scan");
+        return Stream.of("Open FSS and scan.", "Perform filtered spectrum scan", "full spectrum scan", "honk",
+                "discovery scan");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -579,7 +604,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> findMiningSite() {
-        return Stream.of("find mining site for alexandrite within 300 light years", "find mining location for bromelite with 1200 light years", "find asteroid field with gold");
+        return Stream.of("find mining site for alexandrite within 300 light years",
+                "find mining location for bromelite with 1200 light years", "find asteroid field with gold");
     }
 
     // =========================================================================
@@ -597,18 +623,20 @@ public class NaturalSpeechIntegrationTest {
         return Stream.of("enter carrier destination", "set carrier destination", "enter next carrier destination");
     }
 
-/*
-    @ParameterizedTest(name = "[{index}] \"{0}\"")
-    @Order(81)
-    @MethodSource
-    void clearCarrierRoute(String input) throws InterruptedException {
-        assertRouted(input, CLEAR_FLEET_CARRIER_ROUTE.getAction());
-    }
-
-    static Stream<String> clearCarrierRoute() {
-        return Stream.of("clear fleet carrier route", "cancel carrier route");
-    }
-*/
+    /*
+     * @ParameterizedTest(name = "[{index}] \"{0}\"")
+     * 
+     * @Order(81)
+     * 
+     * @MethodSource
+     * void clearCarrierRoute(String input) throws InterruptedException {
+     * assertRouted(input, CLEAR_FLEET_CARRIER_ROUTE.getAction());
+     * }
+     * 
+     * static Stream<String> clearCarrierRoute() {
+     * return Stream.of("clear fleet carrier route", "cancel carrier route");
+     * }
+     */
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(82)
@@ -740,7 +768,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryCurrentLocation() {
-        return Stream.of("Where are we right now?", "what is our location", "where are we", "how long does the day last at current location");
+        return Stream.of("Where are we right now?", "what is our location", "where are we",
+                "how long does the day last at current location");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -751,7 +780,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryShipLoadout() {
-        return Stream.of("ship loadout", "what am I flying", "ship equipment", "do you have fuel scoop equipped", "do you have weapons equipped", "what weapons do you have equipped", "do you have a refinery equipped");
+        return Stream.of("ship loadout", "what am I flying", "ship equipment", "do you have fuel scoop equipped",
+                "do you have weapons equipped", "what weapons do you have equipped", "do you have a refinery equipped");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -784,7 +814,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryStationsInSystem() {
-        return Stream.of("stations in system", "what stations", "nearby stations", "are there any stations or ports here", "any ports in this star system");
+        return Stream.of("stations in system", "what stations", "nearby stations",
+                "are there any stations or ports here", "any ports in this star system");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -795,7 +826,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryStellarObjects() {
-        return Stream.of("What landable planets or moons are in this system?", "Are there any ice rings this star system");
+        return Stream.of("What landable planets or moons are in this system?",
+                "Are there any ice rings this star system");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -806,7 +838,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryStellarSignals() {
-        return Stream.of("What signals are in this system?", "What signals do you see?", "Any interesting signals?", "System signals?", "What's in this system?");
+        return Stream.of("What signals are in this system?", "What signals do you see?", "Any interesting signals?",
+                "System signals?", "What's in this system?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -820,7 +853,6 @@ public class NaturalSpeechIntegrationTest {
         return Stream.of("Which planets still need bio or organic scans?");
     }
 
-
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(209)
     @MethodSource
@@ -829,7 +861,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryExobiologySamples() {
-        return Stream.of("What bio scans have we completed?", "What organics do we still have to scan?", "What organics or biology is on this planet");
+        return Stream.of("What bio scans have we completed?", "What organics do we still have to scan?",
+                "What organics or biology is on this planet");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -851,7 +884,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryCarrierStatus() {
-        return Stream.of("What is our carrier range?", "What's my fleet carrier fuel status", "How long can we operate on current funds?", "How far can carrier we jump with current tritium?");
+        return Stream.of("What is our carrier range?", "What's my fleet carrier fuel status",
+                "How long can we operate on current funds?", "How far can carrier we jump with current tritium?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -873,7 +907,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryDistanceToCarrier() {
-        return Stream.of("How far are we from the carrier?", "Distance from the fleet carrier?", "How far is the fleet carrier?");
+        return Stream.of("How far are we from the carrier?", "Distance from the fleet carrier?",
+                "How far is the fleet carrier?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -895,7 +930,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryExplorationProfits() {
-        return Stream.of("Exploration profit potential in this system.", "What is the exploration profit potential in this system?");
+        return Stream.of("Exploration profit potential in this system.",
+                "What is the exploration profit potential in this system?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -928,7 +964,8 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryStationDetails() {
-        return Stream.of("station details", "what station services are at this station", "what services here", "station info");
+        return Stream.of("station details", "what station services are at this station", "what services here",
+                "station info");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -961,9 +998,9 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryDistanceToBubble() {
-        return Stream.of("How far are we from the Bubble?", "Distance to earth", "How far is earth", "how far to civilization", "how far to earth");
+        return Stream.of("How far are we from the Bubble?", "Distance to earth", "How far is earth",
+                "how far to civilization", "how far to earth");
     }
-
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(224)
@@ -1072,9 +1109,9 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryCarrierRoute() {
-        return Stream.of("What's on the carrier route?", "What's the route for our fleet carrier?", "How many jump on the carrier route?");
+        return Stream.of("What's on the carrier route?", "What's the route for our fleet carrier?",
+                "How many jump on the carrier route?");
     }
-
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(233)
@@ -1084,9 +1121,9 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> querySetCarrierFuelReserve() {
-        return Stream.of("Set fuel reserve level to 5000", "Set fuel reserve to 10000", "Fuel reserve 15000", "Set fuel reserve to fifteen thousand");
+        return Stream.of("Set fuel reserve level to 5000", "Set fuel reserve to 10000", "Fuel reserve 15000",
+                "Set fuel reserve to fifteen thousand");
     }
-
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(234)
@@ -1099,7 +1136,6 @@ public class NaturalSpeechIntegrationTest {
         return Stream.of("disembark");
     }
 
-
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(235)
     @MethodSource
@@ -1111,7 +1147,6 @@ public class NaturalSpeechIntegrationTest {
         return Stream.of("Open commander panel", "open central panel", "open role panel", "open knee board");
     }
 
-
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(235)
     @MethodSource
@@ -1122,7 +1157,6 @@ public class NaturalSpeechIntegrationTest {
     static Stream<String> openFighterPanel() {
         return Stream.of("show fighter panel", "open fighter panel");
     }
-
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(236)
@@ -1146,17 +1180,23 @@ public class NaturalSpeechIntegrationTest {
         return Stream.of("fighter attack my target", "attack", "focus my target");
     }
 
-/*
-    @ParameterizedTest(name = "[{index}] \"{0}\"")
-    @Order(236)
-    @MethodSource
-    void nonsense(String input) throws InterruptedException {
-        assertRouted(input, IGNORE_NONSENSE.getAction());
-    }
-
-    static Stream<String> nonsense() {
-        return Stream.of("youtube stream is at 5 tomorrow", "what time should we meet", "most to the time it should pay no attention to bogus data", "the response time is fast", "what is the meaning of life", "some other crap", "have to navigate though the potholes");
-    }
-*/
+    /*
+     * @ParameterizedTest(name = "[{index}] \"{0}\"")
+     * 
+     * @Order(236)
+     * 
+     * @MethodSource
+     * void nonsense(String input) throws InterruptedException {
+     * assertRouted(input, IGNORE_NONSENSE.getAction());
+     * }
+     * 
+     * static Stream<String> nonsense() {
+     * return Stream.of("youtube stream is at 5 tomorrow",
+     * "what time should we meet",
+     * "most to the time it should pay no attention to bogus data",
+     * "the response time is fast", "what is the meaning of life",
+     * "some other crap", "have to navigate though the potholes");
+     * }
+     */
 
 }

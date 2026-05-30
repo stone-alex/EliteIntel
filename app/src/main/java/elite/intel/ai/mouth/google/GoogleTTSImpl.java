@@ -93,7 +93,7 @@ public class GoogleTTSImpl implements MouthInterface {
         if (systemSession.getRmsThresholdHigh() != null) {
             EventBusManager.publish(new AiResponseLogEvent("Speech enabled"));
         }
-        EventBusManager.publish(new AiVoxResponseEvent(StringUtls.greeting(PlayerSession.getInstance().getPlayerName())));
+        EventBusManager.publish(new AiVoxResponseEvent(StringUtls.greeting(PlayerSession.getInstance().getConfiguredPlayerName())));
     }
 
     @Override

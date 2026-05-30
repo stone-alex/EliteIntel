@@ -119,7 +119,7 @@ public class KokoroTTS implements MouthInterface {
         playbackThread.start();
 
         log.info("KokoroTTS started - voice: {} sid={}", KokoroVoices.GEORGE.getDisplayName(), DEFAULT_SID);
-        EventBusManager.publish(new AiVoxResponseEvent(StringUtls.greeting(PlayerSession.getInstance().getPlayerName())));
+        EventBusManager.publish(new AiVoxResponseEvent(StringUtls.greeting(PlayerSession.getInstance().getConfiguredPlayerName())));
     }
 
     @Override

@@ -92,6 +92,7 @@ public class AiActionsMap {
             // vehicle deployment
             map.put("deploy SRV, deploy vehicle, launch SRV, send out SRV, drop SRV", DEPLOY_SRV.getAction());
             map.put("deploy heat sink, launch heat sink, dump heat", DEPLOY_HEAT_SINK.getAction());
+            map.put("deploy shield cell, use shield cell, activate shield cell, shield cell bank, deploy power cell, fire shield cell", DEPLOY_SHIELD_CELL.getAction());
             // fighter orders
             map.put("deploy fighter, launch fighter, send out fighter", DEPLOY_FIGHTER.getAction());
             map.put("order fighter defend ship, fighter defend, fighter defensive", FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR.getAction());

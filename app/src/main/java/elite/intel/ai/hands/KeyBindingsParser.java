@@ -9,7 +9,8 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -44,11 +45,6 @@ public class KeyBindingsParser {
         }
     }
 
-    private final Set<String> BLACKLISTED_ACTIONS = new HashSet<>(Arrays.asList(
-            "PrimaryFire", "SecondaryFire", "TriggerFieldNeutraliser",
-            "BuggyPrimaryFireButton", "BuggySecondaryFireButton"
-    ));
-
     public Map<String, KeyBinding> parseBindings(File file) throws Exception {
         Map<String, KeyBinding> bindings = new HashMap<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -65,26 +61,30 @@ public class KeyBindingsParser {
                 NodeList primaryList = element.getElementsByTagName("Primary");
                 NodeList secondaryList = element.getElementsByTagName("Secondary");
 
+                KeyBinding keyBinding = null;
+
                 if (primaryList.getLength() > 0) {
                     Element primary = (Element) primaryList.item(0);
                     if ("Keyboard".equals(primary.getAttribute("Device"))) {
                         String key = primary.getAttribute("Key");
                         boolean hold = "1".equals(primary.getAttribute("Hold"));
-                        String[] modifiers = getModifiers(primary);
-                        bindings.put(actionName, new KeyBinding(key, modifiers, hold));
+                        keyBinding = new KeyBinding(key, getModifiers(primary), hold);
                         log.debug("Parsed primary binding for {}: key={}, hold={}", actionName, key, hold);
                     }
                 }
 
-                if (secondaryList.getLength() > 0) {
+                if (keyBinding == null && secondaryList.getLength() > 0) {
                     Element secondary = (Element) secondaryList.item(0);
                     if ("Keyboard".equals(secondary.getAttribute("Device"))) {
                         String key = secondary.getAttribute("Key");
                         boolean hold = "1".equals(secondary.getAttribute("Hold"));
-                        String[] modifiers = getModifiers(secondary);
-                        bindings.put(actionName, new KeyBinding(key, modifiers, hold));
+                        keyBinding = new KeyBinding(key, getModifiers(secondary), hold);
                         log.debug("Parsed secondary binding for {}: key={}, hold={}", actionName, key, hold);
                     }
+                }
+
+                if (keyBinding != null) {
+                    bindings.put(actionName, keyBinding);
                 }
             }
         }

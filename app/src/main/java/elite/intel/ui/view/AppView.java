@@ -5,6 +5,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.controller.AiTabController;
 import elite.intel.ui.event.LanguageChangedEvent;
+import elite.intel.ui.event.ServicesStateEvent;
 import elite.intel.ui.event.ShipProfileChangedEvent;
 import elite.intel.ui.event.SystemShutDownEvent;
 import elite.intel.ui.event.UpdateAvailableEvent;
@@ -40,6 +41,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private MarkdownViewPanel creditsPanel;
     private MarkdownViewPanel userManualPanel;
     private AiTabController aiTabController;
+    private boolean servicesRunning;
 
     public AppView() {
         super("--");
@@ -110,7 +112,12 @@ public class AppView extends JFrame implements AppViewInterface {
     public void initData() {
         settingsTabPanel.initData();
         playerTabPanel.initData();
-        aiTabPanel.initData(systemSession.isSleepingModeOn());
+        aiTabPanel.initData(systemSession.isSleepingModeOn(), servicesRunning);
+    }
+
+    @Subscribe
+    public void onServiceStatusEvent(ServicesStateEvent event) {
+        servicesRunning = event.isRunning();
     }
 
     @Subscribe

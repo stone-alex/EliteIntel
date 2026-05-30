@@ -18,7 +18,7 @@ import elite.intel.ui.event.AppLogEvent;
 import elite.intel.ui.event.LanguageChangedEvent;
 import elite.intel.ui.view.settings.GlobalSettingsPopup;
 import elite.intel.ui.view.settings.ShipSettingsPopup;
-import elite.intel.util.Ranks;
+import elite.intel.util.StringUtls;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
@@ -120,7 +120,7 @@ public class PlayerTabPanel extends JPanel {
             systemSession.setLanguage(language);
             EventBusManager.publish(new LanguageChangedEvent());
             SwingUtilities.invokeLater(() -> EventBusManager.publish(new MissionCriticalAnnouncementEvent(
-                    "Language changed to " + englishLanguageLabel(language) + ".")));
+                    StringUtls.localizedSpeech("speech.languageChanged", StringUtls.localizedSpeechLanguageName(language)))));
         });
         addField(this, languageCombo, gbc, 1, 1.0);
 
@@ -257,7 +257,7 @@ public class PlayerTabPanel extends JPanel {
                 // The preview introduces the ship when named; otherwise it identifies the selected voice model.
                 String speakerName = trimToNull(ship.getShipName());
                 if (speakerName == null) speakerName = voiceName;
-                String tts = "Hello " + playerSession.getConfiguredPlayerName() + ", I am " + speakerName + ", at your service " + Ranks.getPlayerHonorific();
+                String tts = StringUtls.shipIntroduction(playerSession.getConfiguredPlayerName(), speakerName);
                 EventBusManager.publish(new AiVoxDemoEvent(tts, voiceName));
                 ShipManager.getInstance().saveShip(ship);
             });
@@ -373,15 +373,6 @@ public class PlayerTabPanel extends JPanel {
         public String toString() {
             return label;
         }
-    }
-
-    private String englishLanguageLabel(Language language) {
-        return switch (language) {
-            case EN -> "English";
-            case RU -> "Russian";
-            case UK -> "Ukrainian";
-            case DE -> "German";
-        };
     }
 
     private void savePlayerConfig() {

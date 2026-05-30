@@ -19,6 +19,7 @@ import elite.intel.ui.event.AiResponseLogEvent;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AppPaths;
 import elite.intel.util.AudioPlayer;
+import elite.intel.util.SherpaOnnxNatives;
 import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,11 +28,8 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -91,7 +89,7 @@ public class KokoroTTS implements MouthInterface {
         if (running) return;
         log.info("KokoroTTS.start() called from thread: {}", Thread.currentThread().getName());
         try {
-            extractAndLoadNatives();
+            SherpaOnnxNatives.load();
         } catch (Exception e) {
             log.error("KokoroTTS: native lib load failed - TTS unavailable", e);
             return;
@@ -395,61 +393,6 @@ public class KokoroTTS implements MouthInterface {
         } catch (Throwable e) {
             log.warn("KokoroTTS: could not reset LC_NUMERIC locale: {}", e.getMessage());
         }
-    }
-
-    // -- Native loading --------------------------------------------------------
-
-    private static void extractAndLoadNatives() throws IOException {
-        String platform = detectPlatform();
-        Path nativeDir = AppPaths.getNativeLibDir().resolve("sherpa-onnx");
-        Files.createDirectories(nativeDir);
-
-        for (String lib : nativeLibsInOrder(platform)) {
-            extractAndLoad(platform, nativeDir, lib);
-        }
-
-        // Tell sherpa-onnx's LibraryLoader where the natives already are.
-        // Without this, every OfflineTts/OfflineRecognizer constructor calls
-        // LibraryLoader.maybeLoad() → loadFromResourceInJar() which extracts
-        // the lib to a temp dir and calls System.load() a second time, causing
-        // JVM native-symbol corruption (manifests as stof / std::invalid_argument).
-        System.setProperty("sherpa_onnx.native.path", nativeDir.toAbsolutePath().toString());
-        log.info("KokoroTTS: set sherpa_onnx.native.path = {}", nativeDir.toAbsolutePath());
-    }
-
-    private static String[] nativeLibsInOrder(String platform) {
-        if (platform.startsWith("win")) {
-            return new String[]{
-                    "onnxruntime_providers_shared.dll",
-                    "onnxruntime.dll",
-                    "sherpa-onnx-jni.dll"
-            };
-        }
-        return new String[]{
-                "libonnxruntime.so",
-                "libsherpa-onnx-jni.so"
-        };
-    }
-
-    private static void extractAndLoad(String platform, Path dir, String lib) throws IOException {
-        Path target = dir.resolve(lib);
-        if (!Files.exists(target)) {
-            String resource = "/native/" + platform + "/" + lib;
-            try (InputStream in = KokoroTTS.class.getResourceAsStream(resource)) {
-                if (in == null) throw new IOException("Resource not in JAR: " + resource);
-                Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
-            }
-        }
-        System.load(target.toAbsolutePath().toString());
-        log.info("KokoroTTS: loaded {}", lib);
-    }
-
-    private static String detectPlatform() {
-        String os = System.getProperty("os.name", "").toLowerCase();
-        if (os.contains("win")) return "win-x86-64";
-        if (os.contains("linux")) return "linux-x86-64";
-        if (os.contains("mac")) return "osx-x86-64";
-        throw new UnsupportedOperationException("Unsupported OS: " + os);
     }
 
     // -- Helpers ---------------------------------------------------------------

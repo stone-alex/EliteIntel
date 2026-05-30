@@ -46,7 +46,11 @@ public class SystemSession {
         if (ship == null) return GoogleVoices.STEVE;
         String voice = ship.getVoice();
         if (voice == null) return GoogleVoices.STEVE;
-        return GoogleVoices.valueOf(voice);
+        try {
+            return GoogleVoices.valueOf(voice);
+        } catch (IllegalArgumentException e) {
+            return GoogleVoices.STEVE;
+        }
     }
 
 
@@ -55,7 +59,11 @@ public class SystemSession {
         if (ship == null) return KokoroVoices.BELLA;
         String voice = ship.getVoice();
         if (voice == null) return KokoroVoices.BELLA;
-        return KokoroVoices.valueOf(voice);
+        try {
+            return KokoroVoices.valueOf(voice);
+        } catch (IllegalArgumentException e) {
+            return KokoroVoices.BELLA;
+        }
     }
 
     private void setShipVoice(String voice) {
@@ -154,10 +162,11 @@ public class SystemSession {
 
 
     public void setTtsApiKey(String ttsApiKey) {
-        if (ttsApiKey == null && ttsApiKey.isEmpty()) {
+        if (ttsApiKey == null || ttsApiKey.isBlank()) {
             Database.withDao(GameSessionDao.class, dao -> {
                 GameSessionDao.GameSession session = dao.get();
                 session.setTtsApiKey(null);
+                session.setEncryptedTTSKey(null);
                 dao.save(session);
                 return Void.class;
             });
@@ -180,10 +189,11 @@ public class SystemSession {
 
 
     public void setAiApiKey(String aiApiKey) {
-        if (aiApiKey == null && aiApiKey.isEmpty()) {
+        if (aiApiKey == null || aiApiKey.isBlank()) {
             Database.withDao(GameSessionDao.class, dao -> {
                 GameSessionDao.GameSession session = dao.get();
                 session.setAiApiKey(null);
+                session.setEncryptedLLMKey(null);
                 dao.save(session);
                 return Void.class;
             });

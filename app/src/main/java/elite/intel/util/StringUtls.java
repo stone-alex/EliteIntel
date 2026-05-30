@@ -1,6 +1,10 @@
 package elite.intel.util;
 
+import elite.intel.ai.brain.commons.AiResponseLanguagePolicy;
+import elite.intel.i18n.Language;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.SystemSession;
+import elite.intel.ui.i18n.MultiLingualTextProvider;
 
 import javax.annotation.Nullable;
 import java.text.Normalizer;
@@ -68,22 +72,54 @@ public class StringUtls {
     }
 
     public static String greeting(String playerName) {
-        String spokenName = asciiTtsNameOrCommander(playerName);
+        Language language = effectiveTtsLanguage();
+        String spokenName = spokenNameOrCommander(playerName, language);
 
         int hour = getHourOfDay();
-        String timeGreeting;
+        String greetingKey = hour >= 5 && hour < 12
+                ? "speech.greeting.morning"
+                : hour >= 12 && hour < 18
+                ? "speech.greeting.afternoon"
+                : "speech.greeting.evening";
 
-        if (hour >= 5 && hour < 12) {
-            timeGreeting = "Good morning";
-        } else if (hour >= 12 && hour < 18) {
-            timeGreeting = "Good afternoon";
-        } else if (hour >= 18 && hour < 22) {
-            timeGreeting = "Good evening";
-        } else {
-            timeGreeting = "Good evening";
+        return MultiLingualTextProvider.getText(language, greetingKey, spokenName);
+    }
+
+    public static String shipIntroduction(String playerName, String shipName) {
+        Language language = effectiveTtsLanguage();
+        String spokenName = spokenNameOrCommander(playerName, language);
+        String safeShipName = shipName == null || shipName.isBlank()
+                ? MultiLingualTextProvider.getText(language, "speech.shipFallback")
+                : shipName;
+        return MultiLingualTextProvider.getText(language, "speech.shipIntroduction", spokenName, safeShipName);
+    }
+
+    public static String localizedSpeech(String key, Object... args) {
+        return MultiLingualTextProvider.getText(effectiveTtsLanguage(), key, args);
+    }
+
+    public static String localizedSpeechLanguageName(Language language) {
+        String key = switch (language) {
+            case EN -> "language.english";
+            case RU -> "language.russian";
+            case UK -> "language.ukrainian";
+            case DE -> "language.german";
+        };
+        return MultiLingualTextProvider.getText(effectiveTtsLanguage(), key);
+    }
+
+    private static Language effectiveTtsLanguage() {
+        return AiResponseLanguagePolicy.resolveEffectiveAiResponseLanguage(SystemSession.getInstance());
+    }
+
+    private static String spokenNameOrCommander(String playerName, Language language) {
+        if (language == Language.EN) {
+            return asciiTtsNameOrCommander(playerName);
         }
-
-        return timeGreeting + ", " + spokenName + "!";
+        if (playerName != null && !playerName.isBlank()) {
+            return playerName;
+        }
+        return MultiLingualTextProvider.getText(language, "speech.commander");
     }
 
     private static String asciiTtsNameOrCommander(String playerName) {
@@ -130,7 +166,6 @@ public class StringUtls {
     public static String sanitizeTts(String input) {
         if (input == null) return "";
         return input
-                .replaceAll("[^\\x00-\\x7F]", "")               // strip non-ASCII (emojis, unicode)
                 .replaceAll("\\*{1,2}([^*\n]*?)\\*{1,2}", "$1") // **bold** / *italic* → plain
                 .replaceAll("_([^_\n]*?)_", "$1")                // _italic_ → plain
                 .replaceAll("~~([^~\n]*?)~~", "$1")              // ~~strikethrough~~ → plain
@@ -147,6 +182,7 @@ public class StringUtls {
                 .replace("[", "").replace("]", "")
                 .replace("ETA", ". E.T.A.")
                 .replace(":", " - ")
+                .replaceAll("[\\p{C}\\p{So}\\p{Sk}]+", " ")      // drop controls, emojis, and standalone symbols
                 .replaceAll("\\.{2,}", " ")                     // "..." → space (espeak-ng stof crash on multi-dot sequences)
                 .replaceAll("\\s{2,}", " ")                     // collapse repeated spaces
                 .replace(", pilot", " " + PlayerSession.getInstance().getVariablePlayerName())

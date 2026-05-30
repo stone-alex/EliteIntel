@@ -13,7 +13,7 @@ import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.ShipProfileChangedEvent;
-import elite.intel.util.Ranks;
+import elite.intel.util.StringUtls;
 
 import java.util.Objects;
 
@@ -61,7 +61,7 @@ public class LoadoutSubscriber {
             }
 
             if (Status.getInstance().isOkToAnnounceLoadout()) {
-                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Hello " + playerSession.getPlayerName() + ", I am " + shipName + ", at your service " + Ranks.getPlayerHonorific()));
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent(StringUtls.shipIntroduction(playerSession.getPlayerName(), shipName)));
             }
         });
     }

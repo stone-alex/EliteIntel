@@ -14,6 +14,7 @@ import elite.intel.gameapi.journal.MissingMissionMonitor;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
+import elite.intel.util.StringUtls;
 import elite.intel.util.Updater;
 import elite.intel.ws.WebSocketBroadcaster;
 
@@ -96,11 +97,11 @@ public class AppController implements Runnable {
     }
 
     private String ignoreModeOffMessage() {
-        return "I am listening.";
+        return StringUtls.localizedSpeech("speech.ignoreModeOff");
     }
 
     private String ignoreModeOnMessage() {
-        return "I am sleeping.";
+        return StringUtls.localizedSpeech("speech.ignoreModeOn");
     }
 
     @Subscribe
@@ -160,6 +161,21 @@ public class AppController implements Runnable {
         appendToLog("LLM service restarted");
     }
 
+    @Subscribe
+    void onRestartMouthEvent(RestartMouthEvent event) {
+        new Thread(this::restartMouthService, "MouthRestart-Thread").start();
+    }
+
+    private void restartMouthService() {
+        if (!isRunning.get()) return;
+        ServiceHolder mouth = services.get(ServiceType.MOUTH);
+        if (mouth == null) return;
+        appendToLog("Restarting TTS service...");
+        mouth.stop();
+        mouth.start();
+        appendToLog("TTS service restarted");
+    }
+
     private void appendToLog(String data) {
         String formattedTime = Instant.now()
                 .atZone(ZoneId.systemDefault())
@@ -198,7 +214,7 @@ public class AppController implements Runnable {
         EventBusManager.publish(new ServicesStateEvent(true));
 
         Timer connectionCheckTimer = new Timer(2000, e -> {
-            EventBusManager.publish(new AiVoxResponseEvent("Connecting to LLM..."));
+            EventBusManager.publish(new AiVoxResponseEvent(StringUtls.localizedSpeech("speech.connectingToLlm")));
             EventBusManager.publish(new UserInputEvent(CONNECTION_CHECK_COMMAND));
         });
         connectionCheckTimer.setRepeats(false);

@@ -26,7 +26,9 @@ import java.awt.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Function;
 
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 import static elite.intel.ui.view.AppTheme.*;
@@ -259,7 +261,8 @@ public class PlayerTabPanel extends JPanel {
 
             c.gridx = 2;
             c.weightx = 0.24;
-            JComboBox<String> personalityCombo = makeCombo(personalityOptions, ship.getPersonality());
+            JComboBox<String> personalityCombo = makeCombo(personalityOptions, ship.getPersonality(),
+                    value -> getText(enumDisplayKey("ship.personality", value)));
             personalityCombo.addActionListener(e -> {
                 ship.setPersonality((String) personalityCombo.getSelectedItem());
                 ShipManager.getInstance().saveShip(ship);
@@ -268,7 +271,8 @@ public class PlayerTabPanel extends JPanel {
 
             c.gridx = 3;
             c.weightx = 0.14;
-            JComboBox<String> cadenceCombo = makeCombo(cadenceOptions, ship.getCadence());
+            JComboBox<String> cadenceCombo = makeCombo(cadenceOptions, ship.getCadence(),
+                    value -> getText(enumDisplayKey("ship.cadence", value)));
             cadenceCombo.addActionListener(e -> {
                 ship.setCadence((String) cadenceCombo.getSelectedItem());
                 ShipManager.getInstance().saveShip(ship);
@@ -304,9 +308,19 @@ public class PlayerTabPanel extends JPanel {
     }
 
     private JComboBox<String> makeCombo(String[] options, String selected) {
+        return makeCombo(options, selected, Function.identity());
+    }
+
+    private JComboBox<String> makeCombo(String[] options, String selected, Function<String, String> displayText) {
         JComboBox<String> combo = new JComboBox<>(options);
         combo.setBackground(BG_PANEL);
         combo.setForeground(FG);
+        combo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            JLabel label = (JLabel) new DefaultListCellRenderer()
+                    .getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            label.setText(value == null ? "" : displayText.apply(value));
+            return label;
+        });
         if (selected != null) {
             for (String opt : options) {
                 if (opt.equals(selected)) {
@@ -316,6 +330,10 @@ public class PlayerTabPanel extends JPanel {
             }
         }
         return combo;
+    }
+
+    private String enumDisplayKey(String prefix, String value) {
+        return prefix + "." + value.toLowerCase(Locale.ROOT);
     }
 
     private JComboBox<LanguageOption> makeLanguageCombo(Language selected) {

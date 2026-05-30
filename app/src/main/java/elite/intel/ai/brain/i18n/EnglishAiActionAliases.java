@@ -2,7 +2,6 @@ package elite.intel.ai.brain.i18n;
 
 import elite.intel.session.Status;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static elite.intel.ai.brain.actions.Commands.*;
@@ -51,7 +50,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
             map.put("request docking, dock at station, request landing, docking request, ask for docking, request parking, parking spot, request pad, park ship", REQUEST_DOCKING.getAction());
             // UI panels
             map.put("show, open or display fighter panel", SHOW_FIGHTER_PANEL.getAction());
-
+            map.put("deploy shield cell, use shield cell, activate shield cell, shield cell bank, deploy power cell, fire shield cell", DEPLOY_SHIELD_CELL.getAction());
             // combat
             map.put("deploy hardpoints, weapons hot, combat ready, weapons free, weapons out, arm weapons, weapons ready", DEPLOY_HARDPOINTS.getAction());
             map.put("retract hardpoints, weapons cold, weapons away, stand down, holster weapons, weapons down, safe weapons", RETRACT_HARDPOINTS.getAction());

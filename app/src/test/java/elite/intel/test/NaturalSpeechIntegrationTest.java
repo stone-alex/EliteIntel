@@ -490,6 +490,18 @@ public class NaturalSpeechIntegrationTest {
         return Stream.of("priority target", "target highest threat", "next enemy", "select enemy");
     }
 
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(54)
+    @MethodSource
+    void deployShieldPowerCell(String input) throws InterruptedException {
+        assertRouted(input, DEPLOY_SHIELD_CELL.getAction());
+    }
+
+    static Stream<String> deployShieldPowerCell() {
+        return Stream.of("deploy shield cell", "use shield cell", "activate shield cell", "shield cell bank", "deploy power cell", "fire shield cell");
+    }
+
     // =========================================================================
     // Power management
     // =========================================================================

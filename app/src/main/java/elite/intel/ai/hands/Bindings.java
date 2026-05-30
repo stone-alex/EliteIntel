@@ -90,6 +90,7 @@ public class Bindings {
         BINDING_CYCLE_PREVIOUS_SUBSYSTEM("CyclePreviousSubsystem"),
 
         BINDING_DEPLOY_HEAT_SINK("DeployHeatSink"),
+        BINDING_USE_SHIELD_CELL("UseShieldCell"),
         BINDING_DRIVE_ASSIST("ToggleDriveAssist"),
         BINDING_EXPLORATION_FSSQUIT("ExplorationFSSQuit"),
 

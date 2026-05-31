@@ -8,7 +8,8 @@ import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryHandler {
 
-    @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
+    @Override
+    public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         //EventBusManager.publish(new AiVoxResponseEvent("Analyzing cargo data. Stand by."));
         PlayerSession playerSession = PlayerSession.getInstance();
 
@@ -25,15 +26,20 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
                 - If asked about cargo capacity: state the cargoCapacity value in tons.
                 - No follow-up questions.
                 """;
-        return process(new AiDataStruct(
-                        instructions,
-                        new DataDto(playerSession.getShipLoadout().getCargoCapacity(), playerSession.getShipCargo())),
-                originalUserInput
-        );
+        if (playerSession.getShipLoadout() != null) {
+            return process(new AiDataStruct(
+                            instructions,
+                            new DataDto(playerSession.getShipLoadout().getCargoCapacity(), playerSession.getShipCargo())),
+                    originalUserInput
+            );
+        } else {
+            return process("Loadout not available. New installation? Please re-load into the ship.");
+        }
     }
 
     record DataDto(int cargoCapacity, ToYamlConvertable cargo) implements ToYamlConvertable {
-        @Override public String toYaml() {
+        @Override
+        public String toYaml() {
             return YamlFactory.toYaml(this);
         }
     }

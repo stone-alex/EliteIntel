@@ -4,6 +4,10 @@ public class AiVoxDemoEvent extends BaseVoxEvent {
 
     private final String voiceName;
 
+    public AiVoxDemoEvent(String textToVoice) {
+        this(textToVoice, "");
+    }
+
     public AiVoxDemoEvent(String textToVoice, String voiceName) {
         super(textToVoice, false);
         this.voiceName = voiceName;

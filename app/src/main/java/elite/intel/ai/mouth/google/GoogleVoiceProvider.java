@@ -96,7 +96,14 @@ public class GoogleVoiceProvider implements VoiceProvider<VoiceSelectionParams> 
     public VoiceSelectionParams getVoiceParams(String voiceName) {
         VoiceSelectionParams params = voiceMap.get(voiceName);
         if (params == null) {
-            params = voiceMap.get(GoogleVoices.JENNIFER.getName()); // Default to Jennifer
+            // voiceName may be an enum name (e.g. "EMMA") rather than a display name ("Emma")
+            try {
+                params = voiceMap.get(GoogleVoices.valueOf(voiceName).getName());
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        if (params == null) {
+            params = voiceMap.get(GoogleVoices.JENNIFER.getName());
         }
         return params;
     }

@@ -135,6 +135,7 @@ public class GoogleVoiceProvider implements VoiceProvider<VoiceSelectionParams> 
             case RU -> "ru-RU";
             case UK -> "uk-UA";
             case DE -> "de-DE";
+            case FR -> "fr-FR";
         };
     }
 
@@ -144,6 +145,7 @@ public class GoogleVoiceProvider implements VoiceProvider<VoiceSelectionParams> 
             case RU -> male ? "ru-RU-Standard-B" : "ru-RU-Standard-E";
             case UK -> "uk-UA-Standard-B";
             case DE -> male ? "de-DE-Standard-H" : "de-DE-Standard-G";
+            case FR -> male ? "fr-FR-Standard-G" : "fr-FR-Standard-E";
         };
     }
 }

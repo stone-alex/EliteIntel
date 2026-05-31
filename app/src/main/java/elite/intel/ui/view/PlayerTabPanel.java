@@ -352,7 +352,8 @@ public class PlayerTabPanel extends JPanel {
                 new LanguageOption(getText("language.english"), Language.EN),
                 new LanguageOption(getText("language.russian"), Language.RU),
                 new LanguageOption(getText("language.ukrainian"), Language.UK),
-                new LanguageOption(getText("language.german"), Language.DE)
+                new LanguageOption(getText("language.german"), Language.DE),
+                new LanguageOption(getText("language.french"), Language.FR)
         });
         combo.setBackground(BG_PANEL);
         combo.setForeground(FG);

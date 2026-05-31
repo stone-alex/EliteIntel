@@ -17,6 +17,7 @@ public final class AiActionLocalizations {
             case RU -> new RussianAiActionAliases();
             case UK -> new UkrainianAiActionAliases();
             case DE -> new GermanAiActionAliases();
+            case FR -> new FrenchAiActionAliases();
         };
     }
 

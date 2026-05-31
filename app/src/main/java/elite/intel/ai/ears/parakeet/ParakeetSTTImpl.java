@@ -408,9 +408,13 @@ public class ParakeetSTTImpl implements EarsInterface {
     }
 
     private boolean passThrough(String transcript) {
-        String lower = transcript.toLowerCase(Locale.ROOT);
+        return isPureWakePhrase(transcript) || stripListenBypassPrefix(transcript) != null;
+    }
+
+    private boolean isPureWakePhrase(String transcript) {
+        String lower = transcript.trim().toLowerCase(Locale.ROOT);
         for (String phrase : AiActionLocalizations.wakeBypassPhrases()) {
-            if (lower.contains(phrase.toLowerCase(Locale.ROOT))) return true;
+            if (lower.equals(phrase.toLowerCase(Locale.ROOT))) return true;
         }
         return false;
     }
@@ -422,14 +426,19 @@ public class ParakeetSTTImpl implements EarsInterface {
      * caller sends the original unchanged so the AI can route it via WAKEUP.
      */
     private String stripListenBypassPrefix(String transcript) {
+        return stripPrefixAtStart(transcript, AiActionLocalizations.listenBypassPrefixes());
+    }
+
+    private String stripPrefixAtStart(String transcript, Collection<String> prefixes) {
         String lower = transcript.toLowerCase(Locale.ROOT);
-        List<String> prefixes = new ArrayList<>(AiActionLocalizations.listenBypassPrefixes());
-        prefixes.sort(Comparator.comparingInt(String::length).reversed());
-        for (String prefix : prefixes) {
-            String lowerPrefix = prefix.toLowerCase(Locale.ROOT) + " ";
-            int idx = lower.indexOf(lowerPrefix);
-            if (idx >= 0) {
-                String remainder = transcript.substring(idx + lowerPrefix.length()).trim();
+        List<String> sortedPrefixes = new ArrayList<>(prefixes);
+        sortedPrefixes.sort(Comparator.comparingInt(String::length).reversed());
+        for (String prefix : sortedPrefixes) {
+            String lowerPrefix = prefix.toLowerCase(Locale.ROOT);
+            if (lower.startsWith(lowerPrefix)
+                    && lower.length() > lowerPrefix.length()
+                    && Character.isWhitespace(lower.charAt(lowerPrefix.length()))) {
+                String remainder = transcript.substring(prefix.length()).trim();
                 if (!remainder.isBlank()) return remainder;
             }
         }

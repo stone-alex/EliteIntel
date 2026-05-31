@@ -21,9 +21,13 @@ class SleepModeWakeBypassTest {
     // --- helpers that mirror the logic in ParakeetSTTImpl ---
 
     private static boolean passThrough(AiActionAliasProvider provider, String transcript) {
-        String lower = transcript.toLowerCase(Locale.ROOT);
+        return isPureWakePhrase(provider, transcript) || stripListenPrefix(provider, transcript) != null;
+    }
+
+    private static boolean isPureWakePhrase(AiActionAliasProvider provider, String transcript) {
+        String lower = transcript.trim().toLowerCase(Locale.ROOT);
         for (String phrase : provider.wakeBypassPhrases()) {
-            if (lower.contains(phrase.toLowerCase(Locale.ROOT))) return true;
+            if (lower.equals(phrase.toLowerCase(Locale.ROOT))) return true;
         }
         return false;
     }
@@ -33,10 +37,11 @@ class SleepModeWakeBypassTest {
         List<String> prefixes = new ArrayList<>(provider.listenBypassPrefixes());
         prefixes.sort(Comparator.comparingInt(String::length).reversed());
         for (String prefix : prefixes) {
-            String lowerPrefix = prefix.toLowerCase(Locale.ROOT) + " ";
-            int idx = lower.indexOf(lowerPrefix);
-            if (idx >= 0) {
-                String remainder = transcript.substring(idx + lowerPrefix.length()).trim();
+            String lowerPrefix = prefix.toLowerCase(Locale.ROOT);
+            if (lower.startsWith(lowerPrefix)
+                    && lower.length() > lowerPrefix.length()
+                    && Character.isWhitespace(lower.charAt(lowerPrefix.length()))) {
+                String remainder = transcript.substring(prefix.length()).trim();
                 if (!remainder.isBlank()) return remainder;
             }
         }
@@ -48,7 +53,7 @@ class SleepModeWakeBypassTest {
     // =========================================================================
 
     @ParameterizedTest(name = "[EN] \"{0}\" passes gate")
-    @CsvSource({"wake", "wake up", "listen", "listen up", "listen open galaxy map", "wake up please"})
+    @CsvSource({"wake", "wake up", "listen", "listen up", "listen open galaxy map"})
     void english_passThrough(String transcript) {
         assertTrue(passThrough(new EnglishAiActionAliases(), transcript));
     }
@@ -57,6 +62,10 @@ class SleepModeWakeBypassTest {
     void english_blockedWhileSleeping() {
         assertFalse(passThrough(new EnglishAiActionAliases(), "open galaxy map"));
         assertFalse(passThrough(new EnglishAiActionAliases(), "jump to hyperspace"));
+        assertFalse(passThrough(new EnglishAiActionAliases(), "do not listen open galaxy map"));
+        assertFalse(passThrough(new EnglishAiActionAliases(), "please listen open galaxy map"));
+        assertFalse(passThrough(new EnglishAiActionAliases(), "open galaxy map listen"));
+        assertFalse(passThrough(new EnglishAiActionAliases(), "wake up please"));
     }
 
     @Test
@@ -86,6 +95,9 @@ class SleepModeWakeBypassTest {
     void german_blockedWhileSleeping() {
         assertFalse(passThrough(new GermanAiActionAliases(), "öffne galaxiekarte"));
         assertFalse(passThrough(new GermanAiActionAliases(), "sprung in den hyperraum"));
+        assertFalse(passThrough(new GermanAiActionAliases(), "nicht hör zu öffne galaxiekarte"));
+        assertFalse(passThrough(new GermanAiActionAliases(), "bitte hör zu öffne galaxiekarte"));
+        assertFalse(passThrough(new GermanAiActionAliases(), "öffne galaxiekarte hör zu"));
     }
 
     @Test
@@ -115,6 +127,9 @@ class SleepModeWakeBypassTest {
     void russian_blockedWhileSleeping() {
         assertFalse(passThrough(new RussianAiActionAliases(), "открой карту галактики"));
         assertFalse(passThrough(new RussianAiActionAliases(), "прыжок в гиперпространство"));
+        assertFalse(passThrough(new RussianAiActionAliases(), "не слушай открой карту"));
+        assertFalse(passThrough(new RussianAiActionAliases(), "пожалуйста слушай открой карту"));
+        assertFalse(passThrough(new RussianAiActionAliases(), "открой карту слушай"));
     }
 
     @Test
@@ -144,6 +159,9 @@ class SleepModeWakeBypassTest {
     void ukrainian_blockedWhileSleeping() {
         assertFalse(passThrough(new UkrainianAiActionAliases(), "відкрий карту галактики"));
         assertFalse(passThrough(new UkrainianAiActionAliases(), "стрибок у гіперпростір"));
+        assertFalse(passThrough(new UkrainianAiActionAliases(), "не слухай відкрий карту"));
+        assertFalse(passThrough(new UkrainianAiActionAliases(), "будь ласка слухай відкрий карту"));
+        assertFalse(passThrough(new UkrainianAiActionAliases(), "відкрий карту слухай"));
     }
 
     @Test

@@ -24,7 +24,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
     public void addAliases(Map<String, String> map, Status status, boolean isDryRun) {
         // always available
         map.put("проснись, слушай, слушай меня, активируйся", WAKEUP.getAction());
-        map.put("спи, усни, иди спать, игнорируй меня, не слушай, не отслеживай", SLEEP.getAction());
+        map.put("спи, усни, иди спать, перейди в спящий режим, включи спящий режим, игнорируй меня, не слушай, не отслеживай", SLEEP.getAction());
         map.put("перебей, прерви, останови речь, прекрати говорить", INTERRUPT_TTS.getAction());
 
         // navigation

@@ -15,7 +15,7 @@ public class NavigateToMyFleetCarrier implements CommandHandler {
         Status status = Status.getInstance();
         if (status.isInSrv() || status.isInMainShip()) {
             PlayerSession playerSession = PlayerSession.getInstance();
-            boolean hasFleetCarrier = playerSession.getCarrierData() != null;
+            boolean hasFleetCarrier = playerSession.getFleetCarrierData() != null;
             boolean hasHomeSystem = playerSession.getHomeSystem() != null;
 
             String destination;

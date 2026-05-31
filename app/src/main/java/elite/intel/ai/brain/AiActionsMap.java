@@ -58,7 +58,9 @@ public class AiActionsMap {
         map.put("navigate to active mission, plot route to active mission, plot route to mission, take me to mission, go to mission {key:X}",
                 NAVIGATE_TO_NEXT_MISSION.getAction());
         map.put("navigate to fleet carrier, go to carrier, head to carrier, return to carrier, take us to carrier",
-                NAVIGATE_TO_CARRIER.getAction());
+                NAVIGATE_TO_FLEET_CARRIER.getAction());
+        map.put("navigate to squadron carrier, go to squadron carrier, head to squadron carrier, return to squadron carrier",
+                NAVIGATE_TO_SQUADRON_CARRIER.getAction());
         map.put("navigate to landing zone, bearing to landing zone, heading to landing zone, back to LZ",
                 GET_HEADING_TO_LZ.getAction());
         map.put("navigate to next trade stop, go to next trade stop", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
@@ -295,16 +297,29 @@ public class AiActionsMap {
 
         map.put("fleet carriers in system, carriers in system, how many carriers, fleet carriers here, any carriers nearby",
                 QUERY_CARRIERS.getAction());
+
         map.put("carrier route, carrier navigation, carrier jump route, carrier trip, carrier journey, carrier travel plan, how many jumps on carrier route, jumps remaining on carrier, carrier route jump count, jumps left on carrier",
-                CARRIER_ROUTE_ANALYSIS.getAction());
+                FLEET_CARRIER_ROUTE_ANALYSIS.getAction());
         map.put("carrier route, where is carrier going, carrier next jump, where is carrier headed, carrier heading, carrier endpoint, carrier final destination",
-                CARRIER_ROUTE.getAction());
+                FLEET_CARRIER_ROUTE.getAction());
         map.put("carrier tritium, carrier fuel, how much tritium, tritium supply, tritium level, carrier fuel level, tritium reserve, carrier tritium status",
-                CARRIER_TRITIUM_SUPPLY.getAction());
+                FLEET_CARRIER_TRITIUM_SUPPLY.getAction());
         map.put("carrier status, carrier finances, carrier balance, carrier overview, carrier funds, how long can we operate carrier, carrier fuel status, fleet carrier fuel status, how far can carrier jump, carrier jump range with current tritium, carrier tritium range",
-                CARRIER_STATUS.getAction());
+                FLEET_CARRIER_STATUS.getAction());
         map.put("carrier ETA, when does carrier arrive, how long until carrier, carrier arrival time, carrier arrival, when does carrier jump, carrier jump time",
-                CARRIER_ETA.getAction());
+                FLEET_CARRIER_ETA.getAction());
+
+        map.put("squadron carrier route, squadron carrier navigation, squadron carrier jump route, how many jumps on squadron carrier route, jumps remaining on squadron carrier",
+                SQUADRON_CARRIER_ROUTE_ANALYSIS.getAction());
+        map.put("where is squadron carrier going, squadron carrier heading, squadron carrier endpoint, squadron carrier final destination",
+                SQUADRON_CARRIER_ROUTE.getAction());
+        map.put("squadron carrier tritium, squadron carrier fuel, squadron tritium supply, squadron carrier fuel level, squadron carrier tritium status",
+                SQUADRON_CARRIER_TRITIUM_SUPPLY.getAction());
+        map.put("squadron carrier status, squadron carrier finances, squadron carrier balance, squadron carrier overview, squadron carrier funds, how long can we operate squadron carrier, squadron carrier fuel status",
+                SQUADRON_CARRIER_STATUS.getAction());
+        map.put("squadron carrier ETA, when does squadron carrier arrive, how long until squadron carrier, squadron carrier arrival time, squadron carrier arrival",
+                SQUADRON_CARRIER_ETA.getAction());
+
         map.put("distance to carrier, where is our carrier, how far is carrier, where is our carrier, range to carrier, carrier proximity, how far away is carrier",
                 DISTANCE_TO_CARRIER.getAction());
         map.put("system security, faction control, who controls, power struggle, security level, who owns this system, dominant faction, controlling power",

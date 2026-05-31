@@ -39,7 +39,7 @@ public class CarrierJumpCompleteSubscriber {
 
 
             FleetCarrierRouteManager fleetCarrierRouteManager = FleetCarrierRouteManager.getInstance();
-            CarrierDataDto carrierData = playerSession.getCarrierData();
+            CarrierDataDto carrierData = playerSession.getFleetCarrierData();
             carrierData.setSystemAddress(event.getSystemAddress());
             carrierData.setStarName(event.getStarSystem());
             CarrierJump currentLocationLeg = fleetCarrierRouteManager.findByPrimaryStar(event.getStarSystem());
@@ -57,14 +57,14 @@ public class CarrierJumpCompleteSubscriber {
 
             int fuelUsed = currentLocationLeg == null ? 0 : currentLocationLeg.getFuelUsed();
             carrierData.setFuelLevel(carrierData.getFuelLevel() - fuelUsed);
-            playerSession.setCarrierData(carrierData);
+            playerSession.setFleetCarrierData(carrierData);
 
             fleetCarrierRouteManager.removeLeg(event.getStarSystem());
 
             playerSession.setCarrierDepartureTime(null);
 
             Status status = Status.getInstance();
-            CarrierDataDto carrierInfo = playerSession.getCarrierData();
+            CarrierDataDto carrierInfo = playerSession.getFleetCarrierData();
 
             LocationDto location = toLocationDto(event);
             if (status.isDocked()) {
@@ -80,10 +80,10 @@ public class CarrierJumpCompleteSubscriber {
                 carrierData.setX(starPos[0]);
                 carrierData.setY(starPos[1]);
                 carrierData.setZ(starPos[2]);
-                playerSession.setCarrierData(carrierData);
+                playerSession.setFleetCarrierData(carrierData);
             }
 
-            CarrierDataDto postJumpCarrierData = playerSession.getCarrierData();
+            CarrierDataDto postJumpCarrierData = playerSession.getFleetCarrierData();
             int numJumpsRemaining = fleetCarrierRouteManager.getFleetCarrierRoute().size();
             int estimatedTimeToFinal = numJumpsRemaining * 20;
             String timeString;

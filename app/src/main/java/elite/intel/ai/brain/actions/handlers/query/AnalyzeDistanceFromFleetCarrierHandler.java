@@ -16,7 +16,7 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         //EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry. Stand by."));
 
-        CarrierDataDto carrierData = playerSession.getCarrierData();
+        CarrierDataDto carrierData = playerSession.getFleetCarrierData();
         if (carrierData == null) return process("No data available");
         double carrierLocationX = carrierData.getX();
         double carrierLocationY = carrierData.getY();

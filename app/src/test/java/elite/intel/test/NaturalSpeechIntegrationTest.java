@@ -291,7 +291,7 @@ public class NaturalSpeechIntegrationTest {
     @Order(34)
     @MethodSource
     void navigateToCarrier(String input) throws InterruptedException {
-        assertRouted(input, NAVIGATE_TO_CARRIER.getAction());
+        assertRouted(input, NAVIGATE_TO_FLEET_CARRIER.getAction());
     }
 
     static Stream<String> navigateToCarrier() {
@@ -650,6 +650,106 @@ public class NaturalSpeechIntegrationTest {
     }
 
     // =========================================================================
+    // Squadron carrier
+    // =========================================================================
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(85)
+    @MethodSource
+    void navigateToSquadronCarrier(String input) throws InterruptedException {
+        assertRouted(input, NAVIGATE_TO_SQUADRON_CARRIER.getAction());
+    }
+
+    static Stream<String> navigateToSquadronCarrier() {
+        return Stream.of("navigate to squadron carrier", "go to squadron carrier", "head to squadron carrier");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(240)
+    @MethodSource
+    void querySquadronCarrierStatus(String input) throws InterruptedException {
+        assertRouted(input, SQUADRON_CARRIER_STATUS.getAction());
+    }
+
+    static Stream<String> querySquadronCarrierStatus() {
+        return Stream.of("squadron carrier status", "squadron carrier finances", "squadron carrier balance",
+                "how long can we operate the squadron carrier");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(241)
+    @MethodSource
+    void querySquadronCarrierFuel(String input) throws InterruptedException {
+        assertRouted(input, SQUADRON_CARRIER_TRITIUM_SUPPLY.getAction());
+    }
+
+    static Stream<String> querySquadronCarrierFuel() {
+        return Stream.of("squadron carrier tritium", "squadron carrier fuel", "squadron carrier fuel level");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(242)
+    @MethodSource
+    void querySquadronCarrierRoute(String input) throws InterruptedException {
+        assertRouted(input, SQUADRON_CARRIER_ROUTE_ANALYSIS.getAction());
+    }
+
+    static Stream<String> querySquadronCarrierRoute() {
+        return Stream.of("squadron carrier route", "how many jumps on the squadron carrier route",
+                "squadron carrier jump route");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(243)
+    @MethodSource
+    void querySquadronCarrierDestination(String input) throws InterruptedException {
+        assertRouted(input, SQUADRON_CARRIER_ROUTE.getAction());
+    }
+
+    static Stream<String> querySquadronCarrierDestination() {
+        return Stream.of("where is the squadron carrier going", "squadron carrier final destination",
+                "squadron carrier heading");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(244)
+    @MethodSource
+    void querySquadronCarrierEta(String input) throws InterruptedException {
+        assertRouted(input, SQUADRON_CARRIER_ETA.getAction());
+    }
+
+    static Stream<String> querySquadronCarrierEta() {
+        return Stream.of("squadron carrier ETA", "when does the squadron carrier arrive",
+                "how long until the squadron carrier arrives");
+    }
+
+    // =========================================================================
+    // Disambiguation: bare "carrier" phrases must route to fleet, not squadron
+    // =========================================================================
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(250)
+    @MethodSource
+    void bareCarrierDefaultsToFleet(String input) throws InterruptedException {
+        assertRouted(input, NAVIGATE_TO_FLEET_CARRIER.getAction());
+    }
+
+    static Stream<String> bareCarrierDefaultsToFleet() {
+        return Stream.of("navigate to fleet carrier", "return to carrier", "take us to carrier");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(251)
+    @MethodSource
+    void bareCarrierStatusDefaultsToFleet(String input) throws InterruptedException {
+        assertRouted(input, FLEET_CARRIER_STATUS.getAction());
+    }
+
+    static Stream<String> bareCarrierStatusDefaultsToFleet() {
+        return Stream.of("carrier status", "carrier balance", "carrier funds");
+    }
+
+    // =========================================================================
     // App settings / announcements
     // =========================================================================
 
@@ -880,7 +980,7 @@ public class NaturalSpeechIntegrationTest {
     @Order(211)
     @MethodSource
     void queryCarrierStatus(String input) throws InterruptedException {
-        assertRouted(input, CARRIER_STATUS.getAction());
+        assertRouted(input, FLEET_CARRIER_STATUS.getAction());
     }
 
     static Stream<String> queryCarrierStatus() {
@@ -892,7 +992,7 @@ public class NaturalSpeechIntegrationTest {
     @Order(212)
     @MethodSource
     void queryCarrierFuel(String input) throws InterruptedException {
-        assertRouted(input, CARRIER_TRITIUM_SUPPLY.getAction());
+        assertRouted(input, FLEET_CARRIER_TRITIUM_SUPPLY.getAction());
     }
 
     static Stream<String> queryCarrierFuel() {
@@ -1028,7 +1128,7 @@ public class NaturalSpeechIntegrationTest {
     @Order(226)
     @MethodSource
     void queryCarrierEta(String input) throws InterruptedException {
-        assertRouted(input, CARRIER_ETA.getAction());
+        assertRouted(input, FLEET_CARRIER_ETA.getAction());
     }
 
     static Stream<String> queryCarrierEta() {
@@ -1105,7 +1205,7 @@ public class NaturalSpeechIntegrationTest {
     @Order(233)
     @MethodSource
     void queryCarrierRoute(String input) throws InterruptedException {
-        assertRouted(input, CARRIER_ROUTE_ANALYSIS.getAction());
+        assertRouted(input, FLEET_CARRIER_ROUTE_ANALYSIS.getAction());
     }
 
     static Stream<String> queryCarrierRoute() {

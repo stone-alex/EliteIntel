@@ -39,7 +39,7 @@ public class SuperCruiseDropSubscriber {
                 locationManager.save(location);
             }
 
-            String carrierName = playerSession.getCarrierData().getCarrierName();
+            String carrierName = playerSession.getFleetCarrierData().getCarrierName();
             if (event.getType().toUpperCase().startsWith(carrierName.toUpperCase())) {
                 EventBusManager.publish(new AiVoxResponseEvent("Welcome Home to " + StringUtls.capitalizeWords(carrierName) + "! "));
             }

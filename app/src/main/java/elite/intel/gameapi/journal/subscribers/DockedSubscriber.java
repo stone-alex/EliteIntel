@@ -51,12 +51,12 @@ public class DockedSubscriber {
                     location.setLocationType(FLEET_CARRIER);
                     LocationDao.Coordinates coordinates = LocationManager.getInstance().getGalacticCoordinates();
                     if (coordinates != null) {
-                        CarrierDataDto carrierData = playerSession.getCarrierData();
+                        CarrierDataDto carrierData = playerSession.getFleetCarrierData();
                         carrierData.setX(coordinates.x());
                         carrierData.setY(coordinates.y());
                         carrierData.setZ(coordinates.z());
                         carrierData.setStarName(event.getStarSystem());
-                        playerSession.setCarrierData(carrierData);
+                        playerSession.setFleetCarrierData(carrierData);
                     }
                 } else {
                     location.setLocationType(STATION);

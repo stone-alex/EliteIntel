@@ -7,19 +7,18 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
-public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements QueryHandler {
+public class AnalyzeSquadronCarrierDataHandler extends BaseQueryAnalyzer implements QueryHandler {
 
-
-    @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing fleet carrier data. Stand by."));
+    @Override
+    public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
-        CarrierDataDto stats = playerSession.getCarrierData();
+        CarrierDataDto stats = playerSession.getSquadronCarrierData();
 
-        if (stats.getTotalBalance() == 0 && stats.getFuelLevel() == 0) {
-            return process("No data available. Please open carrier management panel.");
+        if (stats == null || (stats.getTotalBalance() == 0 && stats.getFuelLevel() == 0)) {
+            return process("No squadron carrier data available.");
         } else {
             String instructions = """
-                    Answer the user's question about fleet carrier status.
+                    Answer the user's question about squadron carrier status.
                     
                     Data fields:
                     - reserveBalance: credits reserved for weekly operations
@@ -51,7 +50,6 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
                                     stats.getRange(),
                                     stats.getFundedOperation()
                             )
-
                     ),
                     originalUserInput
             );
@@ -68,7 +66,8 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
             int maxRange,
             int fundedOperation
     ) implements ToYamlConvertable {
-        @Override public String toYaml() {
+        @Override
+        public String toYaml() {
             return YamlFactory.toYaml(this);
         }
     }

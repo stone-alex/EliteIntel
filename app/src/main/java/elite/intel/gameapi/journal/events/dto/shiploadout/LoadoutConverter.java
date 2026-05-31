@@ -4,6 +4,7 @@ import elite.intel.gameapi.journal.events.LoadoutEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static elite.intel.util.StringUtls.toReadableModuleName;
 
@@ -25,9 +26,39 @@ public class LoadoutConverter {
         dto.setShipId(event.getShipId());
         dto.setShipIdent(event.getShipIdent());
         dto.setShipMake(event.getShip());
-        dto.setShipName(event.getShipName());
+        dto.setShipName(toDisplayShipName(event));
         dto.setUnladenMass(event.getUnladenMass());
         return dto;
+    }
+
+    /**
+     * Returns the player-defined ship name when present, otherwise falls back to
+     * the journal ship type with a capitalized first letter. Returns null when
+     * neither value is usable so existing Unknown fallback text can still apply.
+     */
+    public static String toDisplayShipName(LoadoutEvent event) {
+        return toDisplayShipName(event.getShipName(), event.getShip());
+    }
+
+    static String toDisplayShipName(String shipName, String ship) {
+        String normalizedShipName = normalizeBlank(shipName);
+        if (normalizedShipName != null) {
+            return normalizedShipName;
+        }
+
+        String normalizedShip = normalizeBlank(ship);
+        if (normalizedShip == null) {
+            return null;
+        }
+        return normalizedShip.substring(0, 1).toUpperCase(Locale.ROOT) + normalizedShip.substring(1);
+    }
+
+    private static String normalizeBlank(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     private static List<ModuleDto> toModules(List<LoadoutEvent.Module> modules) {

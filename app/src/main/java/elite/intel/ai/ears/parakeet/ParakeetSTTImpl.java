@@ -2,6 +2,7 @@ package elite.intel.ai.ears.parakeet;
 
 import com.google.common.eventbus.Subscribe;
 import com.k2fsa.sherpa.onnx.*;
+import elite.intel.ai.brain.i18n.AiActionLocalizations;
 import elite.intel.ai.ears.*;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
@@ -20,14 +21,13 @@ import javax.sound.sampled.*;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayDeque;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static elite.intel.ai.brain.Reducer.passThroughWords;
 import static elite.intel.ai.brain.Reducer.trashSttWords;
 import static elite.intel.gameapi.AudioMonitorBus.publish;
 import static java.util.Arrays.copyOf;
@@ -408,24 +408,28 @@ public class ParakeetSTTImpl implements EarsInterface {
     }
 
     private boolean passThrough(String transcript) {
-        for (String word : passThroughWords) {
-            if (transcript.toLowerCase().contains(word)) return true;
+        String lower = transcript.toLowerCase(Locale.ROOT);
+        for (String phrase : AiActionLocalizations.wakeBypassPhrases()) {
+            if (lower.contains(phrase.toLowerCase(Locale.ROOT))) return true;
         }
         return false;
     }
 
     /**
-     * If the transcript contains a "listen up" / "listen" bypass prefix followed by
+     * If the transcript starts with a localized listen-type prefix followed by
      * meaningful content, returns the content with the prefix stripped.
-     * Returns null if the transcript is just the keyword alone (e.g. pure "wake up")
-     * or no listen prefix is present - caller should send the original in that case.
+     * Returns null if the transcript is a pure wake phrase or has no listen prefix
+     * caller sends the original unchanged so the AI can route it via WAKEUP.
      */
     private String stripListenBypassPrefix(String transcript) {
-        String lower = transcript.toLowerCase();
-        for (String prefix : new String[]{"listen up ", "listen "}) {
-            int idx = lower.indexOf(prefix);
+        String lower = transcript.toLowerCase(Locale.ROOT);
+        List<String> prefixes = new ArrayList<>(AiActionLocalizations.listenBypassPrefixes());
+        prefixes.sort(Comparator.comparingInt(String::length).reversed());
+        for (String prefix : prefixes) {
+            String lowerPrefix = prefix.toLowerCase(Locale.ROOT) + " ";
+            int idx = lower.indexOf(lowerPrefix);
             if (idx >= 0) {
-                String remainder = transcript.substring(idx + prefix.length()).trim();
+                String remainder = transcript.substring(idx + lowerPrefix.length()).trim();
                 if (!remainder.isBlank()) return remainder;
             }
         }

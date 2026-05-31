@@ -8,10 +8,6 @@ import static elite.intel.ai.brain.actions.Queries.GENERAL_CONVERSATION;
 
 public class Reducer {
 
-    /// these words will pass through in "ignore" mode.
-    public final static List<String> passThroughWords = List.of("listen", "wake", "wake up");
-
-
     /// trash
     public final static List<String> trashSttWords = List.of(
             "--", "mm-hmm", "uh-huh", "hmm", "mm", "uh", "um", "ah", "oh", "huh", "eh",

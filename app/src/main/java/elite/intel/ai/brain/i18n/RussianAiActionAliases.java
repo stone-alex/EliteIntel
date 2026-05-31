@@ -3,11 +3,22 @@ package elite.intel.ai.brain.i18n;
 import elite.intel.session.Status;
 
 import java.util.Map;
+import java.util.Set;
 
 import static elite.intel.ai.brain.actions.Commands.*;
 import static elite.intel.ai.brain.actions.Queries.*;
 
 public class RussianAiActionAliases implements AiActionAliasProvider {
+
+    @Override
+    public Set<String> wakeBypassPhrases() {
+        return Set.of("проснись", "слушай", "слушай меня", "активируйся");
+    }
+
+    @Override
+    public Set<String> listenBypassPrefixes() {
+        return Set.of("слушай меня", "слушай");
+    }
 
     @Override
     public void addAliases(Map<String, String> map, Status status, boolean isDryRun) {

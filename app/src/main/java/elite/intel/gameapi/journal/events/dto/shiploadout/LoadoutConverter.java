@@ -40,7 +40,10 @@ public class LoadoutConverter {
         return toDisplayShipName(event.getShipName(), event.getShip());
     }
 
-    static String toDisplayShipName(String shipName, String ship) {
+    /**
+     * Normalizes a stored or journal ship name into the display name used by the UI.
+     */
+    public static String toDisplayShipName(String shipName, String ship) {
         String normalizedShipName = normalizeBlank(shipName);
         if (normalizedShipName != null) {
             return normalizedShipName;

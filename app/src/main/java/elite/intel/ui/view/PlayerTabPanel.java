@@ -11,6 +11,7 @@ import elite.intel.db.dao.ShipSettingsDao;
 import elite.intel.db.managers.ShipManager;
 import elite.intel.db.managers.ShipSettingsManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.journal.events.dto.shiploadout.LoadoutConverter;
 import elite.intel.i18n.Language;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -30,9 +31,9 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 import static elite.intel.ui.view.AppTheme.*;
-import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 public class PlayerTabPanel extends JPanel {
 
@@ -42,9 +43,9 @@ public class PlayerTabPanel extends JPanel {
     private JTextField playerAltNameField;
     private JTextField journalDirField;
     private JTextField bindingsDirField;
+    private JComboBox<LanguageOption> languageCombo;
     private JScrollPane fleetScrollPane;
     private JCheckBox conversationModeCheckBox;
-    private JComboBox<LanguageOption> languageCombo;
 
     public PlayerTabPanel() {
         buildUi();
@@ -183,8 +184,8 @@ public class PlayerTabPanel extends JPanel {
 
         List<ShipDao.Ship> ships = ShipManager.getInstance().getAllShips();
         ships.sort((a, b) -> {
-            String nameA = a.getShipName() == null ? "" : a.getShipName();
-            String nameB = b.getShipName() == null ? "" : b.getShipName();
+            String nameA = displayShipName(a);
+            String nameB = displayShipName(b);
             return nameA.compareToIgnoreCase(nameB);
         });
         fleetScrollPane.setViewportView(buildFleetGrid(ships));
@@ -244,7 +245,8 @@ public class PlayerTabPanel extends JPanel {
             c.gridy = gridRow;
             c.gridx = 0;
             c.weightx = 0.30;
-            JLabel nameLabel = new JLabel(ship.getShipName() != null ? ship.getShipName() : getText("player.fleet.unknown"));
+            String shipDisplayName = displayShipName(ship);
+            JLabel nameLabel = new JLabel(shipDisplayName);
             nameLabel.setForeground(FG);
             panel.add(nameLabel, c);
 
@@ -255,7 +257,7 @@ public class PlayerTabPanel extends JPanel {
                 String voiceName = (String) voiceCombo.getSelectedItem();
                 ship.setVoice(voiceName);
                 // The preview introduces the ship when named; otherwise it identifies the selected voice model.
-                String speakerName = trimToNull(ship.getShipName());
+                String speakerName = trimToNull(shipDisplayName);
                 if (speakerName == null) speakerName = voiceName;
                 String tts = StringUtls.shipIntroduction(playerSession.getConfiguredPlayerName(), speakerName);
                 EventBusManager.publish(new AiVoxDemoEvent(tts, voiceName));
@@ -288,7 +290,7 @@ public class PlayerTabPanel extends JPanel {
             c.fill = GridBagConstraints.NONE;
             JButton shipSettingsBtn = makeButtonSubtle("");
             shipSettingsBtn.setIcon(scaledIcon("/images/handicapped.png"));
-            shipSettingsBtn.addActionListener(e -> ShipSettingsPopup.create(panel, ship.getShipName(), shipSettings).setVisible(true));
+            shipSettingsBtn.addActionListener(e -> ShipSettingsPopup.create(panel, shipDisplayName, shipSettings).setVisible(true));
             panel.add(shipSettingsBtn, c);
             c.fill = GridBagConstraints.HORIZONTAL;
         }
@@ -302,6 +304,11 @@ public class PlayerTabPanel extends JPanel {
         panel.add(Box.createGlue(), c);
 
         return panel;
+    }
+
+    private String displayShipName(ShipDao.Ship ship) {
+        String displayName = LoadoutConverter.toDisplayShipName(ship.getShipName(), ship.getShipIdentifier());
+        return displayName == null ? getText("player.fleet.unknown") : displayName;
     }
 
     private JLabel makeColHeader(String text) {

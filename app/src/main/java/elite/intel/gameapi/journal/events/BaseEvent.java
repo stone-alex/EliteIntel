@@ -26,7 +26,11 @@ public abstract class BaseEvent implements ToJsonConvertible, ToYamlConvertable 
         if (endOfLife == null) {
             return false;
         }
-        return Instant.now().isAfter(endOfLife);
+        Instant now = Instant.now();
+        if (Instant.parse(timestamp).isAfter(now.plusSeconds(5))) {
+            return true;
+        }
+        return now.isAfter(endOfLife);
     }
 
 

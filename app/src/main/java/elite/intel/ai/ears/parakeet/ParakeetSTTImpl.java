@@ -408,6 +408,8 @@ public class ParakeetSTTImpl implements EarsInterface {
     }
 
     private boolean passThrough(String transcript) {
+        // Sleep mode only accepts exact wake phrases or listen-prefix commands at the start.
+        // This prevents phrases like "do not listen open map" from bypassing the gate.
         return isPureWakePhrase(transcript) || stripListenBypassPrefix(transcript) != null;
     }
 

@@ -3,9 +3,7 @@ package elite.intel.ai.brain.inference.xai;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.brain.AIChatInterface;
-import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.commons.AiEndPoint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,13 +40,19 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);
             prompt.add("messages", sanitizedMessages);
 
+            prompt.add("response_format", GrokClient.buildCommandResponseFormat());
+
             bodyString = prompt.toString();
             log.debug("xAI API chat call:\n{}", bodyString);
 
 
             JsonObject response = processAiPrompt(bodyString, client);
 
-            // Extract content safely
+            if (isHttpErrorResponse(response)) {
+                log.debug("HTTP error already handled by BaseAiClient: {}", response);
+                return null;
+            }
+
             JsonArray choices = response.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
                 log.error("No choices in API response:\n{}", response);
@@ -69,21 +73,7 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
 
             log.debug("API response content:\n{}", content);
 
-            String jsonContent = extractJsonFromContent(content);
-            if (jsonContent == null) {
-                JsonObject result = new JsonObject();
-                result.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, content);
-                return result;
-            }
-
-            log.debug("Extracted JSON content:\n\n{}\n\n", jsonContent);
-
-            try {
-                return JsonParser.parseString(jsonContent).getAsJsonObject();
-            } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response content:\n{}", jsonContent, e);
-                throw e;
-            }
+            return JsonParser.parseString(content).getAsJsonObject();
         } catch (Exception e) {
             log.error("AI API chat call fatal error: {}", e.getMessage(), e);
             log.error("Input data:\n{}", bodyString != null ? bodyString : "null");

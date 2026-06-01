@@ -177,7 +177,7 @@ public class InputNormalizer {
         m.put("hyperspace jump", "jump to hyperspace");
         m.put("make the jump", "jump to hyperspace");
         m.put("let's jump", "jump to hyperspace");
-        m.put("frame shift drive", "jump to hyperspace");
+
         m.put("engage drive", "jump to hyperspace");
         m.put("get us out", "jump to hyperspace");
         m.put("let's bounce", "jump to hyperspace");

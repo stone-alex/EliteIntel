@@ -135,6 +135,7 @@ public class PromptFactory implements AiPromptFactory {
                 - "target next route system" → select_next_system_in_route
                 - "target most dangerous / highest threat" → target_highest_threat
                 - "focus [my] target" / "focus on target" → fighter_attack_target (NOT target_subsystem)
+                - "target fsd" → target_subsystem ONLY. NEVER jump_to_hyperspace. Targeting a subsystem is not engaging it.
                 - "target [anything else]" → target_subsystem, key = the words after "target"
                 - organics / biology / exobiology on a planet or here → query_exobiology_samples, NOT geo/materials
                 - organics / bio signals in a system or which planets → query_bio_scans_and_samples_in_star_system

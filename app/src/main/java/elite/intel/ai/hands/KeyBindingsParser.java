@@ -33,9 +33,15 @@ public class KeyBindingsParser {
         return instance;
     }
 
+    /**
+     * Executable binding used by command handling.
+     * <p>
+     * This model intentionally contains only keyboard bindings that EliteIntel can press.
+     * Non-keyboard devices are represented only in the read-only diagnostic models below.
+     */
     public class KeyBinding {
         public String key;
-        String[] modifiers;
+        public String[] modifiers;
         public boolean hold;
 
         public KeyBinding(String key, String[] modifiers, boolean hold) {
@@ -45,8 +51,95 @@ public class KeyBindingsParser {
         }
     }
 
+    /**
+     * Executable Primary/Secondary slots after non-keyboard assignments have been filtered out.
+     */
+    public record BindingSlots(KeyBinding primary, KeyBinding secondary) {
+    }
+
+    /**
+     * Slot position as it appears in the Elite Dangerous binds file.
+     */
+    public enum BindingSlotType {
+        PRIMARY,
+        SECONDARY
+    }
+
+    /**
+     * Read-only representation of one Primary or Secondary slot from a .binds file.
+     * <p>
+     * It keeps the raw device id and key for UI diagnostics, while {@code keyboardUsable}
+     * records whether the slot is eligible for the existing keyboard-only execution path.
+     */
+    public record ReadOnlyBindingSlot(
+            String device,
+            String key,
+            String[] modifiers,
+            boolean hold,
+            BindingSlotType slotType,
+            boolean keyboardUsable
+    ) {
+    }
+
+    /**
+     * Read-only Primary/Secondary pair for the Bindings tab.
+     * <p>
+     * Unlike {@link BindingSlots}, this pair may contain HOTAS, joystick, mouse, or gamepad
+     * assignments so the UI can show what exists in the game file without making it executable.
+     */
+    public record ReadOnlyBindingSlots(ReadOnlyBindingSlot primary, ReadOnlyBindingSlot secondary) {
+    }
+
+    /**
+     * Parses the effective binding map used by command execution.
+     * <p>
+     * When both slots are present, the primary keyboard slot wins. Non-keyboard slots are excluded
+     * before this map is built, preserving the historical keyboard-only behavior.
+     */
     public Map<String, KeyBinding> parseBindings(File file) throws Exception {
+        Map<String, BindingSlots> bindingSlots = parseBindingSlots(file);
         Map<String, KeyBinding> bindings = new HashMap<>();
+        for (Map.Entry<String, BindingSlots> entry : bindingSlots.entrySet()) {
+            KeyBinding keyBinding = entry.getValue().primary() != null
+                    ? entry.getValue().primary()
+                    : entry.getValue().secondary();
+            if (keyBinding != null) {
+                bindings.put(entry.getKey(), keyBinding);
+            }
+        }
+        log.info("Parsed {} bindings from file: {}", bindings.size(), file.getName());
+        return bindings;
+    }
+
+    /**
+     * Parses only keyboard-usable binding slots for command execution and missing-binding checks.
+     * <p>
+     * This method preserves the existing executable behavior: HOTAS, joystick, mouse, and gamepad
+     * assignments are ignored here even though {@link #parseReadOnlyBindingSlots(File)} can display them.
+     */
+    public Map<String, BindingSlots> parseBindingSlots(File file) throws Exception {
+        Map<String, ReadOnlyBindingSlots> readOnlySlots = parseReadOnlyBindingSlots(file);
+        Map<String, BindingSlots> bindings = new HashMap<>();
+        for (Map.Entry<String, ReadOnlyBindingSlots> entry : readOnlySlots.entrySet()) {
+            KeyBinding primaryBinding = toExecutableBinding(entry.getValue().primary());
+            KeyBinding secondaryBinding = toExecutableBinding(entry.getValue().secondary());
+            if (primaryBinding != null || secondaryBinding != null) {
+                bindings.put(entry.getKey(), new BindingSlots(primaryBinding, secondaryBinding));
+            }
+        }
+        log.info("Parsed {} binding slots from file: {}", bindings.size(), file.getName());
+        return bindings;
+    }
+
+    /**
+     * Parses Primary and Secondary slots exactly enough for the read-only Bindings tab.
+     * <p>
+     * The returned model includes raw device ids such as {@code 044F0422}. These values are diagnostic
+     * only; callers must use {@link ReadOnlyBindingSlot#keyboardUsable()} before treating a slot as
+     * executable.
+     */
+    public Map<String, ReadOnlyBindingSlots> parseReadOnlyBindingSlots(File file) throws Exception {
+        Map<String, ReadOnlyBindingSlots> bindings = new HashMap<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(file);
@@ -61,35 +154,47 @@ public class KeyBindingsParser {
                 NodeList primaryList = element.getElementsByTagName("Primary");
                 NodeList secondaryList = element.getElementsByTagName("Secondary");
 
-                KeyBinding keyBinding = null;
+                ReadOnlyBindingSlot primaryBinding = null;
+                ReadOnlyBindingSlot secondaryBinding = null;
 
                 if (primaryList.getLength() > 0) {
                     Element primary = (Element) primaryList.item(0);
-                    if ("Keyboard".equals(primary.getAttribute("Device"))) {
-                        String key = primary.getAttribute("Key");
-                        boolean hold = "1".equals(primary.getAttribute("Hold"));
-                        keyBinding = new KeyBinding(key, getModifiers(primary), hold);
-                        log.debug("Parsed primary binding for {}: key={}, hold={}", actionName, key, hold);
-                    }
+                    primaryBinding = readOnlySlot(primary, BindingSlotType.PRIMARY);
+                    log.debug("Parsed primary binding for {}: device={}, key={}, hold={}",
+                            actionName, primaryBinding.device(), primaryBinding.key(), primaryBinding.hold());
                 }
 
-                if (keyBinding == null && secondaryList.getLength() > 0) {
+                if (secondaryList.getLength() > 0) {
                     Element secondary = (Element) secondaryList.item(0);
-                    if ("Keyboard".equals(secondary.getAttribute("Device"))) {
-                        String key = secondary.getAttribute("Key");
-                        boolean hold = "1".equals(secondary.getAttribute("Hold"));
-                        keyBinding = new KeyBinding(key, getModifiers(secondary), hold);
-                        log.debug("Parsed secondary binding for {}: key={}, hold={}", actionName, key, hold);
-                    }
+                    secondaryBinding = readOnlySlot(secondary, BindingSlotType.SECONDARY);
+                    log.debug("Parsed secondary binding for {}: device={}, key={}, hold={}",
+                            actionName, secondaryBinding.device(), secondaryBinding.key(), secondaryBinding.hold());
                 }
 
-                if (keyBinding != null) {
-                    bindings.put(actionName, keyBinding);
+                if (primaryBinding != null || secondaryBinding != null) {
+                    bindings.put(actionName, new ReadOnlyBindingSlots(primaryBinding, secondaryBinding));
                 }
             }
         }
-        log.info("Parsed {} bindings from file: {}", bindings.size(), file.getName());
+        log.info("Parsed {} read-only binding slots from file: {}", bindings.size(), file.getName());
         return bindings;
+    }
+
+    private ReadOnlyBindingSlot readOnlySlot(Element slot, BindingSlotType slotType) {
+        String device = slot.getAttribute("Device");
+        String key = slot.getAttribute("Key");
+        boolean hold = "1".equals(slot.getAttribute("Hold"));
+        return new ReadOnlyBindingSlot(device, key, getModifiers(slot), hold, slotType, isKeyboardUsable(device, key));
+    }
+
+    private KeyBinding toExecutableBinding(ReadOnlyBindingSlot slot) {
+        if (slot == null || !slot.keyboardUsable()) return null;
+        return new KeyBinding(slot.key(), slot.modifiers(), slot.hold());
+    }
+
+    private boolean isKeyboardUsable(String device, String key) {
+        // This guard is the boundary that prevents diagnostic non-keyboard slots from becoming executable.
+        return "Keyboard".equals(device) && key != null && !key.isBlank() && !"Key_".equals(key);
     }
 
     private String[] getModifiers(Element binding) {

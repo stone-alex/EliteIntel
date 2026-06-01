@@ -82,6 +82,7 @@ public class FrenchAiActionAliases implements AiActionAliasProvider {
             map.put("chasseur cesse le feu, chasseur retiens ton feu, chasseur ne tire pas, cessez-le-feu chasseur, hold fire chasseur", FIGHTER_REQUEST_HOLD_FIRE.getAction());
             map.put("chasseur rentre au vaisseau, chasseur dock, rappelle le chasseur, retour chasseur, chasseur reviens au vaisseau", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("chasseur feu à volonté, chasseur feu a volonte, feu à volonté, feu a volonte, attaque à volonté, attaque a volonte, fire at will", FIGHTER_OPEN_ORDERS.getAction());
+            map.put("sélectionne le groupe de tir {key:X}, selectionne le groupe de tir {key:X}, groupe de tir {key:X}, bascule vers le groupe de tir {key:X}, basculez vers le groupe de tir {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {

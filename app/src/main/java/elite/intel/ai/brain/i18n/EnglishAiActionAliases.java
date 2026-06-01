@@ -82,6 +82,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
             map.put("order fighter hold fire, fighter cease fire, fighter stand down", FIGHTER_REQUEST_HOLD_FIRE.getAction());
             map.put("order fighter return to ship, fighter dock, recall fighter", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("fighter open orders, fire at will, attack at will", FIGHTER_OPEN_ORDERS.getAction());
+            map.put("select fire group {key:X}, fire group {key:X}, switch to fire group {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {

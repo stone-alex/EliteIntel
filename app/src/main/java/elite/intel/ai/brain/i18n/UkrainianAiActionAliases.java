@@ -86,6 +86,7 @@ public class UkrainianAiActionAliases implements AiActionAliasProvider {
             map.put("винищувач припинити вогонь, винищувач не стріляти, тримати вогонь", FIGHTER_REQUEST_HOLD_FIRE.getAction());
             map.put("винищувач повернись на корабель, винищувач стикування, відкликати винищувач", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("винищувач вільний вогонь, вогонь за готовністю, атакувати на власний розсуд", FIGHTER_OPEN_ORDERS.getAction());
+            map.put("вибери вогневу групу {key:X}, вогнева група {key:X}, перемкнись на вогневу групу {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {

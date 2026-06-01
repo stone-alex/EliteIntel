@@ -86,6 +86,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
             map.put("истребитель прекратить огонь, истребитель не стрелять, не открывать огонь", FIGHTER_REQUEST_HOLD_FIRE.getAction());
             map.put("истребитель вернись на корабль, истребитель стыковка, отозвать истребитель", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("истребитель свободный огонь, огонь по усмотрению, атаковать по усмотрению, атакуй самостоятельно", FIGHTER_OPEN_ORDERS.getAction());
+            map.put("выбери огневую группу {key:X}, огневая группа {key:X}, переключись на огневую группу {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {

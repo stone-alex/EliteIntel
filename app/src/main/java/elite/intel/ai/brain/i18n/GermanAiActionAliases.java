@@ -85,6 +85,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
             map.put("jäger feuer einstellen, fighter feuer halten, feuer einstellen", FIGHTER_REQUEST_HOLD_FIRE.getAction());
             map.put("jäger zurück zum schiff, fighter andocken, jäger zurückrufen", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("jäger feuer frei, fighter feuer frei, nach eigenem ermessen angreifen", FIGHTER_OPEN_ORDERS.getAction());
+            map.put("wähle feuergruppe {key:X}, feuergruppe {key:X}, wechsle zu feuergruppe {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {

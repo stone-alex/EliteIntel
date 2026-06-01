@@ -148,7 +148,7 @@ public class AiActionsMap {
         }
 
         if (status.isInSrv() || status.isOnFoot() || isDryRun) {
-            map.put("dismiss ship, send ship away, ship to orbit", DISMISS_SHIP.getAction());
+            map.put("dismiss ship, send ship away, ship to orbit, go to orbit, send to orbit, put ship in orbit", DISMISS_SHIP.getAction());
             map.put("return to surface, pick me up", RETURN_TO_SURFACE.getAction());
         }
 

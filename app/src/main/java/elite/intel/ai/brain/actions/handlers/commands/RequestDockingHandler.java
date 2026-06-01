@@ -8,6 +8,7 @@ import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
 import elite.intel.session.ui.LeftPanel;
 import elite.intel.session.ui.UINavigator;
+import elite.intel.util.SleepNoThrow;
 
 public class RequestDockingHandler implements CommandHandler {
 
@@ -25,9 +26,9 @@ public class RequestDockingHandler implements CommandHandler {
             navigator.openAndNavigate(StatusFlags.GuiFocus.EXTERNAL_PANEL, LeftPanel.CONTACTS);
             //navigate to panel
             GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0));
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 1500)); // scroll up to the top (and hope our station is there)
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 250)); // scroll up to the top (and hope our station is there)
             GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0));
-
+            SleepNoThrow.sleep(500);
             //request docking
             GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding(), 120));
             /// Exit

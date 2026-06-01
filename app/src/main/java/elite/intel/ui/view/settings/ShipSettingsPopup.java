@@ -18,7 +18,7 @@ public class ShipSettingsPopup {
                 shipSettings::isHonkOnJump,
                 shipSettings::setHonkOnJump,
 
-                List.of("A", "B", "C", "D", "E"),
+                List.of("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"),
                 shipSettings::getHonkFireGroup,
                 shipSettings::setHonkFireGroup,
 

@@ -71,8 +71,7 @@ public class ShipManager {
         return Database.withDao(ShipDao.class, dao -> dao.allShips());
     }
 
-    public void resetAllVoicesToDefault(boolean useLocalTTS) {
-        String defaultVoice = useLocalTTS ? "BELLA" : "STEVE";
+    public void resetAllVoicesToDefault(String defaultVoice) {
         List<ShipDao.Ship> ships = getAllShips();
         for (ShipDao.Ship ship : ships) {
             ship.setVoice(defaultVoice);

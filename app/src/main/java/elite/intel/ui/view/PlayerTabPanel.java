@@ -1,5 +1,6 @@
 package elite.intel.ui.view;
 
+import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.brain.ShipCadence;
 import elite.intel.ai.brain.ShipPersonality;
 import elite.intel.ai.mouth.GoogleVoices;
@@ -16,6 +17,7 @@ import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.ui.event.LanguageChangedEvent;
+import elite.intel.ui.event.TTSProviderChangedEvent;
 import elite.intel.ui.view.settings.GlobalSettingsPopup;
 import elite.intel.ui.view.settings.ShipSettingsPopup;
 import elite.intel.util.StringUtls;
@@ -48,6 +50,12 @@ public class PlayerTabPanel extends JPanel {
 
     public PlayerTabPanel() {
         buildUi();
+        EventBusManager.register(this);
+    }
+
+    @Subscribe
+    public void onTTSProviderChanged(TTSProviderChangedEvent event) {
+        SwingUtilities.invokeLater(this::initData);
     }
 
     private void buildUi() {

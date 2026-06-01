@@ -1,5 +1,7 @@
 package elite.intel.ui.view.settings;
 
+import elite.intel.ai.mouth.GoogleVoices;
+import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.db.managers.ShipManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
@@ -8,6 +10,7 @@ import elite.intel.ui.event.RestartMouthEvent;
 import elite.intel.ui.event.SpeechSpeedChangeEvent;
 import elite.intel.ui.event.SttThreadsChangedEvent;
 import elite.intel.ui.event.SttVolumeChangedEvent;
+import elite.intel.ui.event.*;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -165,6 +168,7 @@ public class AudioSettingsPanel extends JPanel {
         boolean newValue = useLocalTTSCheck.isSelected();
         boolean oldValue = systemSession.useLocalTTS();
         if (newValue != oldValue) {
+            String defaultVoice = newValue ? KokoroVoices.BELLA.name() : GoogleVoices.EMMA.name();
             int confirm = JOptionPane.showConfirmDialog(
                     this,
                     getText("settings.audio.switchTts.message"),
@@ -175,9 +179,11 @@ public class AudioSettingsPanel extends JPanel {
                 useLocalTTSCheck.setSelected(oldValue);
                 return;
             }
-            ShipManager.getInstance().resetAllVoicesToDefault(newValue);
+            ShipManager.getInstance().resetAllVoicesToDefault(defaultVoice);
         }
         systemSession.setUseLocalTTS(newValue);
+        EventBusManager.publish(new TTSProviderChangedEvent());
+        EventBusManager.publish(new RestartMouthEvent());
         if (newValue != oldValue) EventBusManager.publish(new RestartMouthEvent());
         if (onLocalTtsChanged != null) onLocalTtsChanged.run();
     }

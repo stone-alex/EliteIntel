@@ -117,7 +117,8 @@ public class JournalParser implements Runnable, ManagedService {
                     return;
                 }
 
-                // Drain WatchKey only to detect new journal files — do not block on it.
+                // Fix for Windows
+                // Drain WatchKey only to detect new journal files. Do not block on it.
                 // On Windows the WatchService can delay notifications by several seconds, so
                 // reads must happen on every iteration regardless of whether a key arrived.
                 WatchKey key = watchService.poll();
@@ -139,7 +140,7 @@ public class JournalParser implements Runnable, ManagedService {
 
                     while ((line = reader.readLine()) != null) {
                         if (isFirstLineAfterSeek) {
-                            if (line.length() > 0 && line.charAt(0) == '\uFEFF') {
+                            if (!line.isEmpty() && line.charAt(0) == '\uFEFF') {
                                 line = line.substring(1);
                             }
                             isFirstLineAfterSeek = false;

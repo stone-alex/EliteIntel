@@ -15,9 +15,12 @@ public class SubSystemsManager {
 
     private static volatile SubSystemsManager instance;
 
+    private static final int MIN_EVENT_RESPONSE_MS = 150;
+
     private String target;
     private volatile boolean continueTargeting = true;
     private volatile boolean pause = false;
+    private volatile long lastKeyPressTime = 0;
 
     private SubSystemsManager() {
         EventBusManager.register(this);
@@ -61,6 +64,7 @@ public class SubSystemsManager {
                         usingFallback = true;
                         cycleCount = 0;
                     }
+                    lastKeyPressTime = System.currentTimeMillis();
                     GameControllerBus.publish(new GameInputEvent(BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), 50));
                     pause = true;
                     cycleCount++;
@@ -80,6 +84,9 @@ public class SubSystemsManager {
             return;
         }
         if (event.getSubsystemLocalised() == null || event.getSubsystemLocalised().isEmpty()) {
+            return;
+        }
+        if (System.currentTimeMillis() - lastKeyPressTime < MIN_EVENT_RESPONSE_MS) {
             return;
         }
 

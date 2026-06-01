@@ -144,9 +144,17 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             GrokClient client = GrokClient.getInstance();
             JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_REASONING, 1.00f);
             prompt.add("messages", messages);
+
+            prompt.add("response_format", GrokClient.buildSensorResponseFormat());
+
             String jsonString = GsonFactory.getGson().toJson(prompt);
 
             JsonObject response = processAiPrompt(jsonString, client);
+
+            if (isHttpErrorResponse(response)) {
+                log.debug("HTTP error already handled by BaseAiClient: {}", response);
+                return null;
+            }
 
             JsonArray choices = response.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
@@ -166,25 +174,16 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
                 return client.createErrorResponse("No content in API response");
             }
 
-            log.debug("Raw API content (before cleanup):\n{}", content);
+            log.debug("Raw API content:\n{}", content);
 
-            // Robust JSON extraction - handles ```json
-            String jsonContent = extractJsonFromContent(content);
-            if (jsonContent == null) {
-                log.error("Could not extract valid JSON from content:\n{}", content);
-                return client.createErrorResponse("Could not extract JSON from model response");
-            }
-
-            log.debug("Extracted JSON:\n{}", jsonContent);
-
-            return JsonParser.parseString(jsonContent).getAsJsonObject();
+            return JsonParser.parseString(content).getAsJsonObject();
 
         } catch (IOException e) {
             log.error("X AI API call failed: {}", e.getMessage(), e);
             String aiServerError = serverErrorMessage(e);
             return GrokClient.getInstance().createErrorResponse("API call failed: " + aiServerError);
         } catch (JsonSyntaxException e) {
-            log.error("JSON parse failed after extraction", e);
+            log.error("JSON parse failed", e);
             return GrokClient.getInstance().createErrorResponse("Invalid JSON structure from model");
         }
     }

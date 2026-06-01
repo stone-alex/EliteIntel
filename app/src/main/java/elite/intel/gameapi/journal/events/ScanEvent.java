@@ -200,7 +200,7 @@ public class ScanEvent extends BaseEvent {
     }
 
     public ScanEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofSeconds(20), "Scan");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(60), "Scan");
         ScanEvent event = GsonFactory.getGson().fromJson(json, ScanEvent.class);
         this.scanType = event.scanType;
         this.starPos = event.starPos;

@@ -14,6 +14,7 @@ import elite.intel.db.managers.ShipSettingsManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.shiploadout.LoadoutConverter;
 import elite.intel.i18n.Language;
+import elite.intel.gameapi.journal.events.dto.shiploadout.LoadoutConverter;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;

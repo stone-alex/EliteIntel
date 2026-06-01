@@ -124,20 +124,20 @@ public class JumpCompletedSubscriber {
 
             locationManager.save(primaryStar);
 
-            if (playerSession.isRouteAnnouncementOn()) {
-                EventBusManager.publish(new RouteAnnouncementEvent(sb.toString()));
+            if (!event.isReplay()) {
+                if (playerSession.isRouteAnnouncementOn()) {
+                    EventBusManager.publish(new RouteAnnouncementEvent(sb.toString()));
+                }
+                if (isSellerSystem && station != null) {
+                    EventBusManager.publish(new SensorDataEvent("Head to " + station.getSourceStationName() + " buy " + station.getSourceCommodity(), "Remind the commander of their active trade route: state the station name and the commodity to buy."));
+                }
+                if (isBuyerSystem && station != null) {
+                    EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind the commander of their active trade route: state the station name and the commodity to sell."));
+                }
             }
-            if (isSellerSystem && station != null) {
-                EventBusManager.publish(new SensorDataEvent("Head to " + station.getSourceStationName() + " buy " + station.getSourceCommodity(), "Remind the commander of their active trade route: state the station name and the commodity to buy."));
-            }
-
-            if (isBuyerSystem && station != null) {
-                EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind the commander of their active trade route: state the station name and the commodity to sell."));
-            }
-
 
             ShipSettingsDao.ShipSettings shipSettings = shipSettingsManager.getSettings(playerSession.getShipLoadout().getShipId());
-            if (shipSettings.isHonkOnJump()) {
+            if (!event.isReplay() && shipSettings.isHonkOnJump()) {
                 boolean isInCombatMode = !status.isAnalysisMode();
                 /// Change to analysis mode
                 if (isInCombatMode) {

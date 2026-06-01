@@ -101,7 +101,7 @@ public class FSDJumpEvent extends BaseEvent {
     private List<Conflict> conflicts;
 
     public FSDJumpEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofSeconds(15), "FSDJump");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(60), "FSDJump");
         FSDJumpEvent event = GsonFactory.getGson().fromJson(json, FSDJumpEvent.class);
         this.taxi = event.taxi;
         this.multicrew = event.multicrew;

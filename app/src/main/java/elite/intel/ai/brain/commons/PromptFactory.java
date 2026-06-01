@@ -118,6 +118,7 @@ public class PromptFactory implements AiPromptFactory {
                 - "max engines" / "boost engines" / "power to engines" → transfer_power_to_engines
                 - "take me back aboard the ship" / "board ship" → recover_srv_vehicle_get_on_board_ship
                 - Sending ship to orbit when requested to board ship is instant failure.
+                - "go to orbit" / "ship to orbit" / "send to orbit" / "put ship in orbit" → dismiss_ship_to_orbit. NEVER navigate_to_coordinates — "orbit" refers to the ship, not a destination.
                 - Never confuse "max engines" with "target engines"
                 - Never confuse "deploy vehicle" with "deploy landing gear"
                 - CARRIER vs SHIP: if the word "carrier" does not appear in the input, all route/jump/navigation queries refer to the SHIP, not the fleet carrier. Use query_ship_route_remaining_jumps, not query_carrier_route.

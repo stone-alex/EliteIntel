@@ -12,6 +12,8 @@ import java.time.Instant;
 
 public abstract class BaseEvent implements ToJsonConvertible, ToYamlConvertable {
 
+    private static final Instant APP_START = Instant.now();
+
     public String timestamp;
     public String event;
     public Instant endOfLife;
@@ -22,12 +24,16 @@ public abstract class BaseEvent implements ToJsonConvertible, ToYamlConvertable 
         this.endOfLife = Instant.parse(timestamp).plus(ttl);
     }
 
+    public boolean isReplay() {
+        return Instant.parse(timestamp).isBefore(APP_START);
+    }
+
     public boolean isExpired() {
         if (endOfLife == null) {
             return false;
         }
         Instant now = Instant.now();
-        if (Instant.parse(timestamp).isAfter(now.plusSeconds(5))) {
+        if (Instant.parse(timestamp).isAfter(now.plusSeconds(60))) {
             return true;
         }
         return now.isAfter(endOfLife);

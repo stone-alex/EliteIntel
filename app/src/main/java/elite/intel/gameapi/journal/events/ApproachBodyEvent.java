@@ -21,7 +21,7 @@ public class ApproachBodyEvent extends BaseEvent {
     private Long bodyID;
 
     public ApproachBodyEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofSeconds(15), "ApproachBody");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(60), "ApproachBody");
         ApproachBodyEvent event = GsonFactory.getGson().fromJson(json, ApproachBodyEvent.class);
         this.starSystem = event.starSystem;
         this.systemAddress = event.systemAddress;

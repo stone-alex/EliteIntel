@@ -26,7 +26,7 @@ public class SquadronStartupEvent extends BaseEvent {
     private String currentRankNameLocalised;
 
     public SquadronStartupEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofSeconds(10), "SquadronStartup");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(60), "SquadronStartup");
         SquadronStartupEvent event = GsonFactory.getGson().fromJson(json, SquadronStartupEvent.class);
         this.squadronID = event.squadronID;
         this.squadronName = event.squadronName;

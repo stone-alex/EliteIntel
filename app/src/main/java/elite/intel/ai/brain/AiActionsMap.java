@@ -135,7 +135,7 @@ public class AiActionsMap {
             map.put("show, open or display inventory panel", SHOW_INVENTORY_PANEL.getAction());
             map.put("show, open or display storage panel", SHOW_STORAGE_PANEL.getAction());
             // power
-            map.put("power to shields, max shields, boost shields", INCREASE_SHIELDS_POWER.getAction());
+            map.put("power to shields, max shields, boost shields, power to systems, max systems, boost systems", INCREASE_SHIELDS_POWER.getAction());
             map.put("power to engines, max engines, boost engines", INCREASE_ENGINES_POWER.getAction());
             map.put("power to weapons, max weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
             // vehicle deployment

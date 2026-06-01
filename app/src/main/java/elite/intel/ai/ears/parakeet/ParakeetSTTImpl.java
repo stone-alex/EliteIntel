@@ -202,6 +202,10 @@ public class ParakeetSTTImpl implements EarsInterface {
         int retryCount = 0;
         while (isListening.get()) {
             try {
+                if (isSpeaking.get()) {
+                    Thread.sleep(100);
+                    continue;
+                }
                 runVadAndTranscribe();
                 retryCount = 0;
             } catch (LineUnavailableException e) {
@@ -233,6 +237,7 @@ public class ParakeetSTTImpl implements EarsInterface {
             preRoll.clear();
 
             while (isListening.get() && line.isOpen()) {
+                if (isSpeaking.get()) break;
                 int bytesRead = line.read(buffer, 0, buffer.length);
                 if (bytesRead <= 0) continue;
 

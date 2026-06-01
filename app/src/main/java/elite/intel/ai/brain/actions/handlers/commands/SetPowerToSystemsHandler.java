@@ -38,26 +38,21 @@ public class SetPowerToSystemsHandler implements CommandHandler {
     }
 
     private void powerToSystemsSRV() {
-        String resetPowerDistribution = BINDING_RESET_POWER_DISTRIBUTION_BUGGY.getGameBinding();
-        String increaseSystemsPower = BINDING_INCREASE_SYSTEMS_POWER_BUGGY.getGameBinding();
-        String increaseEnginesPower = BINDING_INCREASE_ENGINES_POWER_BUGGY.getGameBinding();
-
-        performOperation(resetPowerDistribution, increaseSystemsPower, increaseEnginesPower);
+        performOperation(
+                BINDING_RESET_POWER_DISTRIBUTION_BUGGY.getGameBinding(),
+                BINDING_INCREASE_SYSTEMS_POWER_BUGGY.getGameBinding());
     }
 
     private void powerToSystemsShip() {
-        String resetPowerDistribution = BINDING_RESET_POWER_DISTRIBUTION.getGameBinding();
-        String increaseSystemsPower = BINDING_INCREASE_SYSTEMS_POWER.getGameBinding();
-        String increaseEnginesPower = BINDING_INCREASE_ENGINES_POWER.getGameBinding();
-
-        performOperation(resetPowerDistribution, increaseSystemsPower, increaseEnginesPower);
+        performOperation(
+                BINDING_RESET_POWER_DISTRIBUTION.getGameBinding(),
+                BINDING_INCREASE_SYSTEMS_POWER.getGameBinding());
     }
 
-    private void performOperation(String resetPowerDistribution, String increaseSystemsPower, String increaseEnginesPower) {
+    private void performOperation(String resetPowerDistribution, String increaseSystemsPower) {
         GameControllerBus.publish(new GameInputEvent(resetPowerDistribution, 0));
         GameControllerBus.publish(new GameInputEvent(increaseSystemsPower, 0));
         GameControllerBus.publish(new GameInputEvent(increaseSystemsPower, 0));
-
         log.info("Power distribution complete");
     }
 }

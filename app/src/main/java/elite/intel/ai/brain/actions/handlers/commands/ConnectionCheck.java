@@ -3,6 +3,7 @@ package elite.intel.ai.brain.actions.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.util.StringUtls;
 
 public class ConnectionCheck implements CommandHandler {
 
@@ -11,7 +12,7 @@ public class ConnectionCheck implements CommandHandler {
         StringBuilder sb = new StringBuilder();
         sb.append(" connection check ");
         EventBusManager.publish(
-                new AiVoxResponseEvent("Connection check successful.")
+                new AiVoxResponseEvent(StringUtls.localizedSpeech("speech.connectionSuccessful"))
         );
     }
 }

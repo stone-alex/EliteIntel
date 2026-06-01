@@ -1,6 +1,7 @@
 package elite.intel.ai.brain.commons;
 
 import com.google.gson.*;
+import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.Client;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
@@ -69,6 +70,16 @@ public abstract class AiEndPoint {
     }
 
     public record StructuredResponse(JsonArray choices, JsonObject message, String content, boolean isSuccessful) {
+    }
+
+    /**
+     * Returns true when the response is a BaseAiClient HTTP-error sentinel
+     * (has text_to_speech_response, no choices). The error was already logged
+     * and a TTS event already published by BaseAiClient - callers should return
+     * null silently rather than logging a second misleading error.
+     */
+    protected boolean isHttpErrorResponse(JsonObject response) {
+        return response.has(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE) && !response.has("choices");
     }
 
     /**

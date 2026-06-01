@@ -160,6 +160,21 @@ public class AppController implements Runnable {
         appendToLog("LLM service restarted");
     }
 
+    @Subscribe
+    void onRestartMouthEvent(RestartMouthEvent event) {
+        new Thread(this::restartMouthService, "MouthRestart-Thread").start();
+    }
+
+    private void restartMouthService() {
+        if (!isRunning.get()) return;
+        ServiceHolder mouth = services.get(ServiceType.MOUTH);
+        if (mouth == null) return;
+        appendToLog("Restarting TTS service...");
+        mouth.stop();
+        mouth.start();
+        appendToLog("TTS service restarted");
+    }
+
     private void appendToLog(String data) {
         String formattedTime = Instant.now()
                 .atZone(ZoneId.systemDefault())

@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.Comparator;
-import java.util.concurrent.TimeUnit;
 
 /**
  * The JournalParser class is responsible for monitoring and parsing journal log files
@@ -111,15 +110,20 @@ public class JournalParser implements Runnable, ManagedService {
             log.info("Monitoring {}", currentFile.getFileName());
 
             while (isRunning) {
-                Thread.sleep(120);
-                // Wait for file events with a timeout to check isRunning and interruptions
-                WatchKey key = watchService.poll(1, TimeUnit.SECONDS);
-                if (key == null) {
-                    if (Thread.currentThread().isInterrupted() || !isRunning) {
-                        log.info("Shutting down JournalParser due to interruption or stop signal");
-                        return;
-                    }
-                    continue;
+                Thread.sleep(200);
+
+                if (Thread.currentThread().isInterrupted() || !isRunning) {
+                    log.info("Shutting down JournalParser due to interruption or stop signal");
+                    return;
+                }
+
+                // Fix for Windows
+                // Drain WatchKey only to detect new journal files. Do not block on it.
+                // On Windows the WatchService can delay notifications by several seconds, so
+                // reads must happen on every iteration regardless of whether a key arrived.
+                WatchKey key = watchService.poll();
+                if (key != null) {
+                    key.reset();
                 }
 
                 Path latestFile = getLatestJournalFile();
@@ -136,7 +140,7 @@ public class JournalParser implements Runnable, ManagedService {
 
                     while ((line = reader.readLine()) != null) {
                         if (isFirstLineAfterSeek) {
-                            if (line.length() > 0 && line.charAt(0) == '\uFEFF') {
+                            if (!line.isEmpty() && line.charAt(0) == '\uFEFF') {
                                 line = line.substring(1);
                             }
                             isFirstLineAfterSeek = false;
@@ -173,7 +177,7 @@ public class JournalParser implements Runnable, ManagedService {
                                 }
                             }
                         } catch (Exception e) {
-                            log.warn("Skipping malformed journal line: {} — {}", line, e.getMessage());
+                            log.warn("Skipping malformed journal line: {} - {}", line, e.getMessage());
                         }
 
                         lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
@@ -183,7 +187,6 @@ public class JournalParser implements Runnable, ManagedService {
                     log.error("Error reading journal: {}", e.getMessage(), e);
                 }
 
-                key.reset();
             }
         }
     }

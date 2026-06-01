@@ -1,6 +1,7 @@
 package elite.intel.ai.brain.inference.xai;
 
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.BaseAiClient;
 import elite.intel.ai.brain.Client;
@@ -20,8 +21,8 @@ import java.time.Duration;
 public class GrokClient extends BaseAiClient implements Client {
 
     /// use the same non-reasoning model for commands and queries for now.
-    public static final String MODEL_GROK_NON_REASONING = "grok-4.20-non-reasoning";
-    public static final String MODEL_GROK_REASONING = "grok-4.20-non-reasoning";
+    public static final String MODEL_GROK_NON_REASONING = "grok-4-1-fast-non-reasoning";
+    public static final String MODEL_GROK_REASONING = "grok-4-1-fast-non-reasoning";
 
     ///
     public static final boolean IS_STREAM = false;
@@ -49,6 +50,55 @@ public class GrokClient extends BaseAiClient implements Client {
         header.addProperty("temperature", temp);
         header.addProperty("stream", IS_STREAM);
         return header;
+    }
+
+    public static JsonObject buildSensorResponseFormat() {
+        JsonObject ttsProp = new JsonObject();
+        ttsProp.addProperty("type", "string");
+        JsonObject properties = new JsonObject();
+        properties.add("text_to_speech_response", ttsProp);
+        JsonArray required = new JsonArray();
+        required.add("text_to_speech_response");
+        JsonObject schema = new JsonObject();
+        schema.addProperty("type", "object");
+        schema.add("properties", properties);
+        schema.add("required", required);
+        schema.addProperty("additionalProperties", false);
+        JsonObject jsonSchema = new JsonObject();
+        jsonSchema.addProperty("name", "sensor_response");
+        jsonSchema.addProperty("strict", true);
+        jsonSchema.add("schema", schema);
+        JsonObject responseFormat = new JsonObject();
+        responseFormat.addProperty("type", "json_schema");
+        responseFormat.add("json_schema", jsonSchema);
+        return responseFormat;
+    }
+
+    public static JsonObject buildCommandResponseFormat() {
+        JsonObject actionProp = new JsonObject();
+        actionProp.addProperty("type", "string");
+        JsonObject paramsProp = new JsonObject();
+        paramsProp.addProperty("type", "object");
+        paramsProp.addProperty("additionalProperties", false);
+        JsonObject properties = new JsonObject();
+        properties.add("action", actionProp);
+        properties.add("params", paramsProp);
+        JsonArray required = new JsonArray();
+        required.add("action");
+        required.add("params");
+        JsonObject schema = new JsonObject();
+        schema.addProperty("type", "object");
+        schema.add("properties", properties);
+        schema.add("required", required);
+        schema.addProperty("additionalProperties", false);
+        JsonObject jsonSchema = new JsonObject();
+        jsonSchema.addProperty("name", "command_response");
+        jsonSchema.addProperty("strict", true);
+        jsonSchema.add("schema", schema);
+        JsonObject responseFormat = new JsonObject();
+        responseFormat.addProperty("type", "json_schema");
+        responseFormat.add("json_schema", jsonSchema);
+        return responseFormat;
     }
 
     @Override public JsonObject createErrorResponse(String message) {

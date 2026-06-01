@@ -3,11 +3,22 @@ package elite.intel.ai.brain.i18n;
 import elite.intel.session.Status;
 
 import java.util.Map;
+import java.util.Set;
 
 import static elite.intel.ai.brain.actions.Commands.*;
 import static elite.intel.ai.brain.actions.Queries.*;
 
 public class EnglishAiActionAliases implements AiActionAliasProvider {
+
+    @Override
+    public Set<String> wakeBypassPhrases() {
+        return Set.of("wake", "wake up", "listen", "listen up");
+    }
+
+    @Override
+    public Set<String> listenBypassPrefixes() {
+        return Set.of("listen up", "listen");
+    }
 
     @Override
     public void addAliases(Map<String, String> map, Status status, boolean isDryRun) {

@@ -3,6 +3,7 @@ package elite.intel.ai.brain.i18n;
 import elite.intel.session.Status;
 
 import java.util.Map;
+import java.util.Set;
 
 import static elite.intel.ai.brain.actions.Commands.*;
 import static elite.intel.ai.brain.actions.Queries.*;
@@ -10,10 +11,20 @@ import static elite.intel.ai.brain.actions.Queries.*;
 public class RussianAiActionAliases implements AiActionAliasProvider {
 
     @Override
+    public Set<String> wakeBypassPhrases() {
+        return Set.of("проснись", "слушай", "слушай меня", "активируйся");
+    }
+
+    @Override
+    public Set<String> listenBypassPrefixes() {
+        return Set.of("слушай меня", "слушай");
+    }
+
+    @Override
     public void addAliases(Map<String, String> map, Status status, boolean isDryRun) {
         // always available
         map.put("проснись, слушай, слушай меня, активируйся", WAKEUP.getAction());
-        map.put("спи, усни, иди спать, игнорируй меня, не слушай, не отслеживай", SLEEP.getAction());
+        map.put("спи, усни, иди спать, перейди в спящий режим, включи спящий режим, игнорируй меня, не слушай, не отслеживай", SLEEP.getAction());
         map.put("перебей, прерви, останови речь, прекрати говорить", INTERRUPT_TTS.getAction());
 
         // navigation
@@ -29,16 +40,16 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
 
         if (status.isInMainShip() || isDryRun) {
             // navigation
-            map.put("выбери fsd пункт назначения, выбери пункт назначения, установи пункт назначения, выбери цель маршрута", TARGET_DESTINATION.getAction());
+            map.put("выбери пункт назначения FSD, установи цель FSD, выбери пункт назначения, установи пункт назначения, выбери цель маршрута", TARGET_DESTINATION.getAction());
             map.put("прыжок в гиперпространство, прыгай, гиперпрыжок, войти в гиперпространство, поехали, следующий маршрутный пункт", JUMP_TO_HYPERSPACE.getAction());
-            map.put("выйти из суперкруиза, выйти здесь, сбросить суперкруиз, выйти из сверхсвета, сбросься здесь", DROP_FROM_SUPER_CRUISE.getAction());
+            map.put("выйти из суперкруиза, выйти из суперкруиза здесь, сбросить суперкруиз, выйти из сверхсвета, сбросься из суперкруиза здесь", DROP_FROM_SUPER_CRUISE.getAction());
             map.put("войти в суперкруиз, суперкруиз, включи суперкруиз", ENTER_SUPER_CRUISE.getAction());
-            map.put("запусти корабль, старт, отстыковаться, покинуть станцию, выйти из порта", LAUNCH_SHIP.getAction());
+            map.put("запусти корабль, старт корабля, отстыковаться, покинуть станцию, выйти из порта", LAUNCH_SHIP.getAction());
             map.put("применить щитовую ячейку, запустить щитовую ячейку, активировать щитовую ячейку, банк щитовых ячеек, применить энергоячейку, использовать щитовую ячейку", DEPLOY_SHIELD_CELL.getAction());
-            map.put("запустить ловушки, использовать ловушки, выпустить ловушки, активировать ловушки, запустить тепловые ловушки, сбросить ловушки", DEPLOY_CHAFF.getAction());
+            map.put("выпусти дипольные отражатели, сбрось дипольные отражатели, сбрось диполи, chaff", DEPLOY_CHAFF.getAction());
 
             // speed / throttle
-            map.put("останови двигатели, стоп, полный стоп, остановись, заглуши двигатели, сбрось тягу, нулевая тяга, останови корабль", SET_SPEED_ZERO.getAction());
+            map.put("останови двигатели, полный стоп, стоп корабль, заглуши двигатели, сбрось тягу, нулевая тяга, останови корабль", SET_SPEED_ZERO.getAction());
             map.put("такси к посадке, такси, автопосадка, автоматическая посадка", TAXI.getAction());
             map.put("четверть тяги, двадцать пять процентов, малая скорость, одна четверть", SET_SPEED25.getAction());
             map.put("половина тяги, пятьдесят процентов, половина скорости", SET_SPEED50.getAction());
@@ -55,9 +66,9 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
             map.put("покажи панель истребителя, открой панель истребителя, отобрази панель истребителя", SHOW_FIGHTER_PANEL.getAction());
 
             // combat
-            map.put("выпусти оружие, оружие к бою, боевой режим, оружие свободно, вооружиться, подготовить оружие", DEPLOY_HARDPOINTS.getAction());
-            map.put("убери оружие, оружие убрать, снять оружие, выйти из боя, спрячь оружие, безопасный режим оружия", RETRACT_HARDPOINTS.getAction());
-            map.put("цель fsd {key:fsd}, цель двигатели {key:drive}, цель распределитель питания {key:power distributor}, цель силовая установка {key:powerplant}, цель жизнеобеспечение {key:life support}", TARGET_SUB_SYSTEM.getAction());
+            map.put("выпусти оружие, оружие к бою, боевой режим, оружие свободно, вооружиться, подготовить оружие, выпусти хардпойнты, разверни хардпойнты", DEPLOY_HARDPOINTS.getAction());
+            map.put("убери оружие, оружие убрать, снять оружие, выйти из боя, спрячь оружие, безопасный режим оружия, убери хардпойнты, сложи хардпойнты", RETRACT_HARDPOINTS.getAction());
+            map.put("цель FSD {key:fsd}, цель двигатели {key:drive}, цель распределитель энергии {key:power distributor}, цель силовая установка {key:powerplant}, цель жизнеобеспечение {key:life support}", TARGET_SUB_SYSTEM.getAction());
             map.put("цель ведомый один, ведомый альфа", TARGET_WINGMAN0.getAction());
             map.put("цель ведомый два, ведомый браво", TARGET_WINGMAN1.getAction());
             map.put("цель ведомый три, ведомый чарли", TARGET_WINGMAN2.getAction());
@@ -65,16 +76,16 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
             map.put("приоритетная цель, цель с наибольшей угрозой, самая опасная цель, выбрать врага, следующий враг", SELECT_HIGHEST_THREAT.getAction());
 
             // vehicle deployment
-            map.put("выпусти срв, запусти срв, выпусти транспорт, высади срв", DEPLOY_SRV.getAction());
+            map.put("выпусти срв, запусти срв, выпусти транспорт, разверни SRV, высади срв", DEPLOY_SRV.getAction());
             map.put("выпусти теплоотвод, запусти теплоотвод, сбрось тепло", DEPLOY_HEAT_SINK.getAction());
 
             // fighter orders
             map.put("выпусти истребитель, запусти истребитель, отправь истребитель", DEPLOY_FIGHTER.getAction());
             map.put("истребитель защищай корабль, истребитель оборона, приказ истребителю обороняться", FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR.getAction());
             map.put("истребитель атакуй мою цель, истребитель атаковать, фокус на цель, сосредоточься на цели", FIGHTER_REQUEST_FOCUS_TARGET.getAction());
-            map.put("истребитель прекратить огонь, истребитель не стрелять, держать огонь", FIGHTER_REQUEST_HOLD_FIRE.getAction());
+            map.put("истребитель прекратить огонь, истребитель не стрелять, не открывать огонь", FIGHTER_REQUEST_HOLD_FIRE.getAction());
             map.put("истребитель вернись на корабль, истребитель стыковка, отозвать истребитель", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
-            map.put("истребитель свободный огонь, огонь по готовности, атаковать по усмотрению", FIGHTER_OPEN_ORDERS.getAction());
+            map.put("истребитель свободный огонь, огонь по усмотрению, атаковать по усмотрению, атакуй самостоятельно", FIGHTER_OPEN_ORDERS.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {
@@ -89,9 +100,9 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
             // flight / ship systems
             map.put("переключись в боевой режим, включи боевой режим", ACTIVATE_COMBAT_MODE.getAction());
             map.put("переключись в режим анализа, включи режим анализа", ACTIVATE_ANALYSIS_MODE.getAction());
-            map.put("грузовой ковш, открой грузовой ковш, закрой грузовой ковш, выпусти грузовой ковш, убери грузовой ковш, открой грузовой люк, закрой грузовой люк", TOGGLE_CARGO_SCOOP.getAction());
+            map.put("грузовой люк, грузозаборник, открой грузовой люк, закрой грузовой люк, выпусти грузозаборник, убери грузозаборник, cargo scoop", TOGGLE_CARGO_SCOOP.getAction());
             map.put("ночное видение, включи ночное видение, выключи ночное видение {state:true/false}", NIGHT_VISION_ON_OFF.getAction());
-            map.put("фары, свет, выключи свет, включи свет, корабельный свет, свет включить, свет выключить {state:true/false}", LIGHTS_ON_OFF.getAction());
+            map.put("фары, корабельный свет, выключи свет, включи свет, свет включить, свет выключить {state:true/false}", LIGHTS_ON_OFF.getAction());
 
             // UI panels
             map.put("покажи панель командира, открой центральную панель, открой панель ролей, открой планшет", SHOW_COMMANDER_PANEL.getAction());
@@ -118,18 +129,18 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
         }
 
         if (status.isInSrv() || status.isOnFoot() || isDryRun) {
-            map.put("отправь корабль, корабль на орбиту, отозвать корабль с поверхности", DISMISS_SHIP.getAction());
-            map.put("вернись на поверхность, забери меня, вызови корабль", RETURN_TO_SURFACE.getAction());
+            map.put("отправь корабль, отправь корабль на орбиту, корабль на орбиту, убери корабль с поверхности, отпусти корабль", DISMISS_SHIP.getAction());
+            map.put("верни корабль на поверхность, забери меня, вызови корабль, посади корабль рядом", RETURN_TO_SURFACE.getAction());
         }
 
         // market / traders / brokers
         map.put("найди торговца сырьевыми материалами, сырьевой торговец, где обменять сырьевые материалы {key:X}", FIND_RAW_MATERIAL_TRADER.getAction());
         map.put("найди торговца закодированными материалами, торговец данными, где обменять данные {key:X}", FIND_ENCODED_MATERIAL_TRADER.getAction());
-        map.put("найди торговца произведенными материалами, торговец manufactured материалами {key:X}", FIND_MANUFACTURED_MATERIAL_TRADER.getAction());
+        map.put("найди торговца производственными материалами, торговец производственными материалами, где обменять производственные материалы {key:X}, manufactured materials", FIND_MANUFACTURED_MATERIAL_TRADER.getAction());
         map.put("найди человеческого техноброкера, человеческий технологический брокер {key:X}", FIND_HUMAN_TECHNOLOGY_BROKER.getAction());
-        map.put("найди guardian техноброкера, технологический брокер стражей {key:X}", FIND_GUARDIAN_TECHNOLOGY_BROKER.getAction());
-        map.put("найди товар, найди ближайший товар, купить товар, где купить, найди рынок {key:X, max_distance:Y, state:true/false}", FIND_COMMODITY.getAction());
-        map.put("найди ближайший авианосец, ближайший carrier, ближайший флиткэрриер", FIND_NEAREST_FLEET_CARRIER.getAction());
+        map.put("найди техноброкера Стражей, технологический брокер Стражей {key:X}, Guardian tech broker", FIND_GUARDIAN_TECHNOLOGY_BROKER.getAction());
+        map.put("найди товар, найди ближайший товар, купить товар, где купить товар, найди рынок {key:X, max_distance:Y, state:true/false}", FIND_COMMODITY.getAction());
+        map.put("найди ближайший авианосец, ближайший флит-кэрриер, ближайший fleet carrier", FIND_NEAREST_FLEET_CARRIER.getAction());
 
         // fleet carrier
         map.put("установи резерв топлива авианосца, резерв трития авианосца {key:X}", SET_CARRIER_FUEL_RESERVE.getAction());
@@ -147,7 +158,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
         map.put("разрешить запрещенные товары в торговом профиле {state:true/false}", CHANGE_TRADE_PROFILE_SET_ALLOW_PROHIBITED_CARGO.getAction());
         map.put("разрешить планетарные порты в торговом профиле {state:true/false}", CHANGE_TRADE_PROFILE_SET_ALLOW_PLANETARY_PORT.getAction());
         map.put("разрешить системы с разрешением в торговом профиле {state:true/false}", CHANGE_TRADE_PROFILE_SET_ALLOW_PERMIT_SYSTEMS.getAction());
-        map.put("разрешить strongholds в торговом профиле {state:true/false}", CHANGE_TRADE_PROFILE_SET_ALLOW_STRONGHOLDS.getAction());
+        map.put("разрешить опорные системы в торговом профиле {state:true/false}, разрешить strongholds в торговом профиле {state:true/false}", CHANGE_TRADE_PROFILE_SET_ALLOW_STRONGHOLDS.getAction());
 
         // announcements / app settings
         map.put("переключи радио, радиотрафик, радиопередачи {state:true/false}", SET_RADIO_TRANSMISSION_MODE.getAction());
@@ -159,7 +170,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
         map.put("установи напоминание {key:X}, напомни {key:X}", SET_REMINDER.getAction());
 
         // UI panels
-        map.put("активировать, активируй", ACTIVATE.getAction());
+        map.put("активировать выбранное, активируй выбранное, подтверди выбор, нажми активную кнопку", ACTIVATE.getAction());
         map.put("покажи панель транзакций, открой транзакции", SHOW_TRANSACTIONS.getAction());
         map.put("покажи панель контактов, открой контакты", SHOW_CONTACTS.getAction());
         map.put("покажи панель навигации, открой навигацию", SHOW_NAVIGATION.getAction());
@@ -169,16 +180,16 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
         map.put("покажи историю, открой историю", SHOW_HISTORY_PANEL.getAction());
         map.put("покажи эскадрилью, открой эскадрилью", SHOW_SQUADRON.getAction());
         map.put("покажи статус, открой панель статуса", SHOW_STATUS_PANEL.getAction());
-        map.put("покажи управление авианосцем, открой carrier management", DISPLAY_CARRIER_MANAGEMENT.getAction());
+        map.put("открой управление авианосцем, панель управления авианосцем, открой carrier management", DISPLAY_CARRIER_MANAGEMENT.getAction());
         map.put("открой карту галактики, покажи карту галактики", OPEN_GALAXY_MAP.getAction());
         map.put("открой карту системы, покажи локальную карту, системная карта", OPEN_SYSTEM_MAP.getAction());
-        map.put("закрыть панель, выйти, закрыть", EXIT_CLOSE.getAction());
+        map.put("закрыть панель, закрыть, назад, закрой меню", EXIT_CLOSE.getAction());
 
         // pirate massacre missions
         map.put("навигация к системе выдачи миссий, курс к системе провайдера миссий", RECON_PROVIDER_SYSTEM.getAction());
         map.put("навигация к пиратскому провайдеру миссий, лети к выдаче пиратских миссий", NAVIGATE_TO_PIRATE_MISSION_PROVIDER.getAction());
         map.put("активные миссии, текущие миссии, журнал миссий, какие миссии, статус миссий, наши миссии", ANALYZE_MISSIONS.getAction());
-        map.put("пиратская миссия, счет убийств, сколько убийств, прогресс massacre миссии, сколько пиратов осталось", PIRATE_MISSION_PROGRESS.getAction());
+        map.put("пиратская миссия, счёт убийств, сколько убийств, прогресс миссии на уничтожение, прогресс massacre mission, сколько пиратов осталось", PIRATE_MISSION_PROGRESS.getAction());
         map.put("найди охотничьи угодья {key:X}, найди место охоты {key:X}", FIND_HUNTING_GROUNDS.getAction());
         map.put("разведка охотничьих угодий, навигация к целевой системе, курс к системе охоты", RECON_TARGET_SYSTEM.getAction());
         map.put("игнорируй охотничьи угодья, пропусти место охоты", IGNORE_HUNTING_GROUND.getAction());
@@ -190,10 +201,10 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
         map.put("очисти цели добычи", CLEAR_MINING_TARGETS.getAction());
         map.put("объявления добычи {state:true/false}", MINING_ON_OFF.getAction());
         map.put("найди мозговые деревья {key:X, max_distance:Y}", FIND_BRAIN_TREES.getAction());
-        map.put("найди место добычи, найди точку добычи, найди hotspot, где майнить, найди астероидное поле {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
+        map.put("найди место добычи, найди точку добычи, горячая точка добычи, хотспот, mining hotspot, где майнить, найди астероидное поле {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("найди место добычи трития, найди тритиевое поле {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
-        map.put("навигация к следующему биосэмплу, к следующему образцу, к следующей органике, запись кодекса, навигация к кодексу", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("просканируй систему, открой fss, полный скан, хонк, скан системы, full spectrum scan", OPEN_FSS_AND_SCAN.getAction());
+        map.put("навигация к следующему биосэмплу, к следующему образцу, к следующей органике, к следующей записи кодекса", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
+        map.put("просканируй систему, открой FSS, полноспектральное сканирование, FSS, скан открытия, полный скан, хонк, скан системы, full spectrum scan", OPEN_FSS_AND_SCAN.getAction());
         map.put("найди ближайшую vista genomics, найди геномику", FIND_VISTA_GENOMICS.getAction());
         map.put("удали запись кодекса, удали этот кодекс, удали эту запись, удали эту органику", DELETE_CODEX_ENTRY.getAction());
 
@@ -203,24 +214,24 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
         map.put("расстояние до последнего биосэмпла, как далеко до образца, расстояние до последней органики, дистанция до биосэмпла, навигация к биосэмплу", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         map.put("анализ биома, какой биом {key:X}, планетарный биом, анализ атмосферы, какая жизнь здесь, тип биома", PLANET_BIOME_ANALYSIS.getAction());
         map.put("звездные объекты, планеты в системе, посадочные планеты, планета или луна пригодна для посадки, тела в системе, какие планеты, сколько планет, кольца, ледяные кольца", QUERY_STELLAR_OBJETS.getAction());
-        map.put("сигналы в системе, какие сигналы в системе, что есть в системе, обнаруженные сигналы, fss сигналы, hotspots, resource extraction sites, конфликтные зоны, эмиссии", QUERY_STELLAR_SIGNALS.getAction());
+        map.put("сигналы в системе, какие сигналы в системе, обнаруженные сигналы, сигналы FSS, горячие точки добычи, зоны добычи ресурсов, RES, конфликтные зоны, эмиссии", QUERY_STELLAR_SIGNALS.getAction());
         map.put("геосигналы, геологические сигналы, вулканические сигналы, геологическая активность, вулканическая активность", QUERY_GEO_SIGNALS.getAction());
 
         map.put("авианосцы в системе, carriers в системе, сколько авианосцев, есть ли авианосцы рядом", QUERY_CARRIERS.getAction());
-        map.put("маршрут авианосца, навигация авианосца, путь авианосца, сколько прыжков на маршруте авианосца, прыжков осталось", CARRIER_ROUTE_ANALYSIS.getAction());
-        map.put("маршрут авианосца, куда летит авианосец, следующий прыжок авианосца, конечная точка авианосца", CARRIER_ROUTE.getAction());
+        map.put("анализ маршрута авианосца, навигация авианосца, путь авианосца, сколько прыжков на маршруте авианосца, сколько прыжков осталось у авианосца, прыжков осталось", CARRIER_ROUTE_ANALYSIS.getAction());
+        map.put("куда летит авианосец, следующий прыжок авианосца, конечная точка авианосца, пункт назначения авианосца", CARRIER_ROUTE.getAction());
         map.put("тритий авианосца, топливо авианосца, сколько трития, уровень трития, резерв трития", CARRIER_TRITIUM_SUPPLY.getAction());
         map.put("статус авианосца, финансы авианосца, баланс авианосца, обзор авианосца, средства авианосца, сколько авианосец может работать, запас хода авианосца", CARRIER_STATUS.getAction());
         map.put("eta авианосца, когда прибудет авианосец, сколько до прибытия авианосца, время прыжка авианосца", CARRIER_ETA.getAction());
         map.put("расстояние до авианосца, где наш авианосец, как далеко авианосец, дистанция до авианосца", DISTANCE_TO_CARRIER.getAction());
         map.put("безопасность системы, контроль фракции, кто контролирует систему, уровень безопасности, владелец системы, доминирующая фракция", SYSTEM_SECURITY_ANALYSIS.getAction());
         map.put("торговый профиль, торговые настройки, параметры торговли, торговая конфигурация, критерии торговли", TRADE_PROFILE_ANALYSIS.getAction());
-        map.put("расстояние до звездного объекта, как далеко до тела, расстояние до планеты {key:X}, расстояние до луны, как далеко до станции, дистанция до тела", DISTANCE_TO_BODY.getAction());
+        map.put("расстояние до звездного объекта, как далеко до тела, расстояние до планеты {key:X}, расстояние до луны, дистанция до тела, расстояние до объекта", DISTANCE_TO_BODY.getAction());
         map.put("последний скан, что мы сканировали, последний просканированный объект, самый свежий скан", LAST_SCAN_ANALYSIS.getAction());
-        map.put("инвентарь материалов {key:X}, сколько предметов {key:X}, сколько материалов {key:X}, есть ли материал {key:X}, сколько {key:X} у нас есть, инженерный материал {key:X}, сырьевой материал {key:X}, manufactured материал {key:X}, закодированный материал {key:X}", MATERIALS_INVENTORY.getAction());
+        map.put("инвентарь материалов {key:X}, сколько предметов {key:X}, сколько материалов {key:X}, есть ли материал {key:X}, сколько {key:X} у нас есть, инженерный материал {key:X}, сырьевой материал {key:X}, производственный материал {key:X}, manufactured material {key:X}, закодированный материал {key:X}", MATERIALS_INVENTORY.getAction());
         map.put("материалы планеты, материалы здесь, какие материалы на этой планете, поверхностные материалы, залежи материалов, минералы на планете", PLANET_MATERIALS.getAction());
         map.put("прибыль исследования, стоимость открытий, сколько стоит исследование, ценность сканов, прибыль картографирования, ценность экзобиологии", EXPLORATION_PROFITS.getAction());
-        map.put("где я нахожусь, где мы находимся, наша позиция, в какой системе мы, где я, наши координаты, текущая система, на какой планете мы, текущая позиция, длина дня", CURRENT_LOCATION.getAction());
+        map.put("где я нахожусь, где мы находимся, наша позиция, в какой системе мы, где я, наши координаты, текущая система, на какой планете мы, текущая позиция", CURRENT_LOCATION.getAction());
         map.put("информация о цели fsd, анализ пункта назначения, какую звезду мы выбрали, анализ fsd цели", FSD_TARGET_ANALYSIS.getAction());
         map.put("проложенный маршрут, топливо на следующей остановке, наличие топлива на маршруте, анализ маршрута, мы уже на месте, текущий маршрут, сколько прыжков осталось, следующая звезда scoopable", PLOTTED_ROUTE_ANALYSIS.getAction());
         map.put("торговый маршрут, текущий торговый план, чем мы торгуем, наш торговый план, торговые этапы", TRADE_ROUTE_ANALYSIS.getAction());
@@ -228,11 +239,11 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
         map.put("верфь, корабли на продажу, какие корабли на станции, купить корабль, доступные корабли, новый корабль", LOCAL_SHIPYARD.getAction());
         map.put("что в грузовом отсеке, что мы везем, содержимое груза, товары на борту, чем мы загружены", CARGO_HOLD_CONTENTS.getAction());
         map.put("профиль игрока", PLAYER_PROFILE_ANALYSIS.getAction());
-        map.put("компоновка корабля, отчет о повреждениях, модули корабля, готовность к бою, оборудование корабля, характеристики корабля, на чем я лечу, что установлено, генератор щитов, усиление корпуса, сенсоры, двигатели, frameshift, топливный ковш", SHIP_LOADOUT.getAction());
-        map.put("детали станции, какие сервисы здесь, какие услуги здесь, сервисы на станции, что предлагает станция, информация о станции, оборудование станции, что есть на этой станции, доступные сервисы", STATION_DETAILS.getAction());
-        map.put("награды за головы, общий bounty, сколько bounty, заработок с bounty, кредиты за bounty", TOTAL_BOUNTIES.getAction());
-        map.put("расстояние до пузыря, расстояние до sol, расстояние от sol, расстояние до земли, как далеко от пузыря, как далеко от цивилизации, расстояние от населенного космоса", DISTANCE_TO_BUBBLE.getAction());
-        map.put("текущее время, сколько времени, время на земле, галактическое время, utc время, реальное время", TIME_IN_ZONE.getAction());
+        map.put("компоновка корабля, отчет о повреждениях, модули корабля, готовность к бою, оборудование корабля, характеристики корабля, на чем я лечу, что установлено, генератор щитов, усиление корпуса, сенсоры, двигатели, FSD, Frame Shift Drive, топливозаборник", SHIP_LOADOUT.getAction());
+        map.put("детали станции, какие сервисы здесь, какие услуги здесь, сервисы на станции, что предлагает станция, информация о станции, сервисы станции, что есть на этой станции, доступные сервисы", STATION_DETAILS.getAction());
+        map.put("награды за головы, общие баунти, сколько наград за головы, награды за розыск, заработок с баунти, bounty", TOTAL_BOUNTIES.getAction());
+        map.put("расстояние до Пузыря, расстояние до Sol, расстояние до Сола, расстояние до Земли, как далеко от населенного космоса, как далеко от Пузыря, как далеко от цивилизации, расстояние от населенного космоса", DISTANCE_TO_BUBBLE.getAction());
+        map.put("текущее время, сколько времени, земное время, галактическое время, UTC время, реальное время", TIME_IN_ZONE.getAction());
         map.put("напоминание, какое было напоминание, напоминание пункта назначения, есть ли напоминания, что мы установили как напоминание", REMINDER.getAction());
         map.put("локальные рынки, рынки на станциях и поселениях, рынки на аванпостах в системе", ANALYZE_MARKETS.getAction());
     }

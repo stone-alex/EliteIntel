@@ -104,6 +104,7 @@ public class StringUtls {
             case RU -> "language.russian";
             case UK -> "language.ukrainian";
             case DE -> "language.german";
+            case FR -> "language.french";
         };
         return MultiLingualTextProvider.getText(effectiveTtsLanguage(), key);
     }
@@ -241,9 +242,10 @@ public class StringUtls {
 
 
     public static String affirmative() {
-        List<String> result = Arrays.stream(
-                new String[]{"On it!", "affirmative!", "aye-aye!", "certainly!", "of course!", "rightaway!"}
-        ).filter(Objects::nonNull).toList();
+        List<String> result = Arrays.stream(localizedSpeech("speech.affirmative").split("\\|"))
+                .map(String::trim)
+                .filter(value -> !value.isBlank())
+                .toList();
         if (result.isEmpty()) {
             return "Commander";
         }

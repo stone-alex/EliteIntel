@@ -37,7 +37,7 @@ public class LoadoutSubscriber {
             );
 
 
-            String shipName = event.getShipName() != null ? event.getShipName() : event.getShip();
+            String shipName = LoadoutConverter.toDisplayShipName(event);
             playerSession.setCurrentShipName(shipName);
             playerSession.setCurrentShip(event.getShip());
             playerSession.setShipLoadout(LoadoutConverter.toShipLoadOutDto(event));

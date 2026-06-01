@@ -172,6 +172,10 @@ public class BindingsMonitor {
         return bindings;
     }
 
+    public File getCurrentBindsFile() {
+        return currentBindsFile;
+    }
+
     /**
      * Detects binding conflicts among GameCommand bindings and persists them.
      * Returns descriptions of newly detected conflicts only - empty list means nothing changed.
@@ -265,19 +269,38 @@ public class BindingsMonitor {
                 .map(KeyBinding::getKeyBinding)
                 .toList();
 
-        Set<String> checkedGameBindings = new HashSet<>();
-        for (Bindings.GameCommand command : Bindings.GameCommand.values()) {
-            String gameBinding = command.getGameBinding();
-            if (!checkedGameBindings.add(gameBinding)) continue;
-
+        for (String gameBinding : findMissingGameBindings(currentBindings)) {
             String bindingName = humanizeBindingName(gameBinding);
-            if (currentBindings.get(gameBinding) == null) {
-                keyBindingManager.addBinding(bindingName);
-                result.add(bindingName);
-            } else if (oldMissingBindings.contains(bindingName)) {
-                keyBindingManager.removeBinding(bindingName);
-            }
+            keyBindingManager.addBinding(bindingName);
+            result.add(bindingName);
+        }
+
+        for (String gameBinding : findFoundGameBindings(currentBindings)) {
+            String bindingName = humanizeBindingName(gameBinding);
+            if (oldMissingBindings.contains(bindingName)) keyBindingManager.removeBinding(bindingName);
         }
         return result;
+    }
+
+    public List<String> findMissingGameBindings(Map<String, KeyBindingsParser.KeyBinding> currentBindings) {
+        if (currentBindings == null) return List.of();
+        return requiredGameBindings().stream()
+                .filter(gameBinding -> currentBindings.get(gameBinding) == null)
+                .toList();
+    }
+
+    public List<String> findFoundGameBindings(Map<String, KeyBindingsParser.KeyBinding> currentBindings) {
+        if (currentBindings == null) return List.of();
+        return requiredGameBindings().stream()
+                .filter(gameBinding -> currentBindings.get(gameBinding) != null)
+                .toList();
+    }
+
+    private List<String> requiredGameBindings() {
+        Set<String> checkedGameBindings = new LinkedHashSet<>();
+        for (Bindings.GameCommand command : Bindings.GameCommand.values()) {
+            checkedGameBindings.add(command.getGameBinding());
+        }
+        return new ArrayList<>(checkedGameBindings);
     }
 }

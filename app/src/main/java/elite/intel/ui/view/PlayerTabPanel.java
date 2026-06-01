@@ -168,7 +168,10 @@ public class PlayerTabPanel extends JPanel {
         bindingsDirField.setText(playerSession.getBindingsDir().toString());
         conversationModeCheckBox.setSelected(systemSession.conversationalModeOn());
 
-        List<ShipDao.Ship> ships = ShipManager.getInstance().getAllShips();
+        String commanderName = playerSession.getInGameName();
+        List<ShipDao.Ship> ships = (commanderName != null && !commanderName.isBlank())
+                ? ShipManager.getInstance().getShipsForCommander(commanderName)
+                : ShipManager.getInstance().getAllShips();
         ships.sort((a, b) -> {
             String nameA = displayShipName(a);
             String nameB = displayShipName(b);

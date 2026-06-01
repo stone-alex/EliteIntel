@@ -3,6 +3,7 @@ package elite.intel.db.dao;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
+import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
@@ -21,18 +22,21 @@ public interface ShipDao {
     @SqlQuery("SELECT * FROM ship")
     List<Ship> allShips();
 
+    @SqlQuery("SELECT * FROM ship WHERE commanderName = :commanderName OR commanderName IS NULL")
+    List<Ship> allShipsForCommander(@Bind("commanderName") String commanderName);
 
 
-    @SqlUpdate(""" 
-            INSERT INTO ship (shipName, shipId, shipIdentifier, cargoCapacity, voice, personality, cadence)
-                        VALUES (:shipName, :shipId, :shipIdentifier, :cargoCapacity, :voice, :personality, :cadence)
-                        on conflict DO UPDATE set
+    @SqlUpdate("""
+            INSERT INTO ship (shipName, shipId, shipIdentifier, cargoCapacity, voice, personality, cadence, commanderName)
+                        VALUES (:shipName, :shipId, :shipIdentifier, :cargoCapacity, :voice, :personality, :cadence, :commanderName)
+                        ON CONFLICT DO UPDATE SET
                         shipName = excluded.shipName,
                         shipIdentifier = excluded.shipIdentifier,
                         cargoCapacity = excluded.cargoCapacity,
                         voice = excluded.voice,
                         personality = excluded.personality,
-                        cadence = excluded.cadence
+                        cadence = excluded.cadence,
+                        commanderName = COALESCE(excluded.commanderName, commanderName)
             """)
     void save(@BindBean ShipDao.Ship ship);
 
@@ -47,6 +51,7 @@ public interface ShipDao {
             ship.setVoice(rs.getString("voice"));
             ship.setPersonality(rs.getString("personality"));
             ship.setCadence(rs.getString("cadence"));
+            ship.setCommanderName(rs.getString("commanderName"));
             return ship;
         }
     }
@@ -74,6 +79,7 @@ public interface ShipDao {
         private String voice;
         private String personality;
         private String cadence;
+        private String commanderName;
 
         public String getShipName() {
             return shipName;
@@ -133,6 +139,14 @@ public interface ShipDao {
 
         public void setCadence(String cadence) {
             this.cadence = cadence;
+        }
+
+        public String getCommanderName() {
+            return commanderName;
+        }
+
+        public void setCommanderName(String commanderName) {
+            this.commanderName = commanderName;
         }
     }
 }

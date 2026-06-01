@@ -36,12 +36,13 @@ public class LoadoutSubscriber {
                     currentShip != null && !Objects.equals(currentShip.getShipId(), event.getShipId())
             );
 
-
             String shipName = LoadoutConverter.toDisplayShipName(event);
             playerSession.setCurrentShipName(shipName);
             playerSession.setCurrentShip(event.getShip());
             playerSession.setShipLoadout(LoadoutConverter.toShipLoadOutDto(event));
 
+            String commanderName = playerSession.getInGameName();
+            boolean hasCommander = commanderName != null && !commanderName.isBlank();
 
             ShipDao.Ship ship = shipManager.getShipById(event.getShipId());
             if (ship == null) {
@@ -49,13 +50,16 @@ public class LoadoutSubscriber {
                 if (!systemSession.useLocalTTS()) {
                     shipDefaultVoice = GoogleVoices.STEVE.name();
                 }
-                shipManager.save(event.getShipId(), shipName, event.getCargoCapacity(), event.getShip(), shipDefaultVoice);
-                EventBusManager.publish(new ShipProfileChangedEvent());  // ← add this
-
+                shipManager.save(event.getShipId(), shipName, event.getCargoCapacity(), event.getShip(), shipDefaultVoice,
+                        hasCommander ? commanderName : null);
+                EventBusManager.publish(new ShipProfileChangedEvent());
             } else {
                 ship.setCargoCapacity(event.getCargoCapacity());
                 ship.setShipIdentifier(event.getShip());
                 ship.setShipName(shipName);
+                if (hasCommander) {
+                    ship.setCommanderName(commanderName);
+                }
                 shipManager.saveShip(ship);
                 EventBusManager.publish(new ShipProfileChangedEvent());
             }

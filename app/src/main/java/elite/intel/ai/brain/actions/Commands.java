@@ -178,7 +178,7 @@ public enum Commands {
     CLEAR_REMINDERS                                     ("clear_reminders", null, CleareReminderHandler.class),
     SET_REMINDER                                        ("set_reminder", null, SetReminderHandler.class),
     DELETE_CODEX_ENTRY                                  ("delete_codex_entry", null, DeleteCodexEntryHandler.class),
-
+    SELECT_FIRE_GROUP_BY_NATO                           ("select_fire_group_by_nato", null, SelectFireGroupByNatoHandler.class),
     IGNORE_NONSENSE                                     ("ignore_nonsensical_input", null, IgnoreNonSensicalInputHandler.class),
     ;
 

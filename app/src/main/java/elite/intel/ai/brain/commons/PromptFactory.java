@@ -175,6 +175,7 @@ public class PromptFactory implements AiPromptFactory {
                   Hotel=H, India=I, Juliet=J, Kilo=K, Lima=L, Mike=M, November=N, Oscar=O, Papa=P,
                   Quebec=Q, Romeo=R, Sierra=S, Tango=T, Uniform=U, Victor=V, Whiskey=W, X-ray=X, Yankee=Y, Zulu=Z.
                   Zero=0…Nine/Niner=9. Example: "moon two Charlie" → "2C"
+                - EXCEPTION — select_fire_group_by_nato: key = NATO word verbatim (lowercase). Never convert to a letter. "fire group bravo" → {"action": "select_fire_group_by_nato", "params": {"key": "bravo"}}
                 
                 """);
 
@@ -204,6 +205,8 @@ public class PromptFactory implements AiPromptFactory {
                   - "find gold within 80 ly"        → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                   - "find nearest market for gold"  → {"action": "find_commodity", "params": {"key": "gold", "state": true}}
                   - "where can we buy gold"         → {"action": "find_commodity", "params": {"key": "gold", "state": false}}
+                  - "fire group charlie"            → {"action": "select_fire_group_by_nato", "params": {"key": "charlie"}}
+                  - "select fire group bravo"       → {"action": "select_fire_group_by_nato", "params": {"key": "bravo"}}
                   - find_commodity state: if "nearest" or "closest" appears anywhere in input → true (distance), regardless of other words. Otherwise → false (price).
                 """);
     }

@@ -75,7 +75,7 @@ public abstract class AiEndPoint {
     /**
      * Returns true when the response is a BaseAiClient HTTP-error sentinel
      * (has text_to_speech_response, no choices). The error was already logged
-     * and a TTS event already published by BaseAiClient — callers should return
+     * and a TTS event already published by BaseAiClient - callers should return
      * null silently rather than logging a second misleading error.
      */
     protected boolean isHttpErrorResponse(JsonObject response) {

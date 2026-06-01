@@ -110,7 +110,7 @@ public class PromptFactory implements AiPromptFactory {
                  - delete_* actions require explicit intent in user input. Example "delete codex entry" - delete_* action allowed, "codex entry" - delete_* action not allowed.
                 
                 DISAMBIGUATION (genuine ambiguities only):
-                - "activate" (exact standalone word only, nothing else meaningful in input) → activate_ui_control. "toggle [X]", "engage [X]", "enable [X]" and other non-activate verbs are NOT "activate" — never map these to activate_ui_control
+                - "activate" (exact standalone word only, nothing else meaningful in input) → activate_ui_control. "toggle [X]", "engage [X]", "enable [X]" and other non-activate verbs are NOT "activate" - never map these to activate_ui_control
                 - "weapons free" / "weapons hot" / "combat ready" → deploy_hardpoints
                 - "weapons cold" / "weapons away" / "stand down" → retract_hardpoints
                 - "max weapons" / "boost weapons" / "power to weapons" → transfer_power_to_weapons
@@ -118,7 +118,7 @@ public class PromptFactory implements AiPromptFactory {
                 - "max engines" / "boost engines" / "power to engines" → transfer_power_to_engines
                 - "take me back aboard the ship" / "board ship" → recover_srv_vehicle_get_on_board_ship
                 - Sending ship to orbit when requested to board ship is instant failure.
-                - "go to orbit" / "ship to orbit" / "send to orbit" / "put ship in orbit" → dismiss_ship_to_orbit. NEVER navigate_to_coordinates — "orbit" refers to the ship, not a destination.
+                - "go to orbit" / "ship to orbit" / "send to orbit" / "put ship in orbit" → dismiss_ship_to_orbit. NEVER navigate_to_coordinates - "orbit" refers to the ship, not a destination.
                 - Never confuse "max engines" with "target engines"
                 - Never confuse "deploy vehicle" with "deploy landing gear"
                 - CARRIER vs SHIP: if the word "carrier" does not appear in the input, all route/jump/navigation queries refer to the SHIP, not the fleet carrier. Use query_ship_route_remaining_jumps, not query_carrier_route.
@@ -146,7 +146,7 @@ public class PromptFactory implements AiPromptFactory {
                 - "exit" or "close" → exit_close
                 - "drop" alone / "drop in" / "drop out" → drop_from_super_cruise
                 - "halt" alone → set_speed_zero
-                - "taxi" alone / "auto docking" / "autopilot" → taxi_to_landing_pad (automated ship approach and landing at a pad — not a ground vehicle)
+                - "taxi" alone / "auto docking" / "autopilot" → taxi_to_landing_pad (automated ship approach and landing at a pad - not a ground vehicle)
                 - "lets go" / "jump to ..." / "enter hyperspace" → jump_to_hyperspace
                 - "confirm ..." → only match confirm-requiring actions when "confirm" is literally in the input
                 - "clear ..." → only match clear-requiring actions when "clear" is literally in the input

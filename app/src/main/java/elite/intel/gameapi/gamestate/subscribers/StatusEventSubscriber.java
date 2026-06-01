@@ -35,7 +35,7 @@ public class StatusEventSubscriber {
         }
 
         // --------------------------------------------------------------------------------------
-        // Legal state change alert — suppress Speeding (transient) and deduplicate against
+        // Legal state change alert - suppress Speeding (transient) and deduplicate against
         // the last state we actually announced so rapid oscillation doesn't repeat the alert.
         String legalState = event.getLegalState();
         if (legalState != null

@@ -156,7 +156,7 @@ public final class AppPaths {
             int len = k32.GetShortPathNameW(new WString(s), buf, buf.length);
             if (len > 0 && len < buf.length) return new String(buf, 0, len);
         } catch (Throwable ignored) {
-            // fall through — return original path
+            // fall through - return original path
         }
         return s;
     }

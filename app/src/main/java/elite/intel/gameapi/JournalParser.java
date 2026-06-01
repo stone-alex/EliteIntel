@@ -177,7 +177,7 @@ public class JournalParser implements Runnable, ManagedService {
                                 }
                             }
                         } catch (Exception e) {
-                            log.warn("Skipping malformed journal line: {} — {}", line, e.getMessage());
+                            log.warn("Skipping malformed journal line: {} - {}", line, e.getMessage());
                         }
 
                         lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;

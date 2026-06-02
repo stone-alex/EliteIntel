@@ -37,6 +37,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
         map.put("navigation abbrechen, route abbrechen, navigation stoppen, route löschen", NAVIGATION_OFF.getAction());
         map.put("heimatsystem setzen, aktuelles system als heimatsystem setzen, heimatsystem markieren", SET_HOME_SYSTEM.getAction());
         map.put("bring mich nach hause, fliege nach hause, navigiere nach hause, zurück nach hause, route nach hause planen, kurs nach hause", TAKE_ME_HOME.getAction());
+        map.put("head look zurücksetzen, kopfansicht zurücksetzen, head look auf standard, head look auf neutral, blickrichtung zurücksetzen", RESET_HEAD_LOOK.getAction());
 
         if (status.isInMainShip() || isDryRun) {
             // navigation
@@ -232,6 +233,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
         map.put("planetenmaterialien, materialien hier, welche materialien auf diesem planeten, oberflächenmaterialien, materialvorkommen, mineralien auf dem planeten", PLANET_MATERIALS.getAction());
         map.put("explorationsgewinn, entdeckungsgewinn, wie viel ist exploration wert, scan wert, kartierungsgewinn, exobiologie wert", EXPLORATION_PROFITS.getAction());
         map.put("aktueller standort, wo sind wir, unsere position, in welchem system sind wir, wo bin ich, unsere koordinaten, aktuelles system, auf welchem planeten sind wir, aktuelle position, tageslänge", CURRENT_LOCATION.getAction());
+        map.put("in welchem system bin ich, wo ist mein schiff, wo sind wir momentan, unser aktueller ort, was ist mein aktueller aufenthaltsort", CURRENT_LOCATION.getAction());
         map.put("fsd ziel info, ziel analysieren, welchen stern visieren wir an, fsd ziel analysieren, information zum fsd ziel", FSD_TARGET_ANALYSIS.getAction());
         map.put("geplante route, treibstoff am nächsten stopp, treibstoffverfügbarkeit auf der route, routenanalyse, sind wir schon da, aktuelle route, wie viele sprünge übrig, nächste tankbare sonne", PLOTTED_ROUTE_ANALYSIS.getAction());
         map.put("handelsroute, aktuelle handelsroute, aktueller handelsplan, womit handeln wir, unser handelsplan, handelsabschnitte", TRADE_ROUTE_ANALYSIS.getAction());
@@ -241,6 +243,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
         map.put("spielerprofil, commander profil, kommandantenprofil", PLAYER_PROFILE_ANALYSIS.getAction());
         map.put("schiff loadout, schadensbericht, schiffsmodule, kampfbereitschaft, schiffsausrüstung, schiffsdaten, was fliege ich, was ist ausgerüstet, schildgenerator, hüllenverstärkung, sensoren, triebwerke, frameshift, fuelscoop", SHIP_LOADOUT.getAction());
         map.put("stationsdetails, welche services hier, welche dienste hier, services auf station, was bietet die station, stationsinfo, stationseinrichtungen, was gibt es auf dieser station, verfügbare services", STATION_DETAILS.getAction());
+        map.put("an welcher station bin ich, an welcher station sind wir, wo bin ich angedockt, wo sind wir angedockt, was ist meine aktuelle station, welche station ist das, aktuelle station", STATION_DETAILS.getAction());
         map.put("kopfgelder, gesamte kopfgelder, bounty gesammelt, wie viel kopfgeld, bounty ertrag, credits aus kopfgeldern", TOTAL_BOUNTIES.getAction());
         map.put("entfernung zur bubble, entfernung zu sol, entfernung von sol, entfernung zur erde, wie weit von sol, wie weit von der bubble, wie weit von zivilisation, entfernung vom bewohnten raum", DISTANCE_TO_BUBBLE.getAction());
         map.put("aktuelle zeit, wie spät ist es, zeit auf der erde, galaktische zeit, utc zeit, echte zeit", TIME_IN_ZONE.getAction());

@@ -85,6 +85,7 @@ public class Bindings {
         BINDING_CYCLE_NEXT_PANEL("CycleNextPanel"),
         BINDING_CYCLE_PREVIOUS_PAGE("CyclePreviousPage"),
         BINDING_CYCLE_PREVIOUS_PANEL("CyclePreviousPanel"),
+        BINDING_HEAD_LOOK_RESET("HeadLookReset"),
 
         BINDING_CYCLE_NEXT_SUBSYSTEM("CycleNextSubsystem"),
         BINDING_CYCLE_PREVIOUS_SUBSYSTEM("CyclePreviousSubsystem"),

@@ -23,6 +23,7 @@ public class TargetSubSystemHandler implements CommandHandler {
                     .replace("thrusters", "drive")
                     .replace("engines", "drive")
                     .replace("shields", "shield generator")
+                    .replace("powerplant", "power plant")
                     .trim();
         }
         SubSystemsManager.getInstance().targetSubSystem(subSystem);

@@ -4,12 +4,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -70,15 +73,27 @@ public class KeyBindingsParser {
      * <p>
      * It keeps the raw device id and key for UI diagnostics, while {@code keyboardUsable}
      * records whether the slot is eligible for the existing keyboard-only execution path.
+     * {@code editable} is narrower: it is true only for slots the basic V1 GUI can safely rewrite.
      */
     public record ReadOnlyBindingSlot(
             String device,
             String key,
             String[] modifiers,
+            List<BindingModifier> bindingModifiers,
             boolean hold,
             BindingSlotType slotType,
-            boolean keyboardUsable
+            boolean keyboardUsable,
+            boolean editable
     ) {
+        public ReadOnlyBindingSlot {
+            modifiers = modifiers == null ? new String[0] : modifiers.clone();
+            bindingModifiers = bindingModifiers == null ? List.of() : List.copyOf(bindingModifiers);
+        }
+
+        @Override
+        public String[] modifiers() {
+            return modifiers.clone();
+        }
     }
 
     /**
@@ -184,7 +199,17 @@ public class KeyBindingsParser {
         String device = slot.getAttribute("Device");
         String key = slot.getAttribute("Key");
         boolean hold = "1".equals(slot.getAttribute("Hold"));
-        return new ReadOnlyBindingSlot(device, key, getModifiers(slot), hold, slotType, isKeyboardUsable(device, key));
+        List<BindingModifier> bindingModifiers = getBindingModifiers(slot);
+        return new ReadOnlyBindingSlot(
+                device,
+                key,
+                modifierKeys(bindingModifiers),
+                bindingModifiers,
+                hold,
+                slotType,
+                isKeyboardUsable(device, key, bindingModifiers),
+                isEditableKeyboardSlot(device, key, bindingModifiers)
+        );
     }
 
     private KeyBinding toExecutableBinding(ReadOnlyBindingSlot slot) {
@@ -192,18 +217,39 @@ public class KeyBindingsParser {
         return new KeyBinding(slot.key(), slot.modifiers(), slot.hold());
     }
 
-    private boolean isKeyboardUsable(String device, String key) {
+    private boolean hasKeyboardMainKey(String device, String key) {
         // This guard is the boundary that prevents diagnostic non-keyboard slots from becoming executable.
         return "Keyboard".equals(device) && key != null && !key.isBlank() && !"Key_".equals(key);
     }
 
-    private String[] getModifiers(Element binding) {
-        NodeList modifierList = binding.getElementsByTagName("Modifier");
-        String[] modifiers = new String[modifierList.getLength()];
-        for (int i = 0; i < modifierList.getLength(); i++) {
-            Element modifier = (Element) modifierList.item(i);
-            modifiers[i] = modifier.getAttribute("Key");
+    private boolean isKeyboardUsable(String device, String key, List<BindingModifier> modifiers) {
+        return hasKeyboardMainKey(device, key)
+                && modifiers.stream().allMatch(modifier -> "Keyboard".equals(modifier.device()));
+    }
+
+    private boolean isEditableKeyboardSlot(String device, String key, List<BindingModifier> modifiers) {
+        if (!hasKeyboardMainKey(device, key)) {
+            return false;
+        }
+        return modifiers.isEmpty()
+                || (modifiers.size() == 1 && modifiers.get(0).isSupportedKeyboardModifier());
+    }
+
+    private List<BindingModifier> getBindingModifiers(Element binding) {
+        NodeList children = binding.getChildNodes();
+        List<BindingModifier> modifiers = new ArrayList<>();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child instanceof Element modifier && "Modifier".equals(modifier.getTagName())) {
+                modifiers.add(new BindingModifier(modifier.getAttribute("Device"), modifier.getAttribute("Key")));
+            }
         }
         return modifiers;
+    }
+
+    private String[] modifierKeys(List<BindingModifier> modifiers) {
+        return modifiers.stream()
+                .map(BindingModifier::key)
+                .toArray(String[]::new);
     }
 }

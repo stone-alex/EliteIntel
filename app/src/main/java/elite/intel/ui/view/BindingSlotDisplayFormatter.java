@@ -1,9 +1,9 @@
 package elite.intel.ui.view;
 
+import elite.intel.ai.hands.BindingModifier;
 import elite.intel.ai.hands.KeyBindingsParser;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.List;
 
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
@@ -24,7 +24,7 @@ class BindingSlotDisplayFormatter {
 
     String formatBindingToken(String token) {
         if (token.startsWith("Key_") && token.length() > "Key_".length()) {
-            return "Key '" + token.substring("Key_".length()) + "'";
+            return formatKeyboardToken(token);
         }
         if (token.startsWith("Joy_") && token.length() > "Joy_".length()) {
             return "Joystick " + token.substring("Joy_".length());
@@ -57,17 +57,37 @@ class BindingSlotDisplayFormatter {
             return getText("bindings.status.notDefined");
         }
 
-        String[] modifiers = slot.modifiers() == null
-                ? new String[0]
-                : Arrays.stream(slot.modifiers())
-                        .filter(modifier -> modifier != null && !modifier.isBlank() && !"Key_".equals(modifier))
-                        .map(this::formatBindingToken)
-                        .sorted(Comparator.naturalOrder())
-                        .toArray(String[]::new);
+        List<String> modifiers = slot.bindingModifiers().stream()
+                .filter(modifier -> modifier.key() != null && !modifier.key().isBlank() && !"Key_".equals(modifier.key()))
+                .map(this::formatModifier)
+                .toList();
         String key = formatBindingToken(slot.key());
-        if (modifiers.length == 0)
+        if (modifiers.isEmpty()) {
             return key;
+        }
 
         return String.join(" + ", modifiers) + " + " + key;
+    }
+
+    private String formatModifier(BindingModifier modifier) {
+        if ("Keyboard".equals(modifier.device())) {
+            return formatBindingToken(modifier.key());
+        }
+        String device = modifier.device() == null || modifier.device().isBlank()
+                ? getText("bindings.assign.modifier.unknownDevice")
+                : modifier.device();
+        return device + " " + formatBindingToken(modifier.key());
+    }
+
+    private String formatKeyboardToken(String token) {
+        return switch (token) {
+            case "Key_LeftControl" -> "Left Ctrl";
+            case "Key_RightControl" -> "Right Ctrl";
+            case "Key_LeftShift" -> "Left Shift";
+            case "Key_RightShift" -> "Right Shift";
+            case "Key_LeftAlt" -> "Left Alt";
+            case "Key_RightAlt" -> "Right Alt";
+            default -> token.substring("Key_".length());
+        };
     }
 }

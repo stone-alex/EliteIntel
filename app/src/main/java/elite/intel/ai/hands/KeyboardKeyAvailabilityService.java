@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -46,20 +47,28 @@ public class KeyboardKeyAvailabilityService {
     }
 
     /**
-     * Returns free keys plus the edited slot's current keyboard key, if any, so
-     * a dialog can represent "leave unchanged" without permitting a new conflict.
+     * Returns keys that are free for the plain keyboard chord, ignoring only the
+     * slot currently being edited.
      */
     public List<String> availableKeys(Path bindsFile, String bindingId, BindingSlotType slotType) throws Exception {
-        Set<String> occupied = occupiedKeyboardKeys(bindsFile);
+        return availableKeys(bindsFile, bindingId, slotType, null);
+    }
+
+    /**
+     * Returns keys that are free for the selected V1 keyboard chord.
+     */
+    public List<String> availableKeys(
+            Path bindsFile,
+            String bindingId,
+            BindingSlotType slotType,
+            BindingModifier modifier
+    ) throws Exception {
+        BindingModifier normalizedModifier = normalizeModifier(modifier);
+        Set<String> occupied = occupiedKeyboardKeysForModifier(bindsFile, bindingId, slotType, normalizedModifier);
         List<String> available = new ArrayList<>(EliteKeyboardKeys.assignableKeys().stream()
                 .filter(key -> !occupied.contains(key))
                 .toList());
 
-        currentKeyboardSlotKey(bindsFile, bindingId, slotType).ifPresent(currentKey -> {
-            if (!available.contains(currentKey)) {
-                available.add(currentKey);
-            }
-        });
         available.sort(String.CASE_INSENSITIVE_ORDER);
         return List.copyOf(available);
     }
@@ -73,8 +82,25 @@ public class KeyboardKeyAvailabilityService {
             BindingSlotType slotType,
             String key
     ) throws Exception {
+        return isKeyOccupiedByOtherSlot(bindsFile, bindingId, slotType, key, null);
+    }
+
+    /**
+     * Save-time conflict check for the selected V1 keyboard chord.
+     */
+    public boolean isKeyOccupiedByOtherSlot(
+            Path bindsFile,
+            String bindingId,
+            BindingSlotType slotType,
+            String key,
+            BindingModifier modifier
+    ) throws Exception {
+        BindingModifier normalizedModifier = normalizeModifier(modifier);
         for (SlotAssignment assignment : keyboardSlotAssignments(bindsFile)) {
             if (!assignment.key().equals(key)) {
+                continue;
+            }
+            if (!Objects.equals(assignment.modifier(), normalizedModifier)) {
                 continue;
             }
             if (assignment.bindingId().equals(bindingId) && assignment.slotType() == slotType) {
@@ -118,6 +144,24 @@ public class KeyboardKeyAvailabilityService {
         return assignments;
     }
 
+    private Set<String> occupiedKeyboardKeysForModifier(
+            Path bindsFile,
+            String bindingId,
+            BindingSlotType slotType,
+            BindingModifier modifier
+    ) throws Exception {
+        Set<String> occupied = new LinkedHashSet<>();
+        for (SlotAssignment assignment : keyboardSlotAssignments(bindsFile)) {
+            if (assignment.bindingId().equals(bindingId) && assignment.slotType() == slotType) {
+                continue;
+            }
+            if (Objects.equals(assignment.modifier(), modifier)) {
+                occupied.add(assignment.key());
+            }
+        }
+        return occupied;
+    }
+
     private void collectKeyboardSlotAssignments(
             Document doc,
             BindingSlotType slotType,
@@ -135,10 +179,49 @@ public class KeyboardKeyAvailabilityService {
                 continue;
             }
 
+            Optional<BindingModifier> modifier = v1KeyboardModifier(slot);
+            if (modifier.isEmpty() && hasModifierChildren(slot)) {
+                continue;
+            }
+
             Node parent = slot.getParentNode();
             String bindingId = parent instanceof Element action ? action.getTagName() : "";
-            assignments.add(new SlotAssignment(bindingId, slotType, key));
+            assignments.add(new SlotAssignment(bindingId, slotType, key, modifier.orElse(null)));
         }
+    }
+
+    private Optional<BindingModifier> v1KeyboardModifier(Element slot) {
+        List<BindingModifier> modifiers = directModifierChildren(slot);
+        if (modifiers.isEmpty()) {
+            return Optional.empty();
+        }
+        if (modifiers.size() == 1 && modifiers.get(0).isSupportedKeyboardModifier()) {
+            return Optional.of(modifiers.get(0));
+        }
+        return Optional.empty();
+    }
+
+    private boolean hasModifierChildren(Element slot) {
+        return !directModifierChildren(slot).isEmpty();
+    }
+
+    private List<BindingModifier> directModifierChildren(Element slot) {
+        NodeList children = slot.getChildNodes();
+        List<BindingModifier> modifiers = new ArrayList<>();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child instanceof Element modifier && "Modifier".equals(modifier.getTagName())) {
+                modifiers.add(new BindingModifier(modifier.getAttribute("Device"), modifier.getAttribute("Key")));
+            }
+        }
+        return modifiers;
+    }
+
+    private BindingModifier normalizeModifier(BindingModifier modifier) {
+        if (modifier == null) {
+            return null;
+        }
+        return modifier.isSupportedKeyboardModifier() ? modifier : null;
     }
 
     private boolean isOccupiedKeyboardKey(String device, String key) {
@@ -173,6 +256,6 @@ public class KeyboardKeyAvailabilityService {
         return doc;
     }
 
-    private record SlotAssignment(String bindingId, BindingSlotType slotType, String key) {
+    private record SlotAssignment(String bindingId, BindingSlotType slotType, String key, BindingModifier modifier) {
     }
 }

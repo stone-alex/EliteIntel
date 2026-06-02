@@ -24,6 +24,7 @@ class BindingsWriterTest {
     Path tempDir;
 
     private final KeyboardKeyAvailabilityService availabilityService = new KeyboardKeyAvailabilityService();
+    private final KeyBindingsParser parser = KeyBindingsParser.getInstance();
 
     @Test
     void occupiedKeysAreCollectedFromEntireFileIncludingUnusedActions() throws Exception {
@@ -107,6 +108,71 @@ class BindingsWriterTest {
 
         assertEquals(BindingSaveResult.KEY_OCCUPIED, result);
         assertEquals(0, backups(file).size());
+    }
+
+    @Test
+    void sameMainKeyWithDifferentModifierIsAvailableAndCanBeSaved() throws Exception {
+        Path file = writeBinds("""
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="{NoDevice}" Key="" />
+                        <Secondary Device="{NoDevice}" Key="" />
+                    </GalaxyMapOpen>
+                    <PlainAction>
+                        <Primary Device="Keyboard" Key="Key_J" />
+                    </PlainAction>
+                    <ShiftAction>
+                        <Primary Device="Keyboard" Key="Key_J">
+                            <Modifier Device="Keyboard" Key="Key_RightShift" />
+                        </Primary>
+                    </ShiftAction>
+                </Root>
+                """);
+
+        List<String> available = availabilityService.availableKeys(
+                file,
+                "GalaxyMapOpen",
+                BindingSlotType.PRIMARY,
+                new BindingModifier("Keyboard", "Key_LeftControl")
+        );
+        BindingSaveResult result = new BindingsWriter().assignKeyboardKeyWithModifier(
+                edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, "Key_J"),
+                new BindingModifier("Keyboard", "Key_LeftControl")
+        );
+
+        assertTrue(available.contains("Key_J"));
+        assertEquals(BindingSaveResult.SAVED, result);
+    }
+
+    @Test
+    void sameMainKeyWithSameModifierReturnsKeyOccupied() throws Exception {
+        Path file = writeBinds("""
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="{NoDevice}" Key="" />
+                        <Secondary Device="{NoDevice}" Key="" />
+                    </GalaxyMapOpen>
+                    <OtherAction>
+                        <Primary Device="Keyboard" Key="Key_J">
+                            <Modifier Device="Keyboard" Key="Key_LeftControl" />
+                        </Primary>
+                    </OtherAction>
+                </Root>
+                """);
+
+        List<String> available = availabilityService.availableKeys(
+                file,
+                "GalaxyMapOpen",
+                BindingSlotType.PRIMARY,
+                new BindingModifier("Keyboard", "Key_LeftControl")
+        );
+        BindingSaveResult result = new BindingsWriter().assignKeyboardKeyWithModifier(
+                edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, "Key_J"),
+                new BindingModifier("Keyboard", "Key_LeftControl")
+        );
+
+        assertFalse(available.contains("Key_J"));
+        assertEquals(BindingSaveResult.KEY_OCCUPIED, result);
     }
 
     @Test
@@ -199,7 +265,7 @@ class BindingsWriterTest {
     }
 
     @Test
-    void writerChangesOnlySelectedSlotAndPreservesOtherXml() throws Exception {
+    void writerChangesOnlySelectedSlotAndRemovesSupportedModifierForPlainSave() throws Exception {
         String original = """
                 <Root>
                     <GalaxyMapOpen>
@@ -272,7 +338,7 @@ class BindingsWriterTest {
     }
 
     @Test
-    void selectedNonKeyboardSlotCanBeReplacedWhenThatExactSlotIsSelected() throws Exception {
+    void selectedNonKeyboardSlotCannotBeReplaced() throws Exception {
         Path file = writeBinds("""
                 <Root>
                     <GalaxyMapOpen>
@@ -281,15 +347,15 @@ class BindingsWriterTest {
                     </GalaxyMapOpen>
                 </Root>
                 """);
+        String before = Files.readString(file, StandardCharsets.UTF_8);
 
         BindingSaveResult result = new BindingsWriter().assignKeyboardKey(
                 edit(file, "GalaxyMapOpen", BindingSlotType.SECONDARY, "Key_M"));
 
         String updated = Files.readString(file, StandardCharsets.UTF_8);
-        assertEquals(BindingSaveResult.SAVED, result);
-        assertTrue(updated.contains("<Primary Device=\"Keyboard\" Key=\"Key_G\" />"));
-        assertTrue(updated.contains("<Secondary Device=\"Keyboard\" Key=\"Key_M\" />"));
-        assertFalse(updated.contains("<Secondary Device=\"045E028E\" Key=\"Joy_1\" />"));
+        assertEquals(BindingSaveResult.UNSUPPORTED_XML, result);
+        assertEquals(before, updated);
+        assertEquals(0, backups(file).size());
     }
 
     @Test
@@ -319,7 +385,30 @@ class BindingsWriterTest {
     }
 
     @Test
-    void clearingNonKeyboardSlotWritesNoDeviceBlankAndPreservesOtherSlot() throws Exception {
+    void clearingSupportedKeyboardModifierSlotWritesNoDeviceBlank() throws Exception {
+        Path file = writeBinds("""
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="Keyboard" Key="Key_J">
+                            <Modifier Device="Keyboard" Key="Key_LeftControl" />
+                        </Primary>
+                        <Secondary Device="Keyboard" Key="Key_H" />
+                    </GalaxyMapOpen>
+                </Root>
+                """);
+
+        BindingSaveResult result = new BindingsWriter().assignKeyboardKey(
+                edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, null));
+
+        String updated = Files.readString(file, StandardCharsets.UTF_8);
+        assertEquals(BindingSaveResult.SAVED, result);
+        assertTrue(updated.contains("<Primary Device=\"{NoDevice}\" Key=\"\" />"));
+        assertTrue(updated.contains("<Secondary Device=\"Keyboard\" Key=\"Key_H\" />"));
+        assertFalse(updated.contains("<Modifier Device=\"Keyboard\" Key=\"Key_LeftControl\" />"));
+    }
+
+    @Test
+    void clearingNonKeyboardSlotIsUnsupportedAndPreservesFile() throws Exception {
         Path file = writeBinds("""
                 <Root>
                     <GalaxyMapOpen>
@@ -328,15 +417,199 @@ class BindingsWriterTest {
                     </GalaxyMapOpen>
                 </Root>
                 """);
+        String before = Files.readString(file, StandardCharsets.UTF_8);
 
         BindingSaveResult result = new BindingsWriter().assignKeyboardKey(
                 edit(file, "GalaxyMapOpen", BindingSlotType.SECONDARY, null));
 
         String updated = Files.readString(file, StandardCharsets.UTF_8);
+        assertEquals(BindingSaveResult.UNSUPPORTED_XML, result);
+        assertEquals(before, updated);
+        assertEquals(0, backups(file).size());
+    }
+
+    @Test
+    void parserMarksKeyboardKeyWithoutModifierEditable() throws Exception {
+        Path file = writeBinds("""
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="Keyboard" Key="Key_I" />
+                        <Secondary Device="{NoDevice}" Key="" />
+                    </GalaxyMapOpen>
+                </Root>
+                """);
+
+        KeyBindingsParser.ReadOnlyBindingSlot slot = parser.parseReadOnlyBindingSlots(file.toFile())
+                .get("GalaxyMapOpen")
+                .primary();
+
+        assertTrue(slot.editable());
+        assertTrue(slot.keyboardUsable());
+        assertEquals(0, slot.bindingModifiers().size());
+    }
+
+    @Test
+    void parserMarksKeyboardKeyWithOneKeyboardModifierEditable() throws Exception {
+        Path file = writeBinds("""
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="Keyboard" Key="Key_I">
+                            <Modifier Device="Keyboard" Key="Key_LeftControl" />
+                        </Primary>
+                        <Secondary Device="{NoDevice}" Key="" />
+                    </GalaxyMapOpen>
+                </Root>
+                """);
+
+        KeyBindingsParser.ReadOnlyBindingSlot slot = parser.parseReadOnlyBindingSlots(file.toFile())
+                .get("GalaxyMapOpen")
+                .primary();
+
+        assertTrue(slot.editable());
+        assertTrue(slot.keyboardUsable());
+        assertEquals(List.of(new BindingModifier("Keyboard", "Key_LeftControl")), slot.bindingModifiers());
+        assertArrayEquals(new String[]{"Key_LeftControl"}, slot.modifiers());
+    }
+
+    @Test
+    void parserPreservesTwoModifiersAndMarksSlotUnsupported() throws Exception {
+        Path file = writeBinds("""
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="Keyboard" Key="Key_I">
+                            <Modifier Device="Keyboard" Key="Key_LeftControl" />
+                            <Modifier Device="Keyboard" Key="Key_LeftAlt" />
+                        </Primary>
+                        <Secondary Device="{NoDevice}" Key="" />
+                    </GalaxyMapOpen>
+                </Root>
+                """);
+
+        KeyBindingsParser.ReadOnlyBindingSlot slot = parser.parseReadOnlyBindingSlots(file.toFile())
+                .get("GalaxyMapOpen")
+                .primary();
+
+        assertFalse(slot.editable());
+        assertTrue(slot.keyboardUsable());
+        assertEquals(List.of(
+                new BindingModifier("Keyboard", "Key_LeftControl"),
+                new BindingModifier("Keyboard", "Key_LeftAlt")
+        ), slot.bindingModifiers());
+        assertArrayEquals(new String[]{"Key_LeftControl", "Key_LeftAlt"}, slot.modifiers());
+    }
+
+    @Test
+    void parserPreservesMouseModifierAndMarksSlotUnsupported() throws Exception {
+        Path file = writeBinds("""
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="Keyboard" Key="Key_I">
+                            <Modifier Device="Mouse" Key="Mouse_1" />
+                        </Primary>
+                        <Secondary Device="{NoDevice}" Key="" />
+                    </GalaxyMapOpen>
+                </Root>
+                """);
+
+        KeyBindingsParser.ReadOnlyBindingSlot slot = parser.parseReadOnlyBindingSlots(file.toFile())
+                .get("GalaxyMapOpen")
+                .primary();
+
+        assertFalse(slot.editable());
+        assertFalse(slot.keyboardUsable());
+        assertEquals(List.of(new BindingModifier("Mouse", "Mouse_1")), slot.bindingModifiers());
+    }
+
+    @Test
+    void writerSavesOneKeyboardModifierAsValidBindsXml() throws Exception {
+        Path file = writeBinds("""
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="Keyboard" Key="Key_G" />
+                        <Secondary Device="{NoDevice}" Key="" />
+                    </GalaxyMapOpen>
+                </Root>
+                """);
+
+        BindingSaveResult result = new BindingsWriter().assignKeyboardKeyWithModifier(
+                edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, "Key_I"),
+                new BindingModifier("Keyboard", "Key_LeftControl"));
+
+        String updated = Files.readString(file, StandardCharsets.UTF_8);
         assertEquals(BindingSaveResult.SAVED, result);
-        assertTrue(updated.contains("<Primary Device=\"Keyboard\" Key=\"Key_G\" />"));
-        assertTrue(updated.contains("<Secondary Device=\"{NoDevice}\" Key=\"\" />"));
-        assertFalse(updated.contains("<Secondary Device=\"045E028E\" Key=\"Joy_1\" />"));
+        assertTrue(updated.contains("""
+                <Primary Device="Keyboard" Key="Key_I">
+                    <Modifier Device="Keyboard" Key="Key_LeftControl" />
+                </Primary>
+                """.stripTrailing()));
+    }
+
+    @Test
+    void writerDoesNotRemoveUnsupportedModifierNodesWhenSavingAnotherSlot() throws Exception {
+        String original = """
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="Keyboard" Key="Key_I">
+                            <Modifier Device="Mouse" Key="Mouse_1" />
+                        </Primary>
+                        <Secondary Device="Keyboard" Key="Key_H" />
+                    </GalaxyMapOpen>
+                </Root>
+                """;
+        Path file = writeBinds(original);
+
+        BindingSaveResult result = new BindingsWriter().assignKeyboardKey(
+                edit(file, "GalaxyMapOpen", BindingSlotType.SECONDARY, "Key_M"));
+
+        String updated = Files.readString(file, StandardCharsets.UTF_8);
+        assertEquals(BindingSaveResult.SAVED, result);
+        assertTrue(updated.contains("<Modifier Device=\"Mouse\" Key=\"Mouse_1\" />"));
+        assertTrue(updated.contains("<Secondary Device=\"Keyboard\" Key=\"Key_M\" />"));
+    }
+
+    @Test
+    void writerRejectsTwoModifiersAndPreservesThemUnchanged() throws Exception {
+        String original = """
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="Keyboard" Key="Key_I">
+                            <Modifier Device="Keyboard" Key="Key_LeftControl" />
+                            <Modifier Device="Keyboard" Key="Key_LeftAlt" />
+                        </Primary>
+                        <Secondary Device="{NoDevice}" Key="" />
+                    </GalaxyMapOpen>
+                </Root>
+                """;
+        Path file = writeBinds(original);
+
+        BindingSaveResult result = new BindingsWriter().assignKeyboardKey(
+                edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, "Key_M"));
+
+        assertEquals(BindingSaveResult.UNSUPPORTED_XML, result);
+        assertEquals(original, Files.readString(file, StandardCharsets.UTF_8));
+        assertEquals(0, backups(file).size());
+    }
+
+    @Test
+    void writerRejectsMouseModifierAndPreservesItUnchanged() throws Exception {
+        String original = """
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="Keyboard" Key="Key_I">
+                            <Modifier Device="Mouse" Key="Mouse_1" />
+                        </Primary>
+                        <Secondary Device="{NoDevice}" Key="" />
+                    </GalaxyMapOpen>
+                </Root>
+                """;
+        Path file = writeBinds(original);
+
+        BindingSaveResult result = new BindingsWriter().assignKeyboardKey(
+                edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, "Key_M"));
+
+        assertEquals(BindingSaveResult.UNSUPPORTED_XML, result);
+        assertEquals(original, Files.readString(file, StandardCharsets.UTF_8));
+        assertEquals(0, backups(file).size());
     }
 
     @Test

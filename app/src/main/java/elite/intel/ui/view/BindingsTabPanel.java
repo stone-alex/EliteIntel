@@ -2,6 +2,7 @@ package elite.intel.ui.view;
 
 import elite.intel.ai.hands.BindingGroup;
 import elite.intel.ai.hands.BindingGroupClassifier;
+import elite.intel.ai.hands.BindingModifier;
 import elite.intel.ai.hands.BindingSaveResult;
 import elite.intel.ai.hands.BindingSlotType;
 import elite.intel.ai.hands.BindingsLoader;
@@ -461,6 +462,15 @@ public class BindingsTabPanel extends JPanel {
         KeyBindingsParser.ReadOnlyBindingSlot slot = slotType == BindingSlotType.PRIMARY
                 ? (slots == null ? null : slots.primary())
                 : (slots == null ? null : slots.secondary());
+        if (!isBasicEditableSlot(slot)) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    getText("bindings.assign.unsupportedReadOnlyMessage"),
+                    getText("bindings.assign.dialogTitle"),
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            return;
+        }
         AssignKeyboardBindingDialog dialog = new AssignKeyboardBindingDialog(
                 this,
                 activeBindingsFile.toPath(),
@@ -493,12 +503,27 @@ public class BindingsTabPanel extends JPanel {
                 activeBindingsLastModified,
                 activeBindingsFileSize
         );
-        BindingSaveResult result = bindingsWriter.assignKeyboardKey(edit);
+        BindingSaveResult result = saveKeyboardBinding(edit, selection.modifier());
         saveResultPresenter.show(result);
 
         if (result == BindingSaveResult.SAVED || result == BindingSaveResult.NO_CHANGE || result == BindingSaveResult.STALE_FILE) {
             initData();
         }
+    }
+
+    private BindingSaveResult saveKeyboardBinding(KeyboardBindingEdit edit, BindingModifier modifier) {
+        return modifier == null
+                ? bindingsWriter.assignKeyboardKey(edit)
+                : bindingsWriter.assignKeyboardKeyWithModifier(edit, modifier);
+    }
+
+    private boolean isBasicEditableSlot(KeyBindingsParser.ReadOnlyBindingSlot slot) {
+        return slot == null || slot.editable() || isClearedSlot(slot);
+    }
+
+    private boolean isClearedSlot(KeyBindingsParser.ReadOnlyBindingSlot slot) {
+        return "{NoDevice}".equals(slot.device())
+                && (slot.key() == null || slot.key().isBlank());
     }
 
     private void clearLoadedBindingsSnapshot() {

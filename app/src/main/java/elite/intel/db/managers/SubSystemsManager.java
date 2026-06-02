@@ -10,6 +10,7 @@ import elite.intel.util.AudioPlayer;
 import elite.intel.util.SleepNoThrow;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static elite.intel.ai.hands.Bindings.GameCommand.BINDING_CYCLE_NEXT_SUBSYSTEM;
 
@@ -93,7 +94,8 @@ public class SubSystemsManager {
             return;
         }
         // only react to events the game wrote after the last key press
-        if (Instant.parse(event.getTimestamp()).isBefore(lastKeyPressInstant)) {
+        // journal timestamps are second-precision; truncate before comparing to avoid sub-second false negatives
+        if (Instant.parse(event.getTimestamp()).isBefore(lastKeyPressInstant.truncatedTo(ChronoUnit.SECONDS))) {
             return;
         }
 

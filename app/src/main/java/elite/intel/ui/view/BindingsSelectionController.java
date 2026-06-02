@@ -3,7 +3,6 @@ package elite.intel.ui.view;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Keeps a single selected binding row across multiple grouped tables.
@@ -47,7 +46,7 @@ class BindingsSelectionController {
 
         Object value = table.getValueAt(row, 0);
         String bindingId = value == null ? "" : value.toString();
-        selectedBinding = new SelectedBinding(table, bindingId);
+        selectedBinding = new SelectedBinding(table);
         return bindingId;
     }
 
@@ -65,10 +64,6 @@ class BindingsSelectionController {
         tables.clear();
     }
 
-    Optional<String> selectedBindingId() {
-        return Optional.ofNullable(selectedBinding).map(SelectedBinding::bindingId);
-    }
-
-    private record SelectedBinding(JTable table, String bindingId) {
+    private record SelectedBinding(JTable table) {
     }
 }

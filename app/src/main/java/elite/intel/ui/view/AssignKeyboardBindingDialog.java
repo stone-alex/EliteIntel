@@ -14,6 +14,12 @@ import java.util.Optional;
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 import static elite.intel.ui.view.AppTheme.*;
 
+/**
+ * Modal selector for one keyboard binding edit.
+ * <p>
+ * The dialog only returns the selected slot and key token (or clear request);
+ * all file validation and XML writing remain in {@code BindingsWriter}.
+ */
 public class AssignKeyboardBindingDialog extends JDialog {
     private final KeyboardKeyAvailabilityService availabilityService;
     private final BindingSlotDisplayFormatter slotFormatter = new BindingSlotDisplayFormatter();

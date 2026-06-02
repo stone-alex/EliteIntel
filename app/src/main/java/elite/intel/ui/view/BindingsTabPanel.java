@@ -51,7 +51,6 @@ public class BindingsTabPanel extends JPanel {
     private JTextField filePathField;
     private JTextField bindingsDirField;
     private JPanel keyboardOnlyBanner;
-    private JLabel keyboardOnlyBannerIcon;
     private JLabel keyboardOnlyBannerText;
     private BindingSaveResultPresenter saveResultPresenter;
     private JPanel usedBindingsPanel;
@@ -320,11 +319,9 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private JPanel keyboardOnlyBanner() {
-        keyboardOnlyBanner = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
-        keyboardOnlyBannerIcon = new JLabel("\u26A0");
-        keyboardOnlyBannerText = new JLabel(getText("bindings.keyboardOnlyHint"));
-        keyboardOnlyBanner.add(keyboardOnlyBannerIcon);
-        keyboardOnlyBanner.add(keyboardOnlyBannerText);
+        keyboardOnlyBanner = new JPanel(new BorderLayout());
+        keyboardOnlyBannerText = new JLabel("\u26A0  " + getText("bindings.keyboardOnlyHint"));
+        keyboardOnlyBanner.add(keyboardOnlyBannerText, BorderLayout.CENTER);
         styleKeyboardOnlyBanner();
         return keyboardOnlyBanner;
     }
@@ -336,11 +333,9 @@ public class BindingsTabPanel extends JPanel {
         keyboardOnlyBanner.setOpaque(true);
         keyboardOnlyBanner.setBackground(new Color(0x2A2418));
         keyboardOnlyBanner.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
-        keyboardOnlyBannerIcon.setForeground(ACCENT);
-        keyboardOnlyBannerIcon.setFont(keyboardOnlyBannerIcon.getFont().deriveFont(
-                Font.BOLD,
-                keyboardOnlyBannerIcon.getFont().getSize2D() + 1f));
         keyboardOnlyBannerText.setForeground(ACCENT);
+        keyboardOnlyBannerText.setHorizontalAlignment(SwingConstants.CENTER);
+        keyboardOnlyBannerText.setFont(keyboardOnlyBannerText.getFont().deriveFont(Font.BOLD));
     }
 
     private JPanel groupedTablesPanel() {

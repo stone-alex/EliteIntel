@@ -293,6 +293,95 @@ class BindingsWriterTest {
     }
 
     @Test
+    void clearingKeyboardSlotWritesNoDeviceBlankAndPreservesOtherSlot() throws Exception {
+        Path file = writeBinds("""
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="Keyboard" Key="Key_G" />
+                        <Secondary Device="Keyboard" Key="Key_H" />
+                    </GalaxyMapOpen>
+                    <Unrelated value="kept" />
+                </Root>
+                """);
+        String before = Files.readString(file, StandardCharsets.UTF_8);
+
+        BindingSaveResult result = new BindingsWriter().assignKeyboardKey(
+                edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, null));
+
+        String updated = Files.readString(file, StandardCharsets.UTF_8);
+        List<Path> backups = backups(file);
+        assertEquals(BindingSaveResult.SAVED, result);
+        assertTrue(updated.contains("<Primary Device=\"{NoDevice}\" Key=\"\" />"));
+        assertTrue(updated.contains("<Secondary Device=\"Keyboard\" Key=\"Key_H\" />"));
+        assertTrue(updated.contains("<Unrelated value=\"kept\" />"));
+        assertEquals(1, backups.size());
+        assertEquals(before, Files.readString(backups.get(0), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void clearingNonKeyboardSlotWritesNoDeviceBlankAndPreservesOtherSlot() throws Exception {
+        Path file = writeBinds("""
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="Keyboard" Key="Key_G" />
+                        <Secondary Device="045E028E" Key="Joy_1" />
+                    </GalaxyMapOpen>
+                </Root>
+                """);
+
+        BindingSaveResult result = new BindingsWriter().assignKeyboardKey(
+                edit(file, "GalaxyMapOpen", BindingSlotType.SECONDARY, null));
+
+        String updated = Files.readString(file, StandardCharsets.UTF_8);
+        assertEquals(BindingSaveResult.SAVED, result);
+        assertTrue(updated.contains("<Primary Device=\"Keyboard\" Key=\"Key_G\" />"));
+        assertTrue(updated.contains("<Secondary Device=\"{NoDevice}\" Key=\"\" />"));
+        assertFalse(updated.contains("<Secondary Device=\"045E028E\" Key=\"Joy_1\" />"));
+    }
+
+    @Test
+    void clearingAlreadyNoDeviceBlankSlotIsNoChange() throws Exception {
+        Path file = writeBinds("""
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="{NoDevice}" Key="" />
+                        <Secondary Device="Keyboard" Key="Key_H" />
+                    </GalaxyMapOpen>
+                </Root>
+                """);
+        String before = Files.readString(file, StandardCharsets.UTF_8);
+
+        BindingSaveResult result = new BindingsWriter().assignKeyboardKey(
+                edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, null));
+
+        assertEquals(BindingSaveResult.NO_CHANGE, result);
+        assertEquals(before, Files.readString(file, StandardCharsets.UTF_8));
+        assertEquals(0, backups(file).size());
+    }
+
+    @Test
+    void staleClearReturnsStaleFileWithoutBackupOrWrite() throws Exception {
+        Path file = writeBinds("""
+                <Root>
+                    <GalaxyMapOpen>
+                        <Primary Device="Keyboard" Key="Key_G" />
+                        <Secondary Device="{NoDevice}" Key="" />
+                    </GalaxyMapOpen>
+                </Root>
+                """);
+        KeyboardBindingEdit staleEdit = edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, null);
+        Files.writeString(file, Files.readString(file, StandardCharsets.UTF_8) + "\n<!-- changed by game -->", StandardCharsets.UTF_8);
+
+        BindingSaveResult result = new BindingsWriter().assignKeyboardKey(staleEdit);
+
+        String updated = Files.readString(file, StandardCharsets.UTF_8);
+        assertEquals(BindingSaveResult.STALE_FILE, result);
+        assertTrue(updated.contains("<Primary Device=\"Keyboard\" Key=\"Key_G\" />"));
+        assertTrue(updated.contains("changed by game"));
+        assertEquals(0, backups(file).size());
+    }
+
+    @Test
     void noChangeDoesNotCreateBackupOrWrite() throws Exception {
         Path file = writeBinds("""
                 <Root>

@@ -18,7 +18,8 @@ import java.util.regex.Pattern;
 
 /**
  * Safely applies the first editing MVP: assign one plain keyboard key to one
- * Primary or Secondary slot in an Elite Dangerous {@code .binds} file.
+ * Primary or Secondary slot, or clear one selected slot, in an Elite Dangerous
+ * {@code .binds} file.
  * <p>
  * This writer is intentionally separate from {@link KeyBindingsParser}. The
  * parser feeds command execution and must remain a read-only, keyboard-only
@@ -41,7 +42,8 @@ public class BindingsWriter {
     }
 
     /**
-     * Replaces exactly one selected slot with a plain keyboard slot.
+     * Replaces exactly one selected slot with a plain keyboard slot or the
+     * canonical Elite Dangerous empty slot.
      * <p>
      * The method rejects stale files before and after backup creation, validates
      * the key against the full active file, and edits raw XML text instead of
@@ -49,7 +51,7 @@ public class BindingsWriter {
      * unrelated XML byte-for-byte identical apart from the selected slot.
      */
     public BindingSaveResult assignKeyboardKey(KeyboardBindingEdit edit) {
-        if (!EliteKeyboardKeys.isAssignable(edit.key())) {
+        if (!edit.clearsSlot() && !EliteKeyboardKeys.isAssignable(edit.key())) {
             return BindingSaveResult.UNKNOWN_KEY;
         }
 
@@ -69,7 +71,7 @@ public class BindingsWriter {
                 return slot.result();
             }
 
-            if (isNoChange(encodedXml.xml(), slot.range(), edit.key())) {
+            if (isNoChange(encodedXml.xml(), slot.range(), edit)) {
                 return BindingSaveResult.NO_CHANGE;
             }
 
@@ -77,7 +79,7 @@ public class BindingsWriter {
                 return BindingSaveResult.UNSUPPORTED_XML;
             }
 
-            if (availabilityService.isKeyOccupiedByOtherSlot(
+            if (!edit.clearsSlot() && availabilityService.isKeyOccupiedByOtherSlot(
                     edit.file(),
                     edit.bindingId(),
                     edit.slotType(),
@@ -174,11 +176,14 @@ public class BindingsWriter {
                 || actualSize != edit.expectedFileSize();
     }
 
-    private boolean isNoChange(String xml, TextRange slotRange, String key) {
+    private boolean isNoChange(String xml, TextRange slotRange, KeyboardBindingEdit edit) {
         String startTag = startTag(xml, slotRange.start());
         String device = attributeValue(startTag, "Device");
         String currentKey = attributeValue(startTag, "Key");
-        return "Keyboard".equals(device) && key.equals(currentKey);
+        if (edit.clearsSlot()) {
+            return "{NoDevice}".equals(device) && currentKey.isBlank();
+        }
+        return "Keyboard".equals(device) && edit.key().equals(currentKey);
     }
 
     private boolean isSupportedSlotForReplacement(String xml, TextRange slotRange, BindingSlotType slotType) {
@@ -211,6 +216,9 @@ public class BindingsWriter {
     private String replacementSlot(KeyboardBindingEdit edit) {
         // The MVP deliberately writes a plain single-key slot. Modifiers and
         // Hold are not preserved because this operation is not a combo editor.
+        if (edit.clearsSlot()) {
+            return "<" + edit.slotType().xmlElementName() + " Device=\"{NoDevice}\" Key=\"\" />";
+        }
         return "<" + edit.slotType().xmlElementName()
                 + " Device=\"Keyboard\" Key=\"" + edit.key() + "\" />";
     }

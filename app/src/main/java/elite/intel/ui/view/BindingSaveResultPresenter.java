@@ -6,34 +6,41 @@ import javax.swing.*;
 import java.awt.*;
 
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
-import static elite.intel.ui.view.AppTheme.DISABLED_FG;
-import static elite.intel.ui.view.AppTheme.FG_MUTED;
 
 class BindingSaveResultPresenter {
     private final Component parent;
-    private final JLabel statusLabel;
 
-    BindingSaveResultPresenter(Component parent, JLabel statusLabel) {
+    BindingSaveResultPresenter(Component parent) {
         this.parent = parent;
-        this.statusLabel = statusLabel;
     }
 
     void show(BindingSaveResult result) {
-        show(messageFor(result), isErrorResult(result));
+        if (result == BindingSaveResult.SAVED || result == BindingSaveResult.NO_CHANGE) {
+            showInfo(messageFor(result));
+            return;
+        }
+        showError(messageFor(result));
     }
 
     void showWriteFailed() {
-        show(getText("bindings.assign.writeFailed"), true);
+        showError(getText("bindings.assign.writeFailed"));
     }
 
-    private void show(String message, boolean error) {
-        statusLabel.setForeground(error ? DISABLED_FG : FG_MUTED);
-        statusLabel.setText(message);
+    private void showInfo(String message) {
         JOptionPane.showMessageDialog(
                 parent,
                 message,
                 getText("bindings.assign.dialogTitle"),
-                error ? JOptionPane.ERROR_MESSAGE : JOptionPane.INFORMATION_MESSAGE
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(
+                parent,
+                message,
+                getText("bindings.assign.dialogTitle"),
+                JOptionPane.ERROR_MESSAGE
         );
     }
 
@@ -49,9 +56,5 @@ class BindingSaveResultPresenter {
             case BACKUP_FAILED -> getText("bindings.assign.backupFailed");
             case WRITE_FAILED -> getText("bindings.assign.writeFailed");
         };
-    }
-
-    private boolean isErrorResult(BindingSaveResult result) {
-        return result != BindingSaveResult.SAVED && result != BindingSaveResult.NO_CHANGE;
     }
 }

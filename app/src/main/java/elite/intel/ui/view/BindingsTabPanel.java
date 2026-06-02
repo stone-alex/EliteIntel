@@ -45,11 +45,14 @@ public class BindingsTabPanel extends JPanel {
     private final BindingSlotDisplayFormatter slotFormatter = new BindingSlotDisplayFormatter();
     private final BindingsSelectionController selectionController;
     private final BindingsGroupTableFactory tableFactory;
+    private final List<JButton> headerInfoButtons = new ArrayList<>();
 
     private JTextField profileField;
     private JTextField filePathField;
     private JTextField bindingsDirField;
-    private JLabel assignmentStatusLabel;
+    private JPanel keyboardOnlyBanner;
+    private JLabel keyboardOnlyBannerIcon;
+    private JLabel keyboardOnlyBannerText;
     private BindingSaveResultPresenter saveResultPresenter;
     private JPanel usedBindingsPanel;
     private JPanel missingBindingsPanel;
@@ -66,7 +69,14 @@ public class BindingsTabPanel extends JPanel {
         selectionController = new BindingsSelectionController();
         tableFactory = new BindingsGroupTableFactory(selectionController, this::openAssignKeyboardBindingDialog);
         buildUi();
+        saveResultPresenter = new BindingSaveResultPresenter(this);
         EventBusManager.register(this);
+    }
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        SwingUtilities.invokeLater(this::applyHeaderDisplayStyle);
     }
 
     @Subscribe
@@ -83,32 +93,38 @@ public class BindingsTabPanel extends JPanel {
         details.setOpaque(false);
         GridBagConstraints gbc = baseGbc();
 
+        resetHeaderRow(gbc);
         addLabel(details, getText("player.bindingsDirectory"), gbc);
         bindingsDirField = readOnlyField();
         bindingsDirField.setToolTipText(getText("player.bindingsDirectory.tooltip"));
-        addField(details, bindingsDirField, gbc, 1, 0.8);
-        JButton selectBindingsDirButton = makeButton(getText("button.select"));
+        addField(details, bindingsDirField, gbc, 1, 1.0);
+        JButton selectBindingsDirButton = compactDirectoryChooserButton();
         selectBindingsDirButton.addActionListener(e -> selectBindingsDirectory());
-        addField(details, selectBindingsDirButton, gbc, 2, 0.2);
+        gbc.gridx = 2;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        details.add(selectBindingsDirButton, gbc);
 
         nextRow(gbc);
+        resetHeaderRow(gbc);
         addLabel(details, getText("bindings.profileName"), gbc);
-        profileField = readOnlyField();
+        profileField = readOnlyValueField();
         addField(details, profileField, gbc, 1, 1.0);
+        addInfoButton(details, gbc, "bindings.profileName.info");
 
         nextRow(gbc);
+        resetHeaderRow(gbc);
         addLabel(details, getText("bindings.filePath"), gbc);
-        filePathField = readOnlyField();
+        filePathField = readOnlyValueField();
         addField(details, filePathField, gbc, 1, 1.0);
+        addInfoButton(details, gbc, "bindings.filePath.info");
 
         nextRow(gbc);
         gbc.gridx = 0;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 3;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        JLabel keyboardOnlyHint = new JLabel(getText("bindings.keyboardOnlyHint"));
-        keyboardOnlyHint.setForeground(FG_MUTED);
-        details.add(keyboardOnlyHint, gbc);
+        details.add(keyboardOnlyBanner(), gbc);
 
         add(details, BorderLayout.NORTH);
 
@@ -126,7 +142,6 @@ public class BindingsTabPanel extends JPanel {
 
         JPanel center = new JPanel(new BorderLayout(0, 8));
         center.setBackground(BG);
-        center.add(bindingsStatusBar(), BorderLayout.NORTH);
         center.add(tabs, BorderLayout.CENTER);
         add(center, BorderLayout.CENTER);
     }
@@ -194,17 +209,6 @@ public class BindingsTabPanel extends JPanel {
         }
     }
 
-    private JPanel bindingsStatusBar() {
-        JPanel toolbar = new JPanel(new BorderLayout(8, 0));
-        toolbar.setOpaque(false);
-
-        assignmentStatusLabel = new JLabel(" ");
-        assignmentStatusLabel.setForeground(FG_MUTED);
-        saveResultPresenter = new BindingSaveResultPresenter(this, assignmentStatusLabel);
-        toolbar.add(assignmentStatusLabel, BorderLayout.CENTER);
-        return toolbar;
-    }
-
     private File activeBindingsFile() throws Exception {
         File currentFile = monitor.getCurrentBindsFile();
         return currentFile != null ? currentFile : loader.getLatestBindsFile();
@@ -220,6 +224,13 @@ public class BindingsTabPanel extends JPanel {
         return profileEnd > 0 ? fileName.substring(0, profileEnd) : fileName;
     }
 
+    private void resetHeaderRow(GridBagConstraints gbc) {
+        gbc.gridx = 0;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+    }
+
     private JTextField readOnlyField() {
         JTextField field = new JTextField();
         field.setEditable(false);
@@ -227,6 +238,109 @@ public class BindingsTabPanel extends JPanel {
         field.setBackground(BG_PANEL);
         field.setForeground(FG);
         return field;
+    }
+
+    private JTextField readOnlyValueField() {
+        JTextField field = readOnlyField();
+        field.setOpaque(false);
+        field.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+        field.setForeground(FG_MUTED);
+        field.setCaretColor(FG_MUTED);
+        return field;
+    }
+
+    private JButton compactDirectoryChooserButton() {
+        JButton button = makeButton("\u22EE");
+        button.setToolTipText(getText("player.bindingsDirectory.select.tooltip"));
+        Dimension size = new Dimension(42, 42);
+        button.setPreferredSize(size);
+        button.setMinimumSize(size);
+        button.setMaximumSize(size);
+        return button;
+    }
+
+    private void addInfoButton(JPanel panel, GridBagConstraints gbc, String messageKey) {
+        JButton button = new JButton("\u24D8");
+        String message = getText(messageKey);
+        button.addActionListener(e -> JOptionPane.showMessageDialog(
+                this,
+                message,
+                getText("bindings.info.title"),
+                JOptionPane.INFORMATION_MESSAGE));
+        button.setOpaque(false);
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder());
+        button.setForeground(FG_MUTED);
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setFont(button.getFont().deriveFont(Font.PLAIN, button.getFont().getSize2D() + 2f));
+        Dimension size = new Dimension(28, 28);
+        button.setPreferredSize(size);
+        button.setMinimumSize(size);
+        button.setMaximumSize(size);
+        headerInfoButtons.add(button);
+
+        gbc.gridx = 2;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        panel.add(button, gbc);
+    }
+
+    private void applyHeaderDisplayStyle() {
+        styleReadOnlyValueField(profileField);
+        styleReadOnlyValueField(filePathField);
+        headerInfoButtons.forEach(this::styleHeaderInfoButton);
+        styleKeyboardOnlyBanner();
+    }
+
+    private void styleReadOnlyValueField(JTextField field) {
+        if (field == null) {
+            return;
+        }
+        field.setOpaque(false);
+        field.setBackground(BG);
+        field.setForeground(FG_MUTED);
+        field.setCaretColor(FG_MUTED);
+        field.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+    }
+
+    private void styleHeaderInfoButton(JButton button) {
+        button.setOpaque(false);
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder());
+        button.setForeground(FG_MUTED);
+        button.setBackground(BG);
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setFont(button.getFont().deriveFont(Font.PLAIN, button.getFont().getSize2D() + 2f));
+        Dimension size = new Dimension(28, 28);
+        button.setPreferredSize(size);
+        button.setMinimumSize(size);
+        button.setMaximumSize(size);
+    }
+
+    private JPanel keyboardOnlyBanner() {
+        keyboardOnlyBanner = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
+        keyboardOnlyBannerIcon = new JLabel("\u26A0");
+        keyboardOnlyBannerText = new JLabel(getText("bindings.keyboardOnlyHint"));
+        keyboardOnlyBanner.add(keyboardOnlyBannerIcon);
+        keyboardOnlyBanner.add(keyboardOnlyBannerText);
+        styleKeyboardOnlyBanner();
+        return keyboardOnlyBanner;
+    }
+
+    private void styleKeyboardOnlyBanner() {
+        if (keyboardOnlyBanner == null) {
+            return;
+        }
+        keyboardOnlyBanner.setOpaque(true);
+        keyboardOnlyBanner.setBackground(new Color(0x2A2418));
+        keyboardOnlyBanner.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
+        keyboardOnlyBannerIcon.setForeground(ACCENT);
+        keyboardOnlyBannerIcon.setFont(keyboardOnlyBannerIcon.getFont().deriveFont(
+                Font.BOLD,
+                keyboardOnlyBannerIcon.getFont().getSize2D() + 1f));
+        keyboardOnlyBannerText.setForeground(ACCENT);
     }
 
     private JPanel groupedTablesPanel() {

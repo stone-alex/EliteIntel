@@ -7,6 +7,7 @@ import elite.intel.db.managers.KeyBindingManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.BindingsUpdatedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,25 +23,31 @@ import static elite.intel.util.StringUtls.humanizeBindingName;
  * The BindingsMonitor class is responsible for monitoring changes to
  * key bindings files in the specified directory and updating the internal
  * bindings map accordingly. It continuously monitors the target directory
- * for file events and processes changes to ensure the bindings remain up to date.
+ * for file events and processes changes to ensure the bindings remain up to
+ * date.
  * <p>
- * This class relies on the {@link KeyBindingsParser} to parse the contents of key
+ * This class relies on the {@link KeyBindingsParser} to parse the contents of
+ * key
  * bindings files and determine the mapping of actions to key bindings.
  * <p>
  * Features:
  * - Monitors a directory for changes to "*.binds" files.
- * - Automatically reloads and parses bindings when a new or modified file is detected.
+ * - Automatically reloads and parses bindings when a new or modified file is
+ * detected.
  * - Provides access to the current bindings map.
  * <p>
  * Thread Safety:
- * - This class uses synchronization to ensure thread-safe access to start and stop
+ * - This class uses synchronization to ensure thread-safe access to start and
+ * stop
  * monitoring operations.
  * <p>
  * Logging:
- * - Uses SLF4J for logging to provide information on status, errors, and events during monitoring.
+ * - Uses SLF4J for logging to provide information on status, errors, and events
+ * during monitoring.
  * <p>
  * Exceptions:
- * - Captures and logs IOExceptions, InterruptedExceptions, and other unexpected errors
+ * - Captures and logs IOExceptions, InterruptedExceptions, and other unexpected
+ * errors
  * during the monitoring process.
  */
 public class BindingsMonitor {
@@ -102,7 +109,8 @@ public class BindingsMonitor {
 
     private void monitorBindings() {
         try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
-            bindingsDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_CREATE);
+            bindingsDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY,
+                    StandardWatchEventKinds.ENTRY_CREATE);
             log.info("Monitoring key bindings in directory: {}", bindingsDir);
 
             // Initial parse of bindings
@@ -160,11 +168,15 @@ public class BindingsMonitor {
         try {
             currentBindsFile = new BindingsLoader().getLatestBindsFile();
             bindings = parser.parseBindings(currentBindsFile);
-            EventBusManager.publish(new AppLogEvent("SYSTEM: Key bindings updated from file " + currentBindsFile.getAbsolutePath()));
+            EventBusManager.publish(
+                    new AppLogEvent("SYSTEM: Key bindings updated from file " + currentBindsFile.getAbsolutePath()));
+            EventBusManager.publish(new BindingsUpdatedEvent());
             log.info("Key bindings updated from: {}", currentBindsFile.getName());
         } catch (Exception e) {
-            log.error("Failed to parse key bindings from: {}", currentBindsFile != null ? currentBindsFile.getName() : "null", e);
-            EventBusManager.publish(new AiVoxResponseEvent("Failed to update key bindings. Plese check the bindings directory. "));
+            log.error("Failed to parse key bindings from: {}",
+                    currentBindsFile != null ? currentBindsFile.getName() : "null", e);
+            EventBusManager.publish(
+                    new AiVoxResponseEvent("Failed to update key bindings. Plese check the bindings directory. "));
         }
     }
 
@@ -178,21 +190,25 @@ public class BindingsMonitor {
 
     /**
      * Detects binding conflicts among GameCommand bindings and persists them.
-     * Returns descriptions of newly detected conflicts only - empty list means nothing changed.
+     * Returns descriptions of newly detected conflicts only - empty list means
+     * nothing changed.
      */
     public List<String> checkForConflictsAndPersist() {
         List<String> newDescriptions = new ArrayList<>();
         Map<String, KeyBindingsParser.KeyBinding> currentBindings = getBindings();
-        if (currentBindings == null || currentBindings.isEmpty()) return newDescriptions;
+        if (currentBindings == null || currentBindings.isEmpty())
+            return newDescriptions;
 
         // Invert: keyCombo → all action names sharing it
         Map<String, List<String>> byCombo = new HashMap<>();
         for (Map.Entry<String, KeyBindingsParser.KeyBinding> e : currentBindings.entrySet()) {
             String combo = normalizeCombo(e.getValue());
-            if (!combo.isEmpty()) byCombo.computeIfAbsent(combo, k -> new ArrayList<>()).add(e.getKey());
+            if (!combo.isEmpty())
+                byCombo.computeIfAbsent(combo, k -> new ArrayList<>()).add(e.getKey());
         }
 
-        // Find conflicts: for each distinct GameCommand binding, check what else shares its key
+        // Find conflicts: for each distinct GameCommand binding, check what else shares
+        // its key
         Set<String> currentConflictKeys = new HashSet<>();
         Map<String, String> currentConflictDescriptions = new LinkedHashMap<>();
         Set<String> processedCombos = new HashSet<>();
@@ -200,15 +216,19 @@ public class BindingsMonitor {
         for (Bindings.GameCommand cmd : Bindings.GameCommand.values()) {
             String gameBinding = cmd.getGameBinding();
             KeyBindingsParser.KeyBinding kb = currentBindings.get(gameBinding);
-            if (kb == null) continue;
+            if (kb == null)
+                continue;
 
             String combo = normalizeCombo(kb);
-            if (!processedCombos.add(combo)) continue; // same combo already checked via another GameCommand
+            if (!processedCombos.add(combo))
+                continue; // same combo already checked via another GameCommand
 
             List<String> sharingActions = byCombo.getOrDefault(combo, List.of());
             for (String other : sharingActions) {
-                if (other.equals(gameBinding)) continue;
-                if (BindingConflictRules.isSafeOverlap(gameBinding, other)) continue;
+                if (other.equals(gameBinding))
+                    continue;
+                if (BindingConflictRules.isSafeOverlap(gameBinding, other))
+                    continue;
 
                 String conflictKey = BindingConflictRules.makeKey(gameBinding, other);
                 if (currentConflictKeys.add(conflictKey)) {
@@ -221,8 +241,7 @@ public class BindingsMonitor {
         Set<String> persistedKeys = new HashSet<>(
                 conflictManager.getConflicts().stream()
                         .map(r -> r.getConflictKey())
-                        .toList()
-        );
+                        .toList());
 
         for (Map.Entry<String, String> entry : currentConflictDescriptions.entrySet()) {
             if (!persistedKeys.contains(entry.getKey())) {
@@ -241,19 +260,24 @@ public class BindingsMonitor {
     }
 
     private String normalizeCombo(KeyBindingsParser.KeyBinding kb) {
-        if (kb == null || kb.key == null || kb.key.isBlank() || kb.key.equals("Key_")) return "";
-        if (kb.modifiers == null || kb.modifiers.length == 0) return kb.key;
+        if (kb == null || kb.key == null || kb.key.isBlank() || kb.key.equals("Key_"))
+            return "";
+        if (kb.modifiers == null || kb.modifiers.length == 0)
+            return kb.key;
         String[] sorted = kb.modifiers.clone();
         Arrays.sort(sorted);
         return kb.key + "|" + String.join("|", sorted);
     }
 
     /**
-     * Checks for missing bindings by iterating over all game commands and determines if a corresponding
-     * key binding exists. If a binding is missing, it adds a new binding through the key binding manager
+     * Checks for missing bindings by iterating over all game commands and
+     * determines if a corresponding
+     * key binding exists. If a binding is missing, it adds a new binding through
+     * the key binding manager
      * and records the newly added binding names.
      *
-     * @return a list of names of key bindings that were missing and subsequently added.
+     * @return a list of names of key bindings that were missing and subsequently
+     *         added.
      */
     public List<String> checkForMissingBindingsAndPersist() {
         List<String> result = new ArrayList<>();
@@ -277,20 +301,23 @@ public class BindingsMonitor {
 
         for (String gameBinding : findFoundGameBindings(currentBindings)) {
             String bindingName = humanizeBindingName(gameBinding);
-            if (oldMissingBindings.contains(bindingName)) keyBindingManager.removeBinding(bindingName);
+            if (oldMissingBindings.contains(bindingName))
+                keyBindingManager.removeBinding(bindingName);
         }
         return result;
     }
 
     public List<String> findMissingGameBindings(Map<String, KeyBindingsParser.KeyBinding> currentBindings) {
-        if (currentBindings == null) return List.of();
+        if (currentBindings == null)
+            return List.of();
         return requiredGameBindings().stream()
                 .filter(gameBinding -> currentBindings.get(gameBinding) == null)
                 .toList();
     }
 
     public List<String> findFoundGameBindings(Map<String, KeyBindingsParser.KeyBinding> currentBindings) {
-        if (currentBindings == null) return List.of();
+        if (currentBindings == null)
+            return List.of();
         return requiredGameBindings().stream()
                 .filter(gameBinding -> currentBindings.get(gameBinding) != null)
                 .toList();

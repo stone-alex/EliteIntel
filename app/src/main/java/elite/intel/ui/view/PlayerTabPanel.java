@@ -45,7 +45,6 @@ public class PlayerTabPanel extends JPanel {
 
     private JTextField playerAltNameField;
     private JTextField journalDirField;
-    private JTextField bindingsDirField;
     private JComboBox<LanguageOption> languageCombo;
     private JScrollPane fleetScrollPane;
     private JCheckBox conversationModeCheckBox;
@@ -94,28 +93,6 @@ public class PlayerTabPanel extends JPanel {
         });
         addField(this, selectJournalDirButton, gbc, 2, 0.2);
 
-        // Row 2: Bindings Directory
-        nextRow(gbc);
-        addLabel(this, getText("player.bindingsDirectory"), gbc);
-        bindingsDirField = new JTextField();
-        bindingsDirField.setEditable(false);
-        bindingsDirField.setPreferredSize(new Dimension(200, 42));
-        bindingsDirField.setToolTipText(getText("player.bindingsDirectory.tooltip"));
-        addField(this, bindingsDirField, gbc, 1, 0.8);
-        JButton selectBindingsDirButton = makeButton(getText("button.select"));
-        selectBindingsDirButton.addActionListener(e -> {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            chooser.setDialogTitle(getText("player.bindingsDirectory.dialog"));
-            String current = playerSession.getBindingsDir().toString();
-            if (!current.isBlank()) chooser.setCurrentDirectory(new File(current).getParentFile());
-            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                String path = chooser.getSelectedFile().getAbsolutePath();
-                playerSession.setBindingsDir(path);
-                bindingsDirField.setText(path);
-            }
-        });
-        addField(this, selectBindingsDirButton, gbc, 2, 0.2);
 
         // Row 3: Command Language
         nextRow(gbc);
@@ -187,7 +164,6 @@ public class PlayerTabPanel extends JPanel {
     public void initData() {
         playerAltNameField.setText(playerSession.getAlternativeName() != null ? playerSession.getAlternativeName() : "");
         journalDirField.setText(playerSession.getJournalPath().toString());
-        bindingsDirField.setText(playerSession.getBindingsDir().toString());
         conversationModeCheckBox.setSelected(systemSession.conversationalModeOn());
         selectLanguage(systemSession.getLanguage());
 
@@ -398,7 +374,6 @@ public class PlayerTabPanel extends JPanel {
     private void savePlayerConfig() {
         playerSession.setAlternativeName(playerAltNameField.getText());
         playerSession.setJournalPath(journalDirField.getText());
-        playerSession.setBindingsDir(bindingsDirField.getText());
         EventBusManager.publish(new AppLogEvent("Player config saved"));
         initData();
     }

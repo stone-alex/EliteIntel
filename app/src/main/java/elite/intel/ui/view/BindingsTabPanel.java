@@ -5,6 +5,10 @@ import elite.intel.ai.hands.BindingGroupClassifier;
 import elite.intel.ai.hands.BindingsLoader;
 import elite.intel.ai.hands.BindingsMonitor;
 import elite.intel.ai.hands.KeyBindingsParser;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.PlayerSession;
+import elite.intel.ui.event.BindingsUpdatedEvent;
+import com.google.common.eventbus.Subscribe;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -35,16 +39,25 @@ public class BindingsTabPanel extends JPanel {
     private final BindingsLoader loader = new BindingsLoader();
     private final KeyBindingsParser parser = KeyBindingsParser.getInstance();
     private final BindingsMonitor monitor = BindingsMonitor.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     private JTextField profileField;
     private JTextField filePathField;
+    private JTextField bindingsDirField;
     private JPanel usedBindingsPanel;
     private JPanel missingBindingsPanel;
     private JScrollPane usedBindingsScrollPane;
     private JScrollPane missingBindingsScrollPane;
+    private JTabbedPane tabs;
 
     public BindingsTabPanel() {
         buildUi();
+        EventBusManager.register(this);
+    }
+
+    @Subscribe
+    public void onBindingsUpdated(BindingsUpdatedEvent event) {
+        SwingUtilities.invokeLater(this::initData);
     }
 
     private void buildUi() {
@@ -56,6 +69,29 @@ public class BindingsTabPanel extends JPanel {
         details.setOpaque(false);
         GridBagConstraints gbc = baseGbc();
 
+        // Bindings Directory
+        addLabel(details, getText("player.bindingsDirectory"), gbc);
+        bindingsDirField = readOnlyField();
+        bindingsDirField.setToolTipText(getText("player.bindingsDirectory.tooltip"));
+        addField(details, bindingsDirField, gbc, 1, 0.8);
+        JButton selectBindingsDirButton = makeButton(getText("button.select"));
+        selectBindingsDirButton.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.setDialogTitle(getText("player.bindingsDirectory.dialog"));
+            String current = playerSession.getBindingsDir().toString();
+            if (!current.isBlank())
+                chooser.setCurrentDirectory(new File(current).getParentFile());
+            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                String path = chooser.getSelectedFile().getAbsolutePath();
+                playerSession.setBindingsDir(path);
+                bindingsDirField.setText(path);
+                initData();
+            }
+        });
+        addField(details, selectBindingsDirButton, gbc, 2, 0.2);
+
+        nextRow(gbc);
         addLabel(details, getText("bindings.profileName"), gbc);
         profileField = readOnlyField();
         addField(details, profileField, gbc, 1, 1.0);
@@ -81,7 +117,7 @@ public class BindingsTabPanel extends JPanel {
         usedBindingsScrollPane = groupedTablesScrollPane(usedBindingsPanel);
         missingBindingsScrollPane = groupedTablesScrollPane(missingBindingsPanel);
 
-        JTabbedPane tabs = new JTabbedPane();
+        tabs = new JTabbedPane();
         AppTheme.styleTabbedPane(tabs);
         tabs.setFont(tabs.getFont().deriveFont(Font.BOLD, tabs.getFont().getSize2D() + 1f));
         tabs.addTab(getText("bindings.usedBindings"), nestedTabContent(usedBindingsScrollPane));
@@ -91,6 +127,7 @@ public class BindingsTabPanel extends JPanel {
 
     public void initData() {
         clearOuterScrollPaneBorders();
+        bindingsDirField.setText(playerSession.getBindingsDir().toString());
         try {
             File bindingsFile = activeBindingsFile();
             Map<String, KeyBindingsParser.ReadOnlyBindingSlots> slots = parser.parseReadOnlyBindingSlots(bindingsFile);
@@ -107,8 +144,8 @@ public class BindingsTabPanel extends JPanel {
                     groupedUsedBindings(usedBindings, slots),
                     getText("bindings.column.action"),
                     getText("bindings.column.primary"),
-                    getText("bindings.column.secondary")
-            );
+                    getText("bindings.column.secondary"));
+            tabs.setTitleAt(0, getText("bindings.usedBindings", usedBindings.size()));
 
             List<String> missingBindings = monitor.findMissingGameBindings(parsedBindings).stream()
                     .sorted(String::compareToIgnoreCase)
@@ -118,13 +155,15 @@ public class BindingsTabPanel extends JPanel {
                     groupedMissingBindings(missingBindings, slots),
                     getText("bindings.column.action"),
                     getText("bindings.column.primary"),
-                    getText("bindings.column.secondary")
-            );
+                    getText("bindings.column.secondary"));
+            tabs.setTitleAt(1, getText("bindings.missingBindings", missingBindings.size()));
         } catch (Exception e) {
             profileField.setText(getText("bindings.notAvailable"));
             filePathField.setText(getText("bindings.notAvailable"));
             renderGroupedTables(usedBindingsPanel, Map.of(), getText("bindings.column.action"));
             renderGroupedTables(missingBindingsPanel, Map.of(), getText("bindings.column.action"));
+            tabs.setTitleAt(0, getText("bindings.usedBindings", 0));
+            tabs.setTitleAt(1, getText("bindings.missingBindings", 0));
         }
     }
 
@@ -135,7 +174,8 @@ public class BindingsTabPanel extends JPanel {
 
     private String activeProfileName(File bindingsFile) {
         String presetName = loader.getActivePresetName();
-        if (presetName != null && !presetName.isBlank()) return presetName;
+        if (presetName != null && !presetName.isBlank())
+            return presetName;
 
         String fileName = bindingsFile.getName();
         int profileEnd = fileName.indexOf('.');
@@ -168,9 +208,12 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private void clearOuterScrollPaneBorders() {
-        // AppTheme styles all scroll panes after buildUi; keep the Bindings content panes visually borderless.
-        if (usedBindingsScrollPane != null) usedBindingsScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        if (missingBindingsScrollPane != null) missingBindingsScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        // AppTheme styles all scroll panes after buildUi; keep the Bindings content
+        // panes visually borderless.
+        if (usedBindingsScrollPane != null)
+            usedBindingsScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        if (missingBindingsScrollPane != null)
+            missingBindingsScrollPane.setBorder(BorderFactory.createEmptyBorder());
     }
 
     private JPanel nestedTabContent(JComponent content) {
@@ -181,11 +224,12 @@ public class BindingsTabPanel extends JPanel {
         return panel;
     }
 
-    private Map<BindingGroup, List<Object[]>> groupedUsedBindings(List<String> bindingIds, Map<String, KeyBindingsParser.ReadOnlyBindingSlots> slots) {
+    private Map<BindingGroup, List<Object[]>> groupedUsedBindings(List<String> bindingIds,
+            Map<String, KeyBindingsParser.ReadOnlyBindingSlots> slots) {
         Map<BindingGroup, List<Object[]>> grouped = groupedRows();
         for (String bindingId : bindingIds) {
             KeyBindingsParser.ReadOnlyBindingSlots bindingSlots = slots.get(bindingId);
-            grouped.get(BindingGroupClassifier.classify(bindingId)).add(new Object[]{
+            grouped.get(BindingGroupClassifier.classify(bindingId)).add(new Object[] {
                     bindingId,
                     formatSlot(bindingSlots == null ? null : bindingSlots.primary()),
                     formatSlot(bindingSlots == null ? null : bindingSlots.secondary())
@@ -195,31 +239,38 @@ public class BindingsTabPanel extends JPanel {
     }
 
     /**
-     * Builds the same keyboard-only view that command execution uses while keeping diagnostic slots available for tables.
+     * Builds the same keyboard-only view that command execution uses while keeping
+     * diagnostic slots available for tables.
      * <p>
-     * Non-keyboard slots remain visible in the read-only UI, but they are not included in this map and therefore still
+     * Non-keyboard slots remain visible in the read-only UI, but they are not
+     * included in this map and therefore still
      * count as missing for EliteIntel command execution.
      */
-    private Map<String, KeyBindingsParser.KeyBinding> effectiveBindings(Map<String, KeyBindingsParser.ReadOnlyBindingSlots> slots) {
+    private Map<String, KeyBindingsParser.KeyBinding> effectiveBindings(
+            Map<String, KeyBindingsParser.ReadOnlyBindingSlots> slots) {
         Map<String, KeyBindingsParser.KeyBinding> bindings = new HashMap<>();
         for (Map.Entry<String, KeyBindingsParser.ReadOnlyBindingSlots> entry : slots.entrySet()) {
             KeyBindingsParser.KeyBinding keyBinding = executableBinding(entry.getValue().primary());
-            if (keyBinding == null) keyBinding = executableBinding(entry.getValue().secondary());
-            if (keyBinding != null) bindings.put(entry.getKey(), keyBinding);
+            if (keyBinding == null)
+                keyBinding = executableBinding(entry.getValue().secondary());
+            if (keyBinding != null)
+                bindings.put(entry.getKey(), keyBinding);
         }
         return bindings;
     }
 
     private KeyBindingsParser.KeyBinding executableBinding(KeyBindingsParser.ReadOnlyBindingSlot slot) {
-        if (slot == null || !slot.keyboardUsable()) return null;
+        if (slot == null || !slot.keyboardUsable())
+            return null;
         return parser.new KeyBinding(slot.key(), slot.modifiers(), slot.hold());
     }
 
-    private Map<BindingGroup, List<Object[]>> groupedMissingBindings(List<String> bindingIds, Map<String, KeyBindingsParser.ReadOnlyBindingSlots> slots) {
+    private Map<BindingGroup, List<Object[]>> groupedMissingBindings(List<String> bindingIds,
+            Map<String, KeyBindingsParser.ReadOnlyBindingSlots> slots) {
         Map<BindingGroup, List<Object[]>> grouped = groupedRows();
         for (String bindingId : bindingIds) {
             KeyBindingsParser.ReadOnlyBindingSlots bindingSlots = slots.get(bindingId);
-            grouped.get(BindingGroupClassifier.classify(bindingId)).add(new Object[]{
+            grouped.get(BindingGroupClassifier.classify(bindingId)).add(new Object[] {
                     bindingId,
                     formatSlot(bindingSlots == null ? null : bindingSlots.primary()),
                     formatSlot(bindingSlots == null ? null : bindingSlots.secondary())
@@ -236,13 +287,15 @@ public class BindingsTabPanel extends JPanel {
         return grouped;
     }
 
-    private void renderGroupedTables(JPanel targetPanel, Map<BindingGroup, List<Object[]>> grouped, String... columnNames) {
+    private void renderGroupedTables(JPanel targetPanel, Map<BindingGroup, List<Object[]>> grouped,
+            String... columnNames) {
         targetPanel.removeAll();
         for (BindingGroup group : BindingGroup.values()) {
             List<Object[]> rows = grouped.getOrDefault(group, List.of()).stream()
                     .sorted(Comparator.comparing(row -> row[0].toString(), String.CASE_INSENSITIVE_ORDER))
                     .toList();
-            if (rows.isEmpty()) continue;
+            if (rows.isEmpty())
+                continue;
 
             targetPanel.add(sectionHeader(group));
             targetPanel.add(groupTable(rows, outerScrollPaneFor(targetPanel), columnNames));
@@ -318,7 +371,8 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private void configureColumnWidths(JTable table) {
-        if (table.getColumnCount() < 3) return;
+        if (table.getColumnCount() < 3)
+            return;
 
         table.getColumnModel().getColumn(0).setPreferredWidth(320);
         table.getColumnModel().getColumn(1).setPreferredWidth(270);
@@ -335,8 +389,9 @@ public class BindingsTabPanel extends JPanel {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                       boolean hasFocus, int row, int column) {
-            JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                boolean hasFocus, int row, int column) {
+            JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+                    column);
             label.setBackground(BG_PANEL);
             boolean notDefined = elite.intel.ui.i18n.MultiLingualTextProvider
                     .getText("bindings.status.notDefined")
@@ -354,8 +409,9 @@ public class BindingsTabPanel extends JPanel {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                       boolean hasFocus, int row, int column) {
-            JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                boolean hasFocus, int row, int column) {
+            JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+                    column);
             label.setBackground(BG);
             label.setForeground(FG);
             label.setFont(label.getFont().deriveFont(Font.BOLD));
@@ -382,8 +438,7 @@ public class BindingsTabPanel extends JPanel {
                     event.getScrollType(),
                     event.getScrollAmount(),
                     event.getWheelRotation(),
-                    event.getPreciseWheelRotation()
-            );
+                    event.getPreciseWheelRotation());
             outerScrollPane.dispatchEvent(converted);
             event.consume();
         });
@@ -397,7 +452,8 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private boolean isEmptySlot(KeyBindingsParser.ReadOnlyBindingSlot slot) {
-        return isEmptyDevice(slot) && (slot == null || slot.key() == null || slot.key().isBlank() || "Key_".equals(slot.key()));
+        return isEmptyDevice(slot)
+                && (slot == null || slot.key() == null || slot.key().isBlank() || "Key_".equals(slot.key()));
     }
 
     private String formatDevice(KeyBindingsParser.ReadOnlyBindingSlot slot) {
@@ -423,12 +479,13 @@ public class BindingsTabPanel extends JPanel {
         String[] modifiers = slot.modifiers() == null
                 ? new String[0]
                 : Arrays.stream(slot.modifiers())
-                .filter(modifier -> modifier != null && !modifier.isBlank() && !"Key_".equals(modifier))
-                .map(this::formatBindingToken)
-                .sorted(Comparator.naturalOrder())
-                .toArray(String[]::new);
+                        .filter(modifier -> modifier != null && !modifier.isBlank() && !"Key_".equals(modifier))
+                        .map(this::formatBindingToken)
+                        .sorted(Comparator.naturalOrder())
+                        .toArray(String[]::new);
         String key = formatBindingToken(slot.key());
-        if (modifiers.length == 0) return key;
+        if (modifiers.length == 0)
+            return key;
 
         return String.join(" + ", modifiers) + " + " + key;
     }

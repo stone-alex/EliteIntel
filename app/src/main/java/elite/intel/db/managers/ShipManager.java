@@ -22,10 +22,7 @@ public class ShipManager {
         return instance;
     }
 
-    /**
-     * Creates or updates ship on LoadoutEvent.
-     */
-    public void save(int shipId, String shipName, int cargoCapacity, String shipMake, String voice) {
+    public void save(int shipId, String shipName, int cargoCapacity, String shipMake, String voice, String commanderName) {
         Database.withDao(ShipDao.class, dao -> {
             ShipDao.Ship ship = new ShipDao.Ship();
             ship.setShipId(shipId);
@@ -35,6 +32,7 @@ public class ShipManager {
             ship.setVoice(voice);
             ship.setPersonality(ShipPersonality.PROFESSIONAL.name());
             ship.setCadence(ShipCadence.IMPERIAL.name());
+            ship.setCommanderName(commanderName);
             dao.save(ship);
             return Void.TYPE;
         });
@@ -69,6 +67,10 @@ public class ShipManager {
 
     public List<ShipDao.Ship> getAllShips() {
         return Database.withDao(ShipDao.class, dao -> dao.allShips());
+    }
+
+    public List<ShipDao.Ship> getShipsForCommander(String commanderName) {
+        return Database.withDao(ShipDao.class, dao -> dao.allShipsForCommander(commanderName));
     }
 
     public void resetAllVoicesToDefault(String defaultVoice) {

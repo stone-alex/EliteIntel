@@ -9,18 +9,21 @@ import elite.intel.gameapi.journal.events.ShipTargetedEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.SleepNoThrow;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 import static elite.intel.ai.hands.Bindings.GameCommand.BINDING_CYCLE_NEXT_SUBSYSTEM;
 
 public class SubSystemsManager {
 
     private static volatile SubSystemsManager instance;
 
-    private static final int MIN_EVENT_RESPONSE_MS = 150;
+    private static final int PAUSE_TIMEOUT_MS = 1500;
 
     private String target;
-    private volatile boolean continueTargeting = true;
+    private volatile boolean continueTargeting = false;
     private volatile boolean pause = false;
-    private volatile long lastKeyPressTime = 0;
+    private volatile Instant lastKeyPressInstant = Instant.EPOCH;
 
     private SubSystemsManager() {
         EventBusManager.register(this);
@@ -55,6 +58,7 @@ public class SubSystemsManager {
             boolean usingFallback = false;
             while (continueTargeting) {
                 if (!pause) {
+                    if (!continueTargeting) break;  // re-check after acquiring slot
                     if (cycleCount >= 25) {
                         if (usingFallback) {
                             continueTargeting = false;
@@ -64,11 +68,14 @@ public class SubSystemsManager {
                         usingFallback = true;
                         cycleCount = 0;
                     }
-                    lastKeyPressTime = System.currentTimeMillis();
+                    lastKeyPressInstant = Instant.now();
                     GameControllerBus.publish(new GameInputEvent(BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), 50));
                     pause = true;
                     cycleCount++;
                     SleepNoThrow.sleep(250);
+                } else if (Instant.now().isAfter(lastKeyPressInstant.plusMillis(PAUSE_TIMEOUT_MS))) {
+                    // journal response never arrived; force unpause so cycling can continue
+                    pause = false;
                 }
                 SleepNoThrow.sleep(10);  // yield + quick flag check
             }
@@ -86,7 +93,9 @@ public class SubSystemsManager {
         if (event.getSubsystemLocalised() == null || event.getSubsystemLocalised().isEmpty()) {
             return;
         }
-        if (System.currentTimeMillis() - lastKeyPressTime < MIN_EVENT_RESPONSE_MS) {
+        // only react to events the game wrote after the last key press
+        // journal timestamps are second-precision; truncate before comparing to avoid sub-second false negatives
+        if (Instant.parse(event.getTimestamp()).isBefore(lastKeyPressInstant.truncatedTo(ChronoUnit.SECONDS))) {
             return;
         }
 
@@ -95,8 +104,9 @@ public class SubSystemsManager {
         if (event.getSubsystemLocalised().equalsIgnoreCase(getTarget())) {
             continueTargeting = false;
             AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
+        } else {
+            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         }
-        AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         pause = false;
     }
 }

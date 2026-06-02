@@ -114,7 +114,7 @@ public class PromptFactory implements AiPromptFactory {
                 - "weapons free" / "weapons hot" / "combat ready" → deploy_hardpoints
                 - "weapons cold" / "weapons away" / "stand down" → retract_hardpoints
                 - "max weapons" / "boost weapons" / "power to weapons" → transfer_power_to_weapons
-                - "max shields" / "boost shields" / "power to shields" → transfer_power_to_shields
+                - "max shields" / "boost shields" / "power to shields" / "max systems" / "boost systems" / "power to systems" → transfer_power_to_shields
                 - "max engines" / "boost engines" / "power to engines" → transfer_power_to_engines
                 - "take me back aboard the ship" / "board ship" → recover_srv_vehicle_get_on_board_ship
                 - Sending ship to orbit when requested to board ship is instant failure.

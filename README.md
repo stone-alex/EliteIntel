@@ -1,4 +1,6 @@
 # Elite Intel
+## V1.0 English only - require English game.
+## V1.1 Multi lingual in the active development.
 
 ### ⚙️ [INSTALL](https://github.com/stone-alex/EliteIntel/wiki/Installation-and-Configuration) | 🎓 [**WIKI**](https://github.com/stone-alex/eliteintel/wiki) | 💻[TECH STUFF](https://github.com/stone-alex/EliteIntel/blob/master/TECHNICAL.md)
 

@@ -97,6 +97,7 @@ public enum Commands {
     GET_HEADING_TO_LZ                                   ("navigate_to_landing_zone", null,  NavigateToLandingZone.class),
     DEPLOY_SRV                                          ("deploy_vehicle_srv", null,  DeploySrvHandler.class),
     DISEMBARK                                           ("disembark", null,  DisembarkHandler.class),
+    RESET_HEAD_LOOK                                     ("reset_head_look_ahead",  null, LookAheadHandler.class),
 
     DEPLOY_FIGHTER                                      ("deploy_fighter", null,  DeployFighterHandler.class),
     RECOVER_SRV                                         ("recover_srv_vehicle_get_on_board_ship", null,  RecoverSrvHandler.class),
@@ -155,7 +156,7 @@ public enum Commands {
     RETURN_TO_SURFACE                                   ("return_to_surface", null, DismissRecallShip.class),
 
     FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR                 ("fighter_defend", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), SimpleCommandActionHandler.class),
-    FIGHTER_REQUEST_FOCUS_TARGET                        ("fighter_attack_target", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), SimpleCommandActionHandler.class),
+    FIGHTER_REQUEST_FOCUS_TARGET                        ("fighter_attack_target", BINDING_REQUEST_FOCUS_TARGET.getGameBinding(), SimpleCommandActionHandler.class),
     FIGHTER_REQUEST_HOLD_FIRE                           ("fighter_hold_fire", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), SimpleCommandActionHandler.class),
     FIGHTER_REQUEST_REQUEST_DOCK                        ("fighter_return_to_ship", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), SimpleCommandActionHandler.class),
     FIGHTER_OPEN_ORDERS                                 ("fighter_fire_at_will", OPEN_ORDERS.getGameBinding(), SimpleCommandActionHandler.class),

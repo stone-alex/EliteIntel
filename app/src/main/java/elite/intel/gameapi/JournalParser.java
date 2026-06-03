@@ -13,8 +13,9 @@ import elite.intel.ws.WebSocketBroadcaster;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.Comparator;
@@ -133,54 +134,65 @@ public class JournalParser implements Runnable, ManagedService {
                     log.info("Switched to new journal file: {}", currentFile.getFileName());
                 }
 
-                try (BufferedReader reader = Files.newBufferedReader(currentFile, StandardCharsets.UTF_8)) {
-                    reader.skip(lastPosition);
-                    String line;
-                    boolean isFirstLineAfterSeek = (lastPosition == 0);
+                try (SeekableByteChannel channel = Files.newByteChannel(currentFile, StandardOpenOption.READ)) {
+                    // Do NOT use channel.size() as a gate: on Windows the OS caches the
+                    // directory-entry file size and may not reflect bytes written by the game
+                    // for minutes at a time. Attempt a direct read from lastPosition instead \u2014
+                    // the read syscall bypasses the cached size and reaches actual file data.
+                    channel.position(lastPosition);
+                    ByteBuffer buf = ByteBuffer.allocate(65536);
+                    int bytesRead = channel.read(buf);
+                    if (bytesRead > 0) {
+                        buf.flip();
 
-                    while ((line = reader.readLine()) != null) {
-                        if (isFirstLineAfterSeek) {
-                            if (!line.isEmpty() && line.charAt(0) == '\uFEFF') {
-                                line = line.substring(1);
+                        // Decode and split on \n \u2014 handles both \n and \r\n line endings
+                        String chunk = StandardCharsets.UTF_8.decode(buf).toString();
+                        String[] parts = chunk.split("\n", -1);
+                        boolean firstLine = (lastPosition == 0);
+
+                        // All parts except the last are complete lines (terminated by \n).
+                        // The last part is either empty (file ended with \n) or an incomplete
+                        // line not yet flushed by the game \u2014 leave it for the next poll.
+                        for (int i = 0; i < parts.length - 1; i++) {
+                            String raw = parts[i];
+                            // Advance by exact bytes: the raw part as stored in file + the \n
+                            lastPosition += raw.getBytes(StandardCharsets.UTF_8).length + 1;
+
+                            // Strip \r if the game wrote \r\n
+                            String line = raw.endsWith("\r") ? raw.substring(0, raw.length() - 1) : raw;
+
+                            // Strip UTF-8 BOM from the very first line of the file
+                            if (firstLine) {
+                                if (!line.isEmpty() && line.charAt(0) == '\uFEFF') line = line.substring(1);
+                                firstLine = false;
                             }
-                            isFirstLineAfterSeek = false;
-                        }
 
-                        if (line.isBlank()) {
-                            lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
-                            continue;
-                        }
+                            if (line.isBlank()) continue;
 
-                        try {
-                            String sanitizedLine = line.replaceAll("[\\p{Cntrl}\\p{Cc}\\p{Cf}]", "").trim();
-                            if (!sanitizedLine.startsWith("{") || !sanitizedLine.endsWith("}")) {
-                                continue;
-                            }
+                            try {
+                                String sanitizedLine = line.replaceAll("[\\p{Cntrl}\\p{Cc}\\p{Cf}]", "").trim();
+                                if (!sanitizedLine.startsWith("{") || !sanitizedLine.endsWith("}")) continue;
 
-                            JsonElement element = GsonFactory.getGson().fromJson(sanitizedLine, JsonElement.class);
-                            if (!element.isJsonObject()) {
-                                lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
-                                continue;
-                            }
+                                JsonElement element = GsonFactory.getGson().fromJson(sanitizedLine, JsonElement.class);
+                                if (!element.isJsonObject()) continue;
 
-                            JsonObject eventJson = element.getAsJsonObject();
-                            if (eventJson.has("event")) {
-                                String eventType = eventJson.get("event").getAsString();
-                                BaseEvent event = EventRegistry.createEvent(eventType, eventJson);
-                                if (event != null && !event.isExpired()) {
-                                    EventBusManager.publish(event);
-                                    webSocketBroadcaster.broadcast(event.toJson());
-                                    EventBusManager.publish(new AppLogDebugEvent("\tProcessing Event: " + eventType));
-                                    log.info("Processing Journal Event: {} {}", eventType, event.toJsonObject());
-                                } else if (event != null && event.isExpired()) {
-                                    log.warn("Skipping event: {}, reason {}", eventType, "Event expired");
+                                JsonObject eventJson = element.getAsJsonObject();
+                                if (eventJson.has("event")) {
+                                    String eventType = eventJson.get("event").getAsString();
+                                    BaseEvent event = EventRegistry.createEvent(eventType, eventJson);
+                                    if (event != null && !event.isExpired()) {
+                                        EventBusManager.publish(event);
+                                        webSocketBroadcaster.broadcast(event.toJson());
+                                        EventBusManager.publish(new AppLogDebugEvent("\tProcessing Event: " + eventType));
+                                        log.info("Processing Journal Event: {} {}", eventType, event.toJsonObject());
+                                    } else if (event != null && event.isExpired()) {
+                                        log.warn("Skipping event: {}, reason {}", eventType, "Event expired");
+                                    }
                                 }
+                            } catch (Exception e) {
+                                log.warn("Skipping malformed journal line: {} - {}", line, e.getMessage());
                             }
-                        } catch (Exception e) {
-                            log.warn("Skipping malformed journal line: {} - {}", line, e.getMessage());
                         }
-
-                        lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
                     }
                 } catch (IOException e) {
                     EventBusManager.publish(new AiVoxResponseEvent("Error reading journal: " + e.getMessage()));

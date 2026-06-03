@@ -1,7 +1,9 @@
 package elite.intel.db.managers;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.db.FuzzySearch;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
@@ -86,10 +88,12 @@ public class SubSystemsManager {
                     }
                     lastKeyPressInstant = Instant.now();
                     log.debug("[cycle] count={} pressing key, target=[{}]", cycleCount, getTarget());
-                    GameControllerBus.publish(new GameInputEvent(BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), 50));
+                    GameControllerBus.publish(GameInputSequenceEvent.of(
+                            GameInputStep.bindingHold(BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), 50),
+                            GameInputStep.delay(250)
+                    ));
                     pause = true;
                     cycleCount++;
-                    SleepNoThrow.sleep(250);
                 } else if (Instant.now().isAfter(lastKeyPressInstant.plusMillis(PAUSE_TIMEOUT_MS))) {
                     consecutiveTimeouts++;
                     log.debug("[cycle] journal timeout #{} after {}ms - no ShipTargeted event received", consecutiveTimeouts, PAUSE_TIMEOUT_MS);

@@ -1,7 +1,9 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 
@@ -16,7 +18,7 @@ public class LookAheadHandler implements CommandHandler {
 
         if (status.isInMainShip()) {
             UiNavCommon.close();
-            GameControllerBus.publish(new GameInputEvent(BINDING_HEAD_LOOK_RESET.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_HEAD_LOOK_RESET.getGameBinding())));
         }
     }
 }

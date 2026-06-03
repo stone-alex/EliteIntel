@@ -1,14 +1,15 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.GlobalSettingsManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import elite.intel.session.ui.UINavigator;
-import elite.intel.util.SleepNoThrow;
 
 import static elite.intel.ai.hands.Bindings.GameCommand.*;
 
@@ -30,37 +31,44 @@ public class SuperCruiseHandler implements CommandHandler {
         } else if (status.isFsdCooldown()) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("FSD is on cooldown."));
         } else if (status.isFighterOut()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_REQUEST_REQUEST_DOCK.getGameBinding())));
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Fighter is still out. Can not comply."));
         } else if (status.isInMainShip()) {
             if (status.isInSupercruise()) {
                 navigator.closeOpenPanel();
-                GameControllerBus.publish(new GameInputEvent(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0));
                 if (settingsManager.getAutoSpeedUpForFtl()) {
-                    GameControllerBus.publish(new GameInputEvent(BINDING_SET_SPEED100.getGameBinding(), 0));
-                }
-                GameControllerBus.publish(new GameInputEvent(BINDING_JUMP_TO_HYPERSPACE.getGameBinding(), 0));
-                if (settingsManager.getAutoSpeedUpForFtl()) {
-                    SleepNoThrow.sleep(12_000);
-                    GameControllerBus.publish(new GameInputEvent(BINDING_SET_SPEED100.getGameBinding(), 0));
+                    GameControllerBus.publish(GameInputSequenceEvent.of(
+                            GameInputStep.bindingTap(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding()),
+                            GameInputStep.bindingTap(BINDING_SET_SPEED100.getGameBinding()),
+                            GameInputStep.bindingTap(BINDING_JUMP_TO_HYPERSPACE.getGameBinding()),
+                            GameInputStep.delay(12_000),
+                            GameInputStep.bindingTap(BINDING_SET_SPEED100.getGameBinding())
+                    ));
+                } else {
+                    GameControllerBus.publish(GameInputSequenceEvent.of(
+                            GameInputStep.bindingTap(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding()),
+                            GameInputStep.bindingTap(BINDING_JUMP_TO_HYPERSPACE.getGameBinding())
+                    ));
                 }
             } else {
                 PreFtlChecks.preJumpCheck(status, "Preparing for Supercruise.");
                 if (settingsManager.getAutoSpeedUpForFtl()) {
-                    GameControllerBus.publish(new GameInputEvent(BINDING_SET_SPEED100.getGameBinding(), 0));
-                }
-                GameControllerBus.publish(new GameInputEvent(BINDING_ENTER_SUPERCRUISE.getGameBinding(), 0));
-                if (settingsManager.getAutoSpeedUpForFtl()) {
-                    SleepNoThrow.sleep(1_000);
-                    GameControllerBus.publish(new GameInputEvent(BINDING_SET_SPEED100.getGameBinding(), 0));
-                    SleepNoThrow.sleep(1_000);
-                    GameControllerBus.publish(new GameInputEvent(BINDING_SET_SPEED100.getGameBinding(), 0));
-                    SleepNoThrow.sleep(1_000);
-                    GameControllerBus.publish(new GameInputEvent(BINDING_SET_SPEED100.getGameBinding(), 0));
-                    SleepNoThrow.sleep(1_000);
-                    GameControllerBus.publish(new GameInputEvent(BINDING_SET_SPEED100.getGameBinding(), 0));
-                    SleepNoThrow.sleep(1_000);
-                    GameControllerBus.publish(new GameInputEvent(BINDING_SET_SPEED100.getGameBinding(), 0));
+                    GameControllerBus.publish(GameInputSequenceEvent.of(
+                            GameInputStep.bindingTap(BINDING_SET_SPEED100.getGameBinding()),
+                            GameInputStep.bindingTap(BINDING_ENTER_SUPERCRUISE.getGameBinding()),
+                            GameInputStep.delay(1_000),
+                            GameInputStep.bindingTap(BINDING_SET_SPEED100.getGameBinding()),
+                            GameInputStep.delay(1_000),
+                            GameInputStep.bindingTap(BINDING_SET_SPEED100.getGameBinding()),
+                            GameInputStep.delay(1_000),
+                            GameInputStep.bindingTap(BINDING_SET_SPEED100.getGameBinding()),
+                            GameInputStep.delay(1_000),
+                            GameInputStep.bindingTap(BINDING_SET_SPEED100.getGameBinding()),
+                            GameInputStep.delay(1_000),
+                            GameInputStep.bindingTap(BINDING_SET_SPEED100.getGameBinding())
+                    ));
+                } else {
+                    GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_ENTER_SUPERCRUISE.getGameBinding())));
                 }
             }
         } else {

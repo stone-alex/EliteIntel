@@ -1,7 +1,9 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.gameapi.GameControllerBus;
 
 import static elite.intel.ai.hands.Bindings.GameCommand.BINDING_SET_SPEED75;
@@ -20,6 +22,6 @@ public class SetOptimalSpeedHandler implements CommandHandler {
 
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        GameControllerBus.publish(new GameInputEvent(BINDING_SET_SPEED75.getGameBinding(), 0)); /// Sets to 75%
+        GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_SET_SPEED75.getGameBinding()))); /// Sets to 75%
     }
 }

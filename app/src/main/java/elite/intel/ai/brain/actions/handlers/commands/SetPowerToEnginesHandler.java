@@ -1,7 +1,9 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import org.apache.logging.log4j.LogManager;
@@ -75,9 +77,11 @@ public class SetPowerToEnginesHandler implements CommandHandler {
     }
 
     private void performAction(String resetPowerDistribution, String increaseEnginePower, String increaseSystemPower) {
-        GameControllerBus.publish(new GameInputEvent(resetPowerDistribution, 0));
-        GameControllerBus.publish(new GameInputEvent(increaseEnginePower, 0));
-        GameControllerBus.publish(new GameInputEvent(increaseEnginePower, 0));
+        GameControllerBus.publish(GameInputSequenceEvent.of(
+                GameInputStep.bindingTap(resetPowerDistribution),
+                GameInputStep.bindingTap(increaseEnginePower),
+                GameInputStep.bindingTap(increaseEnginePower)
+        ));
         log.info("Diverting power to engines");
     }
 }

@@ -1,12 +1,13 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
-import elite.intel.util.SleepNoThrow;
 
 import static elite.intel.ai.hands.Bindings.GameCommand.BINDING_EXPLORATION_FSSDISCOVERY_SCAN;
 import static elite.intel.ai.hands.Bindings.GameCommand.BINDING_SET_SPEED_ZERO;
@@ -32,12 +33,13 @@ public class DisplayFssAndScanHandler implements CommandHandler {
         String stop = BINDING_SET_SPEED_ZERO.getGameBinding();
         String fssControl = BINDING_EXPLORATION_FSSDISCOVERY_SCAN.getGameBinding();
 
-        GameControllerBus.publish(new GameInputEvent(stop, 0));
-        SleepNoThrow.sleep(200);
-
-        GameControllerBus.publish(new GameInputEvent(fssControl, 0));
-        SleepNoThrow.sleep(1500);
-        GameControllerBus.publish(new GameInputEvent(fssControl, 4500));
+        GameControllerBus.publish(GameInputSequenceEvent.of(
+                GameInputStep.bindingTap(stop),
+                GameInputStep.delay(200),
+                GameInputStep.bindingTap(fssControl),
+                GameInputStep.delay(1500),
+                GameInputStep.bindingHold(fssControl, 4500)
+        ));
 
     }
 }

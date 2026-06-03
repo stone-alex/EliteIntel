@@ -1,7 +1,9 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.util.AudioPlayer;
 
@@ -15,7 +17,7 @@ public class SpeedPlusControlHandler implements CommandHandler {
         int num = params.get("key").getAsInt();
         String increase = INCREASE_SPEED_BY.getBinding();
         for (int i = 0; i < num; i++) {
-            GameControllerBus.publish(new GameInputEvent(increase, 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(increase)));
             AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         }
 

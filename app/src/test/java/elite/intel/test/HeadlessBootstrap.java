@@ -9,7 +9,7 @@ import elite.intel.session.SystemSession;
 import elite.intel.util.Cypher;
 
 /**
- * Starts only the BRAIN service (LLM endpoint + ResponseRouter + HandsSubscriber).
+ * Starts only the BRAIN service (LLM endpoint + ResponseRouter + InputSequenceExecutor).
  * No TTS, no STT, no journals, no UI.
  * <p>
  * Prerequisites:

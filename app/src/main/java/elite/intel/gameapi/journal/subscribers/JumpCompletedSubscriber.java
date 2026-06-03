@@ -1,7 +1,9 @@
 package elite.intel.gameapi.journal.subscribers;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.RouteAnnouncementEvent;
 import elite.intel.db.dao.DestinationReminderDao;
@@ -145,7 +147,7 @@ public class JumpCompletedSubscriber {
                 boolean isInCombatMode = !status.isAnalysisMode();
                 /// Change to analysis mode
                 if (isInCombatMode) {
-                    GameControllerBus.publish(new GameInputEvent(BINDING_ACTIVATE_ANALYSIS_MODE.getGameBinding(), 0));
+                    GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_ACTIVATE_ANALYSIS_MODE.getGameBinding())));
                 }
 
                 /// Switch fire-group
@@ -154,14 +156,14 @@ public class JumpCompletedSubscriber {
                 /// Scan
                 int honkTrigger = shipSettings.getHonkTrigger(); /// 1 primary, 2 secondary
                 if (honkTrigger == 1) {
-                    GameControllerBus.publish(new GameInputEvent(BINDING_PRIMARY_FIRE.getGameBinding(), 5000));
+                    GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingHold(BINDING_PRIMARY_FIRE.getGameBinding(), 5000)));
                 } else {
-                    GameControllerBus.publish(new GameInputEvent(BINDING_SECONDARY_FIRE.getGameBinding(), 5000));
+                    GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingHold(BINDING_SECONDARY_FIRE.getGameBinding(), 5000)));
                 }
 
                 /// change back to combat mode - if the user was in combat mode
                 if (isInCombatMode) {
-                    GameControllerBus.publish(new GameInputEvent(BINDING_ACTIVATE_COMBAT_MODE.getGameBinding(), 0));
+                    GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_ACTIVATE_COMBAT_MODE.getGameBinding())));
                 }
             }
 

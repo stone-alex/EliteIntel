@@ -1,7 +1,9 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
@@ -21,7 +23,7 @@ public class RetractLandingGearHandler implements CommandHandler {
         }
 
         if (status.isInMainShip() && status.isLandingGearDown()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_LANDING_GEAR_TOGGLE.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_LANDING_GEAR_TOGGLE.getGameBinding())));
         } else {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Landing gear already retracted."));
         }

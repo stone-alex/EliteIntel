@@ -1,7 +1,9 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import elite.intel.session.ui.UINavigator;
@@ -43,13 +45,13 @@ public class OpenGalaxyMapHandler implements CommandHandler {
         navigator.closeOpenPanel();
         Status status = Status.getInstance();
         if (status.isInMainShip() || status.isInFighter()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_GALAXY_MAP.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_GALAXY_MAP.getGameBinding())));
         }
 
         if (status.isInSrv()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_GALAXY_MAP_BUGGY.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_GALAXY_MAP_BUGGY.getGameBinding())));
         } if(status.isOnFoot()){
-            GameControllerBus.publish(new GameInputEvent(BINDING_GALAXY_MAP_HUMANOID.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_GALAXY_MAP_HUMANOID.getGameBinding())));
         }
     }
 }

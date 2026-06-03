@@ -1,7 +1,9 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
@@ -19,7 +21,7 @@ public class CloseCargoScoopHandler implements CommandHandler {
 
         if (status.isInMainShip()) {
             if (status.isCargoScoopDeployed()) {
-                GameControllerBus.publish(new GameInputEvent(BINDING_TOGGLE_CARGO_SCOOP.getGameBinding(), 0));
+                GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_TOGGLE_CARGO_SCOOP.getGameBinding())));
             } else {
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Cargo scoop already retracted."));
             }
@@ -27,7 +29,7 @@ public class CloseCargoScoopHandler implements CommandHandler {
 
         if (status.isInSrv()) {
             if (status.isCargoScoopDeployed()) {
-                GameControllerBus.publish(new GameInputEvent(BINDING_TOGGLE_CARGO_SCOOP_BUGGY.getGameBinding(), 0));
+                GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_TOGGLE_CARGO_SCOOP_BUGGY.getGameBinding())));
             } else {
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Cargo scoop already retracted."));
             }

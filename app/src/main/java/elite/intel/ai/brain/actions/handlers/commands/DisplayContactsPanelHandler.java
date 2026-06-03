@@ -1,7 +1,9 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 
@@ -16,11 +18,11 @@ public class DisplayContactsPanelHandler implements CommandHandler {
         Status status = Status.getInstance();
 
         if (status.isInMainShip()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_FOCUS_LEFT_PANEL.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_FOCUS_LEFT_PANEL.getGameBinding())));
         }
 
         if (status.isInSrv()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_FOCUS_CONTACTS_PANEL_BUGGY.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_FOCUS_CONTACTS_PANEL_BUGGY.getGameBinding())));
         }
     }
 }

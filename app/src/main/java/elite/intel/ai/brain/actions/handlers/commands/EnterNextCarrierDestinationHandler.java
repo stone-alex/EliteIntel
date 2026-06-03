@@ -2,10 +2,12 @@ package elite.intel.ai.brain.actions.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.KeyProcessor;
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
 import elite.intel.db.managers.FleetCarrierRouteManager;
+import elite.intel.gameapi.GameControllerBus;
 import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.util.AudioPlayer;
-import elite.intel.util.SleepNoThrow;
 
 import java.util.Collections;
 import java.util.Map;
@@ -21,11 +23,12 @@ public class EnterNextCarrierDestinationHandler implements CommandHandler {
         if (!fleetCarrierRoute.isEmpty()) {
             Integer nextLeg = Collections.min(fleetCarrierRoute.keySet());
             CarrierJump carrierJump = fleetCarrierRoute.get(nextLeg);
-            KeyProcessor keyProcessor = KeyProcessor.getInstance();
             if(carrierJump.getSystemName() != null) {
-                keyProcessor.enterText(carrierJump.getSystemName());
-                SleepNoThrow.sleep(250);
-                keyProcessor.pressKey(KeyProcessor.KEY_ENTER);
+                GameControllerBus.publish(GameInputSequenceEvent.of(
+                        GameInputStep.text(carrierJump.getSystemName()),
+                        GameInputStep.delay(250),
+                        GameInputStep.rawKey(KeyProcessor.KEY_ENTER)
+                ));
                 AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
             }
         }

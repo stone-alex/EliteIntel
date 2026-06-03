@@ -1,7 +1,9 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 
@@ -14,7 +16,7 @@ public class DropFromFtlHandler implements CommandHandler {
         Status status = Status.getInstance();
 
         if (status.isInSupercruise()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_EXIT_SUPERCRUISE.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_EXIT_SUPERCRUISE.getGameBinding())));
         }
     }
 }

@@ -1,7 +1,9 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 
@@ -17,11 +19,11 @@ public class CargoScoopHandler implements CommandHandler {
         Status status = Status.getInstance();
 
         if (status.isInMainShip()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_TOGGLE_CARGO_SCOOP.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_TOGGLE_CARGO_SCOOP.getGameBinding())));
         }
 
         if (status.isInSrv()) {
-            GameControllerBus.publish(new GameInputEvent(BINDING_TOGGLE_CARGO_SCOOP_BUGGY.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_TOGGLE_CARGO_SCOOP_BUGGY.getGameBinding())));
         }
     }
 }

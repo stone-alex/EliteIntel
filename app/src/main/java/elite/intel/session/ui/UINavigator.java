@@ -1,14 +1,16 @@
 package elite.intel.session.ui;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import elite.intel.ai.hands.Bindings;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.db.managers.GlobalSettingsManager;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
 import elite.intel.session.StatusFlags.GuiFocus;
 
-import static elite.intel.util.SleepNoThrow.sleep;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Dispatches panel navigation keystrokes on behalf of c
@@ -65,7 +67,7 @@ public class UINavigator {
         // openPanel() is a toggle - sending it when the panel is already open would close it.
         if (status.getGuiFocus() != panel) {
             openPanel(panel);
-            sleep(RANDOM_MAX);
+            inputDelay(RANDOM_MAX);
         }
 
         if (!state.isKnown()) {
@@ -73,7 +75,7 @@ public class UINavigator {
         }
 
         navigateToTargetTab(panel, target);
-        sleep(250); // <--- important! Don't be hasty.
+        inputDelay(250); // <--- important! Don't be hasty.
     }
 
 
@@ -99,20 +101,20 @@ public class UINavigator {
 
         if (status.isFssModeActive()) {
 
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_EXPLORATION_FSSQUIT.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_EXPLORATION_FSSQUIT.getGameBinding())));
         }
 
         if (status.isSaaModeActive()) {
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.EXPLORATION_SAAEXIT_THIRD_PERSON.getGameBinding(), 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(Bindings.GameCommand.EXPLORATION_SAAEXIT_THIRD_PERSON.getGameBinding())));
         }
 
         if (shouldBackOut()) {
             for (int i = 0; i < 10; i++) {
-                GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0));
+                GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding())));
             }
         } else {
             for (int i = 0; i < 3; i++) {
-                GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0));
+                GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding())));
             }
         }
     }
@@ -141,7 +143,7 @@ public class UINavigator {
             navigateToDefaultTab(panel, state.getDefault());
         }
         closePanel(panel);
-        sleep(RANDOM_MAX);
+        inputDelay(RANDOM_MAX);
         tracker.notifyEliteIntelClosedPanel();
         state.resetToDefault();
     }
@@ -169,7 +171,7 @@ public class UINavigator {
         }
 
         for (int i = 0; i < steps; i++) {
-            GameControllerBus.publish(new GameInputEvent(key, 0)); // always tap - binding.hold flag must be ignored for tab cycling
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(key))); // always tap - binding.hold flag must be ignored for tab cycling
         }
         state.recordTab((Enum & PanelTab) target);
     }
@@ -186,7 +188,7 @@ public class UINavigator {
         if (steps == 0) return;
         String key = Bindings.GameCommand.BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding();
         for (int i = 0; i < steps; i++) {
-            GameControllerBus.publish(new GameInputEvent(key, 0)); // always tap - binding.hold flag must be ignored for tab cycling
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(key))); // always tap - binding.hold flag must be ignored for tab cycling
         }
         state.recordTab((Enum & PanelTab) defaultTarget);
     }
@@ -204,7 +206,7 @@ public class UINavigator {
         }
         String nextTab = Bindings.GameCommand.BINDING_CYCLE_NEXT_PANEL.getGameBinding();
         for (int i = 0; i < getTabCount(panel); i++) {
-            GameControllerBus.publish(new GameInputEvent(nextTab, 0)); // always tap
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(nextTab))); // always tap
         }
         state.resetToDefault();
     }
@@ -230,9 +232,11 @@ public class UINavigator {
             };
         }
         if (binding != null) {
-            GameControllerBus.publish(new GameInputEvent(binding, 0)); // panel focus keys must be tapped, not held
+            GameControllerBus.publish(GameInputSequenceEvent.of(
+                    GameInputStep.bindingTap(binding), // panel focus keys must be tapped, not held
+                    GameInputStep.delay(RANDOM_MAX)
+            ));
         }
-        sleep(RANDOM_MAX);
     }
 
     private void closePanel(GuiFocus panel) {
@@ -252,6 +256,10 @@ public class UINavigator {
 
 
     public static int randomDelay() {
-        return Math.max((int) (Math.random() * RANDOM_MAX), RANDOM_MIN);
+        return RANDOM_MIN + ThreadLocalRandom.current().nextInt(RANDOM_MAX - RANDOM_MIN + 1);
+    }
+
+    private void inputDelay(int delayMs) {
+        GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.delay(delayMs)));
     }
 }

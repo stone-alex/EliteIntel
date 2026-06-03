@@ -1,7 +1,9 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 
@@ -17,12 +19,12 @@ public class ResetPowerSettings implements CommandHandler {
 
         if (status.isInMainShip()) {
             String resetPowerDistribution = BINDING_RESET_POWER_DISTRIBUTION.getGameBinding();
-            GameControllerBus.publish(new GameInputEvent(resetPowerDistribution, 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(resetPowerDistribution)));
         }
 
         if (status.isInSrv()) {
             String resetPowerDistribution = BINDING_RESET_POWER_DISTRIBUTION_BUGGY.getGameBinding();
-            GameControllerBus.publish(new GameInputEvent(resetPowerDistribution, 0));
+            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(resetPowerDistribution)));
         }
     }
 }

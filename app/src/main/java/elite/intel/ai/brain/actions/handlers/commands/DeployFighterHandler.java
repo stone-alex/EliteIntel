@@ -1,11 +1,15 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.Bindings;
-import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
-import elite.intel.util.SleepNoThrow;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DeployFighterHandler implements CommandHandler {
 
@@ -16,33 +20,35 @@ public class DeployFighterHandler implements CommandHandler {
     @Override
     public void handle(String action, JsonObject params, String responseText) {
         if (status.isInMainShip()) {
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding(), 0));
-            /// ensure the cursor is at the top
+            List<GameInputStep> steps = new ArrayList<>();
+            steps.add(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding()));
+            // Ensure the cursor is at the top before navigating to deploy fighter.
             for (int i = 0; i < 5; i++) {
-                GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding(), 0));
+                steps.add(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding()));
             }
             for (int i = 0; i < 5; i++) {
-                GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 0));
+                steps.add(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_UI_UP.getGameBinding()));
             }
 
-            /// Deploy Fighter
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0));
-            SleepNoThrow.sleep(150);
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0));
-            SleepNoThrow.sleep(150);
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding(), 0));
+            // Deploy Fighter.
+            steps.add(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding()));
+            steps.add(GameInputStep.delay(150));
+            steps.add(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding()));
+            steps.add(GameInputStep.delay(150));
+            steps.add(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding()));
             for (int i = 0; i < 6; i++) {
-                GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0));
-                SleepNoThrow.sleep(150);
+                steps.add(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding()));
+                steps.add(GameInputStep.delay(150));
             }
             for (int i = 0; i < 3; i++) {
-                GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 0));
-                SleepNoThrow.sleep(150);
+                steps.add(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_UI_UP.getGameBinding()));
+                steps.add(GameInputStep.delay(150));
             }
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding(), 0));
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding(), 0));
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 0));
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding(), 0));
+            steps.add(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding()));
+            steps.add(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding()));
+            steps.add(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_UI_UP.getGameBinding()));
+            steps.add(GameInputStep.bindingTap(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding()));
+            GameControllerBus.publish(new GameInputSequenceEvent(steps));
             status.setOkToAnnounceLoadout(false);
         }
     }

@@ -1,9 +1,9 @@
 package elite.intel.ai.brain.actions.handlers.commands;
 
+import elite.intel.ai.hands.events.GameInputSequenceEvent;
+import elite.intel.ai.hands.events.GameInputStep;
+
 import elite.intel.ai.hands.KeyProcessor;
-import elite.intel.ai.hands.events.EnterTextEvent;
-import elite.intel.ai.hands.events.GameInputEvent;
-import elite.intel.ai.hands.events.RawKeyEvent;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.gameapi.EventBusManager;
@@ -33,26 +33,24 @@ public class RoutePlotter {
             return;
         }
 
-        try {
-            GameControllerBus.publish(new GameInputEvent(BINDING_GALAXY_MAP.getGameBinding(), 0));
-            Thread.sleep(3000);
-            GameControllerBus.publish(new GameInputEvent(BINDING_CAM_ZOOM_IN.getGameBinding(), 500));
-            GameControllerBus.publish(new GameInputEvent(BINDING_UI_LEFT.getGameBinding(), 0));
-            Thread.sleep(200);
-            GameControllerBus.publish(new GameInputEvent(BINDING_UI_RIGHT.getGameBinding(), 0));
-            Thread.sleep(200);
-            GameControllerBus.publish(new GameInputEvent(BINDING_ACTIVATE.getGameBinding(), 0));
-            Thread.sleep(200);
-            GameControllerBus.publish(new EnterTextEvent(destination));
-            Thread.sleep(250);
-            GameControllerBus.publish(new RawKeyEvent(KeyProcessor.KEY_DOWNARROW));
-            GameControllerBus.publish(new RawKeyEvent(KeyProcessor.KEY_ENTER));
-            Thread.sleep(1000);
-            GameControllerBus.publish(new RawKeyEvent(KeyProcessor.KEY_ENTER));
+        GameControllerBus.publish(GameInputSequenceEvent.of(
+                GameInputStep.bindingTap(BINDING_GALAXY_MAP.getGameBinding()),
+                GameInputStep.delay(3000),
+                GameInputStep.bindingHold(BINDING_CAM_ZOOM_IN.getGameBinding(), 500),
+                GameInputStep.bindingTap(BINDING_UI_LEFT.getGameBinding()),
+                GameInputStep.delay(200),
+                GameInputStep.bindingTap(BINDING_UI_RIGHT.getGameBinding()),
+                GameInputStep.delay(200),
+                GameInputStep.bindingTap(BINDING_ACTIVATE.getGameBinding()),
+                GameInputStep.delay(200),
+                GameInputStep.text(destination),
+                GameInputStep.delay(250),
+                GameInputStep.rawKey(KeyProcessor.KEY_DOWNARROW),
+                GameInputStep.rawKey(KeyProcessor.KEY_ENTER),
+                GameInputStep.delay(1000),
+                GameInputStep.rawKey(KeyProcessor.KEY_ENTER)
+        ));
 
-            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
-        } catch (InterruptedException e) {
-            //
-        }
+        AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
     }
 }

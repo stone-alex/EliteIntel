@@ -5,6 +5,8 @@ import elite.intel.ai.hands.events.GameInputStep;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.db.FuzzySearch;
+import elite.intel.db.dao.SubSystemDao;
+import elite.intel.db.util.Database;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.gameapi.journal.events.ShipTargetedEvent;
@@ -110,16 +112,18 @@ public class SubSystemsManager {
     }
 
     @Subscribe public void onShipTargetedEvent(ShipTargetedEvent event) {
-        if (event == null) {
-            return;
-        }
+        if (event == null) return;
+
         if (!event.isTargetLocked()) {
             log.debug("[journal] target lock lost - stopping");
             continueTargeting = false;
             return;
         }
-        if (event.getSubsystemLocalised() == null || event.getSubsystemLocalised().isEmpty()) {
-            log.debug("[journal] ShipTargeted has no subsystem (scanStage={})", event.getScanStage());
+
+        String effectiveName = resolveSubsystemName(event.getSubsystemLocalised(), event.getSubsystem());
+        if (effectiveName == null) {
+            log.debug("[journal] ShipTargeted: no resolvable subsystem (scanStage={}, raw=[{}])",
+                    event.getScanStage(), event.getSubsystem());
             return;
         }
 
@@ -130,10 +134,8 @@ public class SubSystemsManager {
             return;
         }
 
-        String raw = event.getSubsystemLocalised();
-        String trimmed = raw.trim();
-        log.debug("[journal] game=[{}] (len={}) trimmed=[{}] (len={}) target=[{}] (len={})",
-                raw, raw.length(), trimmed, trimmed.length(), getTarget(), getTarget() == null ? -1 : getTarget().length());
+        String trimmed = effectiveName.trim();
+        log.debug("[journal] resolved=[{}] target=[{}]", trimmed, getTarget());
 
         if (trimmed.equalsIgnoreCase(getTarget())) {
             log.debug("[journal] MATCH - stopping");
@@ -145,5 +147,22 @@ public class SubSystemsManager {
         }
         consecutiveTimeouts = 0;
         pause = false;
+    }
+
+    /**
+     * Returns the subsystem category name for matching against the cycling target.
+     * Prefers the game-provided Subsystem_Localised string. When absent (some faction-specific
+     * module variants omit it), strips the raw key down to its identifier and looks it up
+     * in the sub_system table by machine_key substring match — returning the category name
+     * regardless of class, size, or grade.
+     */
+    private static String resolveSubsystemName(String localised, String rawKey) {
+        if (localised != null && !localised.isBlank()) return localised;
+        if (rawKey == null || rawKey.isBlank()) return null;
+
+        String stripped = rawKey.replaceAll("^\\$", "")
+                .replaceAll("_name;?$", "")
+                .replaceAll(";$", "");
+        return Database.withDao(SubSystemDao.class, dao -> dao.findSubsystemByRawKey(stripped));
     }
 }

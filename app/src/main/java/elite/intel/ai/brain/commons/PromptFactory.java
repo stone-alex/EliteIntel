@@ -202,9 +202,11 @@ public class PromptFactory implements AiPromptFactory {
                   - "night vision off"         → {"action": "toggle_night_vision_on_off", "params": {"state": false}}
                   - "lights on"                → {"action": "toggle_lights_on_off", "params": {"state": true}}
                   - "increase speed by 25"          → {"action": "increase_speed", "params": {"key": "25"}}
-                  - "find gold within 80 ly"        → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
-                  - "find nearest market for gold"  → {"action": "find_commodity", "params": {"key": "gold", "state": true}}
-                  - "where can we buy gold"         → {"action": "find_commodity", "params": {"key": "gold", "state": false}}
+                  - "find gold within 80 ly"                    → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
+                  - "find nearest market for gold"              → {"action": "find_commodity", "params": {"key": "gold", "state": true}}
+                  - "where can we buy gold"                     → {"action": "find_commodity", "params": {"key": "gold", "state": false}}
+                  - "find where we can buy cmm composites"      → {"action": "find_commodity", "params": {"key": "cmm composites", "state": false}}
+                  - "where can I buy low temperature diamonds"  → {"action": "find_commodity", "params": {"key": "low temperature diamonds", "state": false}}
                   - "fire group charlie"            → {"action": "select_fire_group_by_nato", "params": {"key": "charlie"}}
                   - "select fire group bravo"       → {"action": "select_fire_group_by_nato", "params": {"key": "bravo"}}
                   - find_commodity state: if "nearest" or "closest" appears anywhere in input → true (distance), regardless of other words. Otherwise → false (price).

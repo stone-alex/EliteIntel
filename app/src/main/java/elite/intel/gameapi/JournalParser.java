@@ -106,9 +106,24 @@ public class JournalParser implements Runnable, ManagedService {
         try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
             journalDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_CREATE);
 
-            Path currentFile = getLatestJournalFile();
+            // If the app is started before the game, no journal exists yet. Wait for one.
+            Path currentFile = null;
+            boolean journalWarningSpoken = false;
+            while (isRunning && currentFile == null) {
+                try {
+                    currentFile = getLatestJournalFile();
+                } catch (IOException e) {
+                    if (!journalWarningSpoken) {
+                        log.info("No journal file found yet - waiting for game to start...");
+                        EventBusManager.publish(new AiVoxResponseEvent("Commander, no game session detected. Standing by."));
+                        journalWarningSpoken = true;
+                    }
+                    Thread.sleep(2000);
+                }
+            }
+            if (!isRunning) return;
             long lastPosition = 0;
-            log.info("Monitoring {}", currentFile.getFileName());
+            log.info("Monitoring {}", currentFile);
 
             while (isRunning) {
                 Thread.sleep(200);
@@ -118,20 +133,33 @@ public class JournalParser implements Runnable, ManagedService {
                     return;
                 }
 
-                // Fix for Windows
-                // Drain WatchKey only to detect new journal files. Do not block on it.
-                // On Windows the WatchService can delay notifications by several seconds, so
-                // reads must happen on every iteration regardless of whether a key arrived.
+                // Fix for Windows (two bugs, same root cause: OS-cached directory-entry metadata)
+                //
+                // Bug 1 (fixed earlier): channel.size() returned a stale cached file size, so the
+                //   read was gated behind a check that never became true. Fixed by reading directly.
+                //
+                // Bug 2 (this fix): File.lastModified() in getLatestJournalFile() returns stale
+                //   cached values for a file being written by another process. Calling it on every
+                //   poll caused the parser to switch to an older journal file (whose cached mtime
+                //   appeared newer), reset lastPosition to 0, and read only expired events forever.
+                //
+                // Solution: do NOT call getLatestJournalFile() inside the loop. Instead watch for
+                // ENTRY_CREATE events from the WatchService. That fires reliably when the game
+                // starts a new journal, and is unaffected by stale mtime caching.
                 WatchKey key = watchService.poll();
                 if (key != null) {
+                    for (WatchEvent<?> watchEvent : key.pollEvents()) {
+                        if (watchEvent.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+                            @SuppressWarnings("unchecked")
+                            Path created = ((WatchEvent<Path>) watchEvent).context();
+                            if (created.toString().endsWith(".log")) {
+                                lastPosition = 0;
+                                currentFile = journalDir.resolve(created);
+                                log.info("Switched to new journal file: {}", currentFile.getFileName());
+                            }
+                        }
+                    }
                     key.reset();
-                }
-
-                Path latestFile = getLatestJournalFile();
-                if (!latestFile.equals(currentFile)) {
-                    lastPosition = 0;
-                    currentFile = latestFile;
-                    log.info("Switched to new journal file: {}", currentFile.getFileName());
                 }
 
                 try (SeekableByteChannel channel = Files.newByteChannel(currentFile, StandardOpenOption.READ)) {
@@ -142,6 +170,7 @@ public class JournalParser implements Runnable, ManagedService {
                     channel.position(lastPosition);
                     ByteBuffer buf = ByteBuffer.allocate(65536);
                     int bytesRead = channel.read(buf);
+                    log.debug("poll: file={} pos={} read={}", currentFile.getFileName(), lastPosition, bytesRead);
                     if (bytesRead > 0) {
                         buf.flip();
 

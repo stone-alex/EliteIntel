@@ -153,6 +153,7 @@ public class ResponseRouter implements AIRouterInterface {
 
 
     protected void handleCommand(String action, JsonObject params, String responseText) {
+        log.info("LLM command: action=[{}] params=[{}]", action, params);
         EventBusManager.publish(new AppLogEvent("Processing action: " + action + " with params: " + params.toString()));
         if (IGNORE_NONSENSE.getAction().equalsIgnoreCase(action)) {
             /// do nothing and return.

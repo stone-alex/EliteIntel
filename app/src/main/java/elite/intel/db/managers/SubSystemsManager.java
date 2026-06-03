@@ -53,18 +53,18 @@ public class SubSystemsManager {
     }
 
     public void targetSubSystem(String subsystem) {
-        log.debug("targetSubSystem called with raw input: [{}]", subsystem);
+        log.debug("[1] targetSubSystem raw input: [{}]", subsystem);
         pause = false;
         String resolved = FuzzySearch.fuzzySubSystemSearch(subsystem, 4);
-        log.debug("fuzzy resolved: [{}]", resolved);
+        log.debug("[2] fuzzy resolved: [{}]", resolved);
         setTarget(resolved);
         continueTargeting = getTarget() != null && !getTarget().isEmpty();
-        log.debug("continueTargeting={} target=[{}]", continueTargeting, getTarget());
 
         if (!continueTargeting) {
-            log.debug("no fuzzy match found for [{}] - cycling will not start", subsystem);
+            log.debug("[3] no fuzzy match - cycling will NOT start");
             return;
         }
+        log.debug("[3] target set to [{}] - cycling starting", getTarget());
 
         consecutiveTimeouts = 0;
         new Thread(() -> {
@@ -72,35 +72,35 @@ public class SubSystemsManager {
             boolean usingFallback = false;
             while (continueTargeting) {
                 if (!pause) {
-                    if (!continueTargeting) break;  // re-check after acquiring slot
+                    if (!continueTargeting) break;
                     if (cycleCount >= 25) {
                         if (usingFallback) {
-                            log.debug("exhausted fallback cycles - giving up");
+                            log.debug("[cycle] exhausted fallback - giving up");
                             continueTargeting = false;
                             break;
                         }
-                        log.debug("cycle limit reached - falling back to Power Plant");
+                        log.debug("[cycle] limit reached - falling back to Power Plant");
                         setTarget("Power Plant");
                         usingFallback = true;
                         cycleCount = 0;
                     }
                     lastKeyPressInstant = Instant.now();
-                    log.debug("cycling - count={} lastKeyPress={}", cycleCount, lastKeyPressInstant);
+                    log.debug("[cycle] count={} pressing key, target=[{}]", cycleCount, getTarget());
                     GameControllerBus.publish(new GameInputEvent(BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), 50));
                     pause = true;
                     cycleCount++;
                     SleepNoThrow.sleep(250);
                 } else if (Instant.now().isAfter(lastKeyPressInstant.plusMillis(PAUSE_TIMEOUT_MS))) {
                     consecutiveTimeouts++;
-                    log.debug("journal response timed out after {}ms - consecutiveTimeouts={}", PAUSE_TIMEOUT_MS, consecutiveTimeouts);
+                    log.debug("[cycle] journal timeout #{} after {}ms - no ShipTargeted event received", consecutiveTimeouts, PAUSE_TIMEOUT_MS);
                     if (consecutiveTimeouts >= 3) {
-                        log.debug("3 consecutive timeouts - assuming target lost, stopping");
+                        log.debug("[cycle] 3 consecutive timeouts - assuming target lost, stopping");
                         continueTargeting = false;
                         break;
                     }
                     pause = false;
                 }
-                SleepNoThrow.sleep(10);  // yield + quick flag check
+                SleepNoThrow.sleep(10);
             }
         }, "SubSystemTargeting-Thread").start();
     }
@@ -110,33 +110,33 @@ public class SubSystemsManager {
             return;
         }
         if (!event.isTargetLocked()) {
-            log.debug("target lost - stopping cycling");
+            log.debug("[journal] target lock lost - stopping");
             continueTargeting = false;
             return;
         }
         if (event.getSubsystemLocalised() == null || event.getSubsystemLocalised().isEmpty()) {
-            log.debug("ShipTargetedEvent has no subsystem localised - skipping");
+            log.debug("[journal] ShipTargeted has no subsystem (scanStage={})", event.getScanStage());
             return;
         }
 
         Instant eventInstant = Instant.parse(event.getTimestamp());
         Instant keyPressFloor = lastKeyPressInstant.truncatedTo(ChronoUnit.SECONDS);
         if (eventInstant.isBefore(keyPressFloor)) {
-            log.debug("stale event filtered - eventTime=[{}] keyPressFloor=[{}]", eventInstant, keyPressFloor);
+            log.debug("[journal] stale event filtered: eventTime=[{}] keyPressFloor=[{}]", eventInstant, keyPressFloor);
             return;
         }
 
         String raw = event.getSubsystemLocalised();
         String trimmed = raw.trim();
-        log.debug("comparing - game=[{}] (len={}) trimmed=[{}] (len={}) target=[{}] (len={})",
+        log.debug("[journal] game=[{}] (len={}) trimmed=[{}] (len={}) target=[{}] (len={})",
                 raw, raw.length(), trimmed, trimmed.length(), getTarget(), getTarget() == null ? -1 : getTarget().length());
 
         if (trimmed.equalsIgnoreCase(getTarget())) {
-            log.debug("MATCH - stopping cycling");
+            log.debug("[journal] MATCH - stopping");
             continueTargeting = false;
             AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
         } else {
-            log.debug("no match - continuing");
+            log.debug("[journal] no match - continuing");
             AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         }
         consecutiveTimeouts = 0;

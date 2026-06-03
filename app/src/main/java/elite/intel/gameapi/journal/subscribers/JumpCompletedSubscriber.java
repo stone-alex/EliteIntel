@@ -9,6 +9,7 @@ import elite.intel.db.dao.RouteMonetisationDao.MonetisationTransaction;
 import elite.intel.db.dao.ShipSettingsDao;
 import elite.intel.db.managers.*;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.FireGroups;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
@@ -23,7 +24,6 @@ import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
-import elite.intel.util.SleepNoThrow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,11 +149,7 @@ public class JumpCompletedSubscriber {
                 }
 
                 /// Switch fire-group
-                int fireGroupInSettings = fireGroupInSettings(shipSettings);
-                while (fireGroupInSettings != status.getFireGroup()) {
-                    GameControllerBus.publish(new GameInputEvent(BINDING_CYCLE_NEXT_FIRE_GROUP.getGameBinding(), 0));
-                    SleepNoThrow.sleep(1000);
-                }
+                FireGroups.cycleToGroup(fireGroupInSettings(shipSettings));
 
                 /// Scan
                 int honkTrigger = shipSettings.getHonkTrigger(); /// 1 primary, 2 secondary

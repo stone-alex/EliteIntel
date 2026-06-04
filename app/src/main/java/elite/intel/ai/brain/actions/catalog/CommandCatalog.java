@@ -2,10 +2,13 @@ package elite.intel.ai.brain.actions.catalog;
 
 import elite.intel.ai.brain.actions.Commands;
 import elite.intel.ai.brain.actions.handlers.commands.SimpleCommandActionHandler;
+import elite.intel.ai.brain.actions.macro.MacroDefinition;
 import elite.intel.ui.i18n.MultiLingualTextProvider;
 import elite.intel.util.StringUtls;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -43,6 +46,23 @@ public final class CommandCatalog {
         return Arrays.stream(Commands.values())
                 .map(this::entryFrom)
                 .toList();
+    }
+
+    /**
+     * Returns all catalog entries: built-in commands followed by user-defined macros.
+     * Built-in entries are derived from {@link Commands#values()} as before; macro entries
+     * are built from the provided list. The existing {@link #entries()} method is unchanged.
+     */
+    public List<CommandCatalogEntry> entries(List<MacroDefinition> macros) {
+        Objects.requireNonNull(macros, "macros");
+        List<CommandCatalogEntry> all = new ArrayList<>(entries());
+        for (MacroDefinition macro : macros) {
+            String desc = macro.getDescription().isBlank()
+                    ? "User macro: " + macro.getName()
+                    : macro.getDescription();
+            all.add(new CommandCatalogEntry(macro.getId(), macro.getName(), desc, CommandCatalogEntryType.USER_MACRO));
+        }
+        return Collections.unmodifiableList(all);
     }
 
     public Optional<CommandCatalogEntry> findById(String id) {

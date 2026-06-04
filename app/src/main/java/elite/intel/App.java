@@ -1,6 +1,7 @@
 package elite.intel;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import elite.intel.ai.brain.actions.macro.MacroRegistry;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SubscriberRegistration;
@@ -21,6 +22,7 @@ public class App {
         // init kry and db first!
         Cypher.initializeKey();
         Database.init();
+        MacroRegistry.getInstance().load();
 
         // change the debug log level when we have version 1.0
         Configurator.setRootLevel(Level.ALL);

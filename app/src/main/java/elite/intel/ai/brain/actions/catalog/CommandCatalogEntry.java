@@ -1,6 +1,5 @@
 package elite.intel.ai.brain.actions.catalog;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -15,8 +14,7 @@ public record CommandCatalogEntry(
         String id,
         String name,
         String description,
-        CommandCatalogEntryType type,
-        List<CommandCatalogInputBlock> inputBlocks
+        CommandCatalogEntryType type
 ) {
 
     public CommandCatalogEntry {
@@ -24,7 +22,6 @@ public record CommandCatalogEntry(
         name = requireText(name, "name");
         description = requireText(description, "description");
         Objects.requireNonNull(type, "type");
-        inputBlocks = List.copyOf(Objects.requireNonNull(inputBlocks, "inputBlocks"));
     }
 
     private static String requireText(String value, String name) {

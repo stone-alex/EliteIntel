@@ -143,6 +143,16 @@ public class ResponseRouter implements AIRouterInterface {
         return queryHandlers;
     }
 
+    /**
+     * Executes a GUI-selected command through the same post-LLM command dispatch path.
+     * <p>
+     * This intentionally bypasses STT and LLM classification: the UI already provides
+     * the resolved action id and any explicit params collected from the commander.
+     */
+    public void executeCommandFromGUI(String action, JsonObject params) {
+        handleCommand(action, params == null ? new JsonObject() : params, "");
+    }
+
 
     protected void handleChat(String responseText) {
         if (!responseText.isEmpty()) {
@@ -153,7 +163,7 @@ public class ResponseRouter implements AIRouterInterface {
 
 
     protected void handleCommand(String action, JsonObject params, String responseText) {
-        log.info("LLM command: action=[{}] params=[{}]", action, params);
+        log.info("Command dispatch: action=[{}] params=[{}]", action, params);
         EventBusManager.publish(new AppLogEvent("Processing action: " + action + " with params: " + params.toString()));
         if (IGNORE_NONSENSE.getAction().equalsIgnoreCase(action)) {
             /// do nothing and return.

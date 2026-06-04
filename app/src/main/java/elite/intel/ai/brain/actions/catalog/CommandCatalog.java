@@ -62,8 +62,7 @@ public final class CommandCatalog {
                 id,
                 localizedName(id, command),
                 localizedDescription(id, command),
-                type,
-                inputBlocks(command, type)
+                type
         );
     }
 
@@ -80,18 +79,6 @@ public final class CommandCatalog {
             return CommandCatalogEntryType.BUILT_IN_BINDING;
         }
         return CommandCatalogEntryType.BUILT_IN_ACTION;
-    }
-
-    private static List<CommandCatalogInputBlock> inputBlocks(Commands command, CommandCatalogEntryType type) {
-        if (type != CommandCatalogEntryType.BUILT_IN_BINDING) {
-            return List.of();
-        }
-        String binding = command.getBinding();
-        return List.of(new CommandCatalogInputBlock(
-                binding,
-                StringUtls.humanizeBindingName(binding),
-                binding
-        ));
     }
 
     private String localizedName(String id, Commands command) {

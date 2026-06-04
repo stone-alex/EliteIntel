@@ -73,6 +73,10 @@ public class BindingsTabPanel extends JPanel {
         EventBusManager.register(this);
     }
 
+    public void dispose() {
+        EventBusManager.unregister(this);
+    }
+
     @Override
     public void addNotify() {
         super.addNotify();

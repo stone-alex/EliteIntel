@@ -43,29 +43,6 @@ class CommandCatalogTest {
     }
 
     @Test
-    void builtInBindingEntriesHaveOneInputBlockWithMatchingBindingId() {
-        assertCatalogMatchesCommands((command, entry) -> {
-            if (expectedType(command) != CommandCatalogEntryType.BUILT_IN_BINDING) {
-                return;
-            }
-
-            assertEquals(1, entry.inputBlocks().size(), command.name());
-            assertEquals(command.getBinding(), entry.inputBlocks().getFirst().bindingId(), command.name());
-        });
-    }
-
-    @Test
-    void builtInActionEntriesHaveNoInputBlocksForNow() {
-        assertCatalogMatchesCommands((command, entry) -> {
-            if (expectedType(command) != CommandCatalogEntryType.BUILT_IN_ACTION) {
-                return;
-            }
-
-            assertEquals(0, entry.inputBlocks().size(), command.name());
-        });
-    }
-
-    @Test
     void missingLocalizationKeysFallBackToNonBlankNameAndDescription() {
         assertCatalogMatchesCommands((command, entry) -> {
             assertFalse(entry.name().isBlank(), command.name());

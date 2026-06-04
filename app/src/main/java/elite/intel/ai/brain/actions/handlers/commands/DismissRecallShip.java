@@ -8,6 +8,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
+import elite.intel.util.StringUtls;
 
 import static elite.intel.ai.hands.Bindings.GameCommand.*;
 
@@ -27,13 +28,13 @@ public class DismissRecallShip implements CommandHandler {
                     GameInputStep.bindingTap(BINDING_EXIT_KEY.getGameBinding())
             ));
         } else if (status.isInMainShip()) {
-            EventBusManager.publish(new AiVoxResponseEvent("Unable to comply. You have the deck."));
+            EventBusManager.publish(new AiVoxResponseEvent(StringUtls.localizedSpeech("speech.shipDismissRejected")));
             return;
         }
         if (status.isLanded()) {
-            EventBusManager.publish(new AiVoxResponseEvent("Going to orbit, call me, when you need me."));
+            EventBusManager.publish(new AiVoxResponseEvent(StringUtls.localizedSpeech("speech.shipDismissed")));
         } else {
-            EventBusManager.publish(new AiVoxResponseEvent("Coming back to get you."));
+            EventBusManager.publish(new AiVoxResponseEvent(StringUtls.localizedSpeech("speech.shipRecall")));
         }
     }
 }

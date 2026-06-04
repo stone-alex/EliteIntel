@@ -6,6 +6,7 @@ import elite.intel.ai.hands.events.GameInputStep;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
+import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -143,7 +144,7 @@ public class InputSequenceExecutor {
 
     private void handleNoKeyBindingFound(String bindingId) {
         log.warn("No binding found for action: {}", bindingId);
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("No key binding found for " + bindingId));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent(StringUtls.localizedSpeech("speech.keyBindingNotFound", bindingId)));
     }
 
     private int defaultPostInputDelayMs() {

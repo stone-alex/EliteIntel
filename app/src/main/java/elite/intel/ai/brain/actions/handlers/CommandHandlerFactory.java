@@ -2,6 +2,7 @@ package elite.intel.ai.brain.actions.handlers;
 
 import elite.intel.ai.brain.actions.Commands;
 import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
+import elite.intel.ai.brain.actions.macro.MacroRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +37,8 @@ public class CommandHandlerFactory {
                 throw new RuntimeException("Custom command handler registration failed for action: " + action.getAction(), e);
             }
         }
+
+        MacroRegistry.getInstance().contributeToHandlerMap(commandHandlers);
 
         return commandHandlers;
     }

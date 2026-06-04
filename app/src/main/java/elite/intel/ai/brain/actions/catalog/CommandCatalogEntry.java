@@ -24,6 +24,11 @@ public record CommandCatalogEntry(
         Objects.requireNonNull(type, "type");
     }
 
+    /** Returns {@code true} when this entry represents a user-defined macro rather than a built-in command. */
+    public boolean isMacro() {
+        return type == CommandCatalogEntryType.USER_MACRO;
+    }
+
     private static String requireText(String value, String name) {
         Objects.requireNonNull(value, name);
         if (value.isBlank()) {

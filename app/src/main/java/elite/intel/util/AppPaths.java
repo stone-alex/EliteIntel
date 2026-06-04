@@ -45,6 +45,27 @@ public final class AppPaths {
 
 
 
+    public static Path getMacrosFilePath() throws IOException {
+        Path base;
+        if (OsDetector.getOs() == OsDetector.OS.LINUX || OsDetector.getOs() == OsDetector.OS.MAC) {
+            String dataHome = System.getenv("XDG_DATA_HOME");
+            base = dataHome != null && !dataHome.isEmpty()
+                    ? Path.of(dataHome)
+                    : Path.of(System.getProperty("user.home"), ".local/share");
+        } else if (OsDetector.getOs() == OsDetector.OS.WINDOWS) {
+            String localAppData = System.getenv("LOCALAPPDATA");
+            if (localAppData == null || localAppData.isEmpty()) {
+                throw new IllegalStateException("LOCALAPPDATA not set");
+            }
+            base = Path.of(localAppData);
+        } else {
+            throw new IllegalStateException("Unsupported OS");
+        }
+        Path dir = base.resolve("elite-intel/db");
+        Files.createDirectories(dir);
+        return dir.resolve("macros.json");
+    }
+
     public static Path getTtsModelDir() {
         return getDistributionFile("tts");
     }

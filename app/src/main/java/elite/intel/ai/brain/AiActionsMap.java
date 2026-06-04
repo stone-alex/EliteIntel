@@ -7,8 +7,8 @@ import elite.intel.session.SystemSession;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static elite.intel.ai.brain.actions.Commands.CONNECTION_CHECK;
 import static elite.intel.ai.brain.actions.Commands.IGNORE_NONSENSE;
+import static elite.intel.ai.brain.actions.Queries.CONNECTION_CHECK;
 import static elite.intel.ai.brain.actions.Queries.GENERAL_CONVERSATION;
 import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
 

@@ -1,9 +1,14 @@
 package elite.intel.gameapi;
 
+import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.db.dao.ShipSettingsDao;
+import elite.intel.session.Status;
+import elite.intel.util.SleepNoThrow;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static elite.intel.ai.hands.Bindings.GameCommand.BINDING_CYCLE_NEXT_FIRE_GROUP;
 
 public class FireGroups {
     public static final Map<String, Integer> fireGroups = new HashMap<>();
@@ -86,5 +91,19 @@ public class FireGroups {
         if (nato == null) return 0;
         Integer result = fireGroups.get(nato);
         return result == null ? 0 : result;
+    }
+
+    public static void cycleToGroup(int targetGroup) {
+        Status status = Status.getInstance();
+        for (int attempt = 0; attempt < 16; attempt++) {
+            if (targetGroup == status.getFireGroup()) break;
+            int groupBefore = status.getFireGroup();
+            GameControllerBus.publish(new GameInputEvent(BINDING_CYCLE_NEXT_FIRE_GROUP.getGameBinding(), 0));
+            long deadline = System.currentTimeMillis() + 1000;
+            while (System.currentTimeMillis() < deadline) {
+                SleepNoThrow.sleep(50);
+                if (status.getFireGroup() != groupBefore) break;
+            }
+        }
     }
 }

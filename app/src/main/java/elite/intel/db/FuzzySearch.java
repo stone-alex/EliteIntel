@@ -69,9 +69,35 @@ public class FuzzySearch {
         final String lowerInput = input.trim().toLowerCase();
         List<String> candidates = Database.withDao(daoClass, candidatesProvider);
 
+        // Pass 1: prefix match.
+        // Pure Levenshtein cannot match a short input like "cmm" to a long candidate
+        // like "cmm composites" (distance=11) within any useful threshold, while short
+        // unrelated words like "tea" (distance=3) sneak in. If the input is an unambiguous
+        // prefix of a candidate name, return the shortest (most specific) prefix match
+        // directly, bypassing Levenshtein.
+        String bestPrefix = null;
+        int bestPrefixLen = Integer.MAX_VALUE;
+        for (String c : candidates) {
+            if (c.toLowerCase().startsWith(lowerInput)) {
+                if (c.length() < bestPrefixLen) {
+                    bestPrefixLen = c.length();
+                    bestPrefix = c;
+                }
+            }
+        }
+        if (bestPrefix != null) {
+            final String finalBestPrefix = bestPrefix;
+            return Database.withDao(daoClass, dao -> originalCaseProvider.apply(dao, finalBestPrefix));
+        }
+
+        // Pass 2: Levenshtein fallback for typos/near-matches.
+        // Scale the threshold with input length so multi-word STT substitutions
+        // (e.g. "commodities" heard instead of "composites", distance≈5) get enough
+        // budget without loosening the threshold for short words where false positives
+        // are more likely (short inputs keep the caller-supplied minimum).
+        int effectiveSimilarity = Math.max(similarity, lowerInput.length() / 3);
         String bestLower = null;
         int bestDist = Integer.MAX_VALUE;
-
         for (String c : candidates) {
             int dist = levenshteinDistance(lowerInput, c.toLowerCase());
             if (dist < bestDist) {
@@ -79,8 +105,7 @@ public class FuzzySearch {
                 bestLower = c;
             }
         }
-
-        if (bestDist <= similarity && bestLower != null) {
+        if (bestDist <= effectiveSimilarity && bestLower != null) {
             final String finalBestLower = bestLower;
             return Database.withDao(daoClass, dao -> originalCaseProvider.apply(dao, finalBestLower));
         }

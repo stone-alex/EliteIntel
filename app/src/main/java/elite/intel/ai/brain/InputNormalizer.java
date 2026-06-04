@@ -669,6 +669,7 @@ public class InputNormalizer {
         m.put("team", "tin");
         m.put("karga", "cargo");
         m.put("skoop", "scoop");
+        m.put("cmm commodities", "cmm composites");
         m.put("alex sounds right", "alexandrite");
         m.put("center", "entry");
         m.put("next zip", "exit");

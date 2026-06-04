@@ -16,7 +16,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * AuxiliaryFilesMonitor is responsible for monitoring specific auxiliary files in the Elite Dangerous game directory.
@@ -117,35 +116,51 @@ public class AuxiliaryFilesMonitor implements Runnable, ManagedService {
 
             while (isRunning) {
                 Thread.sleep(120);
-                WatchKey key = watchService.poll(1, TimeUnit.SECONDS);
-                if (key == null) {
-                    if (Thread.currentThread().isInterrupted() || !isRunning) {
-                        log.info("Shutting down AuxiliaryFilesMonitor due to interruption or stop signal");
-                        return;
-                    }
-                    continue;
+
+                if (Thread.currentThread().isInterrupted() || !isRunning) {
+                    log.info("Shutting down AuxiliaryFilesMonitor due to interruption or stop signal");
+                    return;
                 }
 
-                for (WatchEvent<?> event : key.pollEvents()) {
-                    WatchEvent.Kind<?> kind = event.kind();
-                    if (kind == StandardWatchEventKinds.ENTRY_MODIFY || kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                        Path filePath = (Path) event.context();
-                        String fileName = filePath.toString();
-                        if (monitoredFileSet.contains(fileName)) {
-                            Path fullPath = directory.resolve(fileName);
-                            Object eventObject = readAndParseFile(fullPath, fileName);
-                            if (eventObject != null) {
-                                EventBusManager.publish(eventObject);
-                                log.info("Published update for file: {}", fileName);
+                // Non-blocking poll
+                // WatchService is fine for infrequently-changing files
+                // (Cargo.json, NavRoute.json, etc.). Status.json is handled separately below.
+                WatchKey key = watchService.poll();
+                if (key != null) {
+                    for (WatchEvent<?> event : key.pollEvents()) {
+                        WatchEvent.Kind<?> kind = event.kind();
+                        if (kind == StandardWatchEventKinds.ENTRY_MODIFY || kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                            Path filePath = (Path) event.context();
+                            String fileName = filePath.toString();
+                            if (monitoredFileSet.contains(fileName) && !fileName.equals("Status.json")) {
+                                Path fullPath = directory.resolve(fileName);
+                                Object eventObject = readAndParseFile(fullPath, fileName);
+                                if (eventObject != null) {
+                                    EventBusManager.publish(eventObject);
+                                    log.info("Published update for file: {}", fileName);
+                                }
                             }
                         }
                     }
+                    boolean valid = key.reset();
+                    if (!valid) {
+                        log.error("Watch key no longer valid; directory may be inaccessible");
+                        break;
+                    }
                 }
 
-                boolean valid = key.reset();
-                if (!valid) {
-                    log.error("Watch key no longer valid; directory may be inaccessible");
-                    break;
+                // Status.json: read directly on every cycle instead of relying on WatchService
+                // ENTRY_MODIFY. WatchService notifications for files written by another process
+                // can be delayed or missed. The same class of issue that affected JournalParser.
+                // SelectFireGroupByNatoHandler sleeps only 300ms between key presses and needs
+                // status.getFireGroup() to reflect current game state within that window.
+                // A direct read every 120ms guarantees this on all platforms.
+                Path statusPath = directory.resolve("Status.json");
+                if (Files.exists(statusPath)) {
+                    Object statusEvent = readAndParseFile(statusPath, "Status.json");
+                    if (statusEvent != null) {
+                        EventBusManager.publish(statusEvent);
+                    }
                 }
             }
         }

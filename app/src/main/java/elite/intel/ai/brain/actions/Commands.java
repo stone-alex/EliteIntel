@@ -2,14 +2,13 @@ package elite.intel.ai.brain.actions;
 
 import elite.intel.ai.brain.actions.handlers.commands.*;
 
-import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
 import static elite.intel.ai.hands.Bindings.GameCommand.*;
 
 
 // @formatter:off
 public enum Commands {
 
-    CONNECTION_CHECK                                    (CONNECTION_CHECK_COMMAND, null, ConnectionCheck.class),
+
     DISABLE_ALL_ANNOUNCEMENTS                           ("disable_all_announcements", null, DisableAllAnnouncementHandler.class),
     LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, LightsOnOffHandler.class),
     ADD_MINING_TARGET                                   ("add_mining_target", null, AddMiningTargetHandler.class),

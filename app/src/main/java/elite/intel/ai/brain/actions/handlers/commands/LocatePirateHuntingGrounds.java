@@ -45,7 +45,7 @@ public class LocatePirateHuntingGrounds implements CommandHandler {
             }
             EventBusManager.publish(new MissionCriticalAnnouncementEvent(sb.toString()));
         } else {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Failed to retrieve hunting grounds data."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No hunting grounds found in crowd data within " + range + " light years of this location. "));
         }
     }
 }

@@ -1,10 +1,11 @@
 package elite.intel.ai.brain.actions;
 
 import elite.intel.ai.brain.actions.handlers.query.*;// @formatter:off
+import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
 public enum Queries {
 
     /// ########################################################################################################################################
-    ///HELP                                ("help",                                         HelpHandler.class),
+    CONNECTION_CHECK                    (CONNECTION_CHECK_COMMAND, ConnectionCheck.class),
     BIO_SAMPLE_IN_STAR_SYSTEM           ("query_bio_scans_and_samples_in_star_system",            AnalyzeBioScansStarSystemHandler.class),
     EXOBIOLOGY_SAMPLES                  ("query_exobiology_samples",                    AnalyzeBioSamplesPlanetSurfaceHandler.class),
     QUERY_STELLAR_OBJETS                ("query_stellar_objects",                       AnalyzeStellarObjectsHandler.class),

@@ -35,11 +35,16 @@ public class HandsSubscriber {
 
     @Subscribe
     public void onGameInput(GameInputEvent event) {
-        if (monitor.getBindings() == null) return;
+        if (monitor.getBindings() == null) {
+            log.debug("[key] bindings not loaded - dropping {}", event.getBindingId());
+            return;
+        }
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(event.getBindingId());
         if (binding != null) {
+            log.debug("[key] SENDING id=[{}] key=[{}] modifiers={}", event.getBindingId(), binding.key, binding.modifiers);
             executor.executeBindingWithHold(binding, event.getHoldTime());
         } else {
+            log.debug("[key] NO BINDING FOUND for id=[{}]", event.getBindingId());
             handleNoKeyBindingFound(event.getBindingId());
         }
         sleep(UINavigator.randomDelay());

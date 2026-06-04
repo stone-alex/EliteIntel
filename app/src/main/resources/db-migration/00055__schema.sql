@@ -12,4 +12,7 @@ CREATE TABLE IF NOT EXISTS squadron_carrier_route
     y             DOUBLE  NOT NULL,
     z             DOUBLE  NOT NULL
 );
+
 CREATE INDEX IF NOT EXISTS squadron_carrier_route_key_index ON squadron_carrier_route (leg);
+ALTER TABLE ship
+    ADD COLUMN commanderName TEXT;

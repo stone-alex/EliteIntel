@@ -9,6 +9,7 @@ import elite.intel.db.dao.RouteMonetisationDao.MonetisationTransaction;
 import elite.intel.db.dao.ShipSettingsDao;
 import elite.intel.db.managers.*;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.FireGroups;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
@@ -23,11 +24,14 @@ import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
-import elite.intel.util.SleepNoThrow;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static elite.intel.ai.hands.Bindings.GameCommand.*;
+import static elite.intel.gameapi.FireGroups.fireGroupInSettings;
 import static elite.intel.util.GravityCalculator.calculateSurfaceGravity;
 import static elite.intel.util.StringUtls.isFuelStarClause;
 
@@ -145,11 +149,7 @@ public class JumpCompletedSubscriber {
                 }
 
                 /// Switch fire-group
-                int fireGroupInSettings = fireGroupInSettings(shipSettings);
-                while (fireGroupInSettings != status.getFireGroup()) {
-                    GameControllerBus.publish(new GameInputEvent(BINDING_CYCLE_NEXT_FIRE_GROUP.getGameBinding(), 0));
-                    SleepNoThrow.sleep(1000);
-                }
+                FireGroups.cycleToGroup(fireGroupInSettings(shipSettings));
 
                 /// Scan
                 int honkTrigger = shipSettings.getHonkTrigger(); /// 1 primary, 2 secondary
@@ -168,25 +168,6 @@ public class JumpCompletedSubscriber {
         }); // end virtual thread
     }
 
-    private int fireGroupInSettings(ShipSettingsDao.ShipSettings settings) {
-        String fireGroup = settings.getHonkFireGroup();
-        Map<String, Integer> fireGroups = new HashMap<>();
-        fireGroups.put("A", 0);
-        fireGroups.put("B", 1);
-        fireGroups.put("C", 2);
-        fireGroups.put("D", 3);
-        fireGroups.put("E", 4);
-        fireGroups.put("F", 5);
-        fireGroups.put("G", 6);
-        fireGroups.put("H", 7);
-        fireGroups.put("I", 8);
-        fireGroups.put("J", 9);
-        fireGroups.put("K", 10);
-        fireGroups.put("L", 11);
-        if (fireGroup == null) return 0;
-        Integer result = fireGroups.get(fireGroup);
-        return result == null ? 0 : result;
-    }
 
     private void processEdsmData(SystemBodiesDto systemBodiesDto, long systemAddress, double[] starPos) {
         if (systemBodiesDto == null) return;

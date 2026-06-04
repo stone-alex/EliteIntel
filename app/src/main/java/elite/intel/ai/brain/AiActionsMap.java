@@ -65,6 +65,7 @@ public class AiActionsMap {
         map.put("cancel navigation, abort navigation, stop navigation", NAVIGATION_OFF.getAction());
         map.put("set home system, set current system as home, mark home system", SET_HOME_SYSTEM.getAction());
         map.put("take me home, go home, navigate home, return home, plot route home, head home, take us home", TAKE_ME_HOME.getAction());
+        map.put("reset head look, reset head look to default, reset head look to neutral", RESET_HEAD_LOOK.getAction());
 
         if (status.isInMainShip() || isDryRun) {
             // navigation
@@ -110,6 +111,7 @@ public class AiActionsMap {
             map.put("order fighter hold fire, fighter cease fire, fighter stand down", FIGHTER_REQUEST_HOLD_FIRE.getAction());
             map.put("order fighter return to ship, fighter dock, recall fighter", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("fighter open orders, fire at will, attack at will", FIGHTER_OPEN_ORDERS.getAction());
+            map.put("select fire group {key:X}, fire group {key:X}, switch to fire group {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {
@@ -136,7 +138,7 @@ public class AiActionsMap {
             map.put("show, open or display inventory panel", SHOW_INVENTORY_PANEL.getAction());
             map.put("show, open or display storage panel", SHOW_STORAGE_PANEL.getAction());
             // power
-            map.put("power to shields, max shields, boost shields", INCREASE_SHIELDS_POWER.getAction());
+            map.put("power to shields, max shields, boost shields, power to systems, max systems, boost systems", INCREASE_SHIELDS_POWER.getAction());
             map.put("power to engines, max engines, boost engines", INCREASE_ENGINES_POWER.getAction());
             map.put("power to weapons, max weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
             // vehicle deployment

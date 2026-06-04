@@ -83,6 +83,13 @@ public class KeyBindingsParser {
                     }
                 }
 
+                if (keyBinding == null && primaryList.getLength() > 0 && secondaryList.getLength() > 0) {
+                    log.warn("No keyboard binding for action '{}' (primary={}, secondary={})",
+                            actionName,
+                            ((Element) primaryList.item(0)).getAttribute("Device"),
+                            ((Element) secondaryList.item(0)).getAttribute("Device"));
+                }
+
                 if (keyBinding != null) {
                     bindings.put(actionName, keyBinding);
                 }

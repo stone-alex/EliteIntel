@@ -134,14 +134,27 @@ public final class CommandDetailsDialog extends JDialog {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        JComponent phrases = phrasesComponent();
-        panel.add(phrases, gbc);
+        panel.add(phrasesSection(), gbc);
         gbc.gridy++;
         gbc.weighty = 0.0;
     }
 
+    private JComponent phrasesSection() {
+        JPanel panel = new JPanel(new BorderLayout(0, 8));
+        panel.setOpaque(false);
+        panel.add(phrasesComponent(), BorderLayout.CENTER);
+
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        actions.setOpaque(false);
+        JButton suggestCorrection = AppTheme.makeButtonSubtle(getText("actions.commands.details.suggestCorrection"));
+        suggestCorrection.addActionListener(event -> openPhraseCorrectionDialog());
+        actions.add(suggestCorrection);
+        panel.add(actions, BorderLayout.SOUTH);
+        return panel;
+    }
+
     private JComponent phrasesComponent() {
-        List<String> phrases = AiActionLocalizations.phrasesForAction(entry.id());
+        List<String> phrases = currentPhrases();
         if (phrases.isEmpty()) {
             JLabel empty = new JLabel(getText("actions.commands.details.noPhrases"));
             empty.setForeground(AppTheme.FG_MUTED);
@@ -179,9 +192,14 @@ public final class CommandDetailsDialog extends JDialog {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
 
+        JPanel leftButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        leftButtons.setOpaque(false);
+
         JButton run = runButton();
         run.addActionListener(event -> runCommand());
-        panel.add(run, BorderLayout.WEST);
+        leftButtons.add(run);
+
+        panel.add(leftButtons, BorderLayout.WEST);
 
         JButton close = AppTheme.makeButton(getText("actions.commands.details.close"));
         close.addActionListener(event -> dispose());
@@ -241,6 +259,14 @@ public final class CommandDetailsDialog extends JDialog {
         );
         dispatchTimer.setRepeats(false);
         dispatchTimer.start();
+    }
+
+    private void openPhraseCorrectionDialog() {
+        new PhraseCorrectionSuggestionDialog(this, entry, currentPhrases()).showDialog();
+    }
+
+    private List<String> currentPhrases() {
+        return AiActionLocalizations.phrasesForAction(entry.id());
     }
 
     private JsonObject promptForParams() {

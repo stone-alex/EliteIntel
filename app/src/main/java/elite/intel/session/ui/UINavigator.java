@@ -9,6 +9,8 @@ import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
 import elite.intel.session.StatusFlags.GuiFocus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -22,6 +24,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class UINavigator {
 
+    private static final Logger log = LogManager.getLogger(UINavigator.class);
     private final Status status = Status.getInstance();
     // How many times to blindly press NextPanel to guarantee a full wrap
     // back to index 0 on each panel. One full tab-count is always sufficient.
@@ -32,6 +35,9 @@ public class UINavigator {
 
     private static final int RANDOM_MIN = 99;
     private static final int RANDOM_MAX = 201;
+    private static final int PANEL_OPEN_POLL_MS = 50;   // how often to check GuiFocus after sending open key
+    private static final int PANEL_OPEN_TIMEOUT_MS = 3000; // per-attempt timeout before concluding the key was missed
+    private static final int PANEL_OPEN_MAX_ATTEMPTS = 3;  // retry limit before giving up
 
     private final PanelStateTracker tracker = PanelStateTracker.getInstance();
     private final GlobalSettingsManager globalSettingsManager = GlobalSettingsManager.getInstance();
@@ -66,8 +72,12 @@ public class UINavigator {
         // Only send the open keystroke if the game doesn't already have this panel open.
         // openPanel() is a toggle - sending it when the panel is already open would close it.
         if (status.getGuiFocus() != panel) {
-            openPanel(panel);
-            inputDelay(RANDOM_MAX);
+            for (int attempt = 1; attempt <= PANEL_OPEN_MAX_ATTEMPTS; attempt++) {
+                openPanel(panel);
+                if (waitForPanel(panel)) break;
+                log.warn("Panel {} did not open after {}ms (attempt {}/{}), retrying",
+                        panel, PANEL_OPEN_TIMEOUT_MS, attempt, PANEL_OPEN_MAX_ATTEMPTS);
+            }
         }
 
         if (!state.isKnown()) {
@@ -209,6 +219,19 @@ public class UINavigator {
             GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(nextTab))); // always tap
         }
         state.resetToDefault();
+    }
+
+    /**
+     * Polls {@link Status#getGuiFocus()} until the panel opens or the timeout expires.
+     *
+     * @return true if the panel opened, false if the timeout was reached (key was likely missed)
+     */
+    private boolean waitForPanel(GuiFocus panel) {
+        long deadline = System.currentTimeMillis() + PANEL_OPEN_TIMEOUT_MS;
+        while (status.getGuiFocus() != panel && System.currentTimeMillis() < deadline) {
+            sleep(PANEL_OPEN_POLL_MS);
+        }
+        return status.getGuiFocus() == panel;
     }
 
     private void openPanel(GuiFocus panel) {

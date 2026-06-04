@@ -186,6 +186,13 @@ public class KeyBindingsParser {
                             actionName, secondaryBinding.device(), secondaryBinding.key(), secondaryBinding.hold());
                 }
 
+                if (keyBinding == null && primaryList.getLength() > 0 && secondaryList.getLength() > 0) {
+                    log.warn("No keyboard binding for action '{}' (primary={}, secondary={})",
+                            actionName,
+                            ((Element) primaryList.item(0)).getAttribute("Device"),
+                            ((Element) secondaryList.item(0)).getAttribute("Device"));
+                }
+
                 if (primaryBinding != null || secondaryBinding != null) {
                     bindings.put(actionName, new ReadOnlyBindingSlots(primaryBinding, secondaryBinding));
                 }

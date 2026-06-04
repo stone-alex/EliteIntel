@@ -78,6 +78,11 @@ class NativeKeyInputFactory {
         }
 
         @Override
+        public boolean handles(int keyCode) {
+            return FALLBACK_VK.containsKey(keyCode);
+        }
+
+        @Override
         public void keyDown(int syntheticCode) {
             Integer vk = FALLBACK_VK.get(syntheticCode);
             if (vk != null) robot.keyPress(vk);

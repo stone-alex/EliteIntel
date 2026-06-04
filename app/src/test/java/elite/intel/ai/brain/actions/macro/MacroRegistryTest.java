@@ -1,6 +1,7 @@
 package elite.intel.ai.brain.actions.macro;
 
 import com.google.gson.Gson;
+import elite.intel.ai.brain.Reducer;
 import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,6 +48,14 @@ class MacroRegistryTest {
     }
 
     @Test
+    void replaceMacrosUpdatesPublicSnapshot() {
+        registry.replaceMacros(List.of(buildMacro("macro_replace", "replace phrase")));
+
+        assertEquals(1, registry.getMacros().size());
+        assertEquals("macro_replace", registry.getMacros().getFirst().getId());
+    }
+
+    @Test
     void getMacrosListIsUnmodifiable() {
         registry.setMacros(List.of(buildMacro("macro_a", "alpha")));
         assertThrows(UnsupportedOperationException.class,
@@ -56,7 +65,7 @@ class MacroRegistryTest {
     // --- contributeToActionMap() ---
 
     @Test
-    void contributeToActionMapAddsPhraseEntryForEachMacro() {
+    void contributeToActionMapAddsAliasEntryForEachMacroPhrase() {
         registry.setMacros(List.of(
                 buildMacro("macro_a", "do alpha, alpha command"),
                 buildMacro("macro_b", "do beta")
@@ -64,9 +73,10 @@ class MacroRegistryTest {
         Map<String, String> map = new LinkedHashMap<>();
         registry.contributeToActionMap(map);
 
-        assertEquals("macro_a", map.get("do alpha, alpha command"));
+        assertEquals("macro_a", map.get("do alpha"));
+        assertEquals("macro_a", map.get("alpha command"));
         assertEquals("macro_b", map.get("do beta"));
-        assertEquals(2, map.size());
+        assertEquals(3, map.size());
     }
 
     @Test
@@ -89,14 +99,36 @@ class MacroRegistryTest {
 
     @Test
     void contributeToActionMapDoesNotOverrideExistingPhrase() {
-        registry.setMacros(List.of(buildMacro("macro_x", "existing_phrase")));
+        registry.setMacros(List.of(buildMacro("macro_x", "existing_phrase, new phrase")));
         Map<String, String> map = new LinkedHashMap<>();
         map.put("existing_phrase", "existing_action");
 
         registry.contributeToActionMap(map);
 
         assertEquals("existing_action", map.get("existing_phrase"));
-        assertEquals(1, map.size());
+        assertEquals("macro_x", map.get("new phrase"));
+        assertEquals(2, map.size());
+    }
+
+    @Test
+    void reducerKeepsExactMacroPhraseAsHighConfidenceCandidate() {
+        registry.setMacros(List.of(buildMacro("macro_exact", "example macro, macro status check")));
+        Map<String, String> map = new LinkedHashMap<>();
+        registry.contributeToActionMap(map);
+
+        Map<String, String> reduced = Reducer.reduce("macro status check", map, false);
+
+        assertEquals("macro_exact", reduced.get("macro status check"));
+    }
+
+    @Test
+    void contributeToActionMapNormalizesMacroPhraseCaseForSttInput() {
+        registry.setMacros(List.of(buildMacro("macro_case", "Example Macro")));
+        Map<String, String> map = new LinkedHashMap<>();
+
+        registry.contributeToActionMap(map);
+
+        assertEquals("macro_case", map.get("example macro"));
     }
 
     // --- contributeToHandlerMap() ---

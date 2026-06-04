@@ -136,6 +136,10 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
 
         log.info("Anthropic voice input: {}", userInput);
 
+        if (tryProcessExactMacroCommand(userInput)) {
+            return;
+        }
+
         JsonArray request = new JsonArray();
 
         // Static rules block first (cached by AnthropicUserEndPoint), then the

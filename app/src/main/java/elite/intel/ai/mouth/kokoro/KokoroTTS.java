@@ -6,6 +6,11 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import elite.intel.ai.mouth.AudioDeClicker;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.RadioFilter;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
@@ -55,13 +60,18 @@ public class KokoroTTS implements MouthInterface {
     private final AtomicBoolean canBeInterrupted = new AtomicBoolean(true);
     private final AtomicReference<SourceDataLine> currentLine = new AtomicReference<>();
 
-    private record SynthesisTask(String text, String voiceName, boolean isRadio) {
+    private record SynthesisTask(String text, String voiceName, boolean isRadio,
+                                 @Nullable CompletableFuture<Void> completionFuture) {
+    }
+
+    /** Synthesized PCM paired with an optional completion future from the originating request. */
+    private record PlaybackTask(byte[] pcm, @Nullable CompletableFuture<Void> completionFuture) {
     }
 
     // Stage 1: raw sentence strings waiting for synthesis
     private final BlockingQueue<SynthesisTask> synthesisQueue = new LinkedBlockingQueue<>();
     // Stage 2: synthesized PCM waiting for playback
-    private final BlockingQueue<byte[]> playbackQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<PlaybackTask> playbackQueue = new LinkedBlockingQueue<>();
 
     private final SystemSession systemSession = SystemSession.getInstance();
     private SourceDataLine persistentLine;
@@ -161,8 +171,15 @@ public class KokoroTTS implements MouthInterface {
     public void interruptAndClear() {
         if (!canBeInterrupted.get()) return;
 
-        synthesisQueue.clear();
-        playbackQueue.clear();
+        // Drain queues and complete any pending macro completion futures to avoid 30s timeout
+        List<SynthesisTask> drainedSynthesis = new ArrayList<>();
+        synthesisQueue.drainTo(drainedSynthesis);
+        drainedSynthesis.stream().map(SynthesisTask::completionFuture).filter(Objects::nonNull).forEach(f -> f.complete(null));
+
+        List<PlaybackTask> drainedPlayback = new ArrayList<>();
+        playbackQueue.drainTo(drainedPlayback);
+        drainedPlayback.stream().map(PlaybackTask::completionFuture).filter(Objects::nonNull).forEach(f -> f.complete(null));
+
         interruptRequested.set(true);
 
         SourceDataLine line = currentLine.get();
@@ -200,13 +217,16 @@ public class KokoroTTS implements MouthInterface {
         EventBusManager.publish(new AiResponseLogEvent(sanitizedText));
 
         // Split on sentence boundaries and enqueue each piece for synthesis
-        String[] sentences = sanitizedText.split("(?<=[.,!?])\\s+(?=\\S)");
-        for (String sentence : sentences) {
-            if (!sentence.isBlank()) {
-                boolean isRadio = event.isRadio();
-                if (!Status.getInstance().isInMainShip()) isRadio = true;
-                synthesisQueue.offer(new SynthesisTask(sentence, event.getVoiceName(), isRadio));
-            }
+        String[] allSentences = sanitizedText.split("(?<=[.,!?])\\s+(?=\\S)");
+        // Collect non-blank sentences so the completion future goes to the actual last one
+        List<String> sentences = new ArrayList<>();
+        for (String s : allSentences) { if (!s.isBlank()) sentences.add(s); }
+        CompletableFuture<Void> completionFuture = event.getCompletionFuture();
+        for (int i = 0; i < sentences.size(); i++) {
+            boolean isLast = (i == sentences.size() - 1);
+            boolean isRadio = event.isRadio();
+            if (!Status.getInstance().isInMainShip()) isRadio = true;
+            synthesisQueue.offer(new SynthesisTask(sentences.get(i), event.getVoiceName(), isRadio, isLast ? completionFuture : null));
         }
     }
 
@@ -216,7 +236,11 @@ public class KokoroTTS implements MouthInterface {
         while (running) {
             try {
                 SynthesisTask task = synthesisQueue.take();
-                if (interruptRequested.get()) continue;
+                if (interruptRequested.get()) {
+                    // Complete future immediately so macro doesn't wait until timeout
+                    if (task.completionFuture() != null) task.completionFuture().complete(null);
+                    continue;
+                }
 
                 KokoroVoices voice = task.voiceName() != null
                         ? KokoroVoices.valueOf(task.voiceName())
@@ -232,6 +256,7 @@ public class KokoroTTS implements MouthInterface {
 
                 if (audio == null || audio.getSamples() == null || audio.getSamples().length == 0) {
                     log.warn("KokoroTTS: empty audio for: {}", task.text());
+                    if (task.completionFuture() != null) task.completionFuture().complete(null);
                     continue;
                 }
 
@@ -242,7 +267,7 @@ public class KokoroTTS implements MouthInterface {
                 if (task.isRadio()) {
                     RadioFilter.apply(pcm);
                 }
-                playbackQueue.put(pcm);
+                playbackQueue.put(new PlaybackTask(pcm, task.completionFuture()));
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -260,11 +285,18 @@ public class KokoroTTS implements MouthInterface {
 
         while (running) {
             try {
-                byte[] pcm = playbackQueue.poll(200, TimeUnit.MILLISECONDS);
-                if (pcm == null) continue;
-                if (interruptRequested.get()) continue;
+                PlaybackTask task = playbackQueue.poll(200, TimeUnit.MILLISECONDS);
+                if (task == null) continue;
+                if (interruptRequested.get()) {
+                    // Complete future immediately so macro doesn't wait until timeout
+                    if (task.completionFuture() != null) task.completionFuture().complete(null);
+                    continue;
+                }
 
-                playPcm(pcm);
+                playPcm(task.pcm());
+                if (task.completionFuture() != null) {
+                    task.completionFuture().complete(null);
+                }
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

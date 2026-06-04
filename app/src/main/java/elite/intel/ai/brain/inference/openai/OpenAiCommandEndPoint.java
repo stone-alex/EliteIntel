@@ -121,6 +121,10 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         log.info("Sanitized voice userInput:\n{}", userInput);
 
+        if (tryProcessExactMacroCommand(userInput)) {
+            return;
+        }
+
         JsonArray messages = buildVoiceCommandMessages(userInput);
 
         JsonObject apiResponse = callOpenAiApi(messages);

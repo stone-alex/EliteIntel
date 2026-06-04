@@ -72,6 +72,10 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
             return;
         }
 
+        if (tryProcessExactMacroCommand(userInput)) {
+            return;
+        }
+
         JsonArray request = buildVoiceCommandMessages(userInput);
 
         JsonObject response = OllamaCommandEndPoint.getInstance().processAiPrompt(request, 0.01f);

@@ -43,8 +43,7 @@ public final class AppPaths {
         return dbDir.resolve("database.db");
     }
 
-
-
+    /** Returns the user macro JSON file path, creating the macro data directory if needed. */
     public static Path getMacrosFilePath() throws IOException {
         Path base;
         if (OsDetector.getOs() == OsDetector.OS.LINUX || OsDetector.getOs() == OsDetector.OS.MAC) {
@@ -61,7 +60,7 @@ public final class AppPaths {
         } else {
             throw new IllegalStateException("Unsupported OS");
         }
-        Path dir = base.resolve("elite-intel/db");
+        Path dir = base.resolve("elite-intel/macros");
         Files.createDirectories(dir);
         return dir.resolve("macros.json");
     }

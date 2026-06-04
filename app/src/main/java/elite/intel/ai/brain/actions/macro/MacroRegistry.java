@@ -1,6 +1,8 @@
 package elite.intel.ai.brain.actions.macro;
 
 import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
+import elite.intel.ai.brain.InputNormalizer;
+import elite.intel.ai.brain.i18n.AiActionLocalizations;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,9 +43,18 @@ public final class MacroRegistry {
         log.info("MacroRegistry: {} macro(s) loaded", macros.size());
     }
 
-    /** Returns the loaded macro list. Unmodifiable; empty until {@link #load()} is called. */
+    /** Returns the loaded macro list as an immutable snapshot. Empty until {@link #load()} is called. */
     public List<MacroDefinition> getMacros() {
-        return macros;
+        return List.copyOf(macros);
+    }
+
+    /**
+     * Replaces the in-memory macro registry with a validated immutable snapshot.
+     * Persistence is owned by {@link MacroRepository}; this method only updates runtime state.
+     */
+    public void replaceMacros(List<MacroDefinition> macros) {
+        setMacros(macros);
+        log.info("MacroRegistry: {} macro(s) active after replace", this.macros.size());
     }
 
     /**
@@ -51,16 +63,27 @@ public final class MacroRegistry {
      * and appear in the ACTIONS block sent to the LLM.
      */
     public void contributeToActionMap(Map<String, String> map) {
-        Set<String> protectedPhrases = new HashSet<>(map.keySet());
-        for (MacroDefinition macro : macros) {
-            if (protectedPhrases.contains(macro.getPhrases())) {
-                log.warn("Macro phrase [{}] conflicts with an existing action map entry - macro skipped",
-                        macro.getPhrases());
-                continue;
-            }
-            map.put(macro.getPhrases(), macro.getId());
-            log.debug("Macro phrase registered: [{}] -> {}", macro.getPhrases(), macro.getId());
+        Set<String> protectedPhrases = new HashSet<>();
+        for (String phrase : map.keySet()) {
+            protectedPhrases.add(normalizePhrase(phrase));
         }
+        for (MacroDefinition macro : macros) {
+            for (String phrase : AiActionLocalizations.splitPhraseGroup(macro.getPhrases())) {
+                String normalizedPhrase = normalizePhrase(phrase);
+                if (protectedPhrases.contains(normalizedPhrase)) {
+                    log.warn("Macro phrase [{}] conflicts with an existing action map entry - phrase skipped", phrase);
+                    continue;
+                }
+                map.put(normalizedPhrase, macro.getId());
+                protectedPhrases.add(normalizedPhrase);
+                log.debug("Macro phrase registered: [{}] -> {}", normalizedPhrase, macro.getId());
+            }
+        }
+    }
+
+    private static String normalizePhrase(String phrase) {
+        String normalized = InputNormalizer.getInstance().normalize(phrase == null ? "" : phrase);
+        return normalized == null ? "" : normalized.trim().toLowerCase(Locale.ROOT);
     }
 
     /**

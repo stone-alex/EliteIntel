@@ -28,6 +28,17 @@ public final class MacroStep {
     private final String text;
     private final String actionId;
 
+    /**
+     * Creates one macro step. Only the fields required by {@code type} are used at execution time.
+     */
+    public MacroStep(Type type, String bindingId, int durationMs, String text, String actionId) {
+        this.type = type;
+        this.bindingId = bindingId;
+        this.durationMs = durationMs;
+        this.text = text;
+        this.actionId = actionId;
+    }
+
     @SuppressWarnings("unused")
     private MacroStep() {
         type = null;

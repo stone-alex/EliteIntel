@@ -108,6 +108,10 @@ public class DeepSeekCommandEndPoint extends CommandEndPoint implements AiComman
 
         log.info("Sanitized voice userInput:\n{}", userInput);
 
+        if (tryProcessExactMacroCommand(userInput)) {
+            return;
+        }
+
         JsonArray messages = buildVoiceCommandMessages(userInput);
 
         JsonObject apiResponse = DeepSeekChatEndPoint.getInstance().processAiPrompt(messages, 0.01f);

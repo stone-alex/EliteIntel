@@ -95,6 +95,10 @@ public class LMStudioUserInputProcessor extends CommandEndPoint implements AiCom
             return;
         }
 
+        if (tryProcessExactMacroCommand(userInput)) {
+            return;
+        }
+
         JsonArray request = buildVoiceCommandMessages(userInput);
         JsonObject response = LMStudioCommandEndPoint.getInstance().processAiPrompt(request, 0.01f);
         if (response == null) {

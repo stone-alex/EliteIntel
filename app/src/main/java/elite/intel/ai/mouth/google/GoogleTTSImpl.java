@@ -20,7 +20,12 @@ import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.*;
 import java.lang.reflect.InvocationTargetException;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -148,8 +153,15 @@ public class GoogleTTSImpl implements MouthInterface {
     public synchronized void interruptAndClear() {
         if(!canBeInterrupted.get()) return;
 
-        ttsQueue.clear();
-        vocalizationQueue.clear();
+        // Drain queues and complete any pending macro completion futures to avoid 30s timeout
+        List<VoiceRequest> drainedTts = new ArrayList<>();
+        ttsQueue.drainTo(drainedTts);
+        drainedTts.stream().map(VoiceRequest::completionFuture).filter(Objects::nonNull).forEach(f -> f.complete(null));
+
+        List<VocalizationRequest> drainedVox = new ArrayList<>();
+        vocalizationQueue.drainTo(drainedVox);
+        drainedVox.stream().map(VocalizationRequest::completionFuture).filter(Objects::nonNull).forEach(f -> f.complete(null));
+
         interruptRequested.set(true);
         SourceDataLine line = currentLine.get();
         if (line != null) {
@@ -187,8 +199,11 @@ public class GoogleTTSImpl implements MouthInterface {
             ;
 
             String[] sentences = text.split("(?<=[.!?])\\s+(?=\\S)");
-            for (String sentence : sentences) {
-                ttsQueue.put(new VoiceRequest(sentence, voiceName, (1f + systemSession.getSpeechSpeed()), event.getOriginType(), event.isRadio()));
+            CompletableFuture<Void> completionFuture = event.getCompletionFuture();
+            for (int i = 0; i < sentences.length; i++) {
+                // Only the last sentence carries the future; earlier sentences pass null
+                boolean isLast = (i == sentences.length - 1);
+                ttsQueue.put(new VoiceRequest(sentences[i], voiceName, (1f + systemSession.getSpeechSpeed()), event.getOriginType(), event.isRadio(), isLast ? completionFuture : null));
             }
 
             AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
@@ -224,7 +239,8 @@ public class GoogleTTSImpl implements MouthInterface {
                         request.voiceName(),
                         request.speechRate(),
                         request.originType(),
-                        request.isRadio()
+                        request.isRadio(),
+                        request.completionFuture()
                 );
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -280,7 +296,7 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
-    private void processVoiceRequest(String text, String voiceName, double speechRate, Class<? extends BaseVoxEvent> originType, boolean isRadio) {
+    private void processVoiceRequest(String text, String voiceName, double speechRate, Class<? extends BaseVoxEvent> originType, boolean isRadio, @Nullable CompletableFuture<Void> completionFuture) {
         if (text == null || text.isEmpty()) {
             return;
         }
@@ -335,7 +351,7 @@ public class GoogleTTSImpl implements MouthInterface {
                 }
             }
             currentLine.set(persistentLine);
-            vocalizationQueue.put(new VocalizationRequest(text, voiceName, originType, audioData));
+            vocalizationQueue.put(new VocalizationRequest(text, voiceName, originType, audioData, completionFuture));
 
         } catch (Exception e) {
             log.error("Text-to-speech error: {}", e.getMessage(), e);
@@ -351,7 +367,7 @@ public class GoogleTTSImpl implements MouthInterface {
             try {
                 VocalizationRequest request = vocalizationQueue.poll(1, TimeUnit.SECONDS);
                 if (request == null) continue;
-                vocalize(request.text(), request.voiceName(), request.originType(), request.audioData());
+                vocalize(request.text(), request.voiceName(), request.originType(), request.audioData(), request.completionFuture());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
@@ -359,7 +375,7 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
-    private void vocalize(String text, String voiceName, Class<? extends BaseVoxEvent> originType, byte[] audioData) {
+    private void vocalize(String text, String voiceName, Class<? extends BaseVoxEvent> originType, byte[] audioData, @Nullable CompletableFuture<Void> completionFuture) {
         log.debug("Starting playback on persistent line");
         AudioFormat format = persistentLine.getFormat();
         int bufferBytes = (int) (format.getFrameSize() * format.getSampleRate() / 10);
@@ -384,6 +400,9 @@ public class GoogleTTSImpl implements MouthInterface {
             persistentLine.drain();
         }
         publishCompletionEvent(originType);
+        if (completionFuture != null) {
+            completionFuture.complete(null);
+        }
         log.debug("Audio playback completed in {}ms", System.currentTimeMillis() - writeStartTime);
     }
 
@@ -400,24 +419,11 @@ public class GoogleTTSImpl implements MouthInterface {
     }
 
     private record VoiceRequest(String text, String voiceName, double speechRate,
-                                Class<? extends BaseVoxEvent> originType, boolean isRadio) {
+                                Class<? extends BaseVoxEvent> originType, boolean isRadio,
+                                @Nullable CompletableFuture<Void> completionFuture) {
     }
 
-    private record VocalizationRequest(String text, String voiceName, Class<? extends BaseVoxEvent> originType, byte[] audioData) {
-        @Override public String text() {
-            return text;
-        }
-
-        @Override public String voiceName() {
-            return voiceName;
-        }
-
-        @Override public Class<? extends BaseVoxEvent> originType() {
-            return originType;
-        }
-
-        @Override public byte[] audioData() {
-            return audioData;
-        }
+    private record VocalizationRequest(String text, String voiceName, Class<? extends BaseVoxEvent> originType,
+                                       byte[] audioData, @Nullable CompletableFuture<Void> completionFuture) {
     }
 }

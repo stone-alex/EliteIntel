@@ -1,9 +1,8 @@
 package elite.intel.session.ui;
 
+import elite.intel.ai.hands.Bindings;
 import elite.intel.ai.hands.events.GameInputSequenceEvent;
 import elite.intel.ai.hands.events.GameInputStep;
-
-import elite.intel.ai.hands.Bindings;
 import elite.intel.db.managers.GlobalSettingsManager;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
@@ -13,6 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.ThreadLocalRandom;
+
+import static elite.intel.util.SleepNoThrow.sleep;
 
 /**
  * Dispatches panel navigation keystrokes on behalf of c

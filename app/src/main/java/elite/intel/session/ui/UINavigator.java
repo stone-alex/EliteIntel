@@ -54,7 +54,9 @@ public class UINavigator {
      */
     public void openAndNavigate(GuiFocus panel, PanelTab target) {
         // Check tracker BEFORE closing - if we already have this panel open, just navigate.
-        if (tracker.getLastOpenedPanel() == panel) {
+        // Also verify the game actually reports the panel open; lastOpenedPanel can be stale
+        // if the player closed the panel externally or a previous open attempt silently failed.
+        if (tracker.getLastOpenedPanel() == panel && status.getGuiFocus() == panel) {
             navigateToTargetTab(panel, target);
             return;
         }
@@ -104,7 +106,13 @@ public class UINavigator {
 
         StatusFlags.GuiFocus lastOpened = tracker.getLastOpenedPanel();
         if (lastOpened != null) {
-            closeAndRestore(lastOpened);
+            if (status.getGuiFocus() == lastOpened) {
+                closeAndRestore(lastOpened);
+            } else {
+                // Tracker is stale: panel was closed externally (player action or failed open).
+                // Sync the tracker without sending any keystrokes - the panel is already closed.
+                tracker.notifyEliteIntelClosedPanel();
+            }
         }
 
         if (status.isFssModeActive()) {

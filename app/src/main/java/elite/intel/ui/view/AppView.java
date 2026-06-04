@@ -27,7 +27,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private static final String UI_FONT_FAMILY = Font.SANS_SERIF;
     private static final String ICON_AI = "/images/ai.png";
     private static final String ICON_PLAYER = "/images/controller.png";
-    private static final String ICON_BINDINGS = "/images/keys-binding.png";
+    private static final String ICON_ACTIONS = "/images/keys-binding.png";
     private static final String ICON_SETTINGS = "/images/settings.png";
     private static final String ICON_STATS = "/images/stats.png";
     private static final String CREDITS_ICON = "/images/release.png";
@@ -37,7 +37,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private Font monoFont;
     private AiTabPanel aiTabPanel;
     private PlayerTabPanel playerTabPanel;
-    private BindingsTabPanel bindingsTabPanel;
+    private ActionsTabPanel actionsTabPanel;
     private SettingsTabPanel settingsTabPanel;
     private UsageStatsTabPanel usageStatsTabPanel;
     private MarkdownViewPanel creditsPanel;
@@ -77,7 +77,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         ImageIcon aiIcon = scaledIcon(ICON_AI);
         ImageIcon playerIcon = scaledIcon(ICON_PLAYER);
-        ImageIcon bindingsIcon = scaledIcon(ICON_BINDINGS);
+        ImageIcon actionsIcon = scaledIcon(ICON_ACTIONS);
         ImageIcon settingsIcon = scaledIcon(ICON_SETTINGS);
         ImageIcon statsIcon = scaledIcon(ICON_STATS);
         ImageIcon creditsIcon = scaledIcon(CREDITS_ICON);
@@ -85,7 +85,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         aiTabPanel = new AiTabPanel(monoFont);
         playerTabPanel = new PlayerTabPanel();
-        bindingsTabPanel = new BindingsTabPanel();
+        actionsTabPanel = new ActionsTabPanel();
         settingsTabPanel = new SettingsTabPanel();
         usageStatsTabPanel = new UsageStatsTabPanel();
         creditsPanel = new MarkdownViewPanel("credits.md");
@@ -93,7 +93,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         tabs.addTab(getText("tab.ai"), aiIcon, aiTabPanel);
         tabs.addTab(getText("tab.player"), playerIcon, playerTabPanel);
-        tabs.addTab(getText("tab.bindings"), bindingsIcon, bindingsTabPanel);
+        tabs.addTab(getText("tab.actions"), actionsIcon, actionsTabPanel);
         tabs.addTab(getText("tab.settings"), settingsIcon, settingsTabPanel);
         tabs.addTab(getText("tab.stats"), statsIcon, usageStatsTabPanel);
         tabs.addTab(getText("tab.manual"), manualIcon, userManualPanel);
@@ -117,7 +117,7 @@ public class AppView extends JFrame implements AppViewInterface {
     public void initData() {
         settingsTabPanel.initData();
         playerTabPanel.initData();
-        bindingsTabPanel.initData();
+        actionsTabPanel.initData();
         aiTabPanel.initData(systemSession.isSleepingModeOn(), servicesRunning);
     }
 
@@ -141,6 +141,7 @@ public class AppView extends JFrame implements AppViewInterface {
         // Rebuilt panels/controllers register with EventBus; dispose old instances first to avoid duplicate subscribers.
         if (aiTabController != null) aiTabController.dispose();
         if (aiTabPanel != null) aiTabPanel.dispose();
+        if (actionsTabPanel != null) actionsTabPanel.dispose();
         if (settingsTabPanel != null) settingsTabPanel.dispose();
         if (usageStatsTabPanel != null) usageStatsTabPanel.dispose();
         buildUi();

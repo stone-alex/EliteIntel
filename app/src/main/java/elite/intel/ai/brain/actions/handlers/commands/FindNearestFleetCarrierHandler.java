@@ -35,7 +35,7 @@ public class FindNearestFleetCarrierHandler implements CommandHandler {
                     );
 
             String playerCarrierCallSign = null;
-            CarrierDataDto carrierData = playerSession.getCarrierData();
+            CarrierDataDto carrierData = playerSession.getFleetCarrierData();
             if (carrierData != null) {
                 playerCarrierCallSign = carrierData.getCallSign();
             }

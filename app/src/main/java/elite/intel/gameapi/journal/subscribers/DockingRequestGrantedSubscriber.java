@@ -14,13 +14,13 @@ public class DockingRequestGrantedSubscriber {
     public void onDockingRequestGrantedEvent(DockingGrantedEvent event) {
         String playerName = playerSession.getVariablePlayerName();
 
-        if (event.getStationName().equalsIgnoreCase(playerSession.getCarrierData().getCallSign())) {
+        if (event.getStationName().equalsIgnoreCase(playerSession.getFleetCarrierData().getCallSign())) {
             String personalGreeting = " Welcome home " + playerName + "!";
             EventBusManager.publish(
                     new RadioTransmissionEvent(
                             "This is %s traffic control. Proceed to landing pad %d, %s"
                                     .formatted(
-                                            playerSession.getCarrierData().getCarrierName(),
+                                            playerSession.getFleetCarrierData().getCarrierName(),
                                             event.getLandingPad(),
                                             personalGreeting
                                     )

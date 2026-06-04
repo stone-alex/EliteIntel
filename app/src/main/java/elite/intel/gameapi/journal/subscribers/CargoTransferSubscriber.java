@@ -15,7 +15,7 @@ public class CargoTransferSubscriber {
     public void onCargoTransfer(CargoTransferEvent event) {
         Thread.ofVirtual().start(() -> {
             List<CargoTransferEvent.Transfer> transfers = event.getTransfers();
-            CarrierDataDto carrierData = playerSession.getCarrierData();
+            CarrierDataDto carrierData = playerSession.getFleetCarrierData();
 
             for (CargoTransferEvent.Transfer transfer : transfers) {
                 String commodity = transfer.getType();
@@ -29,7 +29,7 @@ public class CargoTransferSubscriber {
                     carrierData.removeCommodity(commodity, amount);
                 }
             }
-            playerSession.setCarrierData(carrierData);
+            playerSession.setFleetCarrierData(carrierData);
         });
     }
 }

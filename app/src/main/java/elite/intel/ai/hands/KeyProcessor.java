@@ -2,6 +2,7 @@ package elite.intel.ai.hands;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class KeyProcessor {
 
@@ -62,12 +63,19 @@ public class KeyProcessor {
     public static final int KEY_NUMPAD_9 = KeyEvent.VK_NUMPAD9;
     public static final int KEY_NUMPAD_0 = KeyEvent.VK_NUMPAD0;
     public static final int KEY_NUMPERIOD = KeyEvent.VK_DECIMAL;
-    public static final int KEY_NUMENTER = KeyEvent.VK_ENTER;
+    public static final int KEY_NUMENTER = NATIVE_BASE + 11;  // Numpad Enter (E0 1C, distinct from main Enter)
     public static final int KEY_NUMEQUALS = KeyEvent.VK_EQUALS;
     public static final int KEY_NUMBACKSPACE = KeyEvent.VK_BACK_SPACE;
     public static final int KEY_NUMTAB = KeyEvent.VK_TAB;
     public static final int KEY_NUMCLEAR = KeyEvent.VK_CLEAR;
     public static final int KEY_NUMSLASHPERIOD = KeyEvent.VK_DIVIDE;
+    public static final int KEY_LESSTHAN = NATIVE_BASE + 10; // ISO 102nd key (<> on DE/EU keyboards, scan 0x56)
+    // KEY_NUMENTER already defined above as NATIVE_BASE + 11
+    public static final int KEY_ADIAERESIS = NATIVE_BASE + 12; // ä (DE/EU) → scan 0x28
+    public static final int KEY_ODIAERESIS = NATIVE_BASE + 13; // ö (DE/EU) → scan 0x27
+    public static final int KEY_UDIAERESIS = NATIVE_BASE + 14; // ü (DE/EU) → scan 0x1A
+    public static final int KEY_SSHARP = NATIVE_BASE + 15; // ß (DE)    → scan 0x0C
+    public static final int KEY_DEAD_ACUTE = NATIVE_BASE + 16; // ´ (DE)    → scan 0x0D
     public static final int KEY_LEFTCONTROL = NATIVE_BASE + 1;
     public static final int KEY_RIGHTCONTROL = NATIVE_BASE + 2;
     public static final int KEY_LEFTSHIFT = NATIVE_BASE + 3;
@@ -170,12 +178,15 @@ public class KeyProcessor {
     }
 
     private boolean isNative(int keyCode) {
-        return keyCode >= NATIVE_BASE;
+        // NATIVE_BASE codes always go native.
+        // nativeKeyInput logs a warning if it has no mapping.
+        return keyCode >= NATIVE_BASE || nativeKeyInput.handles(keyCode);
     }
 
     public void pressKey(int keyCode) {
         if (isNative(keyCode)) {
             nativeKeyInput.keyDown(keyCode);
+            robot.delay(jitter());
             nativeKeyInput.keyUp(keyCode);
         } else {
             robot.keyPress(keyCode);
@@ -198,6 +209,11 @@ public class KeyProcessor {
     public void holdKey(int keyCode) {
         if (isNative(keyCode)) {
             nativeKeyInput.keyDown(keyCode);
+            if (keyCode >= NATIVE_BASE) {
+                // Modifier keys need a settling delay so the game's DirectInput poller sees
+                // the modifier as held before the main key fires.
+                robot.delay(jitter());
+            }
         } else {
             robot.keyPress(keyCode);
         }
@@ -215,7 +231,7 @@ public class KeyProcessor {
         for (int keyCode : keyCodes) {
             if (isNative(keyCode)) {
                 nativeKeyInput.keyDown(keyCode);
-                robot.delay(30);
+                robot.delay(jitter());
             }
             else robot.keyPress(keyCode);
         }
@@ -246,6 +262,10 @@ public class KeyProcessor {
             }
             Thread.currentThread().interrupt();
         }
+    }
+
+    private int jitter() {
+        return ThreadLocalRandom.current().nextInt(43, 89);
     }
 
     public void enterText(String text) {

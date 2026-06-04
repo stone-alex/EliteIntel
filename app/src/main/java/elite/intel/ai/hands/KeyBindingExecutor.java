@@ -47,6 +47,20 @@ public class KeyBindingExecutor {
             // VK_BACK_SLASH is the Java/Windows VK code that maps to scan 0x2B, so we override
             // the auto-reflected KEY_HASH→VK_3 (which is the US "Shift+3 = #" mapping and wrong).
             ELITE_TO_KEYPROCESSOR_MAP.put("KEY_HASH", KeyProcessor.KEY_BACKSLASH);
+
+            // German QWERTZ / EU keyboard keys. Elite uses the actual Unicode character in the key name.
+            // Each maps to a dedicated NATIVE_BASE code so both Windows (scan code) and Linux (keysym) work correctly.
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_Ä", KeyProcessor.KEY_ADIAERESIS); // ä → scan 0x28 / XK_adiaeresis
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_Ö", KeyProcessor.KEY_ODIAERESIS); // ö → scan 0x27 / XK_odiaeresis
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_Ü", KeyProcessor.KEY_UDIAERESIS); // ü → scan 0x1A / XK_udiaeresis
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_SS", KeyProcessor.KEY_SSHARP);     // ß → scan 0x0C / XK_ssharp (Java toUpperCase → "SS")
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_ẞ", KeyProcessor.KEY_SSHARP);     // ẞ → scan 0x0C / XK_ssharp (capital sharp S fallback)
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_ACUTE", KeyProcessor.KEY_DEAD_ACUTE); // ´ → scan 0x0D / XK_dead_acute
+            // "Key_LessThan" is the ISO 102nd key (<> on DE/EU keyboards). Auto-reflection maps it
+            // to KEY_LESSTHAN via field name, but "KEY_LESS" would not match. Added explicitly for clarity.
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_LESSTHAN", KeyProcessor.KEY_LESSTHAN);
+            // Elite uses "Key_Numpad_Enter"; our field is KEY_NUMENTER → auto-reflection produces "KEY_NUMENTER"
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_NUMPAD_ENTER", KeyProcessor.KEY_NUMENTER);
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Failed to initialize key mappings", e);
         }

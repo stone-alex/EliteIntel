@@ -36,15 +36,16 @@ public class HandsSubscriber {
     @Subscribe
     public void onGameInput(GameInputEvent event) {
         if (monitor.getBindings() == null) {
-            log.debug("[key] bindings not loaded - dropping {}", event.getBindingId());
+            log.warn("[key] bindings not loaded - dropping {}", event.getBindingId());
             return;
         }
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(event.getBindingId());
         if (binding != null) {
-            log.debug("[key] SENDING id=[{}] key=[{}] modifiers={}", event.getBindingId(), binding.key, binding.modifiers);
+            log.info("[key] action=[{}] key=[{}] modifiers={} hold={}ms",
+                    event.getBindingId(), binding.key, binding.modifiers, event.getHoldTime());
             executor.executeBindingWithHold(binding, event.getHoldTime());
         } else {
-            log.debug("[key] NO BINDING FOUND for id=[{}]", event.getBindingId());
+            log.warn("[key] NO BINDING for action=[{}]", event.getBindingId());
             handleNoKeyBindingFound(event.getBindingId());
         }
         sleep(UINavigator.randomDelay());
@@ -55,9 +56,10 @@ public class HandsSubscriber {
         if (monitor.getBindings() == null) return;
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(event.getBindingId());
         if (binding != null) {
-            log.debug("Tap binding: key={}, ignoring hold flag={}", binding.key, binding.hold);
+            log.info("[key] tap action=[{}] key=[{}]", event.getBindingId(), binding.key);
             executor.executeTap(binding);
         } else {
+            log.warn("[key] NO BINDING for tap action=[{}]", event.getBindingId());
             handleNoKeyBindingFound(event.getBindingId());
         }
         sleep(UINavigator.randomDelay());

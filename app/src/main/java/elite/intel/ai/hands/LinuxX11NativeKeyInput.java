@@ -53,6 +53,13 @@ class LinuxX11NativeKeyInput implements NativeKeyInput {
         KEYSYM_MAP.put(NATIVE_BASE + 7, 0xFFEBL);  // KEY_LEFTSUPER    → XK_Super_L
         KEYSYM_MAP.put(NATIVE_BASE + 8, 0xFFECL);  // KEY_RIGHTSUPER   → XK_Super_R
         KEYSYM_MAP.put(NATIVE_BASE + 9, 0xFF67L);  // KEY_MENU         → XK_Menu
+        KEYSYM_MAP.put(NATIVE_BASE + 10, 0x003CL);  // KEY_LESSTHAN     → XK_less (ISO 102nd key)
+        KEYSYM_MAP.put(NATIVE_BASE + 11, 0xFF8DL);  // KEY_NUMENTER     → XK_KP_Enter
+        KEYSYM_MAP.put(NATIVE_BASE + 12, 0x00E4L);  // KEY_ADIAERESIS   → XK_adiaeresis (ä)
+        KEYSYM_MAP.put(NATIVE_BASE + 13, 0x00F6L);  // KEY_ODIAERESIS   → XK_odiaeresis (ö)
+        KEYSYM_MAP.put(NATIVE_BASE + 14, 0x00FCL);  // KEY_UDIAERESIS   → XK_udiaeresis (ü)
+        KEYSYM_MAP.put(NATIVE_BASE + 15, 0x00DFL);  // KEY_SSHARP       → XK_ssharp (ß)
+        KEYSYM_MAP.put(NATIVE_BASE + 16, 0xFE51L);  // KEY_DEAD_ACUTE   → XK_dead_acute (´)
     }
 
     private final X11 x11;
@@ -102,6 +109,11 @@ class LinuxX11NativeKeyInput implements NativeKeyInput {
 
     boolean isAvailable() {
         return available;
+    }
+
+    @Override
+    public boolean handles(int keyCode) {
+        return KEYSYM_MAP.containsKey(keyCode);
     }
 
     @Override

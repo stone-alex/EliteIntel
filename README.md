@@ -57,7 +57,7 @@ See [**Configure the app**](UI-and-Configuration-Options) for next steps.
 
 ---
 
-# Realtek usres
+# Realtek users
 Realtek's "enhancements" are a legitimate source of audio problems with Java's javax.sound.sampled.
 The auto noise suppression, equalizer, and "audio enhancements" Realtek enables by default can interfere with raw
 PCM capture because they process the audio stream at the driver level before Java ever sees it.

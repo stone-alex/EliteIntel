@@ -146,6 +146,21 @@ public class EventRegistry {
         }
     }
 
+    public static BaseEvent createEventForPreScan(String eventName, JsonObject json) {
+        Class<? extends BaseEvent> eventClass = eventMap.get(eventName);
+        if (eventClass == null) return null;
+        try {
+            Constructor<? extends BaseEvent> constructor = eventClass.getConstructor(JsonObject.class);
+            return constructor.newInstance(json);
+        } catch (NoSuchMethodException e) {
+            log.error("PreScan: event class {} missing JsonObject constructor", eventClass.getSimpleName(), e);
+            return null;
+        } catch (Exception e) {
+            log.warn("PreScan: failed to instantiate {} : {}", eventName, e.getMessage());
+            return null;
+        }
+    }
+
     private static boolean isRecent(String timestamp, long millisThreshold) {
         try {
             Instant eventTime = Instant.parse(timestamp);

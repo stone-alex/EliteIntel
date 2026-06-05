@@ -40,7 +40,7 @@ public class SuperCruiseDropSubscriber {
             }
 
             String carrierName = playerSession.getFleetCarrierData().getCarrierName();
-            if (event.getType().toUpperCase().startsWith(carrierName.toUpperCase())) {
+            if (carrierName != null && event.getType().toUpperCase().startsWith(carrierName.toUpperCase())) {
                 EventBusManager.publish(new AiVoxResponseEvent("Welcome Home to " + StringUtls.capitalizeWords(carrierName) + "! "));
             }
         });

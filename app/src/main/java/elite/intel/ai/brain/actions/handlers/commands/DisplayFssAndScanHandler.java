@@ -36,8 +36,6 @@ public class DisplayFssAndScanHandler implements CommandHandler {
         SleepNoThrow.sleep(200);
 
         GameControllerBus.publish(new GameInputEvent(fssControl, 0));
-        SleepNoThrow.sleep(1500);
-        GameControllerBus.publish(new GameInputEvent(fssControl, 4500));
 
     }
 }

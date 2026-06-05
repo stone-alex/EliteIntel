@@ -54,6 +54,15 @@ public class SubSystemsManager {
         this.target = target;
     }
 
+    /**
+     * Initiates the targeting process for a specified subsystem within a game. The method
+     * uses fuzzy search to resolve the subsystem name and attempts to cycle through subsystems
+     * using game inputs until the target is confirmed or cycling conditions are exhausted.
+     *
+     * @param subsystem the name of the subsystem to target. This can be a partial or full
+     *                  name which is resolved using a fuzzy search algorithm. If a match
+     *                  is not found, the method terminates the process.
+     */
     public void targetSubSystem(String subsystem) {
         log.debug("[1] targetSubSystem raw input: [{}]", subsystem);
         pause = false;
@@ -107,6 +116,19 @@ public class SubSystemsManager {
         }, "SubSystemTargeting-Thread").start();
     }
 
+    /**
+     * Handles the event triggered when a ship is targeted. This method processes
+     * the event to determine if the targeted ship's subsystem matches a specific
+     * target, and acts accordingly by updating targeting state and playing audio cues.
+     *
+     * @param event the ShipTargetedEvent containing details about the targeting action.
+     *              If the event is null, the method returns immediately.
+     *              Key data from the event includes:
+     *              - Target lock status (targetLocked)
+     *              - Localized and raw subsystem names (subsystemLocalised, subsystem)
+     *              - Event timestamp for filtering stale events
+     *              - Scan stage indicating the progression of targeting
+     */
     @Subscribe public void onShipTargetedEvent(ShipTargetedEvent event) {
         if (event == null) return;
 
@@ -145,12 +167,14 @@ public class SubSystemsManager {
         pause = false;
     }
 
+
     /**
-     * Returns the subsystem category name for matching against the cycling target.
-     * Prefers the game-provided Subsystem_Localised string. When absent (some faction-specific
-     * module variants omit it), strips the raw key down to its identifier and looks it up
-     * in the sub_system table by machine_key substring match — returning the category name
-     * regardless of class, size, or grade.
+     * Resolves the name of a subsystem by prioritizing a localized name if provided,
+     * or falling back to querying a database using a processed version of the raw key.
+     *
+     * @param localised the localized subsystem name, which may be null or blank
+     * @param rawKey the raw identifier for the subsystem, which may be null or blank
+     * @return the resolved subsystem name as a String, or null if the resolution fails
      */
     private static String resolveSubsystemName(String localised, String rawKey) {
         if (localised != null && !localised.isBlank()) return localised;

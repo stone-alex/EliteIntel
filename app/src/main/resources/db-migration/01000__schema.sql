@@ -1,3 +1,6 @@
+ALTER TABLE game_session
+    ADD COLUMN aiLanguage VARCHAR(10) NOT NULL DEFAULT 'EN';
+
 -- Extend sub_system with machine_key for journal raw-key substring matching,
 -- and locale label columns (es, fr, pt, ru) for V1.1 multi-language support.
 --

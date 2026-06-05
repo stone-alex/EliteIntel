@@ -121,8 +121,15 @@ public class EventRegistry {
         // Check timestamp for timed events
         if (!NON_TIMED_EVENTS.contains(eventName)) {
             String timestamp = json.has("timestamp") ? json.get("timestamp").getAsString() : null;
-            if (timestamp != null && !isRecent(timestamp, LONG_THRESHOLD_EVENTS.contains(eventName) ? THRESHOLD_LONG : THRESHOLD)) {
-                log.debug("Skipping outdated event: {} with timestamp: {}", eventName, timestamp);
+            long threshold = LONG_THRESHOLD_EVENTS.contains(eventName) ? THRESHOLD_LONG : THRESHOLD;
+            if (timestamp != null && !isRecent(timestamp, threshold)) {
+                long ageSec = -1;
+                try {
+                    ageSec = ChronoUnit.SECONDS.between(Instant.parse(timestamp), Instant.now());
+                } catch (Exception ignored) {
+                }
+                log.debug("Skipping outdated event: {} timestamp={} age={}s threshold={}s",
+                        eventName, timestamp, ageSec, threshold / 1000);
                 return null;
             }
         }

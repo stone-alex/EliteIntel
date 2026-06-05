@@ -30,7 +30,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
         // navigation
         map.put("navigiere zu koordinaten {lat:X, lon:Y}, kurs auf koordinaten {lat:X, lon:Y}, fliege zu koordinaten {lat:X, lon:Y}", NAVIGATE_TO_TARGET.getAction());
         map.put("navigiere zur aktiven mission, route zur aktiven mission planen, route zur mission planen, bring mich zur mission, fliege zur mission {key:X}", NAVIGATE_TO_NEXT_MISSION.getAction());
-        map.put("navigiere zum fleet carrier, fliege zum carrier, kurs zum carrier, zurück zum carrier, bring uns zum carrier, zurück zum träger", NAVIGATE_TO_CARRIER.getAction());
+        map.put("navigiere zum fleet carrier, fliege zum carrier, kurs zum carrier, zurück zum carrier, bring uns zum carrier, zurück zum träger", NAVIGATE_TO_FLEET_CARRIER.getAction());
         map.put("navigiere zur landezone, kurs zur landezone, peilung zur landezone, zurück zur landezone, zurück zur lz", GET_HEADING_TO_LZ.getAction());
         map.put("navigiere zum nächsten handelsstopp, fliege zum nächsten handelsstopp, nächster handelsstopp", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
         map.put("navigiere aus dem speicher, aus speicher einfügen, adresse aus speicher verwenden", NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
@@ -148,6 +148,13 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
         map.put("fleet carrier route berechnen, carrier route planen, carrier sprungroute planen", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
         map.put("carrier ziel eingeben, carrier ziel setzen, carrier ziel", ENTER_FLEET_CARRIER_DESTINATION.getAction());
 
+        // squadron carrier
+        map.put("squadron carrier route, squadron carrier navigation, squadron carrier sprungroute, wie viele sprünge auf der squadron carrier route, verbleibende squadron carrier sprünge", SQUADRON_CARRIER_ROUTE_ANALYSIS.getAction());
+        map.put("wohin fliegt der squadron carrier, wohin ist der squadron carrier unterwegs, squadron carrier ziel, endziel des squadron carriers", SQUADRON_CARRIER_ROUTE.getAction());
+        map.put("squadron carrier tritium, squadron carrier treibstoff, squadron tritium vorrat, squadron carrier treibstoffstand, squadron carrier tritium status", SQUADRON_CARRIER_TRITIUM_SUPPLY.getAction());
+        map.put("squadron carrier status, squadron carrier finanzen, squadron carrier balance, squadron carrier übersicht, squadron carrier kontostand, wie lange kann der squadron carrier betrieben werden, squadron carrier treibstoffstatus", SQUADRON_CARRIER_STATUS.getAction());
+        map.put("squadron carrier eta, wann kommt der squadron carrier an, wie lange bis squadron carrier ankunft, squadron carrier ankunft, squadron carrier ankunftszeit", SQUADRON_CARRIER_ETA.getAction());
+
         // trade
         map.put("handelsroute berechnen, trade route berechnen", CALCULATE_TRADE_ROUTE.getAction());
         map.put("handelsroutenparameter auflisten, handelsparameter anzeigen", LIST_TRADE_ROUTE_PARAMETERS.getAction());
@@ -219,11 +226,11 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
         map.put("geosignale, geologische signale, vulkanische signale, geologische aktivität, vulkanische aktivität", QUERY_GEO_SIGNALS.getAction());
 
         map.put("fleet carrier im system, carrier im system, wie viele carrier, träger im system, carrier in der nähe", QUERY_CARRIERS.getAction());
-        map.put("carrier route, carrier navigation, carrier sprungroute, carrier reise, wie viele sprünge auf der carrier route, verbleibende carrier sprünge", CARRIER_ROUTE_ANALYSIS.getAction());
-        map.put("carrier route, wohin fliegt der carrier, nächster carrier sprung, wohin ist der carrier unterwegs, carrier ziel, endziel des carriers", CARRIER_ROUTE.getAction());
-        map.put("carrier tritium, carrier treibstoff, wie viel tritium, tritium vorrat, tritium stand, carrier fuel level", CARRIER_TRITIUM_SUPPLY.getAction());
-        map.put("carrier status, carrier finanzen, carrier balance, carrier übersicht, carrier kontostand, wie lange kann der carrier betrieben werden, carrier reichweite", CARRIER_STATUS.getAction());
-        map.put("carrier eta, wann kommt der carrier an, wie lange bis carrier ankunft, carrier ankunft, wann springt der carrier, carrier sprungzeit", CARRIER_ETA.getAction());
+        map.put("carrier route, carrier navigation, carrier sprungroute, carrier reise, wie viele sprünge auf der carrier route, verbleibende carrier sprünge", FLEET_CARRIER_ROUTE_ANALYSIS.getAction());
+        map.put("carrier route, wohin fliegt der carrier, nächster carrier sprung, wohin ist der carrier unterwegs, carrier ziel, endziel des carriers", FLEET_CARRIER_ROUTE.getAction());
+        map.put("carrier tritium, carrier treibstoff, wie viel tritium, tritium vorrat, tritium stand, carrier fuel level", FLEET_CARRIER_TRITIUM_SUPPLY.getAction());
+        map.put("carrier status, carrier finanzen, carrier balance, carrier übersicht, carrier kontostand, wie lange kann der carrier betrieben werden, carrier reichweite", FLEET_CARRIER_STATUS.getAction());
+        map.put("carrier eta, wann kommt der carrier an, wie lange bis carrier ankunft, carrier ankunft, wann springt der carrier, carrier sprungzeit", FLEET_CARRIER_ETA.getAction());
         map.put("entfernung zum carrier, wo ist unser carrier, wie weit ist der carrier weg, distanz zum carrier, carrier nähe", DISTANCE_TO_CARRIER.getAction());
         map.put("systemsicherheit, fraktionskontrolle, wer kontrolliert das system, sicherheitsstufe, wem gehört das system, dominante fraktion, kontrollierende macht", SYSTEM_SECURITY_ANALYSIS.getAction());
         map.put("handelsprofil, handelseinstellungen, handelsparameter, handelskonfiguration, handelskriterien", TRADE_PROFILE_ANALYSIS.getAction());

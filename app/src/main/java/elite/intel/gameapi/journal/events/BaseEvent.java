@@ -33,9 +33,6 @@ public abstract class BaseEvent implements ToJsonConvertible, ToYamlConvertable 
             return false;
         }
         Instant now = Instant.now();
-        if (Instant.parse(timestamp).isAfter(now.plusSeconds(60))) {
-            return true;
-        }
         return now.isAfter(endOfLife);
     }
 

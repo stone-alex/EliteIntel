@@ -1,8 +1,6 @@
 package elite.intel.session.ui;
 
 import elite.intel.ai.hands.Bindings;
-import elite.intel.ai.hands.events.GameInputEvent;
-import elite.intel.ai.hands.events.GameTapEvent;
 import elite.intel.ai.hands.events.GameInputSequenceEvent;
 import elite.intel.ai.hands.events.GameInputStep;
 import elite.intel.db.managers.GlobalSettingsManager;
@@ -35,8 +33,8 @@ public class UINavigator {
     private static final int PANEL_OPEN_POLL_MS = 50;   // how often to check GuiFocus after sending open key
     private static final int PANEL_OPEN_TIMEOUT_MS = 3000; // per-attempt timeout before concluding the key was missed
     private static final int PANEL_OPEN_MAX_ATTEMPTS = 3;  // retry limit before giving up
-    private static final int PANEL_SETTLE_MS = 400;  // settle time after panel confirms open before cycling tabs
-    private static final int TAB_CYCLE_PAUSE_MS = 200; // extra pause between each tab keystroke
+    private static final int PANEL_SETTLE_MS = 100;  // settle time after panel confirms open before cycling tabs
+    private static final int TAB_CYCLE_PAUSE_MS = 100; // extra pause between each tab keystroke
 
     private final PanelStateTracker tracker = PanelStateTracker.getInstance();
     private final GlobalSettingsManager globalSettingsManager = GlobalSettingsManager.getInstance();
@@ -211,23 +209,6 @@ public class UINavigator {
         state.recordTab((Enum & PanelTab) defaultTarget);
     }
 
-    /**
-     * When tab position is unknown, spam BINDING_CYCLE_NEXT_PANEL enough times
-     * to guarantee we've wrapped past every possible tab, landing at index 0.
-     * Requires that the tab list wraps around in the game UI (it does).
-     */
-    @SuppressWarnings("rawtypes")
-    private void blindResetToDefault(GuiFocus panel) {
-        PanelState<?> state = tracker.getState(panel);
-        if (state == null) {
-            return;
-        }
-        String nextTab = Bindings.GameCommand.BINDING_CYCLE_NEXT_PANEL.getGameBinding();
-        for (int i = 0; i < getTabCount(panel); i++) {
-            GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(nextTab))); // always tap
-        }
-        state.resetToDefault();
-    }
 
     /**
      * Polls {@link Status#getGuiFocus()} until the panel opens or the timeout expires.

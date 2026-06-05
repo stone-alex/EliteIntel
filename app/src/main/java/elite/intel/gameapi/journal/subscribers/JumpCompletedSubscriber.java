@@ -154,9 +154,9 @@ public class JumpCompletedSubscriber {
                 /// Scan
                 int honkTrigger = shipSettings.getHonkTrigger(); /// 1 primary, 2 secondary
                 if (honkTrigger == 1) {
-                    GameControllerBus.publish(new GameInputEvent(BINDING_PRIMARY_FIRE.getGameBinding(), 5000));
+                    GameControllerBus.publish(new GameInputEvent(BINDING_PRIMARY_FIRE.getGameBinding(), 6000));
                 } else {
-                    GameControllerBus.publish(new GameInputEvent(BINDING_SECONDARY_FIRE.getGameBinding(), 5000));
+                    GameControllerBus.publish(new GameInputEvent(BINDING_SECONDARY_FIRE.getGameBinding(), 6000));
                 }
 
                 /// change back to combat mode - if the user was in combat mode

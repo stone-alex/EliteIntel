@@ -18,7 +18,7 @@ public class AnalyzeSquadronCarrierFinalDestinationHandler extends BaseQueryAnal
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         Map<Integer, CarrierJump> carrierRoute = routeManager.getSquadronCarrierRoute();
-        Integer totalFuelRequired = routeManager.getTotalFuelRequired();
+        Integer totalFuelRequired = routeManager.getTotalFuelRequired() == null ? 0 : routeManager.getTotalFuelRequired();
         int totalMinutes = carrierRoute.size() * 20;
         int travelHours = totalMinutes / 60;
         int travelMins = totalMinutes % 60;

@@ -189,6 +189,7 @@ class WindowsNativeKeyInput implements NativeKeyInput {
         SCAN_MAP.put(KeyEvent.VK_NUMPAD6, (short) 0x4D);
         SCAN_MAP.put(KeyEvent.VK_NUMPAD7, (short) 0x47);
         SCAN_MAP.put(KeyEvent.VK_NUMPAD8, (short) 0x48);
+        SCAN_MAP.put(KeyEvent.VK_NUMPAD9, (short) 0x49);
     }
 
     @Override
@@ -216,11 +217,35 @@ class WindowsNativeKeyInput implements NativeKeyInput {
             }
             scan = s;
         } else {
-            // MapVirtualKey returns the layout-aware scan code, which correctly handles
-            // keyboards where Y/Z (QWERTZ) or other keys are in different physical positions.
-            int vsc = User32.INSTANCE.MapVirtualKeyEx(keyCode, MAPVK_VK_TO_VSC, null);
-            if (vsc != 0) {
-                scan = (short) vsc;
+            // MapVirtualKey is only safe when the Java VK code equals the Windows VK code.
+            // Java and Windows agree on letters (0x41–0x5A, QWERTZ layout-awareness) and
+            // the navigation cluster (0x21–0x28: PageUp/Dn, End, Home, Left, Up, Right, Down).
+            //
+            // For punctuation Java VK codes are ASCII-based and collide with unrelated
+            // Windows VK codes at the same numeric value:
+            //   VK_COMMA=0x2C → Windows VK_SNAPSHOT (PrintScreen!)
+            //   VK_OPEN_BRACKET=0x5B → Windows VK_LWIN (Windows key!)
+            //   VK_BACK_SLASH=0x5C → Windows VK_RWIN, VK_BACK_QUOTE=0x60 → VK_NUMPAD0, etc.
+            // Use SCAN_MAP directly for those. The hardcoded scan codes are always correct.
+            //
+            // Nav cluster is included because VK_QUOTE and VK_RIGHT share value 0x27 in
+            // Java's API (an AWT quirk), causing SCAN_MAP[0x27] to hold the quote scan code
+            // (0x28) rather than the right-arrow scan code (0x4D). MapVirtualKey resolves
+            // this correctly since Windows VK_RIGHT = 0x27 unambiguously.
+            boolean isLetter = keyCode >= KeyEvent.VK_A && keyCode <= KeyEvent.VK_Z;
+            boolean isNavCluster = keyCode >= KeyEvent.VK_PAGE_UP && keyCode <= KeyEvent.VK_DOWN;
+            if (isLetter || isNavCluster) {
+                int vsc = User32.INSTANCE.MapVirtualKeyEx(keyCode, MAPVK_VK_TO_VSC, null);
+                if (vsc != 0) {
+                    scan = (short) vsc;
+                } else {
+                    Short s = SCAN_MAP.get(keyCode);
+                    if (s == null) {
+                        log.warn("No Windows scan code mapping for key code 0x{}", Integer.toHexString(keyCode));
+                        return;
+                    }
+                    scan = s;
+                }
             } else {
                 Short s = SCAN_MAP.get(keyCode);
                 if (s == null) {

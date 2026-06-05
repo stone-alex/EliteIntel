@@ -90,4 +90,44 @@ class BindingSlotDisplayFormatter {
             default -> token.substring("Key_".length());
         };
     }
+
+    /**
+     * Formats a RAW_KEY step's key and optional modifier for display.
+     * Accepts uppercase Elite key names (e.g. {@code "KEY_LEFTCONTROL"}, {@code "KEY_G"})
+     * and returns a human-readable string (e.g. {@code "Left Ctrl + G"}).
+     */
+    String formatRawKeyStep(String rawKey, String rawKeyModifier) {
+        String keyLabel = rawKey != null ? formatBindingToken(toEliteKeyFormat(rawKey)) : "";
+        if (rawKeyModifier != null && !rawKeyModifier.isBlank()) {
+            String modLabel = formatBindingToken(toEliteKeyFormat(rawKeyModifier));
+            return modLabel + " + " + keyLabel;
+        }
+        return keyLabel;
+    }
+
+    /**
+     * Converts an uppercase key name (e.g. {@code "KEY_LEFTCONTROL"}) to the original Elite
+     * {@code Key_XXX} format accepted by {@link #formatBindingToken(String)}.
+     */
+    static String toEliteKeyFormat(String upperCaseName) {
+        return switch (upperCaseName) {
+            case "KEY_LEFTCONTROL"  -> "Key_LeftControl";
+            case "KEY_RIGHTCONTROL" -> "Key_RightControl";
+            case "KEY_LEFTSHIFT"    -> "Key_LeftShift";
+            case "KEY_RIGHTSHIFT"   -> "Key_RightShift";
+            case "KEY_LEFTALT"      -> "Key_LeftAlt";
+            case "KEY_RIGHTALT"     -> "Key_RightAlt";
+            default -> {
+                String raw = upperCaseName.startsWith("KEY_") ? upperCaseName.substring(4) : upperCaseName;
+                StringBuilder sb = new StringBuilder("Key_");
+                for (String part : raw.split("_")) {
+                    if (!part.isEmpty()) {
+                        sb.append(Character.toUpperCase(part.charAt(0)));
+                        sb.append(part.substring(1).toLowerCase());
+                    }
+                }
+                yield sb.toString();
+            }
+        };
+    }
 }

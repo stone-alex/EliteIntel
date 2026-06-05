@@ -139,6 +139,7 @@ public final class MacroEditorValidator {
                     requirePositive(step.getDurationMs(), prefix + "durationMs must be positive.", errors);
                 }
                 case DELAY -> requirePositive(step.getDurationMs(), prefix + "durationMs must be positive.", errors);
+                case RAW_KEY -> requireText(step.getRawKey(), prefix + "rawKey is required.", errors);
                 case RUN_COMMAND -> {
                     requireText(step.getActionId(), prefix + "commandId is required.", errors);
                     if (macroIds.contains(normalize(step.getActionId()))) {

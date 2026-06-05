@@ -97,7 +97,21 @@ public class InputSequenceExecutor {
             case BINDING_TAP -> executeBindingTap(step.getBindingId());
             case BINDING_HOLD -> executeBindingHold(step.getBindingId(), step.getDurationMs());
             case RAW_KEY -> {
-                keyProcessor.pressKey(step.getKeyCode());
+                int mod = step.getModifierKeyCode();
+                if (mod != 0) {
+                    keyProcessor.holdKey(mod);
+                }
+                try {
+                    if (step.getDurationMs() > 0) {
+                        keyProcessor.pressAndHoldKey(step.getKeyCode(), step.getDurationMs());
+                    } else {
+                        keyProcessor.pressKey(step.getKeyCode());
+                    }
+                } finally {
+                    if (mod != 0) {
+                        keyProcessor.releaseKey(mod);
+                    }
+                }
                 yield true;
             }
             case TEXT -> {

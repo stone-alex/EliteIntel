@@ -377,13 +377,15 @@ final class MacroEditorDialog extends JDialog {
                 case BINDING_TAP, BINDING_HOLD -> step.getBindingId();
                 case RUN_COMMAND -> step.getActionId();
                 case DELAY -> "";
+                case RAW_KEY -> new BindingSlotDisplayFormatter().formatRawKeyStep(step.getRawKey(), step.getRawKeyModifier());
             };
         }
 
         private static String durationValue(MacroStep step) {
-            return step.getType() == MacroStep.Type.BINDING_HOLD || step.getType() == MacroStep.Type.DELAY
-                    ? Integer.toString(step.getDurationMs())
-                    : "";
+            return switch (step.getType()) {
+                case BINDING_HOLD, DELAY, RAW_KEY -> Integer.toString(step.getDurationMs());
+                default -> "";
+            };
         }
     }
 }

@@ -1,6 +1,8 @@
 package elite.intel.ui.view;
 
 import elite.intel.ai.brain.actions.macro.MacroStep;
+import elite.intel.ai.hands.BindingModifier;
+import elite.intel.ai.hands.KeyBindingExecutor;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -27,6 +29,11 @@ final class MacroStepEditorDialog extends JDialog {
     private final JLabel bindingLabel = new JLabel(getText("actions.macros.editor.step.bindingId"));
     private final List<MacroStepPickerItem> bindingItems = new ArrayList<>(MacroStepPickerItem.bindingItems());
     private final JComboBox<MacroStepPickerItem> bindingCombo = picker(bindingItems);
+    private final JLabel rawKeyLabel = new JLabel(getText("actions.macros.editor.step.rawKey"));
+    private final List<MacroStepPickerItem> rawKeyItems = buildRawKeyPickerItems();
+    private final JComboBox<MacroStepPickerItem> rawKeyCombo = picker(rawKeyItems);
+    private final JLabel rawModLabel = new JLabel(getText("actions.macros.editor.step.rawKeyModifier"));
+    private final JComboBox<RawModOption> rawModCombo = buildRawModCombo();
     private final JLabel durationLabel = new JLabel(getText("actions.macros.editor.step.durationMs"));
     private final JSpinner durationSpinner = new JSpinner(new SpinnerNumberModel(250, 0, Integer.MAX_VALUE, 50));
     private MacroStep result;
@@ -57,6 +64,10 @@ final class MacroStepEditorDialog extends JDialog {
             case RUN_COMMAND ->
                     selectPickerItem(commandCombo, commandItems, step.getActionId(), getText("actions.macros.editor.step.unknownCommand"));
             case DELAY -> valueField.setText("");
+            case RAW_KEY -> {
+                selectPickerItem(rawKeyCombo, rawKeyItems, step.getRawKey(), getText("actions.macros.editor.step.unknownRawKey"));
+                selectRawMod(step.getRawKeyModifier());
+            }
         }
     }
 
@@ -84,6 +95,8 @@ final class MacroStepEditorDialog extends JDialog {
         addRow(panel, gbc, valueLabel, valueField);
         addRow(panel, gbc, commandLabel, commandCombo);
         addRow(panel, gbc, bindingLabel, bindingCombo);
+        addRow(panel, gbc, rawKeyLabel, rawKeyCombo);
+        addRow(panel, gbc, rawModLabel, rawModCombo);
         addRow(panel, gbc, durationLabel, durationSpinner);
         AppTheme.applyDarkPalette(panel);
         return panel;
@@ -127,7 +140,8 @@ final class MacroStepEditorDialog extends JDialog {
         boolean hasText = type == MacroStep.Type.SPEAK;
         boolean hasCommand = type == MacroStep.Type.RUN_COMMAND;
         boolean hasBinding = type == MacroStep.Type.BINDING_TAP || type == MacroStep.Type.BINDING_HOLD;
-        boolean hasDuration = type == MacroStep.Type.BINDING_HOLD || type == MacroStep.Type.DELAY;
+        boolean isRawKey = type == MacroStep.Type.RAW_KEY;
+        boolean hasDuration = type == MacroStep.Type.BINDING_HOLD || type == MacroStep.Type.DELAY || isRawKey;
 
         valueLabel.setVisible(hasText);
         valueField.setVisible(hasText);
@@ -135,6 +149,10 @@ final class MacroStepEditorDialog extends JDialog {
         commandCombo.setVisible(hasCommand);
         bindingLabel.setVisible(hasBinding);
         bindingCombo.setVisible(hasBinding);
+        rawKeyLabel.setVisible(isRawKey);
+        rawKeyCombo.setVisible(isRawKey);
+        rawModLabel.setVisible(isRawKey);
+        rawModCombo.setVisible(isRawKey);
         durationLabel.setVisible(hasDuration);
         durationSpinner.setVisible(hasDuration);
 
@@ -164,6 +182,12 @@ final class MacroStepEditorDialog extends JDialog {
             case BINDING_HOLD -> new MacroStep(type, selectedPickerId(bindingCombo), duration, null, null);
             case DELAY -> new MacroStep(type, null, duration, null, null);
             case RUN_COMMAND -> new MacroStep(type, null, 0, null, selectedPickerId(commandCombo));
+            case RAW_KEY -> {
+                String rawKey = selectedPickerId(rawKeyCombo);
+                RawModOption modOption = (RawModOption) rawModCombo.getSelectedItem();
+                String rawMod = (modOption != null && !modOption.key().isBlank()) ? modOption.key() : null;
+                yield new MacroStep(type, null, duration, null, null, rawKey, rawMod);
+            }
         };
     }
 
@@ -251,5 +275,44 @@ final class MacroStepEditorDialog extends JDialog {
 
     private static String selectedPickerId(JComboBox<MacroStepPickerItem> combo) {
         return MacroStepPickerItem.resolveId(combo.getEditor().getItem()).trim();
+    }
+
+    private static List<MacroStepPickerItem> buildRawKeyPickerItems() {
+        BindingSlotDisplayFormatter formatter = new BindingSlotDisplayFormatter();
+        return KeyBindingExecutor.knownEliteKeyNames().stream()
+                .sorted()
+                .map(name -> new MacroStepPickerItem(name, formatter.formatBindingToken(BindingSlotDisplayFormatter.toEliteKeyFormat(name)), true))
+                .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
+    }
+
+    private static JComboBox<RawModOption> buildRawModCombo() {
+        List<RawModOption> items = new ArrayList<>();
+        items.add(new RawModOption("", getText("actions.macros.editor.step.noModifier")));
+        BindingModifier.supportedKeyboardModifiers().forEach(bm ->
+                items.add(new RawModOption(bm.key().toUpperCase(), bm.key())));
+        JComboBox<RawModOption> combo = new JComboBox<>(items.toArray(RawModOption[]::new));
+        combo.setBackground(AppTheme.BG_PANEL);
+        combo.setForeground(AppTheme.FG);
+        return combo;
+    }
+
+    /** Selects the modifier combo item matching the stored key name (case-insensitive), or "(none)" if absent. */
+    private void selectRawMod(String storedKeyName) {
+        for (int i = 0; i < rawModCombo.getItemCount(); i++) {
+            RawModOption option = rawModCombo.getItemAt(i);
+            if (option.key().equalsIgnoreCase(storedKeyName != null ? storedKeyName : "")) {
+                rawModCombo.setSelectedIndex(i);
+                return;
+            }
+        }
+        rawModCombo.setSelectedIndex(0); // default to "(none)"
+    }
+
+    /** Carries the stored uppercase key name and a human-readable display label for the modifier combo. */
+    private record RawModOption(String key, String label) {
+        @Override
+        public String toString() {
+            return label;
+        }
     }
 }

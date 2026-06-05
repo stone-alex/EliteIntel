@@ -321,11 +321,17 @@ public class MacrosTabPanel extends JPanel {
                 return "INVALID_STEP";
             }
             return switch (step.getType()) {
-                case BINDING_TAP -> "BINDING_TAP " + step.getBindingId();
-                case BINDING_HOLD -> "BINDING_HOLD " + step.getBindingId() + " for " + step.getDurationMs() + " ms";
-                case DELAY -> "DELAY " + step.getDurationMs() + " ms";
-                case SPEAK -> "SPEAK \"" + step.getText() + "\"";
-                case RUN_COMMAND -> "RUN_COMMAND " + step.getActionId();
+                case SPEAK        -> "SPEAK: \"" + step.getText() + "\"";
+                case DELAY        -> "DELAY: " + step.getDurationMs() + " ms";
+                case BINDING_TAP  -> "BINDING_TAP: " + step.getBindingId();
+                case BINDING_HOLD -> "BINDING_HOLD: " + step.getBindingId() + " (" + step.getDurationMs() + " ms)";
+                case RUN_COMMAND  -> "RUN_COMMAND: " + step.getActionId();
+                case RAW_KEY -> {
+                    String combo = new BindingSlotDisplayFormatter().formatRawKeyStep(step.getRawKey(), step.getRawKeyModifier());
+                    yield step.getDurationMs() > 0
+                            ? "RAW_KEY: " + combo + " (" + step.getDurationMs() + " ms)"
+                            : "RAW_KEY: " + combo;
+                }
             };
         }
 

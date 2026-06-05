@@ -19,7 +19,13 @@ public final class MacroStep {
          * Delegate to an existing built-in command handler by {@code actionId}.
          * Must reference a Commands action ID, not another macro ID.
          */
-        RUN_COMMAND
+        RUN_COMMAND,
+        /**
+         * Press an arbitrary raw key with an optional modifier and optional hold duration.
+         * Requires {@code rawKey} (uppercase Elite key name, e.g. {@code "KEY_W"}).
+         * {@code rawKeyModifier} is optional (e.g. {@code "KEY_LEFTCONTROL"}); {@code durationMs} is 0 for a tap.
+         */
+        RAW_KEY
     }
 
     private final Type type;
@@ -27,16 +33,29 @@ public final class MacroStep {
     private final int durationMs;
     private final String text;
     private final String actionId;
+    private final String rawKey;
+    private final String rawKeyModifier;
 
     /**
      * Creates one macro step. Only the fields required by {@code type} are used at execution time.
      */
     public MacroStep(Type type, String bindingId, int durationMs, String text, String actionId) {
+        this(type, bindingId, durationMs, text, actionId, null, null);
+    }
+
+    /**
+     * Creates a RAW_KEY step or any step that needs {@code rawKey}/{@code rawKeyModifier}.
+     * For all other types, pass {@code null} for the last two parameters.
+     */
+    public MacroStep(Type type, String bindingId, int durationMs, String text, String actionId,
+                     String rawKey, String rawKeyModifier) {
         this.type = type;
         this.bindingId = bindingId;
         this.durationMs = durationMs;
         this.text = text;
         this.actionId = actionId;
+        this.rawKey = rawKey;
+        this.rawKeyModifier = rawKeyModifier;
     }
 
     @SuppressWarnings("unused")
@@ -46,6 +65,8 @@ public final class MacroStep {
         durationMs = 0;
         text = null;
         actionId = null;
+        rawKey = null;
+        rawKeyModifier = null;
     }
 
     /** Validates required fields for this step's type. */
@@ -66,6 +87,8 @@ public final class MacroStep {
                 require(text != null && !text.isBlank(), stepIndex, "text");
             case RUN_COMMAND ->
                 require(actionId != null && !actionId.isBlank(), stepIndex, "actionId");
+            case RAW_KEY ->
+                require(rawKey != null && !rawKey.isBlank(), stepIndex, "rawKey");
         }
     }
 
@@ -80,4 +103,6 @@ public final class MacroStep {
     public int getDurationMs() { return durationMs; }
     public String getText() { return text; }
     public String getActionId() { return actionId; }
+    public String getRawKey() { return rawKey; }
+    public String getRawKeyModifier() { return rawKeyModifier; }
 }

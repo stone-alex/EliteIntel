@@ -4,8 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The KeyBindingExecutor class provides functionality to manage and execute key bindings
@@ -81,6 +83,26 @@ public class KeyBindingExecutor {
             }
         }
         return eliteKey.toString().toUpperCase();
+    }
+
+    /**
+     * Resolves an Elite key name (e.g. {@code "KEY_W"} or {@code "Key_LeftControl"}) to a
+     * {@link KeyProcessor} key code. Returns {@code null} if the key name is unknown.
+     * The lookup is case-insensitive.
+     */
+    public static Integer resolveKeyCode(String eliteKeyName) {
+        if (eliteKeyName == null || eliteKeyName.isBlank()) {
+            return null;
+        }
+        return ELITE_TO_KEYPROCESSOR_MAP.get(eliteKeyName.toUpperCase());
+    }
+
+    /**
+     * Returns all known Elite key names (uppercase, e.g. {@code "KEY_W"}).
+     * Useful for populating raw-key picker UIs.
+     */
+    public static Set<String> knownEliteKeyNames() {
+        return Collections.unmodifiableSet(ELITE_TO_KEYPROCESSOR_MAP.keySet());
     }
 
     public void executeBinding(KeyBindingsParser.KeyBinding binding) {

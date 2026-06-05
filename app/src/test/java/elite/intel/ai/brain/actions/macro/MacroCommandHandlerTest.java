@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.actions.handlers.CommandHandlerFactory;
 import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
+import elite.intel.ai.hands.KeyBindingExecutor;
 import elite.intel.ai.hands.events.GameInputSequenceEvent;
 import elite.intel.ai.hands.events.GameInputStep;
 import elite.intel.gameapi.GameControllerBus;
@@ -177,6 +178,89 @@ class MacroCommandHandlerTest {
                   {"type":"RUN_COMMAND","actionId":"does_not_exist_12345"}
                 ]}"""));
         assertTrue(inputCapture.events.isEmpty());
+    }
+
+    // --- RAW_KEY ---
+
+    @Test
+    void rawKeyStepPublishesGameInputWithCorrectKeyCode() {
+        runMacro("""
+                {"id":"m","name":"M","phrases":"p","steps":[
+                  {"type":"RAW_KEY","rawKey":"KEY_F5","durationMs":0}
+                ]}""");
+
+        assertEquals(1, inputCapture.events.size());
+        GameInputStep step = inputCapture.events.getFirst().getSteps().getFirst();
+        assertEquals(GameInputStep.Type.RAW_KEY, step.getType());
+        assertEquals(KeyBindingExecutor.resolveKeyCode("KEY_F5"), step.getKeyCode());
+        assertEquals(0, step.getModifierKeyCode());
+        assertEquals(0, step.getDurationMs());
+    }
+
+    @Test
+    void rawKeyStepWithModifierSetsModifierKeyCode() {
+        runMacro("""
+                {"id":"m","name":"M","phrases":"p","steps":[
+                  {"type":"RAW_KEY","rawKey":"KEY_W","rawKeyModifier":"KEY_LEFTCONTROL","durationMs":0}
+                ]}""");
+
+        assertEquals(1, inputCapture.events.size());
+        GameInputStep step = inputCapture.events.getFirst().getSteps().getFirst();
+        assertEquals(GameInputStep.Type.RAW_KEY, step.getType());
+        assertEquals(KeyBindingExecutor.resolveKeyCode("KEY_W"), step.getKeyCode());
+        assertEquals(KeyBindingExecutor.resolveKeyCode("KEY_LEFTCONTROL"), step.getModifierKeyCode());
+        assertEquals(0, step.getDurationMs());
+    }
+
+    @Test
+    void rawKeyStepWithHoldDurationPreservesDuration() {
+        runMacro("""
+                {"id":"m","name":"M","phrases":"p","steps":[
+                  {"type":"RAW_KEY","rawKey":"KEY_SPACE","durationMs":500}
+                ]}""");
+
+        assertEquals(1, inputCapture.events.size());
+        GameInputStep step = inputCapture.events.getFirst().getSteps().getFirst();
+        assertEquals(GameInputStep.Type.RAW_KEY, step.getType());
+        assertEquals(KeyBindingExecutor.resolveKeyCode("KEY_SPACE"), step.getKeyCode());
+        assertEquals(500, step.getDurationMs());
+    }
+
+    @Test
+    void rawKeyStepWithUnknownKeyIsSkipped() {
+        runMacro("""
+                {"id":"m","name":"M","phrases":"p","steps":[
+                  {"type":"RAW_KEY","rawKey":"KEY_DOES_NOT_EXIST_99999","durationMs":0}
+                ]}""");
+
+        assertTrue(inputCapture.events.isEmpty());
+    }
+
+    @Test
+    void rawKeyStepWithUnknownModifierFallsBackToNoModifier() {
+        runMacro("""
+                {"id":"m","name":"M","phrases":"p","steps":[
+                  {"type":"RAW_KEY","rawKey":"KEY_W","rawKeyModifier":"KEY_BAD_MODIFIER","durationMs":0}
+                ]}""");
+
+        assertEquals(1, inputCapture.events.size());
+        GameInputStep step = inputCapture.events.getFirst().getSteps().getFirst();
+        assertEquals(GameInputStep.Type.RAW_KEY, step.getType());
+        // Unknown modifier resolves to 0 (no modifier) rather than skipping the step
+        assertEquals(0, step.getModifierKeyCode());
+        assertEquals(KeyBindingExecutor.resolveKeyCode("KEY_W"), step.getKeyCode());
+    }
+
+    @Test
+    void rawKeyStepCaseInsensitiveKeyName() {
+        runMacro("""
+                {"id":"m","name":"M","phrases":"p","steps":[
+                  {"type":"RAW_KEY","rawKey":"Key_LeftControl","durationMs":0}
+                ]}""");
+
+        assertEquals(1, inputCapture.events.size());
+        GameInputStep step = inputCapture.events.getFirst().getSteps().getFirst();
+        assertEquals(KeyBindingExecutor.resolveKeyCode("KEY_LEFTCONTROL"), step.getKeyCode());
     }
 
     // --- multi-step ordering ---

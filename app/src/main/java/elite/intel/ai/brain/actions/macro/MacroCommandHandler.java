@@ -3,6 +3,7 @@ package elite.intel.ai.brain.actions.macro;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.actions.handlers.CommandHandlerFactory;
 import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
+import elite.intel.ai.hands.KeyBindingExecutor;
 import elite.intel.ai.hands.events.GameInputSequenceEvent;
 import elite.intel.ai.hands.events.GameInputStep;
 import elite.intel.gameapi.EventBusManager;
@@ -98,6 +99,32 @@ public final class MacroCommandHandler implements CommandHandler {
                 flushPendingInputSteps(pendingInput);
                 EventBusManager.publish(new AppLogEvent("Macro step: SPEAK " + step.getText()));
                 speakExecutor.speak(step.getText());
+            }
+
+            case RAW_KEY -> {
+                Integer keyCode = KeyBindingExecutor.resolveKeyCode(step.getRawKey());
+                if (keyCode == null) {
+                    log.warn("Macro '{}' step {}: unknown rawKey '{}' — step skipped",
+                            macro.getName(), index, step.getRawKey());
+                    EventBusManager.publish(new AppLogEvent(
+                            "Macro step: RAW_KEY " + step.getRawKey() + " (unknown key - skipped)"));
+                    break;
+                }
+                int modCode = 0;
+                String rawMod = step.getRawKeyModifier();
+                if (rawMod != null && !rawMod.isBlank()) {
+                    Integer resolved = KeyBindingExecutor.resolveKeyCode(rawMod);
+                    if (resolved == null) {
+                        log.warn("Macro '{}' step {}: unknown rawKeyModifier '{}' — executing without modifier",
+                                macro.getName(), index, rawMod);
+                    } else {
+                        modCode = resolved;
+                    }
+                }
+                String logSuffix = (modCode != 0 ? " + " + rawMod : "")
+                        + (step.getDurationMs() > 0 ? " " + step.getDurationMs() + "ms" : "");
+                EventBusManager.publish(new AppLogEvent("Macro step: RAW_KEY " + step.getRawKey() + logSuffix));
+                pendingInput.addInput(GameInputStep.rawKey(keyCode, modCode, step.getDurationMs()));
             }
 
             case RUN_COMMAND -> {

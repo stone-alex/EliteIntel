@@ -150,7 +150,14 @@ public class ResponseRouter implements AIRouterInterface {
      * the resolved action id and any explicit params collected from the commander.
      */
     public void executeCommandFromGUI(String action, JsonObject params) {
-        handleCommand(action, params == null ? new JsonObject() : params, "");
+        executeCommandFromGUI(action, params, true);
+    }
+
+    /**
+     * Executes a GUI-selected command and optionally suppresses the standard affirmative voice preamble.
+     */
+    public void executeCommandFromGUI(String action, JsonObject params, boolean speakAffirmation) {
+        handleCommand(action, params == null ? new JsonObject() : params, "", speakAffirmation);
     }
 
 
@@ -163,6 +170,10 @@ public class ResponseRouter implements AIRouterInterface {
 
 
     protected void handleCommand(String action, JsonObject params, String responseText) {
+        handleCommand(action, params, responseText, true);
+    }
+
+    private void handleCommand(String action, JsonObject params, String responseText, boolean speakAffirmation) {
         log.info("Command dispatch: action=[{}] params=[{}]", action, params);
         EventBusManager.publish(new AppLogEvent("Processing action: " + action + " with params: " + params.toString()));
         if (IGNORE_NONSENSE.getAction().equalsIgnoreCase(action)) {
@@ -170,7 +181,7 @@ public class ResponseRouter implements AIRouterInterface {
             return;
         }
 
-        if (!CONNECTION_CHECK_COMMAND.equalsIgnoreCase(action)) {
+        if (speakAffirmation && !CONNECTION_CHECK_COMMAND.equalsIgnoreCase(action)) {
             EventBusManager.publish(new AiVoxResponseEvent("%s".formatted(StringUtls.affirmative())));
         }
 

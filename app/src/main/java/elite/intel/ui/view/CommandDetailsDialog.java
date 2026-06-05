@@ -13,6 +13,7 @@ import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,10 +28,60 @@ public final class CommandDetailsDialog extends JDialog {
     private static final Color RUN_BUTTON_BG = new Color(0x1F8F3A);
     private static final int GUI_COMMAND_DISPATCH_DELAY_MS = 350;
     private final CommandCatalogEntry entry;
+    private final List<String> phrases;
+    private final boolean showPhraseCorrection;
+    private final String sequenceText;
+    private final Runnable editAction;
+    private final Runnable deleteAction;
 
     public CommandDetailsDialog(Component parent, CommandCatalogEntry entry) {
-        super(SwingUtilities.getWindowAncestor(parent), getText("actions.commands.details.title"), ModalityType.APPLICATION_MODAL);
-        this.entry = entry;
+        this(parent, entry, AiActionLocalizations.phrasesForAction(entry.id()), true);
+    }
+
+    /**
+     * Creates a details dialog for entries whose phrases do not come from built-in localization aliases.
+     */
+    public CommandDetailsDialog(
+            Component parent,
+            CommandCatalogEntry entry,
+            List<String> phrases,
+            boolean showPhraseCorrection
+    ) {
+        this(parent, entry, phrases, showPhraseCorrection, "");
+    }
+
+    /**
+     * Creates a details dialog with an extra read-only macro sequence section.
+     */
+    CommandDetailsDialog(
+            Component parent,
+            CommandCatalogEntry entry,
+            List<String> phrases,
+            boolean showPhraseCorrection,
+            String sequenceText
+    ) {
+        this(parent, entry, phrases, showPhraseCorrection, sequenceText, null, null);
+    }
+
+    /**
+     * Creates a macro details dialog with optional editing actions owned by the macro list panel.
+     */
+    CommandDetailsDialog(
+            Component parent,
+            CommandCatalogEntry entry,
+            List<String> phrases,
+            boolean showPhraseCorrection,
+            String sequenceText,
+            Runnable editAction,
+            Runnable deleteAction
+    ) {
+        super(SwingUtilities.getWindowAncestor(parent), dialogTitle(entry), ModalityType.APPLICATION_MODAL);
+        this.entry = Objects.requireNonNull(entry, "entry");
+        this.phrases = phrases == null ? List.of() : List.copyOf(phrases);
+        this.showPhraseCorrection = showPhraseCorrection;
+        this.sequenceText = sequenceText == null ? "" : sequenceText;
+        this.editAction = editAction;
+        this.deleteAction = deleteAction;
         buildUi();
     }
 
@@ -85,6 +136,7 @@ public final class CommandDetailsDialog extends JDialog {
         addLabelValue(panel, gbc, getText("actions.commands.details.type"), readableType(entry.type()));
         addDescription(panel, gbc);
         addPhrases(panel, gbc);
+        addSequence(panel, gbc);
 
         gbc.gridx = 0;
         gbc.weighty = 1.0;
@@ -139,6 +191,29 @@ public final class CommandDetailsDialog extends JDialog {
         gbc.weighty = 0.0;
     }
 
+    private void addSequence(JPanel panel, GridBagConstraints gbc) {
+        if (sequenceText.isBlank()) {
+            return;
+        }
+
+        gbc.gridx = 0;
+        gbc.weightx = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
+        panel.add(detailLabel(getText("actions.macros.details.sequence")), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        JTextArea sequence = readOnlyTextArea(sequenceText);
+        sequence.setRows(Math.min(10, Math.max(4, sequenceText.split("\\R").length)));
+        JScrollPane scrollPane = new JScrollPane(sequence);
+        scrollPane.getViewport().setBackground(AppTheme.BG_PANEL);
+        panel.add(scrollPane, gbc);
+        gbc.gridy++;
+        gbc.weighty = 0.0;
+    }
+
     private JComponent phrasesSection() {
         JPanel panel = new JPanel(new BorderLayout(0, 8));
         panel.setOpaque(false);
@@ -146,9 +221,11 @@ public final class CommandDetailsDialog extends JDialog {
 
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         actions.setOpaque(false);
-        JButton suggestCorrection = AppTheme.makeButtonSubtle(getText("actions.commands.details.suggestCorrection"));
-        suggestCorrection.addActionListener(event -> openPhraseCorrectionDialog());
-        actions.add(suggestCorrection);
+        if (showPhraseCorrection) {
+            JButton suggestCorrection = AppTheme.makeButtonSubtle(getText("actions.commands.details.suggestCorrection"));
+            suggestCorrection.addActionListener(event -> openPhraseCorrectionDialog());
+            actions.add(suggestCorrection);
+        }
         panel.add(actions, BorderLayout.SOUTH);
         return panel;
     }
@@ -201,11 +278,30 @@ public final class CommandDetailsDialog extends JDialog {
 
         panel.add(leftButtons, BorderLayout.WEST);
 
+        JPanel rightButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        rightButtons.setOpaque(false);
+        if (editAction != null) {
+            JButton edit = AppTheme.makeButtonSubtle(getText("actions.macros.action.edit"));
+            edit.addActionListener(event -> runAfterClose(editAction));
+            rightButtons.add(edit);
+        }
+        if (deleteAction != null) {
+            JButton delete = AppTheme.makeButtonSubtle(getText("actions.macros.action.delete"));
+            delete.addActionListener(event -> runAfterClose(deleteAction));
+            rightButtons.add(delete);
+        }
+
         JButton close = AppTheme.makeButton(getText("actions.commands.details.close"));
         close.addActionListener(event -> dispose());
-        panel.add(close, BorderLayout.EAST);
+        rightButtons.add(close);
+        panel.add(rightButtons, BorderLayout.EAST);
         getRootPane().setDefaultButton(close);
         return panel;
+    }
+
+    private void runAfterClose(Runnable action) {
+        dispose();
+        action.run();
     }
 
     private JButton runButton() {
@@ -255,7 +351,7 @@ public final class CommandDetailsDialog extends JDialog {
         // Keyboard-backed commands target the active OS window; give focus a moment to leave this dialog.
         Timer dispatchTimer = new Timer(
                 GUI_COMMAND_DISPATCH_DELAY_MS,
-                event -> ResponseRouter.getInstance().executeCommandFromGUI(entry.id(), params)
+                event -> ResponseRouter.getInstance().executeCommandFromGUI(entry.id(), params, !entry.isMacro())
         );
         dispatchTimer.setRepeats(false);
         dispatchTimer.start();
@@ -266,10 +362,13 @@ public final class CommandDetailsDialog extends JDialog {
     }
 
     private List<String> currentPhrases() {
-        return AiActionLocalizations.phrasesForAction(entry.id());
+        return phrases;
     }
 
     private JsonObject promptForParams() {
+        if (entry.isMacro()) {
+            return new JsonObject();
+        }
         List<CommandParameter> parameters = commandParameters();
         JsonObject params = new JsonObject();
         if (parameters.isEmpty()) {
@@ -360,6 +459,12 @@ public final class CommandDetailsDialog extends JDialog {
             case BUILT_IN_ACTION -> getText("actions.commands.type.builtInAction");
             case USER_MACRO -> getText("actions.commands.type.userMacro");
         };
+    }
+
+    private static String dialogTitle(CommandCatalogEntry entry) {
+        return entry != null && entry.isMacro()
+                ? getText("actions.macros.details.title")
+                : getText("actions.commands.details.title");
     }
 
     private record CommandParameter(String name, String hint) {

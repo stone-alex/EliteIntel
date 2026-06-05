@@ -82,10 +82,18 @@ public final class MacroRepository {
      * Caller must invoke this on a background thread.
      */
     public void save(List<MacroDefinition> macros) {
+        trySave(macros);
+    }
+
+    /**
+     * Writes macros and reports whether the runtime file was updated successfully.
+     */
+    public boolean trySave(List<MacroDefinition> macros) {
         try {
-            save(macros, AppPaths.getMacrosFilePath());
+            return save(macros, AppPaths.getMacrosFilePath());
         } catch (Exception e) {
             log.error("Failed to resolve macros file path for save", e);
+            return false;
         }
     }
 
@@ -93,13 +101,18 @@ public final class MacroRepository {
      * Package-private test seam - saves macros to an explicit {@link Path}.
      * Production code always calls {@link #save(List)}.
      */
-    void save(List<MacroDefinition> macros, Path path) {
+    boolean save(List<MacroDefinition> macros, Path path) {
         try {
+            if (path.getParent() != null) {
+                Files.createDirectories(path.getParent());
+            }
             String json = GSON.toJson(macros);
             Files.writeString(path, json, StandardCharsets.UTF_8);
             log.info("Saved {} macro(s) to {}", macros.size(), path);
+            return true;
         } catch (Exception e) {
             log.error("Failed to save macros.json", e);
+            return false;
         }
     }
 }

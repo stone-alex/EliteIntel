@@ -107,6 +107,10 @@ public class GeminiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         log.info("Sanitized voice userInput:\n{}", userInput);
 
+        if (tryProcessExactMacroCommand(userInput)) {
+            return;
+        }
+
         JsonArray messages = buildVoiceCommandMessages(userInput);
 
         JsonObject apiResponse = GeminiChatEndPoint.getInstance().processAiPrompt(messages, 0.01f);

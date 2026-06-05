@@ -6,15 +6,23 @@ import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AIRouterInterface;
 import elite.intel.ai.brain.AiPromptFactory;
+import elite.intel.ai.brain.AiActionsMap;
+import elite.intel.ai.brain.InputNormalizer;
+import elite.intel.ai.brain.actions.macro.MacroRegistry;
 import elite.intel.gameapi.SensorDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class CommandEndPoint extends AiEndPoint {
 
     private static final Logger log = LogManager.getLogger(CommandEndPoint.class);
     private final AiPromptFactory contextFactory;
     private final AIRouterInterface router;
+    private final InputNormalizer inputNormalizer = InputNormalizer.getInstance();
 
     protected CommandEndPoint() {
         this.router = ApiFactory.getInstance().getAiRouter();
@@ -33,6 +41,38 @@ public abstract class CommandEndPoint extends AiEndPoint {
         JsonObject err = new JsonObject();
         err.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, text);
         return err;
+    }
+
+    /**
+     * Dispatches an exact user macro phrase before LLM classification.
+     * <p>
+     * User macros are explicit user-authored commands, so exact phrase matches should be deterministic.
+     */
+    protected boolean tryProcessExactMacroCommand(String userInput) {
+        String normalizedInput = normalizeForExactMacroMatch(userInput);
+        if (normalizedInput.isBlank()) {
+            return false;
+        }
+
+        String action = AiActionsMap.getInstance().actionMap(false).get(normalizedInput);
+        Set<String> macroIds = MacroRegistry.getInstance().getMacros().stream()
+                .map(macro -> macro.getId().toLowerCase(Locale.ROOT))
+                .collect(Collectors.toSet());
+        if (action == null || !macroIds.contains(action.toLowerCase(Locale.ROOT))) {
+            return false;
+        }
+
+        log.info("Exact macro phrase matched STT input: [{}] -> {}", normalizedInput, action);
+        JsonObject direct = new JsonObject();
+        direct.addProperty(AIConstants.TYPE_ACTION, action);
+        direct.add(AIConstants.PARAMS, new JsonObject());
+        router.processAiResponse(direct, userInput);
+        return true;
+    }
+
+    private String normalizeForExactMacroMatch(String value) {
+        String normalized = inputNormalizer.normalize(value == null ? "" : value);
+        return normalized == null ? "" : normalized.trim().toLowerCase(Locale.ROOT);
     }
 
     protected JsonArray buildVoiceCommandMessages(String userInput) {

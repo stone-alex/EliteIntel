@@ -5,79 +5,165 @@ import elite.intel.ai.brain.actions.handlers.CommandHandlerFactory;
 import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.events.GameInputSequenceEvent;
 import elite.intel.ai.hands.events.GameInputStep;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
+import elite.intel.ui.event.AppLogEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Executes a {@link MacroDefinition} step-by-step.
  * <p>
  * Always invoked from the background thread already spawned by {@code ResponseRouter.handleCommand()},
- * so blocking {@link Thread#sleep} in {@code DELAY} steps is safe.
+ * so blocking operations (DELAY sleep, SPEAK wait) are safe.
+ * <p>
+ * A static fair {@link ReentrantLock} serializes all macro executions globally, preventing two
+ * concurrently triggered macros from interleaving their input and speech steps. The lock is
+ * released in {@code finally} regardless of error or interruption.
  */
 public final class MacroCommandHandler implements CommandHandler {
 
     private static final Logger log = LogManager.getLogger(MacroCommandHandler.class);
+
+    /** Serializes all macro executions. Fair ordering ensures FIFO execution when macros queue up. */
+    private static final ReentrantLock MACRO_LOCK = new ReentrantLock(true);
+
     private final MacroDefinition macro;
+    private final MacroSpeakExecutor speakExecutor;
 
     public MacroCommandHandler(MacroDefinition macro) {
+        this(macro, SynchronousMacroSpeech.DEFAULT);
+    }
+
+    /** Package-private: allows tests to inject a fast non-blocking speak executor. */
+    MacroCommandHandler(MacroDefinition macro, MacroSpeakExecutor speakExecutor) {
         this.macro = macro;
+        this.speakExecutor = speakExecutor;
     }
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
-        log.info("Executing macro '{}' ({} step(s))", macro.getName(), macro.getSteps().size());
-        for (int i = 0; i < macro.getSteps().size(); i++) {
-            MacroStep step = macro.getSteps().get(i);
+        MACRO_LOCK.lock();
+        try {
+            log.info("Executing macro '{}' ({} step(s))", macro.getName(), macro.getSteps().size());
+            PendingInputSequence pendingInput = new PendingInputSequence();
+            for (int i = 0; i < macro.getSteps().size(); i++) {
+                MacroStep step = macro.getSteps().get(i);
+                try {
+                    executeStep(step, i, pendingInput);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    log.warn("Macro '{}' interrupted at step {}", macro.getName(), i);
+                    return;
+                } catch (Exception e) {
+                    log.error("Macro '{}' step {} ({}) failed: {}", macro.getName(), i, step.getType(), e.getMessage(), e);
+                    // continue to next step rather than aborting the whole macro
+                }
+            }
             try {
-                executeStep(step, i);
+                flushPendingInputSteps(pendingInput);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                log.warn("Macro '{}' interrupted at step {}", macro.getName(), i);
+                log.warn("Macro '{}' interrupted while flushing input sequence", macro.getName());
                 return;
-            } catch (Exception e) {
-                log.error("Macro '{}' step {} ({}) failed: {}", macro.getName(), i, step.getType(), e.getMessage(), e);
-                // continue to next step rather than aborting the whole macro
             }
+            log.debug("Macro '{}' completed", macro.getName());
+        } finally {
+            MACRO_LOCK.unlock();
         }
-        log.debug("Macro '{}' completed", macro.getName());
     }
 
-    private void executeStep(MacroStep step, int index) throws InterruptedException {
+    private void executeStep(MacroStep step, int index, PendingInputSequence pendingInput) throws InterruptedException {
         switch (step.getType()) {
-            case BINDING_TAP ->
-                GameControllerBus.publish(
-                    GameInputSequenceEvent.single(GameInputStep.bindingTap(step.getBindingId())));
-
-            case BINDING_HOLD ->
-                GameControllerBus.publish(
-                    GameInputSequenceEvent.single(GameInputStep.bindingHold(step.getBindingId(), step.getDurationMs())));
-
-            case DELAY -> {
-                log.debug("Macro '{}' step {}: delay {}ms", macro.getName(), index, step.getDurationMs());
-                Thread.sleep(step.getDurationMs());
+            case BINDING_TAP -> {
+                EventBusManager.publish(new AppLogEvent("Macro step: BINDING_TAP " + step.getBindingId()));
+                pendingInput.addInput(GameInputStep.bindingTap(step.getBindingId()));
             }
 
-            case SPEAK ->
-                EventBusManager.publish(new AiVoxResponseEvent(step.getText()));
+            case BINDING_HOLD -> {
+                EventBusManager.publish(new AppLogEvent("Macro step: BINDING_HOLD " + step.getBindingId() + " " + step.getDurationMs() + "ms"));
+                pendingInput.addInput(GameInputStep.bindingHold(step.getBindingId(), step.getDurationMs()));
+            }
+
+            case DELAY -> {
+                EventBusManager.publish(new AppLogEvent("Macro step: DELAY " + step.getDurationMs() + "ms"));
+                pendingInput.addDelay(GameInputStep.delay(step.getDurationMs()));
+            }
+
+            case SPEAK -> {
+                flushPendingInputSteps(pendingInput);
+                EventBusManager.publish(new AppLogEvent("Macro step: SPEAK " + step.getText()));
+                speakExecutor.speak(step.getText());
+            }
 
             case RUN_COMMAND -> {
+                flushPendingInputSteps(pendingInput);
                 CommandHandler nested = CommandHandlerFactory.getInstance()
                         .getCommandHandlers()
                         .get(step.getActionId());
                 if (nested == null) {
                     log.warn("Macro '{}' step {}: unknown actionId '{}' - step skipped",
                             macro.getName(), index, step.getActionId());
+                    EventBusManager.publish(new AppLogEvent("Macro step: RUN_COMMAND " + step.getActionId() + " (unknown - skipped)"));
                 } else if (nested instanceof MacroCommandHandler) {
                     // Prevent cross-macro delegation - macros must not call other macros.
                     log.warn("Macro '{}' step {}: RUN_COMMAND may not target another macro ('{}') - step skipped",
                             macro.getName(), index, step.getActionId());
+                    EventBusManager.publish(new AppLogEvent("Macro step: RUN_COMMAND " + step.getActionId() + " (cross-macro blocked)"));
                 } else {
+                    EventBusManager.publish(new AppLogEvent("Macro step: RUN_COMMAND " + step.getActionId()));
                     nested.handle(step.getActionId(), new JsonObject(), "");
                 }
             }
+        }
+    }
+
+    private void flushPendingInputSteps(PendingInputSequence pendingInput) throws InterruptedException {
+        if (pendingInput.isEmpty()) {
+            return;
+        }
+        if (pendingInput.hasInput()) {
+            GameControllerBus.publish(new GameInputSequenceEvent(pendingInput.steps()));
+        } else {
+            for (GameInputStep step : pendingInput.steps()) {
+                Thread.sleep(step.getDurationMs());
+            }
+        }
+        pendingInput.clear();
+    }
+
+    private static final class PendingInputSequence {
+        private final List<GameInputStep> steps = new ArrayList<>();
+        private boolean hasInput;
+
+        void addInput(GameInputStep step) {
+            steps.add(step);
+            hasInput = true;
+        }
+
+        void addDelay(GameInputStep step) {
+            steps.add(step);
+        }
+
+        boolean isEmpty() {
+            return steps.isEmpty();
+        }
+
+        boolean hasInput() {
+            return hasInput;
+        }
+
+        List<GameInputStep> steps() {
+            return steps;
+        }
+
+        void clear() {
+            steps.clear();
+            hasInput = false;
         }
     }
 }

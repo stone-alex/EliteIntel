@@ -178,7 +178,7 @@ class MacroRepositoryTest {
     void saveAndLoadRoundtripPreservesAllFields() {
         List<MacroDefinition> original = repo.load(jsonWithOneMacro());
 
-        repo.save(original, macrosFile());
+        assertTrue(repo.save(original, macrosFile()));
         List<MacroDefinition> reloaded = repo.load(macrosFile());
 
         assertEquals(1, reloaded.size());
@@ -190,6 +190,23 @@ class MacroRepositoryTest {
         assertEquals(1, m.getSteps().size());
         assertEquals(MacroStep.Type.SPEAK, m.getSteps().getFirst().getType());
         assertEquals("hi", m.getSteps().getFirst().getText());
+    }
+
+    @Test
+    void saveCreatesParentDirectories() {
+        Path nestedFile = tempDir.resolve("nested").resolve("macros").resolve("macros.json");
+        MacroDefinition macro = new MacroDefinition(
+                "macro_nested_save",
+                "Nested Save",
+                "",
+                "nested save",
+                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hi", null))
+        );
+
+        assertTrue(repo.save(List.of(macro), nestedFile));
+
+        assertTrue(Files.exists(nestedFile));
+        assertEquals(1, repo.load(nestedFile).size());
     }
 
     // --- helpers ---

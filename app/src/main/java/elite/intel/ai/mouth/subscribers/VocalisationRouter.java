@@ -18,7 +18,8 @@ public class VocalisationRouter {
     /// --- always pass through
     @Subscribe
     public void onAiVoxResponseEvent(AiVoxResponseEvent event) {
-        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), AiVoxResponseEvent.class, true));
+        // Pass completionFuture through so macro SPEAK can block until playback finishes
+        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), AiVoxResponseEvent.class, true, event.getCompletionFuture()));
     }
 
     @Subscribe

@@ -105,6 +105,10 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
         log.info("Sanitized voice userInput:\n{}", userInput);
 
+        if (tryProcessExactMacroCommand(userInput)) {
+            return;
+        }
+
         JsonArray messages = buildVoiceCommandMessages(userInput);
 
         JsonObject apiResponse = GrokChatEndPoint.getInstance().processAiPrompt(messages, 0.01f);

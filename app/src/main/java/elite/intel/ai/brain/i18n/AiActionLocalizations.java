@@ -44,9 +44,9 @@ public final class AiActionLocalizations {
     }
 
     /**
-     * Splits alias groups on top-level commas while preserving commas inside parameter templates.
+     * Splits an alias group on top-level commas while preserving commas inside parameter templates.
      */
-    static List<String> splitPhraseGroup(String phraseGroup) {
+    public static List<String> splitPhraseGroup(String phraseGroup) {
         if (phraseGroup == null || phraseGroup.isBlank()) {
             return List.of();
         }

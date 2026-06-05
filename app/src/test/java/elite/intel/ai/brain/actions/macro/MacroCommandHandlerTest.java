@@ -7,8 +7,6 @@ import elite.intel.ai.brain.actions.handlers.CommandHandlerFactory;
 import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.events.GameInputSequenceEvent;
 import elite.intel.ai.hands.events.GameInputStep;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.GameControllerBus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +25,7 @@ class MacroCommandHandlerTest {
     private static final Gson GSON = new Gson();
 
     private final InputCapture inputCapture = new InputCapture();
-    private final VoxCapture voxCapture = new VoxCapture();
+    private final TestSpeakExecutor testSpeakExecutor = new TestSpeakExecutor();
 
     // Keys added to CommandHandlerFactory in individual tests - cleaned up in @AfterEach.
     private final List<String> addedHandlerKeys = new ArrayList<>();
@@ -33,15 +33,13 @@ class MacroCommandHandlerTest {
     @BeforeEach
     void registerCaptures() {
         GameControllerBus.register(inputCapture);
-        EventBusManager.register(voxCapture);
     }
 
     @AfterEach
     void cleanUp() {
         GameControllerBus.unregister(inputCapture);
-        EventBusManager.unregister(voxCapture);
         inputCapture.events.clear();
-        voxCapture.events.clear();
+        testSpeakExecutor.spoken.clear();
         for (String key : addedHandlerKeys) {
             CommandHandlerFactory.getInstance().getCommandHandlers().remove(key);
         }
@@ -89,21 +87,51 @@ class MacroCommandHandlerTest {
                 ]}""");
 
         assertTrue(inputCapture.events.isEmpty());
-        assertTrue(voxCapture.events.isEmpty());
+        assertTrue(testSpeakExecutor.spoken.isEmpty());
     }
 
     // --- SPEAK ---
 
     @Test
-    void speakStepPublishesAiVoxEventWithCorrectText() {
+    void speakStepCallsSpeakExecutorWithCorrectText() {
         runMacro("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"SPEAK","text":"Hello pilot"}
                 ]}""");
 
-        assertEquals(1, voxCapture.events.size());
-        assertEquals("Hello pilot", voxCapture.events.getFirst().getText());
+        assertEquals(1, testSpeakExecutor.spoken.size());
+        assertEquals("Hello pilot", testSpeakExecutor.spoken.getFirst());
         assertTrue(inputCapture.events.isEmpty());
+    }
+
+    @Test
+    void speakBlocksUntilExecutorCompletes() throws InterruptedException {
+        CountDownLatch speakStarted = new CountDownLatch(1);
+        CountDownLatch speakRelease = new CountDownLatch(1);
+
+        MacroSpeakExecutor blockingExecutor = text -> {
+            speakStarted.countDown();
+            speakRelease.await();
+        };
+
+        MacroDefinition macro = deserialize("""
+                {"id":"m","name":"M","phrases":"p","steps":[
+                  {"type":"SPEAK","text":"Wait for me"},
+                  {"type":"BINDING_TAP","bindingId":"AfterSpeak"}
+                ]}""");
+        MacroCommandHandler handler = new MacroCommandHandler(macro, blockingExecutor);
+
+        Thread t = new Thread(() -> handler.handle("m", new JsonObject(), ""));
+        t.start();
+
+        assertTrue(speakStarted.await(2, TimeUnit.SECONDS), "SPEAK must start within 2s");
+        assertTrue(inputCapture.events.isEmpty(), "BINDING_TAP must not fire while SPEAK is executing");
+
+        speakRelease.countDown();
+        t.join(2000);
+
+        assertEquals(1, inputCapture.events.size(), "BINDING_TAP must fire after SPEAK completes");
+        assertEquals("AfterSpeak", inputCapture.events.getFirst().getSteps().getFirst().getBindingId());
     }
 
     // --- RUN_COMMAND ---
@@ -128,7 +156,7 @@ class MacroCommandHandlerTest {
         MacroDefinition nested = deserialize("""
                 {"id":"macro_nested","name":"Nested","phrases":"p",
                  "steps":[{"type":"SPEAK","text":"nested called"}]}""");
-        MacroCommandHandler nestedHandler = new MacroCommandHandler(nested);
+        MacroCommandHandler nestedHandler = new MacroCommandHandler(nested, testSpeakExecutor);
         registerHandler("macro_nested", nestedHandler);
 
         // Macro that tries to call another macro.
@@ -138,7 +166,7 @@ class MacroCommandHandlerTest {
                 ]}""");
 
         // Guard must prevent the nested macro from running - no speech from nested.
-        assertTrue(voxCapture.events.isEmpty(), "Cross-macro call must be blocked");
+        assertTrue(testSpeakExecutor.spoken.isEmpty(), "Cross-macro call must be blocked");
     }
 
     @Test
@@ -163,23 +191,156 @@ class MacroCommandHandlerTest {
                 ]}""");
 
         assertEquals(1, inputCapture.events.size());
-        assertEquals("FirstBinding",
-                inputCapture.events.getFirst().getSteps().getFirst().getBindingId());
-        assertEquals(1, voxCapture.events.size());
-        assertEquals("sequence done", voxCapture.events.getFirst().getText());
+        List<GameInputStep> steps = inputCapture.events.getFirst().getSteps();
+        assertEquals(2, steps.size());
+        assertEquals("FirstBinding", steps.getFirst().getBindingId());
+        assertEquals(GameInputStep.Type.DELAY, steps.get(1).getType());
+        assertEquals(1, testSpeakExecutor.spoken.size());
+        assertEquals("sequence done", testSpeakExecutor.spoken.getFirst());
+    }
+
+    @Test
+    void speakDelayBindingSequenceStillPublishesFinalBindingTap() {
+        runMacro("""
+                {"id":"m","name":"M","phrases":"p","steps":[
+                  {"type":"SPEAK","text":"Hello pilot"},
+                  {"type":"DELAY","durationMs":0},
+                  {"type":"BINDING_TAP","bindingId":"GalaxyMapOpen"}
+                ]}""");
+
+        assertEquals(1, testSpeakExecutor.spoken.size());
+        assertEquals("Hello pilot", testSpeakExecutor.spoken.getFirst());
+        assertEquals(1, inputCapture.events.size());
+        List<GameInputStep> steps = inputCapture.events.getFirst().getSteps();
+        assertEquals(2, steps.size());
+        assertEquals(GameInputStep.Type.DELAY, steps.getFirst().getType());
+        GameInputStep step = steps.get(1);
+        assertEquals(GameInputStep.Type.BINDING_TAP, step.getType());
+        assertEquals("GalaxyMapOpen", step.getBindingId());
+    }
+
+    @Test
+    void bindingDelayBindingPublishesSingleSequenceInOrder() {
+        runMacro("""
+                {"id":"m","name":"M","phrases":"p","steps":[
+                  {"type":"BINDING_TAP","bindingId":"FirstBinding"},
+                  {"type":"DELAY","durationMs":250},
+                  {"type":"BINDING_TAP","bindingId":"SecondBinding"}
+                ]}""");
+
+        assertEquals(1, inputCapture.events.size());
+        List<GameInputStep> steps = inputCapture.events.getFirst().getSteps();
+        assertEquals(3, steps.size());
+        assertEquals("FirstBinding", steps.get(0).getBindingId());
+        assertEquals(GameInputStep.Type.DELAY, steps.get(1).getType());
+        assertEquals(250, steps.get(1).getDurationMs());
+        assertEquals("SecondBinding", steps.get(2).getBindingId());
+    }
+
+    // --- macro atomicity: two macros must not interleave ---
+
+    @Test
+    void twoMacrosDoNotInterleaveInputSteps() throws InterruptedException {
+        MacroDefinition macro1 = deserialize("""
+                {"id":"m1","name":"M1","phrases":"p","steps":[
+                  {"type":"BINDING_TAP","bindingId":"Macro1Step1"},
+                  {"type":"DELAY","durationMs":0},
+                  {"type":"BINDING_TAP","bindingId":"Macro1Step2"}
+                ]}""");
+        MacroDefinition macro2 = deserialize("""
+                {"id":"m2","name":"M2","phrases":"p","steps":[
+                  {"type":"BINDING_TAP","bindingId":"Macro2Step1"},
+                  {"type":"DELAY","durationMs":0},
+                  {"type":"BINDING_TAP","bindingId":"Macro2Step2"}
+                ]}""");
+
+        MacroCommandHandler h1 = new MacroCommandHandler(macro1, testSpeakExecutor);
+        MacroCommandHandler h2 = new MacroCommandHandler(macro2, testSpeakExecutor);
+
+        CountDownLatch ready = new CountDownLatch(2);
+        CountDownLatch go = new CountDownLatch(1);
+
+        Thread t1 = new Thread(() -> {
+            ready.countDown();
+            try { go.await(); } catch (InterruptedException e) { return; }
+            h1.handle("m1", new JsonObject(), "");
+        });
+        Thread t2 = new Thread(() -> {
+            ready.countDown();
+            try { go.await(); } catch (InterruptedException e) { return; }
+            h2.handle("m2", new JsonObject(), "");
+        });
+
+        t1.start();
+        t2.start();
+        assertTrue(ready.await(2, TimeUnit.SECONDS));
+        go.countDown();
+        t1.join(5000);
+        t2.join(5000);
+
+        assertEquals(2, inputCapture.events.size(), "Each macro must produce exactly one GameInputSequenceEvent");
+
+        // No interleaving: each event's bindings must all belong to the same macro
+        List<String> first = inputCapture.events.get(0).getSteps().stream()
+                .filter(s -> s.getType() != GameInputStep.Type.DELAY)
+                .map(GameInputStep::getBindingId)
+                .toList();
+        List<String> second = inputCapture.events.get(1).getSteps().stream()
+                .filter(s -> s.getType() != GameInputStep.Type.DELAY)
+                .map(GameInputStep::getBindingId)
+                .toList();
+
+        boolean firstIsMacro1 = first.stream().allMatch(b -> b.startsWith("Macro1"));
+        boolean firstIsMacro2 = first.stream().allMatch(b -> b.startsWith("Macro2"));
+        assertTrue(firstIsMacro1 || firstIsMacro2, "First event must belong entirely to one macro");
+
+        if (firstIsMacro1) {
+            assertTrue(second.stream().allMatch(b -> b.startsWith("Macro2")), "Second event must be Macro2's steps");
+        } else {
+            assertTrue(second.stream().allMatch(b -> b.startsWith("Macro1")), "Second event must be Macro1's steps");
+        }
+    }
+
+    @Test
+    void macroLockReleasedAfterInterrupt() throws InterruptedException {
+        MacroDefinition slowMacro = deserialize("""
+                {"id":"slow","name":"Slow","phrases":"p","steps":[
+                  {"type":"DELAY","durationMs":5000}
+                ]}""");
+        MacroDefinition fastMacro = deserialize("""
+                {"id":"fast","name":"Fast","phrases":"p","steps":[
+                  {"type":"BINDING_TAP","bindingId":"FastBinding"}
+                ]}""");
+
+        MacroCommandHandler slowHandler = new MacroCommandHandler(slowMacro, testSpeakExecutor);
+        MacroCommandHandler fastHandler = new MacroCommandHandler(fastMacro, testSpeakExecutor);
+
+        Thread slowThread = new Thread(() -> slowHandler.handle("slow", new JsonObject(), ""));
+        slowThread.start();
+        Thread.sleep(50); // let slow macro acquire lock and enter DELAY
+        slowThread.interrupt();
+        slowThread.join(2000);
+
+        // The lock must be released - the fast macro must now complete
+        Thread fastThread = new Thread(() -> fastHandler.handle("fast", new JsonObject(), ""));
+        fastThread.start();
+        fastThread.join(2000);
+
+        assertFalse(fastThread.isAlive(), "Fast macro must complete after slow macro is interrupted");
+        assertEquals(1, inputCapture.events.size());
+        assertEquals("FastBinding", inputCapture.events.getFirst().getSteps().getFirst().getBindingId());
     }
 
     // --- interrupted thread ---
 
     @Test
     void interruptedThreadStopsAfterCurrentStep() throws InterruptedException {
-        // We run the handler on a separate thread so we can interrupt it.
         MacroDefinition macro = deserialize("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"DELAY","durationMs":5000},
                   {"type":"SPEAK","text":"should not reach here"}
                 ]}""");
-        MacroCommandHandler handler = new MacroCommandHandler(macro);
+        MacroCommandHandler handler = new MacroCommandHandler(macro, testSpeakExecutor);
 
         Thread t = new Thread(() -> handler.handle("m", new JsonObject(), ""));
         t.start();
@@ -189,13 +350,13 @@ class MacroCommandHandlerTest {
         t.join(2000);
 
         assertFalse(t.isAlive(), "Handler thread must exit after interrupt");
-        assertTrue(voxCapture.events.isEmpty(), "SPEAK after interrupted DELAY must not fire");
+        assertTrue(testSpeakExecutor.spoken.isEmpty(), "SPEAK after interrupted DELAY must not fire");
     }
 
     // --- helpers ---
 
     private void runMacro(String json) {
-        MacroCommandHandler handler = new MacroCommandHandler(deserialize(json));
+        MacroCommandHandler handler = new MacroCommandHandler(deserialize(json), testSpeakExecutor);
         handler.handle("test_action", new JsonObject(), "");
     }
 
@@ -208,22 +369,23 @@ class MacroCommandHandlerTest {
         addedHandlerKeys.add(key);
     }
 
-    // --- event capture subscribers ---
+    // --- test doubles ---
+
+    /** Captures spoken texts without blocking or publishing events. */
+    static class TestSpeakExecutor implements MacroSpeakExecutor {
+        final List<String> spoken = new ArrayList<>();
+
+        @Override
+        public void speak(String text) {
+            spoken.add(text);
+        }
+    }
 
     private static class InputCapture {
         final List<GameInputSequenceEvent> events = new ArrayList<>();
 
         @Subscribe
         public void on(GameInputSequenceEvent e) {
-            events.add(e);
-        }
-    }
-
-    private static class VoxCapture {
-        final List<AiVoxResponseEvent> events = new ArrayList<>();
-
-        @Subscribe
-        public void on(AiVoxResponseEvent e) {
             events.add(e);
         }
     }

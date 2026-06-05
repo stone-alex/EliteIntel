@@ -1,5 +1,7 @@
 package elite.intel.ai.brain.actions.macro;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,6 +20,20 @@ public final class MacroDefinition {
      */
     private final String phrases;
     private final List<MacroStep> steps;
+
+    /**
+     * Creates a macro definition for editor-created user macros.
+     * The provided step list is defensively copied and exposed as an immutable list.
+     */
+    public MacroDefinition(String id, String name, String description, String phrases, List<MacroStep> steps) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.phrases = phrases;
+        this.steps = steps == null
+                ? Collections.emptyList()
+                : Collections.unmodifiableList(new ArrayList<>(steps));
+    }
 
     @SuppressWarnings("unused")
     private MacroDefinition() {
@@ -72,5 +88,5 @@ public final class MacroDefinition {
     /** Returns description or empty string if not set. */
     public String getDescription() { return description != null ? description : ""; }
     public String getPhrases() { return phrases; }
-    public List<MacroStep> getSteps() { return steps; }
+    public List<MacroStep> getSteps() { return steps == null ? List.of() : steps; }
 }

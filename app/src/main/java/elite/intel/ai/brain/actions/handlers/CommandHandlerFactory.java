@@ -47,6 +47,14 @@ public class CommandHandlerFactory {
         return commandHandlers;
     }
 
+    /**
+     * Refreshes only user macro handlers in-place so existing ResponseRouter references see edits immediately.
+     */
+    public void refreshMacroHandlers() {
+        commandHandlers.entrySet().removeIf(entry -> entry.getValue() instanceof elite.intel.ai.brain.actions.macro.MacroCommandHandler);
+        MacroRegistry.getInstance().contributeToHandlerMap(commandHandlers);
+    }
+
     private CommandHandler instantiateCommandHandler(Class<? extends CommandHandler> handlerClass, String action) {
         try {
             Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor();

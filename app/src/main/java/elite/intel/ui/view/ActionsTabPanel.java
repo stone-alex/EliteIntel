@@ -35,6 +35,7 @@ public class ActionsTabPanel extends JPanel {
     public void initData() {
         bindingsTabPanel.initData();
         commandCatalogTablePanel.initData();
+        macrosTabPanel.initData();
     }
 
     public void dispose() {

@@ -9,6 +9,7 @@ import elite.intel.gameapi.journal.events.*;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.gameapi.journal.events.dto.shiploadout.LoadoutConverter;
+import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.GravityCalculator;
 import org.apache.logging.log4j.LogManager;
@@ -189,6 +190,7 @@ public class SilentPersistenceSubscriber {
     @Subscribe
     public void onLoadout(LoadoutEvent event) {
         String shipName = LoadoutConverter.toDisplayShipName(event);
+
         ShipDao.Ship existing = shipManager.getShipById(event.getShipId());
         if (existing == null) {
             shipManager.save(event.getShipId(), shipName, event.getCargoCapacity(),
@@ -200,6 +202,12 @@ public class SilentPersistenceSubscriber {
             if (lastCommanderName != null) existing.setCommanderName(lastCommanderName);
             shipManager.saveShip(existing);
         }
+
+        // Persist the full loadout and ship name so getShipLoadout() / getShipId()
+        // never return null after a fresh-install scan.
+        ShipLoadOutDto loadout = LoadoutConverter.toShipLoadOutDto(event);
+        playerSession.setShipLoadout(loadout);
+        playerSession.setCurrentShipName(shipName);
         log.debug("PreScan: saved ship {} ({})", shipName, event.getShipId());
     }
 

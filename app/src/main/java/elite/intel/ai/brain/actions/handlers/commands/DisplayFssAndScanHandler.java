@@ -36,9 +36,7 @@ public class DisplayFssAndScanHandler implements CommandHandler {
         GameControllerBus.publish(GameInputSequenceEvent.of(
                 GameInputStep.bindingTap(stop),
                 GameInputStep.delay(200),
-                GameInputStep.bindingTap(fssControl),
-                GameInputStep.delay(1500),
-                GameInputStep.bindingHold(fssControl, 4500)
+                GameInputStep.bindingTap(fssControl)
         ));
 
     }

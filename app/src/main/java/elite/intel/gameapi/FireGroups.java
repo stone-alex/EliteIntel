@@ -23,24 +23,6 @@ public class FireGroups {
         fireGroups.put("F", 5);
         fireGroups.put("G", 6);
         fireGroups.put("H", 7);
-        fireGroups.put("I", 8);
-        fireGroups.put("J", 9);
-        fireGroups.put("K", 10);
-        fireGroups.put("L", 11);
-        fireGroups.put("M", 12);
-        fireGroups.put("N", 13);
-        fireGroups.put("O", 14);
-        fireGroups.put("P", 15);
-        fireGroups.put("Q", 16);
-        fireGroups.put("R", 17);
-        fireGroups.put("S", 18);
-        fireGroups.put("T", 19);
-        fireGroups.put("U", 20);
-        fireGroups.put("V", 21);
-        fireGroups.put("W", 22);
-        fireGroups.put("X", 23);
-        fireGroups.put("Y", 24);
-        fireGroups.put("Z", 25);
     }
 
     static final Map<String, String> natoAlphabet = new HashMap<>();
@@ -54,24 +36,6 @@ public class FireGroups {
         natoAlphabet.put("foxtrot", "F");
         natoAlphabet.put("golf", "G");
         natoAlphabet.put("hotel", "H");
-        natoAlphabet.put("india", "I");
-        natoAlphabet.put("juliett", "J");
-        natoAlphabet.put("kilo", "K");
-        natoAlphabet.put("lima", "L");
-        natoAlphabet.put("mike", "M");
-        natoAlphabet.put("november", "N");
-        natoAlphabet.put("oscar", "O");
-        natoAlphabet.put("papa", "P");
-        natoAlphabet.put("quebec", "Q");
-        natoAlphabet.put("romeo", "R");
-        natoAlphabet.put("sierra", "S");
-        natoAlphabet.put("tango", "T");
-        natoAlphabet.put("uniform", "U");
-        natoAlphabet.put("victor", "V");
-        natoAlphabet.put("whiskey", "W");
-        natoAlphabet.put("x-ray", "X");
-        natoAlphabet.put("yankee", "Y");
-        natoAlphabet.put("zulu", "Z");
     }
 
     public static int fireGroupInSettings(ShipSettingsDao.ShipSettings settings) {

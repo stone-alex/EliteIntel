@@ -1,6 +1,8 @@
 package elite.intel.session.ui;
 
 import elite.intel.ai.hands.Bindings;
+import elite.intel.ai.hands.events.GameInputEvent;
+import elite.intel.ai.hands.events.GameTapEvent;
 import elite.intel.ai.hands.events.GameInputSequenceEvent;
 import elite.intel.ai.hands.events.GameInputStep;
 import elite.intel.db.managers.GlobalSettingsManager;
@@ -27,18 +29,14 @@ public class UINavigator {
 
     private static final Logger log = LogManager.getLogger(UINavigator.class);
     private final Status status = Status.getInstance();
-    // How many times to blindly press NextPanel to guarantee a full wrap
-    // back to index 0 on each panel. One full tab-count is always sufficient.
-    private static final int LEFT_PANEL_TAB_COUNT = LeftPanel.values().length;
-    private static final int COMMS_PANEL_TAB_COUNT = CommsPanel.values().length;
-    private static final int CENTRE_PANEL_TAB_COUNT = CenterPanel.values().length;
-    private static final int RIGHT_PANEL_TAB_COUNT = RightPanel.values().length;
 
     private static final int RANDOM_MIN = 99;
     private static final int RANDOM_MAX = 201;
     private static final int PANEL_OPEN_POLL_MS = 50;   // how often to check GuiFocus after sending open key
     private static final int PANEL_OPEN_TIMEOUT_MS = 3000; // per-attempt timeout before concluding the key was missed
     private static final int PANEL_OPEN_MAX_ATTEMPTS = 3;  // retry limit before giving up
+    private static final int PANEL_SETTLE_MS = 400;  // settle time after panel confirms open before cycling tabs
+    private static final int TAB_CYCLE_PAUSE_MS = 200; // extra pause between each tab keystroke
 
     private final PanelStateTracker tracker = PanelStateTracker.getInstance();
     private final GlobalSettingsManager globalSettingsManager = GlobalSettingsManager.getInstance();
@@ -52,13 +50,12 @@ public class UINavigator {
 
     /**
      * Open a panel, navigate to the target tab, and leave it open.
-     * If the panel is already open, just navigates to the target tab without closing and reopening.
-     * If the tab position is unknown (player moved it), performs a blind reset first.
+     * If the panel is already open (and we opened it), just navigates to the target tab.
+     * Design contract: panels always open on their default tab (game behaviour + user convention).
      */
     public void openAndNavigate(GuiFocus panel, PanelTab target) {
-        // Check tracker BEFORE closing - if we already have this panel open, just navigate.
-        // Also verify the game actually reports the panel open; lastOpenedPanel can be stale
-        // if the player closed the panel externally or a previous open attempt silently failed.
+        // If we already have this panel open and the game confirms it, just navigate.
+        // Verify GuiFocus too — lastOpenedPanel can be stale if the player closed it externally.
         if (tracker.getLastOpenedPanel() == panel && status.getGuiFocus() == panel) {
             navigateToTargetTab(panel, target);
             return;
@@ -72,8 +69,8 @@ public class UINavigator {
         }
 
         tracker.notifyEliteIntelOpeningPanel(panel);
-        // Only send the open keystroke if the game doesn't already have this panel open.
-        // openPanel() is a toggle - sending it when the panel is already open would close it.
+        // Only send the open keystroke if the game doesn't already report this panel open.
+        // openPanel() is a toggle — sending it while the panel is open would close it.
         if (status.getGuiFocus() != panel) {
             for (int attempt = 1; attempt <= PANEL_OPEN_MAX_ATTEMPTS; attempt++) {
                 openPanel(panel);
@@ -81,14 +78,14 @@ public class UINavigator {
                 log.warn("Panel {} did not open after {}ms (attempt {}/{}), retrying",
                         panel, PANEL_OPEN_TIMEOUT_MS, attempt, PANEL_OPEN_MAX_ATTEMPTS);
             }
+            sleep(PANEL_SETTLE_MS);
         }
 
-        if (!state.isKnown()) {
-            blindResetToDefault(panel);
-        }
+        // Panel is now open. Per design contract it is always on the default tab.
+        state.resetToDefault();
 
         navigateToTargetTab(panel, target);
-        inputDelay(250); // <--- important! Don't be hasty.
+        inputDelay(250);
     }
 
 
@@ -151,16 +148,16 @@ public class UINavigator {
 
 
     /**
-     * Navigate to the panel's default tab, then close it.
+     * Retrace steps back to the default tab, then close the panel.
+     * Always retraces regardless of how far navigation went — the user
+     * expects panels to be left on the default tab after every close.
      */
     public void closeAndRestore(GuiFocus panel) {
         PanelState<?> state = tracker.getState(panel);
         if (state == null) {
             return;
         }
-        if (state.isKnown()) {
-            navigateToDefaultTab(panel, state.getDefault());
-        }
+        navigateToDefaultTab(panel, state.getDefault());
         closePanel(panel);
         inputDelay(RANDOM_MAX);
         tracker.notifyEliteIntelClosedPanel();
@@ -190,6 +187,7 @@ public class UINavigator {
         }
 
         for (int i = 0; i < steps; i++) {
+            sleep(TAB_CYCLE_PAUSE_MS);
             GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(key))); // always tap - binding.hold flag must be ignored for tab cycling
         }
         state.recordTab((Enum & PanelTab) target);
@@ -208,6 +206,7 @@ public class UINavigator {
         String key = Bindings.GameCommand.BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding();
         for (int i = 0; i < steps; i++) {
             GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(key))); // always tap - binding.hold flag must be ignored for tab cycling
+            sleep(TAB_CYCLE_PAUSE_MS);
         }
         state.recordTab((Enum & PanelTab) defaultTarget);
     }
@@ -275,17 +274,6 @@ public class UINavigator {
         // Pressing the panel's own open key again closes it
         openPanel(panel);
     }
-
-    private int getTabCount(GuiFocus panel) {
-        return switch (panel) {
-            case EXTERNAL_PANEL -> LEFT_PANEL_TAB_COUNT;
-            case COMMS_PANEL -> COMMS_PANEL_TAB_COUNT;
-            case ROLE_PANEL -> CENTRE_PANEL_TAB_COUNT;
-            case INTERNAL_PANEL -> RIGHT_PANEL_TAB_COUNT;
-            default -> throw new IllegalArgumentException("No tab count for GuiFocus: " + panel);
-        };
-    }
-
 
     public static int randomDelay() {
         return RANDOM_MIN + ThreadLocalRandom.current().nextInt(RANDOM_MAX - RANDOM_MIN + 1);

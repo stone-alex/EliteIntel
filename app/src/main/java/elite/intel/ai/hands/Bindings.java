@@ -14,6 +14,8 @@ public class Bindings {
      */
     public enum GameCommand {
 
+        BINDING_UIFOCUS("UIFocus"),
+
         /// ------------------------------------------------------------------------------------------------------------
         /// mappings for custom commands
         BINDING_TOGGLE_CARGO_SCOOP("ToggleCargoScoop"),

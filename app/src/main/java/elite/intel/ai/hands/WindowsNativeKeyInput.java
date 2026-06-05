@@ -34,6 +34,7 @@ class WindowsNativeKeyInput implements NativeKeyInput {
     private static final int KEYEVENTF_KEYUP = 0x0002;
     private static final int KEYEVENTF_EXTENDEDKEY = 0x0001;
     private static final int KEYEVENTF_SCANCODE = 0x0008;
+    private static final int MAPVK_VK_TO_VSC = 0;
 
     // PS/2 Set-1 scan codes keyed by AWT VK code or KeyProcessor NATIVE_BASE+N code.
     private static final Map<Integer, Short> SCAN_MAP = new HashMap<>();
@@ -206,10 +207,28 @@ class WindowsNativeKeyInput implements NativeKeyInput {
     }
 
     private void sendKeyEvent(int keyCode, boolean isKeyUp) {
-        Short scan = SCAN_MAP.get(keyCode);
-        if (scan == null) {
-            log.warn("No Windows scan code mapping for key code 0x{}", Integer.toHexString(keyCode));
-            return;
+        short scan;
+        if (keyCode >= NATIVE_BASE) {
+            Short s = SCAN_MAP.get(keyCode);
+            if (s == null) {
+                log.warn("No Windows scan code mapping for key code 0x{}", Integer.toHexString(keyCode));
+                return;
+            }
+            scan = s;
+        } else {
+            // MapVirtualKey returns the layout-aware scan code, which correctly handles
+            // keyboards where Y/Z (QWERTZ) or other keys are in different physical positions.
+            int vsc = User32.INSTANCE.MapVirtualKeyEx(keyCode, MAPVK_VK_TO_VSC, null);
+            if (vsc != 0) {
+                scan = (short) vsc;
+            } else {
+                Short s = SCAN_MAP.get(keyCode);
+                if (s == null) {
+                    log.warn("No Windows scan code mapping for key code 0x{}", Integer.toHexString(keyCode));
+                    return;
+                }
+                scan = s;
+            }
         }
 
         WinUser.INPUT input = new WinUser.INPUT();

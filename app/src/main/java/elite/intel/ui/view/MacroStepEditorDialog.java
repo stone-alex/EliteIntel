@@ -20,7 +20,7 @@ import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
  */
 final class MacroStepEditorDialog extends JDialog {
 
-    private final JComboBox<MacroStep.Type> typeCombo = new JComboBox<>(MacroStep.Type.values());
+    private final JComboBox<MacroStep.Type> typeCombo = buildTypeCombo();
     private final JLabel valueLabel = new JLabel();
     private final JTextField valueField = new JTextField(32);
     private final JLabel commandLabel = new JLabel(getText("actions.macros.editor.step.commandId"));
@@ -275,6 +275,32 @@ final class MacroStepEditorDialog extends JDialog {
 
     private static String selectedPickerId(JComboBox<MacroStepPickerItem> combo) {
         return MacroStepPickerItem.resolveId(combo.getEditor().getItem()).trim();
+    }
+
+    private static JComboBox<MacroStep.Type> buildTypeCombo() {
+        JComboBox<MacroStep.Type> combo = new JComboBox<>(MacroStep.Type.values());
+        combo.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                setText(value instanceof MacroStep.Type t ? stepTypeLabel(t) : String.valueOf(value));
+                return this;
+            }
+        });
+        return combo;
+    }
+
+    /** Returns the localized display label for a step type. */
+    static String stepTypeLabel(MacroStep.Type type) {
+        if (type == null) return "";
+        return switch (type) {
+            case BINDING_TAP  -> getText("actions.macros.editor.step.type.bindingTap");
+            case BINDING_HOLD -> getText("actions.macros.editor.step.type.bindingHold");
+            case DELAY        -> getText("actions.macros.editor.step.type.delay");
+            case SPEAK        -> getText("actions.macros.editor.step.type.speak");
+            case RUN_COMMAND  -> getText("actions.macros.editor.step.type.runCommand");
+            case RAW_KEY      -> getText("actions.macros.editor.step.type.rawKey");
+        };
     }
 
     private static List<MacroStepPickerItem> buildRawKeyPickerItems() {

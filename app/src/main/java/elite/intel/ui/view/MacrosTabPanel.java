@@ -320,17 +320,16 @@ public class MacrosTabPanel extends JPanel {
             if (step == null || step.getType() == null) {
                 return "INVALID_STEP";
             }
+            String label = MacroStepEditorDialog.stepTypeLabel(step.getType()) + ": ";
             return switch (step.getType()) {
-                case SPEAK        -> "SPEAK: \"" + step.getText() + "\"";
-                case DELAY        -> "DELAY: " + step.getDurationMs() + " ms";
-                case BINDING_TAP  -> "BINDING_TAP: " + step.getBindingId();
-                case BINDING_HOLD -> "BINDING_HOLD: " + step.getBindingId() + " (" + step.getDurationMs() + " ms)";
-                case RUN_COMMAND  -> "RUN_COMMAND: " + step.getActionId();
+                case SPEAK        -> label + "\"" + step.getText() + "\"";
+                case DELAY        -> label + step.getDurationMs() + " ms";
+                case BINDING_TAP  -> label + step.getBindingId();
+                case BINDING_HOLD -> label + step.getBindingId() + " (" + step.getDurationMs() + " ms)";
+                case RUN_COMMAND  -> label + step.getActionId();
                 case RAW_KEY -> {
                     String combo = new BindingSlotDisplayFormatter().formatRawKeyStep(step.getRawKey(), step.getRawKeyModifier());
-                    yield step.getDurationMs() > 0
-                            ? "RAW_KEY: " + combo + " (" + step.getDurationMs() + " ms)"
-                            : "RAW_KEY: " + combo;
+                    yield label + combo + (step.getDurationMs() > 0 ? " (" + step.getDurationMs() + " ms)" : "");
                 }
             };
         }

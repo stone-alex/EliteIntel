@@ -298,9 +298,9 @@ final class MacroEditorDialog extends JDialog {
     private static final class StepsTableModel extends AbstractTableModel {
         private final List<MacroStep> steps = new ArrayList<>();
         private final String[] columns = {
-                getText("actions.macros.editor.step.column.type"),
+                getText("actions.macros.editor.step.type"),
                 getText("actions.macros.editor.step.column.value"),
-                getText("actions.macros.editor.step.column.durationMs")
+                getText("actions.macros.editor.step.durationMs")
         };
 
         private void setSteps(List<MacroStep> newSteps) {
@@ -364,7 +364,7 @@ final class MacroEditorDialog extends JDialog {
         public Object getValueAt(int rowIndex, int columnIndex) {
             MacroStep step = steps.get(rowIndex);
             return switch (columnIndex) {
-                case 0 -> step.getType();
+                case 0 -> MacroStepEditorDialog.stepTypeLabel(step.getType());
                 case 1 -> stepValue(step);
                 case 2 -> durationValue(step);
                 default -> "";

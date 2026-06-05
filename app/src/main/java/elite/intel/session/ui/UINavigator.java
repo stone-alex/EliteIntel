@@ -33,8 +33,8 @@ public class UINavigator {
     private static final int PANEL_OPEN_POLL_MS = 50;   // how often to check GuiFocus after sending open key
     private static final int PANEL_OPEN_TIMEOUT_MS = 3000; // per-attempt timeout before concluding the key was missed
     private static final int PANEL_OPEN_MAX_ATTEMPTS = 3;  // retry limit before giving up
-    private static final int PANEL_SETTLE_MS = 100;  // settle time after panel confirms open before cycling tabs
-    private static final int TAB_CYCLE_PAUSE_MS = 100; // extra pause between each tab keystroke
+    private static final int PANEL_SETTLE_MS = 10;  // settle time after panel confirms open before cycling tabs
+    private static final int TAB_CYCLE_PAUSE_MS = 10; // extra pause between each tab keystroke
 
     private final PanelStateTracker tracker = PanelStateTracker.getInstance();
     private final GlobalSettingsManager globalSettingsManager = GlobalSettingsManager.getInstance();

@@ -27,7 +27,7 @@ public class CarrierLocationSubscriber {
                     playerSession.setLastKnownCarrierLocation(event.getStarSystem());
                 }
                 FleetCarrierRouteManager route = FleetCarrierRouteManager.getInstance();
-                CarrierDataDto carrierData = isSquadron ? new CarrierDataDto() : playerSession.getCarrierData();
+                CarrierDataDto carrierData = isSquadron ? new CarrierDataDto() : playerSession.getFleetCarrierData();
                 carrierData.setStarName(event.getStarSystem());
 
                 CarrierJump currentCompletedJump = route.findByPrimaryStar(event.getStarSystem());
@@ -39,7 +39,7 @@ public class CarrierLocationSubscriber {
                     if (isSquadron) {
                         playerSession.setSquadronCarrierData(carrierData);
                     } else {
-                        playerSession.setCarrierData(carrierData);
+                        playerSession.setFleetCarrierData(carrierData);
                     }
 
                     routeEntryFound = true;
@@ -64,7 +64,7 @@ public class CarrierLocationSubscriber {
                             if (isSquadron) {
                                 playerSession.setSquadronCarrierData(finalCarrierData);
                             } else {
-                                playerSession.setCarrierData(finalCarrierData);
+                                playerSession.setFleetCarrierData(finalCarrierData);
                             }
                         } else {
                             // try via saved locations
@@ -76,7 +76,7 @@ public class CarrierLocationSubscriber {
                             if (isSquadron) {
                                 playerSession.setSquadronCarrierData(finalCarrierData);
                             } else {
-                                playerSession.setCarrierData(finalCarrierData);
+                                playerSession.setFleetCarrierData(finalCarrierData);
                             }
                         }
                     });

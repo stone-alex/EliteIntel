@@ -10,13 +10,14 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
-public class CarrierETAHandler extends BaseQueryAnalyzer implements QueryHandler {
+public class AnalyzeSquadronCarrierETAHandler extends BaseQueryAnalyzer implements QueryHandler {
 
-    @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
+    @Override
+    public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         String carrierDepartureTime = playerSession.getCarrierDepartureTime();
         if (carrierDepartureTime == null) {
-            return process("No carrier departure time available.");
+            return process("No squadron carrier departure time available.");
         }
 
         long minutesUntilArrival;
@@ -24,11 +25,11 @@ public class CarrierETAHandler extends BaseQueryAnalyzer implements QueryHandler
             ZonedDateTime arrival = ZonedDateTime.parse(carrierDepartureTime, DateTimeFormatter.ISO_DATE_TIME);
             minutesUntilArrival = ChronoUnit.MINUTES.between(ZonedDateTime.now(), arrival);
         } catch (Exception e) {
-            return process("Carrier ETA not available.");
+            return process("Squadron carrier ETA not available.");
         }
 
         String instructions = """
-                Report the fleet carrier estimated time of arrival.
+                Report the squadron carrier estimated time of arrival.
                 
                 Data fields:
                 - minutesUntilArrival: pre-computed minutes until the carrier arrives (negative means already arrived)
@@ -39,9 +40,9 @@ public class CarrierETAHandler extends BaseQueryAnalyzer implements QueryHandler
         return process(new AiDataStruct(instructions, new DataDto(minutesUntilArrival)), originalUserInput);
     }
 
-
     record DataDto(long minutesUntilArrival) implements ToYamlConvertable {
-        @Override public String toYaml() {
+        @Override
+        public String toYaml() {
             return YamlFactory.toYaml(this);
         }
     }

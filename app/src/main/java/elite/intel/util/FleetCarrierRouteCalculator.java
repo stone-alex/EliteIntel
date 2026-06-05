@@ -20,7 +20,7 @@ public class FleetCarrierRouteCalculator {
         SpanshCarrierRouteClient client = new SpanshCarrierRouteClient();
         PlayerSession playerSession = PlayerSession.getInstance();
         FleetCarrierRouteManager routeManager = FleetCarrierRouteManager.getInstance();
-        CarrierDataDto carrierData = playerSession.getCarrierData();
+        CarrierDataDto carrierData = playerSession.getFleetCarrierData();
 
         int fuelSupply = carrierData.getFuelLevel();
         int tritiumInReserve = carrierData.getFuelReserve();

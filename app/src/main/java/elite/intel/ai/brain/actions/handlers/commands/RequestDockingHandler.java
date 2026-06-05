@@ -27,7 +27,7 @@ public class RequestDockingHandler implements CommandHandler {
             GameControllerBus.publish(GameInputSequenceEvent.of(
                     // Navigate within contacts to the station entry.
                     GameInputStep.bindingTap(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding()),
-                    GameInputStep.bindingHold(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 250), // scroll up to the top (and hope our station is there)
+                    GameInputStep.bindingHold(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 2000), // scroll up to the top (and hope our station is there)
                     GameInputStep.bindingTap(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding()),
                     GameInputStep.delay(500),
                     // Request docking.

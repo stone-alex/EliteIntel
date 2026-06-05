@@ -167,16 +167,6 @@ public class PlayerSession {
         });
     }
 
-/*
-    public LocationDto getCurrentLocation() {
-        return Database.withDao(PlayerDao.class, dao -> {
-            PlayerDao.Player player = dao.get();
-            Long currentLocationId = player.getCurrentLocationId();
-            return currentLocationId == null ? new LocationDto(-1L) : locationManager.getLocation(player.getCurrentPrimaryStar(), currentLocationId);
-        });
-    }
-*/
-
     public void setCurrentLocationId(long bodyId, long systemAddress) {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
@@ -197,11 +187,11 @@ public class PlayerSession {
     }
 
 
-    public CarrierDataDto getCarrierData() {
+    public CarrierDataDto getFleetCarrierData() {
         return fleetCarriers.get();
     }
 
-    public void setCarrierData(CarrierDataDto carrierData) {
+    public void setFleetCarrierData(CarrierDataDto carrierData) {
         fleetCarriers.save(carrierData);
     }
 
@@ -221,16 +211,8 @@ public class PlayerSession {
         miningTargets.clear();
     }
 
-    public GameEvents.MarketEvent getMarket(String stationName) {
-        return markets.findForStation(stationName);
-    }
-
     public void saveMarket(GameEvents.MarketEvent data) {
         markets.save(data);
-    }
-
-    public void clearMarkets() {
-        markets.clear();
     }
 
     public List<BioSampleDto> getBioCompletedSamples() {
@@ -253,13 +235,6 @@ public class PlayerSession {
         return shipLoadouts.get();
     }
 
-
-    public void clearCash() {
-        bounties.clear();
-        bioSamples.clear();
-        markets.clear();
-    }
-
     public void setShipCargo(GameEvents.CargoEvent event) {
         cargoHold.save(event);
     }
@@ -270,10 +245,6 @@ public class PlayerSession {
 
     public void setReputation(ReputationEvent event) {
         reputationManager.save(event);
-    }
-
-    public ReputationEvent getReputation() {
-        return reputationManager.get();
     }
 
     public void setLastScan(LocationDto lastScan) {
@@ -410,15 +381,6 @@ public class PlayerSession {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setCrewWagsPayout(crewWagsPayout);
-            dao.save(player);
-            return Void.class;
-        });
-    }
-
-    public void setPlayerTitle(String playerTitle) {
-        Database.withDao(PlayerDao.class, dao -> {
-            PlayerDao.Player player = dao.get();
-            player.setPlayerTitle(playerTitle);
             dao.save(player);
             return Void.class;
         });
@@ -583,10 +545,6 @@ public class PlayerSession {
         });
     }
 
-    public Boolean isNavigationAnnouncementOn() {
-        return Database.withDao(PlayerDao.class, dao -> dao.get().isNavigationAnnouncementOn());
-    }
-
     public void setNavigationAnnouncementOn(Boolean navigationAnnouncementOn) {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
@@ -663,14 +621,6 @@ public class PlayerSession {
             dao.save(player);
             return Void.class;
         });
-    }
-
-    public String getGameVersion() {
-        return Database.withDao(PlayerDao.class, dao -> dao.get().getGameVersion());
-    }
-
-    public String getGameBuild() {
-        return Database.withDao(PlayerDao.class, dao -> dao.get().getGameBuild());
     }
 
     public void setInGameName(String inGameName) {
@@ -792,23 +742,6 @@ public class PlayerSession {
 
     public long getTotalExobiologyProfits() {
         return Database.withDao(PlayerDao.class, playerDao -> playerDao.get().getExobiologyProfits());
-    }
-
-    public String getLocalTtsAddress() {
-        return Database.withDao(PlayerDao.class, playerDao -> playerDao.get().getLocalTtsServer());
-    }
-
-    public void setLocalLlmAddress(String address) {
-        Database.withDao(PlayerDao.class, dao -> {
-            PlayerDao.Player player = dao.get();
-            player.setLocalLlmAddress(address);
-            dao.save(player);
-            return Void.class;
-        });
-    }
-
-    public String getLocalLlmAddress() {
-        return Database.withDao(PlayerDao.class, dao -> dao.get().getLocalLlmAddress());
     }
 
 

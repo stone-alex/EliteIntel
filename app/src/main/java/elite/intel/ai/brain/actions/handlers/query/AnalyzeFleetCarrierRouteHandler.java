@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class AnalyzeCarrierRouteHandler extends BaseQueryAnalyzer implements QueryHandler {
+public class AnalyzeFleetCarrierRouteHandler extends BaseQueryAnalyzer implements QueryHandler {
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
@@ -24,7 +24,7 @@ public class AnalyzeCarrierRouteHandler extends BaseQueryAnalyzer implements Que
         FleetCarrierManager fleetCarrierManager = FleetCarrierManager.getInstance();
         FleetCarrierRouteManager fleetCarrierRouteManager = FleetCarrierRouteManager.getInstance();
         Map<Integer, CarrierJump> fleetCarrierRoute = fleetCarrierRouteManager.getFleetCarrierRoute();
-        CarrierDataDto carrierData = playerSession.getCarrierData();
+        CarrierDataDto carrierData = playerSession.getFleetCarrierData();
         Integer fuelRequired = fleetCarrierRouteManager.getTotalFuelRequired();
         int fuelReserve = fleetCarrierManager.get().getFuelReserve();
         int timeToArrivalInMinutes = 0;

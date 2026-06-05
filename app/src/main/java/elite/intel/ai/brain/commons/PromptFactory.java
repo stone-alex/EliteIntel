@@ -122,6 +122,7 @@ public class PromptFactory implements AiPromptFactory {
                 - Never confuse "max engines" with "target engines"
                 - Never confuse "deploy vehicle" with "deploy landing gear"
                 - CARRIER vs SHIP: if the word "carrier" does not appear in the input, all route/jump/navigation queries refer to the SHIP, not the fleet carrier. Use query_ship_route_remaining_jumps, not query_carrier_route.
+                - FLEET vs SQUADRON CARRIER: if the words "squadron carrier" appears in the input, use squadron_carrier actions (query_squadron_carrier_*, navigate_to_squadron_carrier). Otherwise default to fleet carrier actions. Example: "carrier status" → query_fleet_carrier_status_fuel_credit_balance; "squadron carrier status" → query_squadron_carrier_status_fuel_credit_balance.
                 - Never confuse "organics in system" with "organics at this location/planet/moon"
                 - Never confuse "carrier balance" (finances) with "balance power" (power distribution)
                 - bio signals context (system-wide): "which planets have bio signals / which planets need scanning / bio signals in system / organics in system / biological signals / how many planets have bio" → query_bio_scans_and_samples_in_star_system. KEY: "which planets" always = system-wide.
@@ -351,7 +352,7 @@ public class PromptFactory implements AiPromptFactory {
         String playerName = alternativeName != null ? alternativeName : playerSession.getPlayerName();
         String playerMilitaryRank = playerSession.getPlayerHighestMilitaryRank();
         String playerHonorific = Ranks.getPlayerHonorific();
-        String carrierName = playerSession.getCarrierData() != null ? playerSession.getCarrierData().getCarrierName() : null;
+        String carrierName = playerSession.getFleetCarrierData() != null ? playerSession.getFleetCarrierData().getCarrierName() : null;
 
         appendContext(sb,
                 Objects.requireNonNullElse(playerName, "Commander"),

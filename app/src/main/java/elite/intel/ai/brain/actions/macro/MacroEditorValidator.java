@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -17,13 +18,20 @@ import java.util.regex.Pattern;
  */
 public final class MacroEditorValidator {
 
+    // Allows dot, colon, and dash so macro IDs can mirror the action ID conventions used by Commands enum.
     private static final Pattern SAFE_ID = Pattern.compile("[A-Za-z0-9_.:-]+");
+    // Stricter than SAFE_ID: param names must be valid identifier fragments usable in ${…} templates.
+    private static final Pattern VALID_PARAM_NAME = Pattern.compile("[A-Za-z0-9_]+");
 
     private MacroEditorValidator() {
     }
 
     /**
      * Returns validation errors for a candidate macro. An empty list means the macro is safe to save.
+     *
+     * @param existingMacros all currently saved macros, used for ID and phrase collision checks
+     * @param originalId     the macro's ID before editing ({@code null} for new macros); allows a macro
+     *                       to keep its own ID during an edit without triggering a uniqueness error
      */
     public static List<String> validate(
             MacroDefinition candidate,
@@ -37,6 +45,7 @@ public final class MacroEditorValidator {
 
         validateIdentity(candidate, existingMacros, originalId, errors);
         validatePhrases(candidate, existingMacros, originalId, errors);
+        validateParameters(candidate, errors);
         validateSteps(candidate, existingMacros, errors);
         return List.copyOf(errors);
     }
@@ -107,6 +116,30 @@ public final class MacroEditorValidator {
         }
     }
 
+    private static void validateParameters(MacroDefinition candidate, List<String> errors) {
+        List<MacroParameterSpec> params = candidate.getParameters();
+        if (params.isEmpty()) return;
+
+        Set<String> seen = new HashSet<>();
+        for (MacroParameterSpec param : params) {
+            if (param == null || param.getName() == null || param.getName().isBlank()) {
+                errors.add("Parameter name is required.");
+                continue;
+            }
+            String normalizedName = param.getName().toLowerCase(Locale.ROOT);
+            if (!VALID_PARAM_NAME.matcher(param.getName()).matches()) {
+                errors.add("Parameter '" + param.getName() + "': name may only contain letters, digits, or underscore.");
+            }
+            if (!seen.add(normalizedName)) {
+                errors.add("Duplicate parameter name: " + param.getName());
+            }
+            if (param.getType() == null || !MacroParameterSpec.VALID_TYPES.contains(param.getType())) {
+                errors.add("Parameter '" + param.getName() + "': type must be one of "
+                        + MacroParameterSpec.VALID_TYPES + ".");
+            }
+        }
+    }
+
     private static void validateSteps(
             MacroDefinition candidate,
             List<MacroDefinition> existingMacros,
@@ -124,6 +157,14 @@ public final class MacroEditorValidator {
         }
         macroIds.add(normalize(candidate.getId()));
 
+        // Build the set of declared parameter names for reference checking.
+        Set<String> declaredParamNames = new HashSet<>();
+        for (MacroParameterSpec spec : candidate.getParameters()) {
+            if (spec != null && spec.getName() != null) {
+                declaredParamNames.add(spec.getName());
+            }
+        }
+
         for (int i = 0; i < steps.size(); i++) {
             MacroStep step = steps.get(i);
             String prefix = "Step " + (i + 1) + ": ";
@@ -132,7 +173,10 @@ public final class MacroEditorValidator {
                 continue;
             }
             switch (step.getType()) {
-                case SPEAK -> requireText(step.getText(), prefix + "text is required.", errors);
+                case SPEAK -> {
+                    requireText(step.getText(), prefix + "text is required.", errors);
+                    validateParamRefs(step.getText(), prefix, "text", declaredParamNames, errors);
+                }
                 case BINDING_TAP -> requireText(step.getBindingId(), prefix + "bindingId is required.", errors);
                 case BINDING_HOLD -> {
                     requireText(step.getBindingId(), prefix + "bindingId is required.", errors);
@@ -145,7 +189,26 @@ public final class MacroEditorValidator {
                     if (macroIds.contains(normalize(step.getActionId()))) {
                         errors.add(prefix + "RUN_COMMAND cannot target another macro.");
                     }
+                    step.getStepParams().forEach((key, template) ->
+                            validateParamRefs(template, prefix, "stepParams[" + key + "]",
+                                    declaredParamNames, errors));
                 }
+            }
+        }
+    }
+
+    /** Checks that all {@code ${name}} references in {@code template} are declared macro parameters. */
+    private static void validateParamRefs(
+            String template, String stepPrefix, String fieldName,
+            Set<String> declaredParamNames, List<String> errors
+    ) {
+        // Skip ref checks for parameterless macros — they cannot have ${…} refs by definition.
+        if (template == null || declaredParamNames.isEmpty()) return;
+        Matcher m = MacroExecutionContext.PARAM_REF.matcher(template);
+        while (m.find()) {
+            String ref = m.group(1);
+            if (!declaredParamNames.contains(ref)) {
+                errors.add(stepPrefix + fieldName + " references undeclared parameter '" + ref + "'.");
             }
         }
     }

@@ -2,12 +2,25 @@ package elite.intel.ui.view;
 
 import elite.intel.ai.brain.actions.macro.MacroDefinition;
 import elite.intel.ai.brain.actions.macro.MacroEditorValidator;
+import elite.intel.ai.brain.actions.macro.MacroParameterSpec;
 import elite.intel.ai.brain.actions.macro.MacroStep;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +39,8 @@ final class MacroEditorDialog extends JDialog {
     private final JTextField nameField = new JTextField(36);
     private final JTextArea descriptionArea = textArea(3);
     private final JTextArea phrasesArea = textArea(4);
+    private final ParamsTableModel paramsModel = new ParamsTableModel();
+    private final JTable paramsTable = new JTable(paramsModel);
     private final StepsTableModel stepsModel = new StepsTableModel();
     private final JTable stepsTable = new JTable(stepsModel);
     private final JTextArea errorsArea = textArea(4);
@@ -57,6 +72,7 @@ final class MacroEditorDialog extends JDialog {
         nameField.setText(macro.getName());
         descriptionArea.setText(macro.getDescription());
         phrasesArea.setText(macro.getPhrases());
+        paramsModel.setParameters(macro.getParameters());
         stepsModel.setSteps(macro.getSteps());
     }
 
@@ -65,13 +81,19 @@ final class MacroEditorDialog extends JDialog {
         content.setBackground(AppTheme.BG);
         content.setBorder(new EmptyBorder(16, 18, 12, 18));
         content.add(form(existing), BorderLayout.NORTH);
-        content.add(stepsPanel(), BorderLayout.CENTER);
+
+        JPanel center = new JPanel(new BorderLayout(0, 12));
+        center.setOpaque(false);
+        center.add(paramsPanel(), BorderLayout.NORTH);
+        center.add(stepsPanel(), BorderLayout.CENTER);
+        content.add(center, BorderLayout.CENTER);
+
         content.add(bottomPanel(), BorderLayout.SOUTH);
         setContentPane(content);
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         pack();
-        setMinimumSize(new Dimension(860, 720));
+        setMinimumSize(new Dimension(860, 860));
         setLocationRelativeTo(getOwner());
     }
 
@@ -86,6 +108,70 @@ final class MacroEditorDialog extends JDialog {
         addArea(panel, gbc, getText("actions.macros.editor.description"), descriptionArea);
         addArea(panel, gbc, getText("actions.macros.editor.phrases"), phrasesArea);
         return panel;
+    }
+
+    private JPanel paramsPanel() {
+        JPanel panel = new JPanel(new BorderLayout(0, 8));
+        panel.setOpaque(false);
+
+        JLabel label = new JLabel(getText("actions.macros.editor.parameters"));
+        label.setForeground(AppTheme.FG_MUTED);
+        panel.add(label, BorderLayout.NORTH);
+
+        paramsTable.setFillsViewportHeight(true);
+        paramsTable.setRowHeight(26);
+        paramsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        paramsTable.setBackground(AppTheme.BG_PANEL);
+        paramsTable.setForeground(AppTheme.FG);
+        paramsTable.setSelectionBackground(AppTheme.SEL_BG);
+        paramsTable.setSelectionForeground(AppTheme.SEL_FG);
+        paramsTable.getTableHeader().setBackground(AppTheme.BG);
+        paramsTable.getTableHeader().setForeground(AppTheme.FG);
+        paramsTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) editParam();
+            }
+        });
+        JScrollPane scroll = new JScrollPane(paramsTable);
+        scroll.setPreferredSize(new Dimension(0, 130));
+        panel.add(scroll, BorderLayout.CENTER);
+
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        buttons.setOpaque(false);
+        addStepButton(buttons, "actions.macros.editor.param.add", this::addParam);
+        addStepButton(buttons, "actions.macros.editor.param.edit", this::editParam);
+        addStepButton(buttons, "actions.macros.editor.param.remove", this::removeParam);
+        panel.add(buttons, BorderLayout.SOUTH);
+        return panel;
+    }
+
+    private void addParam() {
+        MacroParameterSpec spec = new MacroParamSpecEditorDialog(this, null).showDialog();
+        if (spec != null) {
+            paramsModel.addParameter(spec);
+        }
+    }
+
+    private void editParam() {
+        int row = selectedParamRow();
+        if (row < 0) return;
+        MacroParameterSpec edited = new MacroParamSpecEditorDialog(this, paramsModel.getParameter(row)).showDialog();
+        if (edited != null) {
+            paramsModel.setParameter(row, edited);
+        }
+    }
+
+    private void removeParam() {
+        int row = selectedParamRow();
+        if (row >= 0) {
+            paramsModel.removeParameter(row);
+        }
+    }
+
+    private int selectedParamRow() {
+        int viewRow = paramsTable.getSelectedRow();
+        return viewRow < 0 ? -1 : paramsTable.convertRowIndexToModel(viewRow);
     }
 
     private JPanel stepsPanel() {
@@ -105,6 +191,12 @@ final class MacroEditorDialog extends JDialog {
         stepsTable.setSelectionForeground(AppTheme.SEL_FG);
         stepsTable.getTableHeader().setBackground(AppTheme.BG);
         stepsTable.getTableHeader().setForeground(AppTheme.FG);
+        stepsTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) editStep();
+            }
+        });
         panel.add(new JScrollPane(stepsTable), BorderLayout.CENTER);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
@@ -180,7 +272,12 @@ final class MacroEditorDialog extends JDialog {
     }
 
     private void addStep() {
-        MacroStep step = new MacroStepEditorDialog(this, null).showDialog();
+        MacroStep step = new MacroStepEditorDialog(
+                this,
+                null,
+                paramsModel.parameters(),
+                this::addMissingMacroParameters
+        ).showDialog();
         if (step != null) {
             stepsModel.addStep(step);
         }
@@ -191,9 +288,27 @@ final class MacroEditorDialog extends JDialog {
         if (row < 0) {
             return;
         }
-        MacroStep edited = new MacroStepEditorDialog(this, stepsModel.getStep(row)).showDialog();
+        MacroStep edited = new MacroStepEditorDialog(
+                this,
+                stepsModel.getStep(row),
+                paramsModel.parameters(),
+                this::addMissingMacroParameters
+        ).showDialog();
         if (edited != null) {
             stepsModel.setStep(row, edited);
+        }
+    }
+
+    private void addMissingMacroParameters(List<MacroParameterSpec> specs) {
+        if (specs == null || specs.isEmpty()) {
+            return;
+        }
+        for (MacroParameterSpec spec : specs) {
+            String name = spec == null ? null : spec.getName();
+            if (name == null || name.isBlank() || paramsModel.hasParameter(name)) {
+                continue;
+            }
+            paramsModel.addParameter(spec);
         }
     }
 
@@ -239,6 +354,7 @@ final class MacroEditorDialog extends JDialog {
                 name,
                 descriptionArea.getText().trim(),
                 phrasesArea.getText().trim(),
+                paramsModel.parameters(),
                 stepsModel.steps()
         );
     }
@@ -292,7 +408,143 @@ final class MacroEditorDialog extends JDialog {
         area.setForeground(AppTheme.FG);
         area.setCaretColor(AppTheme.FG);
         area.setBorder(new EmptyBorder(8, 8, 8, 8));
+        installPlainTextPaste(area);
         return area;
+    }
+
+    private static void installPlainTextPaste(JTextComponent component) {
+        Action paste = new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                pastePlainText(component);
+            }
+        };
+        component.getActionMap().put(DefaultEditorKit.pasteAction, paste);
+        component.getInputMap().put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
+                DefaultEditorKit.pasteAction
+        );
+        component.getInputMap().put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, InputEvent.SHIFT_DOWN_MASK),
+                DefaultEditorKit.pasteAction
+        );
+    }
+
+    private static void pastePlainText(JTextComponent component) {
+        PrintStream originalErr = System.err;
+        System.setErr(new PrintStream(new ClipboardFlavorNoiseFilter(originalErr), true));
+        try {
+            Transferable contents = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+            if (contents == null) {
+                return;
+            }
+            Object data = contents.getTransferData(DataFlavor.stringFlavor);
+            if (data instanceof String text) {
+                component.replaceSelection(text);
+            }
+        } catch (UnsupportedFlavorException | IOException | IllegalStateException e) {
+            Toolkit.getDefaultToolkit().beep();
+        } finally {
+            System.setErr(originalErr);
+        }
+    }
+
+    private static final class ClipboardFlavorNoiseFilter extends OutputStream {
+        private final PrintStream delegate;
+        private final StringBuilder line = new StringBuilder();
+
+        private ClipboardFlavorNoiseFilter(PrintStream delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public synchronized void write(int b) {
+            char c = (char) b;
+            line.append(c);
+            if (c == '\n') {
+                flushLine();
+            }
+        }
+
+        @Override
+        public synchronized void flush() {
+            if (!line.isEmpty()) {
+                flushLine();
+            }
+            delegate.flush();
+        }
+
+        private void flushLine() {
+            String text = line.toString();
+            line.setLength(0);
+            if (!isIntelliJClipboardFlavorNoise(text)) {
+                delegate.print(text);
+            }
+        }
+
+        private static boolean isIntelliJClipboardFlavorNoise(String text) {
+            return text.contains("while constructing DataFlavor")
+                    && (text.contains("com/intellij/openapi/editor/RawText")
+                    || text.contains("com/intellij/codeInsight/editorActions/FoldingData")
+                    || text.contains("com/intellij/openapi/editor/impl/EditorCopyPasteHelperImpl$CopyPasteOptionsTransferableData"));
+        }
+    }
+
+    private static final class ParamsTableModel extends AbstractTableModel {
+        private final List<MacroParameterSpec> params = new ArrayList<>();
+        private final String[] columns = {
+                getText("actions.macros.editor.param.column.name"),
+                getText("actions.macros.editor.param.column.type"),
+                getText("actions.macros.editor.param.column.required"),
+                getText("actions.macros.editor.param.column.description"),
+                getText("actions.macros.editor.param.column.examples")
+        };
+
+        void setParameters(List<MacroParameterSpec> newParams) {
+            params.clear();
+            if (newParams != null) params.addAll(newParams);
+            fireTableDataChanged();
+        }
+
+        List<MacroParameterSpec> parameters() { return List.copyOf(params); }
+
+        MacroParameterSpec getParameter(int row) { return params.get(row); }
+
+        void addParameter(MacroParameterSpec spec) {
+            params.add(spec);
+            fireTableRowsInserted(params.size() - 1, params.size() - 1);
+        }
+
+        void setParameter(int row, MacroParameterSpec spec) {
+            params.set(row, spec);
+            fireTableRowsUpdated(row, row);
+        }
+
+        void removeParameter(int row) {
+            params.remove(row);
+            fireTableRowsDeleted(row, row);
+        }
+
+        boolean hasParameter(String name) {
+            return params.stream().anyMatch(param -> param.getName().equalsIgnoreCase(name));
+        }
+
+        @Override public int getRowCount() { return params.size(); }
+        @Override public int getColumnCount() { return columns.length; }
+        @Override public String getColumnName(int col) { return columns[col]; }
+
+        @Override
+        public Object getValueAt(int row, int col) {
+            MacroParameterSpec spec = params.get(row);
+            return switch (col) {
+                case 0 -> spec.getName();
+                case 1 -> spec.getType();
+                case 2 -> spec.isRequired() ? "✓" : "";
+                case 3 -> spec.getDescription();
+                case 4 -> String.join(", ", spec.getExamples());
+                default -> "";
+            };
+        }
     }
 
     private static final class StepsTableModel extends AbstractTableModel {

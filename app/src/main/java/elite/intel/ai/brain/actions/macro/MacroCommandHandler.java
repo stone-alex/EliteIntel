@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.Map;
 
 /**
  * Executes a {@link MacroDefinition} step-by-step.
@@ -22,9 +23,11 @@ import java.util.concurrent.locks.ReentrantLock;
  * Always invoked from the background thread already spawned by {@code ResponseRouter.handleCommand()},
  * so blocking operations (DELAY sleep, SPEAK wait) are safe.
  * <p>
- * A static fair {@link ReentrantLock} serializes all macro executions globally, preventing two
- * concurrently triggered macros from interleaving their input and speech steps. The lock is
- * released in {@code finally} regardless of error or interruption.
+ * A single static fair {@link ReentrantLock} serializes <em>all</em> macro executions globally
+ * (not per-macro) so that two macros triggered nearly simultaneously cannot interleave their
+ * input or speech steps — from the user's perspective each macro must run atomically end-to-end.
+ * Fair ordering (FIFO) ensures the second macro starts only after the first completes.
+ * The lock is released in {@code finally} regardless of error or interruption.
  */
 public final class MacroCommandHandler implements CommandHandler {
 
@@ -50,16 +53,29 @@ public final class MacroCommandHandler implements CommandHandler {
     public void handle(String action, JsonObject params, String responseText) {
         MACRO_LOCK.lock();
         try {
+            MacroExecutionContext ctx = MacroExecutionContext.fromJson(macro, params);
+            List<String> paramErrors = ctx.validateRequiredParams();
+            if (!paramErrors.isEmpty()) {
+                String errorSummary = String.join(", ", paramErrors);
+                log.warn("Macro '{}' aborted: {}", macro.getName(), errorSummary);
+                EventBusManager.publish(new AppLogEvent("Macro '" + macro.getName() + "' aborted: " + errorSummary));
+                return;
+            }
             log.info("Executing macro '{}' ({} step(s))", macro.getName(), macro.getSteps().size());
             PendingInputSequence pendingInput = new PendingInputSequence();
             for (int i = 0; i < macro.getSteps().size(); i++) {
                 MacroStep step = macro.getSteps().get(i);
                 try {
-                    executeStep(step, i, pendingInput);
+                    executeStep(step, i, pendingInput, ctx);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     log.warn("Macro '{}' interrupted at step {}", macro.getName(), i);
                     return;
+                } catch (UnresolvedMacroParamException e) {
+                    log.error("Macro '{}' step {} ({}): {} — step skipped",
+                            macro.getName(), i, step.getType(), e.getMessage());
+                    EventBusManager.publish(new AppLogEvent(
+                            "Macro step error: " + e.getMessage() + " (step skipped)"));
                 } catch (Exception e) {
                     log.error("Macro '{}' step {} ({}) failed: {}", macro.getName(), i, step.getType(), e.getMessage(), e);
                     // continue to next step rather than aborting the whole macro
@@ -78,7 +94,8 @@ public final class MacroCommandHandler implements CommandHandler {
         }
     }
 
-    private void executeStep(MacroStep step, int index, PendingInputSequence pendingInput) throws InterruptedException {
+    private void executeStep(MacroStep step, int index, PendingInputSequence pendingInput,
+                             MacroExecutionContext ctx) throws InterruptedException {
         switch (step.getType()) {
             case BINDING_TAP -> {
                 EventBusManager.publish(new AppLogEvent("Macro step: BINDING_TAP " + step.getBindingId()));
@@ -96,9 +113,11 @@ public final class MacroCommandHandler implements CommandHandler {
             }
 
             case SPEAK -> {
+                // Flush accumulated input before speaking so keystrokes reach the game first.
                 flushPendingInputSteps(pendingInput);
-                EventBusManager.publish(new AppLogEvent("Macro step: SPEAK " + step.getText()));
-                speakExecutor.speak(step.getText());
+                String resolvedText = ctx.resolveString(step.getText());
+                EventBusManager.publish(new AppLogEvent("Macro step: SPEAK " + resolvedText));
+                speakExecutor.speak(resolvedText);
             }
 
             case RAW_KEY -> {
@@ -128,6 +147,7 @@ public final class MacroCommandHandler implements CommandHandler {
             }
 
             case RUN_COMMAND -> {
+                // Flush before delegating so pending keystrokes are sent before the nested handler runs.
                 flushPendingInputSteps(pendingInput);
                 CommandHandler nested = CommandHandlerFactory.getInstance()
                         .getCommandHandlers()
@@ -142,8 +162,11 @@ public final class MacroCommandHandler implements CommandHandler {
                             macro.getName(), index, step.getActionId());
                     EventBusManager.publish(new AppLogEvent("Macro step: RUN_COMMAND " + step.getActionId() + " (cross-macro blocked)"));
                 } else {
+                    // Resolve step-level param mapping; preserves JSON types for bare ${ref} values.
+                    Map<String, String> stepParamMapping = step.getStepParams();
+                    JsonObject resolvedParams = ctx.resolveStepParams(stepParamMapping);
                     EventBusManager.publish(new AppLogEvent("Macro step: RUN_COMMAND " + step.getActionId()));
-                    nested.handle(step.getActionId(), new JsonObject(), "");
+                    nested.handle(step.getActionId(), resolvedParams, "");
                 }
             }
         }
@@ -163,6 +186,11 @@ public final class MacroCommandHandler implements CommandHandler {
         pendingInput.clear();
     }
 
+    /**
+     * Accumulates input steps (bindings, raw keys) and delays before publishing them as a single
+     * {@link GameInputSequenceEvent}. Delays without any real input are executed via
+     * {@link Thread#sleep} instead, since the executor does not add inter-step pauses for delay-only sequences.
+     */
     private static final class PendingInputSequence {
         private final List<GameInputStep> steps = new ArrayList<>();
         private boolean hasInput;

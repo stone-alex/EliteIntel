@@ -71,6 +71,7 @@ public final class MacroRegistry {
             for (String phrase : AiActionLocalizations.splitPhraseGroup(macro.getPhrases())) {
                 String normalizedPhrase = normalizePhrase(phrase);
                 if (protectedPhrases.contains(normalizedPhrase)) {
+                    // Graceful degradation: skip conflicting phrase rather than blocking the entire macro.
                     log.warn("Macro phrase [{}] conflicts with an existing action map entry - phrase skipped", phrase);
                     continue;
                 }
@@ -94,6 +95,44 @@ public final class MacroRegistry {
         this.macros = macros == null
                 ? Collections.emptyList()
                 : Collections.unmodifiableList(new ArrayList<>(macros));
+    }
+
+    /**
+     * Appends a {@code MACRO PARAMS} section to {@code sb} for any parameterized macros
+     * whose IDs appear as values in the already-reduced action map.
+     * Called from {@code PromptFactory.generateUserInputSystemPrompt()} after
+     * {@code Reducer.formatActions()} so the LLM sees parameter rules only for macros
+     * that survived reduction — avoids sending param rules for unrelated macros and reduces token usage.
+     */
+    public void appendMacroParamRules(Map<String, String> reducedActions, StringBuilder sb) {
+        Set<String> activeIds = new HashSet<>(reducedActions.values());
+        List<MacroDefinition> activeMacros = macros.stream()
+                .filter(m -> activeIds.contains(m.getId()))
+                .filter(m -> !m.getParameters().isEmpty())
+                .toList();
+        if (activeMacros.isEmpty()) return;
+
+        sb.append("\nMACRO PARAMS (required for macro actions above — include ALL required params):\n\n");
+        for (MacroDefinition macro : activeMacros) {
+            sb.append("  ").append(macro.getId()).append(":\n");
+            for (MacroParameterSpec param : macro.getParameters()) {
+                sb.append("    ").append(param.getName())
+                  .append(" (").append(param.getType());
+                if (param.isRequired()) sb.append(", required");
+                sb.append(")");
+                if (!param.getDescription().isBlank()) {
+                    sb.append(" — ").append(param.getDescription());
+                }
+                List<String> examples = param.getExamples();
+                if (!examples.isEmpty()) {
+                    sb.append(". E.g.: ").append(String.join(", ", examples));
+                }
+                sb.append("\n");
+                if (param.getExtractionHint() != null && !param.getExtractionHint().isBlank()) {
+                    sb.append("      Hint: ").append(param.getExtractionHint()).append("\n");
+                }
+            }
+        }
     }
 
     /**

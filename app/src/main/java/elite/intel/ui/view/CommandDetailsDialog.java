@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.AiActionsMap;
 import elite.intel.ai.brain.actions.catalog.CommandCatalogEntry;
 import elite.intel.ai.brain.actions.catalog.CommandCatalogEntryType;
+import elite.intel.ai.brain.actions.macro.MacroParameterSpec;
 import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.ai.brain.i18n.AiActionLocalizations;
 
@@ -31,6 +32,7 @@ public final class CommandDetailsDialog extends JDialog {
     private final List<String> phrases;
     private final boolean showPhraseCorrection;
     private final String sequenceText;
+    private final List<MacroParameterSpec> macroParameters;
     private final Runnable editAction;
     private final Runnable deleteAction;
 
@@ -60,11 +62,12 @@ public final class CommandDetailsDialog extends JDialog {
             boolean showPhraseCorrection,
             String sequenceText
     ) {
-        this(parent, entry, phrases, showPhraseCorrection, sequenceText, null, null);
+        this(parent, entry, phrases, showPhraseCorrection, sequenceText, List.of(), null, null);
     }
 
     /**
      * Creates a macro details dialog with optional editing actions owned by the macro list panel.
+     * Use the overload with {@code macroParameters} to show declared macro parameters.
      */
     CommandDetailsDialog(
             Component parent,
@@ -75,11 +78,28 @@ public final class CommandDetailsDialog extends JDialog {
             Runnable editAction,
             Runnable deleteAction
     ) {
+        this(parent, entry, phrases, showPhraseCorrection, sequenceText, List.of(), editAction, deleteAction);
+    }
+
+    /**
+     * Creates a macro details dialog that shows declared macro parameters and prompts for them on Run.
+     */
+    CommandDetailsDialog(
+            Component parent,
+            CommandCatalogEntry entry,
+            List<String> phrases,
+            boolean showPhraseCorrection,
+            String sequenceText,
+            List<MacroParameterSpec> macroParameters,
+            Runnable editAction,
+            Runnable deleteAction
+    ) {
         super(SwingUtilities.getWindowAncestor(parent), dialogTitle(entry), ModalityType.APPLICATION_MODAL);
         this.entry = Objects.requireNonNull(entry, "entry");
         this.phrases = phrases == null ? List.of() : List.copyOf(phrases);
         this.showPhraseCorrection = showPhraseCorrection;
         this.sequenceText = sequenceText == null ? "" : sequenceText;
+        this.macroParameters = macroParameters == null ? List.of() : List.copyOf(macroParameters);
         this.editAction = editAction;
         this.deleteAction = deleteAction;
         buildUi();
@@ -136,6 +156,7 @@ public final class CommandDetailsDialog extends JDialog {
         addLabelValue(panel, gbc, getText("actions.commands.details.type"), readableType(entry.type()));
         addDescription(panel, gbc);
         addPhrases(panel, gbc);
+        addParameters(panel, gbc);
         addSequence(panel, gbc);
 
         gbc.gridx = 0;
@@ -189,6 +210,30 @@ public final class CommandDetailsDialog extends JDialog {
         panel.add(phrasesSection(), gbc);
         gbc.gridy++;
         gbc.weighty = 0.0;
+    }
+
+    private void addParameters(JPanel panel, GridBagConstraints gbc) {
+        if (macroParameters.isEmpty()) return;
+
+        gbc.gridx = 0;
+        gbc.weightx = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
+        panel.add(detailLabel(getText("actions.macros.details.parameters")), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        StringBuilder sb = new StringBuilder();
+        for (MacroParameterSpec spec : macroParameters) {
+            sb.append(spec.getName()).append(" (").append(spec.getType());
+            if (spec.isRequired()) sb.append(", required");
+            sb.append(")");
+            sb.append(System.lineSeparator());
+        }
+        JTextArea area = readOnlyTextArea(sb.toString().stripTrailing());
+        area.setRows(macroParameters.size());
+        panel.add(area, gbc);
+        gbc.gridy++;
     }
 
     private void addSequence(JPanel panel, GridBagConstraints gbc) {
@@ -367,7 +412,7 @@ public final class CommandDetailsDialog extends JDialog {
 
     private JsonObject promptForParams() {
         if (entry.isMacro()) {
-            return new JsonObject();
+            return macroParameters.isEmpty() ? new JsonObject() : promptForMacroParams();
         }
         List<CommandParameter> parameters = commandParameters();
         JsonObject params = new JsonObject();
@@ -426,6 +471,79 @@ public final class CommandDetailsDialog extends JDialog {
                 String value = textField.getText().trim();
                 if (!value.isBlank()) {
                     params.addProperty(parameter.name(), value);
+                }
+            }
+        }
+        return params;
+    }
+
+    private JsonObject promptForMacroParams() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(AppTheme.BG);
+        Map<MacroParameterSpec, JComponent> fields = new LinkedHashMap<>();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        for (MacroParameterSpec spec : macroParameters) {
+            gbc.gridx = 0;
+            gbc.weightx = 0.0;
+            String labelText = spec.getName() + (spec.isRequired() ? " *" : "");
+            JLabel label = new JLabel(labelText);
+            label.setForeground(AppTheme.FG);
+            if (!spec.getDescription().isBlank()) {
+                label.setToolTipText(spec.getDescription());
+            }
+            panel.add(label, gbc);
+
+            gbc.gridx = 1;
+            gbc.weightx = 1.0;
+            JComponent field = "boolean".equals(spec.getType())
+                    ? new JComboBox<>(new String[]{"", "true", "false"})
+                    : new JTextField(24);
+            if (!spec.getExamples().isEmpty()) {
+                field.setToolTipText("E.g.: " + String.join(", ", spec.getExamples()));
+            }
+            AppTheme.applyDarkPalette(field);
+            panel.add(field, gbc);
+            fields.put(spec, field);
+            gbc.gridy++;
+        }
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                panel,
+                getText("actions.commands.details.parameters.title"),
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+        if (result != JOptionPane.OK_OPTION) {
+            return null;
+        }
+
+        JsonObject params = new JsonObject();
+        for (Map.Entry<MacroParameterSpec, JComponent> e : fields.entrySet()) {
+            MacroParameterSpec spec = e.getKey();
+            JComponent field = e.getValue();
+            if (field instanceof JComboBox<?> combo) {
+                Object selected = combo.getSelectedItem();
+                if (selected != null && !selected.toString().isBlank()) {
+                    params.addProperty(spec.getName(), Boolean.parseBoolean(selected.toString()));
+                }
+            } else if (field instanceof JTextField textField) {
+                String value = textField.getText().trim();
+                if (!value.isBlank()) {
+                    if ("number".equals(spec.getType())) {
+                        try {
+                            params.addProperty(spec.getName(), Double.parseDouble(value));
+                        } catch (NumberFormatException ex) {
+                            params.addProperty(spec.getName(), value);
+                        }
+                    } else {
+                        params.addProperty(spec.getName(), value);
+                    }
                 }
             }
         }

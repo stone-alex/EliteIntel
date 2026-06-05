@@ -207,6 +207,7 @@ public class MacrosTabPanel extends JPanel {
                 row.phrases(),
                 false,
                 row.sequenceText(),
+                row.macro().getParameters(),
                 () -> editMacro(row),
                 () -> deleteMacro(row)
         ).showDialog();

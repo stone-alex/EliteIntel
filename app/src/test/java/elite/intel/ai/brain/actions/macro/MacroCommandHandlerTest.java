@@ -3,6 +3,7 @@ package elite.intel.ai.brain.actions.macro;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import elite.intel.ai.brain.actions.handlers.CommandHandlerFactory;
 import elite.intel.ai.brain.actions.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.KeyBindingExecutor;
@@ -15,9 +16,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -383,6 +386,101 @@ class MacroCommandHandlerTest {
         } else {
             assertTrue(second.stream().allMatch(b -> b.startsWith("Macro1")), "Second event must be Macro1's steps");
         }
+    }
+
+    // --- parameterized macros ---
+
+    @Test
+    void runCommandStepPassesResolvedStepParamsToNestedHandler() {
+        AtomicReference<JsonObject> capturedParams = new AtomicReference<>();
+        CommandHandler fakeBuiltin = (a, p, r) -> capturedParams.set(p);
+        registerHandler("builtin_with_params", fakeBuiltin);
+
+        MacroDefinition macro = new MacroDefinition(
+                "m", "M", "", "phrase",
+                List.of(new MacroParameterSpec("commodity", "string", true, "", null, null)),
+                List.of(MacroStep.runCommandWithParams("builtin_with_params", Map.of("key", "${commodity}")))
+        );
+        MacroCommandHandler handler = new MacroCommandHandler(macro, testSpeakExecutor);
+        JsonObject params = JsonParser.parseString("{\"commodity\": \"gold\"}").getAsJsonObject();
+        handler.handle("m", params, "");
+
+        assertNotNull(capturedParams.get(), "Nested handler must be called with resolved params");
+        assertEquals("gold", capturedParams.get().get("key").getAsString());
+    }
+
+    @Test
+    void runCommandStepPreservesJsonNumberType() {
+        AtomicReference<JsonObject> capturedParams = new AtomicReference<>();
+        CommandHandler fakeBuiltin = (a, p, r) -> capturedParams.set(p);
+        registerHandler("navigate_fake", fakeBuiltin);
+
+        MacroDefinition macro = new MacroDefinition(
+                "m", "M", "", "phrase",
+                List.of(
+                        new MacroParameterSpec("lat", "number", true, "", null, null),
+                        new MacroParameterSpec("lon", "number", true, "", null, null)
+                ),
+                List.of(MacroStep.runCommandWithParams("navigate_fake", Map.of("lat", "${lat}", "lon", "${lon}")))
+        );
+        MacroCommandHandler handler = new MacroCommandHandler(macro, testSpeakExecutor);
+        JsonObject params = JsonParser.parseString("{\"lat\": -10.5, \"lon\": 45.2}").getAsJsonObject();
+        handler.handle("m", params, "");
+
+        assertNotNull(capturedParams.get());
+        assertEquals(-10.5, capturedParams.get().get("lat").getAsDouble(), 0.001);
+        assertEquals(45.2, capturedParams.get().get("lon").getAsDouble(), 0.001);
+    }
+
+    @Test
+    void abortsMacroWhenRequiredParamIsMissing() {
+        AtomicBoolean called = new AtomicBoolean(false);
+        CommandHandler fakeBuiltin = (a, p, r) -> called.set(true);
+        registerHandler("cmd_fake", fakeBuiltin);
+
+        MacroDefinition macro = new MacroDefinition(
+                "m", "M", "", "phrase",
+                List.of(new MacroParameterSpec("speed", "string", true, "", null, null)),
+                List.of(MacroStep.runCommandWithParams("cmd_fake", Map.of("key", "${speed}")))
+        );
+        MacroCommandHandler handler = new MacroCommandHandler(macro, testSpeakExecutor);
+        // No params provided — required "speed" is missing.
+        handler.handle("m", new JsonObject(), "");
+
+        assertFalse(called.get(), "Macro must be aborted when required param is missing");
+    }
+
+    @Test
+    void speakStepResolvesParamTemplate() {
+        MacroDefinition macro = new MacroDefinition(
+                "m", "M", "", "phrase",
+                List.of(new MacroParameterSpec("target", "string", true, "", null, null)),
+                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "Targeting ${target}", null))
+        );
+        MacroCommandHandler handler = new MacroCommandHandler(macro, testSpeakExecutor);
+        JsonObject params = JsonParser.parseString("{\"target\": \"drive\"}").getAsJsonObject();
+        handler.handle("m", params, "");
+
+        assertEquals(1, testSpeakExecutor.spoken.size());
+        assertEquals("Targeting drive", testSpeakExecutor.spoken.getFirst());
+    }
+
+    @Test
+    void optionalParamAbsentDoesNotAbortMacro() {
+        AtomicBoolean called = new AtomicBoolean(false);
+        CommandHandler fakeBuiltin = (a, p, r) -> called.set(true);
+        registerHandler("cmd_optional", fakeBuiltin);
+
+        MacroDefinition macro = new MacroDefinition(
+                "m", "M", "", "phrase",
+                List.of(new MacroParameterSpec("hint", "string", false, "", null, null)),
+                // step doesn't use the optional param at all
+                List.of(new MacroStep(MacroStep.Type.RUN_COMMAND, null, 0, null, "cmd_optional"))
+        );
+        MacroCommandHandler handler = new MacroCommandHandler(macro, testSpeakExecutor);
+        handler.handle("m", new JsonObject(), "");
+
+        assertTrue(called.get(), "Macro with absent optional param must still execute");
     }
 
     @Test

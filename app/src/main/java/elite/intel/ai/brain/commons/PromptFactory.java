@@ -1,6 +1,7 @@
 package elite.intel.ai.brain.commons;
 
 import elite.intel.ai.brain.*;
+import elite.intel.ai.brain.actions.macro.MacroRegistry;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.i18n.Language;
 import elite.intel.session.PlayerSession;
@@ -202,6 +203,7 @@ public class PromptFactory implements AiPromptFactory {
                   - "night vision on"          → {"action": "toggle_night_vision_on_off", "params": {"state": true}}
                   - "night vision off"         → {"action": "toggle_night_vision_on_off", "params": {"state": false}}
                   - "lights on"                → {"action": "toggle_lights_on_off", "params": {"state": true}}
+                  - "navigate to coordinates 12.34 minus 45.67" → {"action": "navigate_to_coordinates", "params": {"lat": 12.34, "lon": -45.67}}
                   - "increase speed by 25"          → {"action": "increase_speed", "params": {"key": "25"}}
                   - "find gold within 80 ly"                    → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                   - "find nearest market for gold"              → {"action": "find_commodity", "params": {"key": "gold", "state": true}}
@@ -218,7 +220,11 @@ public class PromptFactory implements AiPromptFactory {
     public String generateUserInputSystemPrompt(String rawUserInput) {
         StringBuilder sb = new StringBuilder();
         buildCommandRules(sb);
-        sb.append(Reducer.formatActions(reduce(rawUserInput)));
+        Map<String, String> reduced = reduce(rawUserInput);
+        sb.append(Reducer.formatActions(reduced));
+        // Macro param rules are appended after reduction so only the matched macro's params are shown,
+        // avoiding token overhead from param rules of unrelated macros.
+        MacroRegistry.getInstance().appendMacroParamRules(reduced, sb);
         return sb.toString();
     }
 

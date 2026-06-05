@@ -1,5 +1,7 @@
 package elite.intel.ai.brain.actions.macro;
 
+import java.util.Map;
+
 /**
  * One step in a user-defined macro sequence.
  * Gson populates fields directly; call {@link #validate(int)} after deserialization.
@@ -35,12 +37,18 @@ public final class MacroStep {
     private final String actionId;
     private final String rawKey;
     private final String rawKeyModifier;
+    /**
+     * Step-level parameter mapping for {@link Type#RUN_COMMAND} steps.
+     * Maps handler param names to value templates, e.g. {@code {"lat": "${lat}", "lon": "${lon}"}}.
+     * May be {@code null} for non-parameterized steps (backward-compatible).
+     */
+    private final Map<String, String> stepParams;
 
     /**
      * Creates one macro step. Only the fields required by {@code type} are used at execution time.
      */
     public MacroStep(Type type, String bindingId, int durationMs, String text, String actionId) {
-        this(type, bindingId, durationMs, text, actionId, null, null);
+        this(type, bindingId, durationMs, text, actionId, null, null, null);
     }
 
     /**
@@ -49,6 +57,11 @@ public final class MacroStep {
      */
     public MacroStep(Type type, String bindingId, int durationMs, String text, String actionId,
                      String rawKey, String rawKeyModifier) {
+        this(type, bindingId, durationMs, text, actionId, rawKey, rawKeyModifier, null);
+    }
+
+    private MacroStep(Type type, String bindingId, int durationMs, String text, String actionId,
+                      String rawKey, String rawKeyModifier, Map<String, String> stepParams) {
         this.type = type;
         this.bindingId = bindingId;
         this.durationMs = durationMs;
@@ -56,6 +69,18 @@ public final class MacroStep {
         this.actionId = actionId;
         this.rawKey = rawKey;
         this.rawKeyModifier = rawKeyModifier;
+        this.stepParams = stepParams == null ? null : Map.copyOf(stepParams);
+    }
+
+    /**
+     * Creates a {@link Type#RUN_COMMAND} step with a step-level param mapping for macro param substitution.
+     *
+     * @param actionId   the built-in command action ID to invoke
+     * @param stepParams mapping of handler param names to value templates (e.g. {@code {"key": "${speed}"}})
+     */
+    public static MacroStep runCommandWithParams(String actionId, Map<String, String> stepParams) {
+        return new MacroStep(Type.RUN_COMMAND, null, 0, null, actionId, null, null,
+                stepParams == null ? null : Map.copyOf(stepParams));
     }
 
     @SuppressWarnings("unused")
@@ -67,6 +92,7 @@ public final class MacroStep {
         actionId = null;
         rawKey = null;
         rawKeyModifier = null;
+        stepParams = null;
     }
 
     /** Validates required fields for this step's type. */
@@ -105,4 +131,6 @@ public final class MacroStep {
     public String getActionId() { return actionId; }
     public String getRawKey() { return rawKey; }
     public String getRawKeyModifier() { return rawKeyModifier; }
+    /** Returns the step-level param mapping for RUN_COMMAND steps. Empty map if not set. */
+    public Map<String, String> getStepParams() { return stepParams != null ? stepParams : Map.of(); }
 }

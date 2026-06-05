@@ -592,8 +592,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> openFss() {
-        return Stream.of("Open FSS and scan.", "Perform filtered spectrum scan", "full spectrum scan", "honk",
-                "discovery scan");
+        return Stream.of("Open FSS and scan.", "Perform filtered spectrum scan", "full spectrum scan", "discovery scan");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

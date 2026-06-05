@@ -43,7 +43,7 @@ public class NaturalSpeechIntegrationTest {
      * 250 you are pushing it.
      * 150 bro I want your hardware.
      */
-    private static final int LLM_WAIT_MS = 10000;
+    private static final int LLM_WAIT_MS = 5020;
 
     private HandlerCapture capture;
 
@@ -142,6 +142,17 @@ public class NaturalSpeechIntegrationTest {
     static Stream<String> analysisMode() {
         return Stream.of("Analysis mode", "switch to analysis mode", "explorer mode", "analysis HUD",
                 "Change to analysis mode", "swap to analysis mode");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(15)
+    @MethodSource
+    void lookAhead(String input) throws InterruptedException {
+        assertRouted(input, RESET_HEAD_LOOK.getAction());
+    }
+
+    static Stream<String> lookAhead() {
+        return Stream.of("look ahead", "reset", "reset head look", "head look to neutral");
     }
 
     // =========================================================================

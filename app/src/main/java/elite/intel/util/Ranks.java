@@ -5,7 +5,10 @@ import elite.intel.session.PlayerSession;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+
+import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 /**
  * The Ranks class provides various static methods to manage and retrieve mappings
@@ -15,45 +18,91 @@ import java.util.Random;
  */
 public class Ranks {
 
+    private static final Map<String, String> RANK_I18N_KEY_MAP = Map.ofEntries(
+            // Imperial
+            Map.entry("Outsider",             "ranks.imperial.outsider"),
+            Map.entry("Serf",                 "ranks.imperial.serf"),
+            Map.entry("Master",               "ranks.imperial.master"),
+            Map.entry("Squire",               "ranks.imperial.squire"),
+            Map.entry("Knight",               "ranks.imperial.knight"),
+            Map.entry("Lord",                 "ranks.imperial.lord"),
+            Map.entry("Baron",                "ranks.imperial.baron"),
+            Map.entry("Viscount",             "ranks.imperial.viscount"),
+            Map.entry("Count",                "ranks.imperial.count"),
+            Map.entry("Earl",                 "ranks.imperial.earl"),
+            Map.entry("Marquis",              "ranks.imperial.marquis"),
+            Map.entry("Duke",                 "ranks.imperial.duke"),
+            Map.entry("Prince",               "ranks.imperial.prince"),
+            Map.entry("King",                 "ranks.imperial.king"),
+            // Federation
+            Map.entry("Recruit",              "ranks.federation.recruit"),
+            Map.entry("Cadet",                "ranks.federation.cadet"),
+            Map.entry("Midshipman",           "ranks.federation.midshipman"),
+            Map.entry("Petty Officer",        "ranks.federation.pettyOfficer"),
+            Map.entry("Chief Petty Officer",  "ranks.federation.chiefPettyOfficer"),
+            Map.entry("Warrant Officer",      "ranks.federation.warrantOfficer"),
+            Map.entry("Ensign",               "ranks.federation.ensign"),
+            Map.entry("Lieutenant",           "ranks.federation.lieutenant"),
+            Map.entry("Lieutenant Commander", "ranks.federation.lieutenantCommander"),
+            Map.entry("Post Commander",       "ranks.federation.postCommander"),
+            Map.entry("Post Captain",         "ranks.federation.postCaptain"),
+            Map.entry("Rear Admiral",         "ranks.federation.rearAdmiral"),
+            Map.entry("Vice Admiral",         "ranks.federation.viceAdmiral"),
+            Map.entry("Admiral",              "ranks.federation.admiral")
+    );
+
+    /**
+     * Returns the localized display name for the given English rank name sourced from the game journal.
+     * Falls back to the original English name if no translation key is registered.
+     * Returns {@code null} for {@code null}, blank, or {@code "none"} input so callers can filter it out.
+     */
+    public static String getLocalizedRankName(String englishRankName) {
+        if (englishRankName == null || englishRankName.isBlank() || "none".equalsIgnoreCase(englishRankName)) {
+            return null;
+        }
+        String key = RANK_I18N_KEY_MAP.get(englishRankName);
+        return key != null ? getText(key) : englishRankName;
+    }
+
     /**
      * Returns the honorific map. Military rank to Honorific mapping.
-     *
+     * Values are resolved from the active UI language at call time.
      */
     public static HashMap<String, String> getHonorificMap() {
         HashMap<String, String> rankMap = new HashMap<>();
 
         //Imperial ranks
-        rankMap.put("none", "Commander");
-        rankMap.put("Outsider", "Outsider");
-        rankMap.put("Serf", "Serf");
-        rankMap.put("Master", "Master");
-        rankMap.put("Squire", "Squire");
-        rankMap.put("Knight", "Sir");
-        rankMap.put("Lord", "My Lord");
-        rankMap.put("Baron", "My Lord");
-        rankMap.put("Viscount", "My Lord");
-        rankMap.put("Count", "My Lord");
-        rankMap.put("Earl", "My Lord");
-        rankMap.put("Marquis", "My Lord");
-        rankMap.put("Duke", "Your Grace");
-        rankMap.put("Prince", "Your Highness");
-        rankMap.put("King", "Your Majesty");
+        rankMap.put("none",     getText("ranks.honorific.commander"));
+        rankMap.put("Outsider", getText("ranks.honorific.outsider"));
+        rankMap.put("Serf",     getText("ranks.honorific.serf"));
+        rankMap.put("Master",   getText("ranks.honorific.master"));
+        rankMap.put("Squire",   getText("ranks.honorific.squire"));
+        rankMap.put("Knight",   getText("ranks.honorific.sir"));
+        rankMap.put("Lord",     getText("ranks.honorific.myLord"));
+        rankMap.put("Baron",    getText("ranks.honorific.myLord"));
+        rankMap.put("Viscount", getText("ranks.honorific.myLord"));
+        rankMap.put("Count",    getText("ranks.honorific.myLord"));
+        rankMap.put("Earl",     getText("ranks.honorific.myLord"));
+        rankMap.put("Marquis",  getText("ranks.honorific.myLord"));
+        rankMap.put("Duke",     getText("ranks.honorific.yourGrace"));
+        rankMap.put("Prince",   getText("ranks.honorific.yourHighness"));
+        rankMap.put("King",     getText("ranks.honorific.yourMajesty"));
 
         //Federation ranks
-        rankMap.put("Recruit", "Recruit");
-        rankMap.put("Cadet", "Cadet");
-        rankMap.put("Midshipman", "Midshipman");
-        rankMap.put("Petty Officer", "PO");
-        rankMap.put("Chief Petty Officer", "Chief");
-        rankMap.put("Warrant Officer", "Warrant");
-        rankMap.put("Ensign", "Ensign");
-        rankMap.put("Lieutenant", "Lieutenant");
-        rankMap.put("Lieutenant Commander", "Commander");
-        rankMap.put("Post Commander", "Commander");
-        rankMap.put("Post Captain", "Captain");
-        rankMap.put("Rear Admiral", "Admiral");
-        rankMap.put("Vice Admiral", "Admiral");
-        rankMap.put("Admiral", "Admiral");
+        rankMap.put("Recruit",              getText("ranks.honorific.recruit"));
+        rankMap.put("Cadet",                getText("ranks.honorific.cadet"));
+        rankMap.put("Midshipman",           getText("ranks.honorific.midshipman"));
+        rankMap.put("Petty Officer",        getText("ranks.honorific.po"));
+        rankMap.put("Chief Petty Officer",  getText("ranks.honorific.chief"));
+        rankMap.put("Warrant Officer",      getText("ranks.honorific.warrant"));
+        rankMap.put("Ensign",               getText("ranks.honorific.ensign"));
+        rankMap.put("Lieutenant",           getText("ranks.honorific.lieutenant"));
+        rankMap.put("Lieutenant Commander", getText("ranks.honorific.commander"));
+        rankMap.put("Post Commander",       getText("ranks.honorific.commander"));
+        rankMap.put("Post Captain",         getText("ranks.honorific.captain"));
+        rankMap.put("Rear Admiral",         getText("ranks.honorific.admiral"));
+        rankMap.put("Vice Admiral",         getText("ranks.honorific.admiral"));
+        rankMap.put("Admiral",              getText("ranks.honorific.admiral"));
 
         return rankMap;
     }

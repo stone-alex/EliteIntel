@@ -782,7 +782,7 @@ public class PlayerSession {
     public String getVariablePlayerName() {
         String alternativeName = trimToNull(getAlternativeName());
         String playerName = alternativeName != null ? alternativeName : trimToNull(getPlayerName());
-        String playerMilitaryRank = getPlayerHighestMilitaryRank();
+        String playerMilitaryRank = Ranks.getLocalizedRankName(getPlayerHighestMilitaryRank());
         String playerHonorific = Ranks.getPlayerHonorific();
 
         List<String> result = Arrays.stream(

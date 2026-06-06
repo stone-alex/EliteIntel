@@ -8,6 +8,11 @@ import elite.intel.session.PlayerSession;
 public class DiscoveryOnOffHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
+
+        if (params.get("state") == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("LLM Failed to extract on/off state parameter"));
+            return;
+        }
         boolean isOn = params.get("state").getAsBoolean();
 
         PlayerSession playerSession = PlayerSession.getInstance();

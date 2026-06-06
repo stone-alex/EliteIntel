@@ -324,7 +324,7 @@ final class MacroStepEditorDialog extends JDialog {
                         key,
                         inferredMacroParamType(step.getActionId(), key),
                         true,
-                        stepTypeLabel(step.getType()) + " step parameter '" + key + "'.",
+                        getText("actions.macros.editor.step.params.autoDescription", commandNameForActionId(step.getActionId()), key),
                         List.of(),
                         null
                 ))
@@ -336,6 +336,14 @@ final class MacroStepEditorDialog extends JDialog {
 
     private static boolean isSameNameMacroTemplate(String key, String value) {
         return key != null && !key.isBlank() && ("${" + key + "}").equals(value);
+    }
+
+    private String commandNameForActionId(String actionId) {
+        return commandItems.stream()
+                .filter(item -> item.id().equals(actionId))
+                .map(MacroStepPickerItem::label)
+                .findFirst()
+                .orElse(actionId);
     }
 
     private static String inferredMacroParamType(String actionId, String key) {

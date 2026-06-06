@@ -2,6 +2,7 @@ package elite.intel.ai.brain.actions.macro;
 
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.StringUtls;
 
@@ -30,18 +31,19 @@ public class MacroLoadAnnouncement {
     public void announce() {
         int loaded = MacroRegistry.getInstance().getMacros().size();
         int skipped = MacroRegistry.getInstance().getSkippedOnLastLoad();
+        String playerName = PlayerSession.getInstance().getVariablePlayerName();
 
         if (loaded > 0 && skipped > 0) {
             EventBusManager.publish(new AiVoxResponseEvent(
-                    StringUtls.localizedSpeech("speech.macrosLoadedWithSkipped", loaded, skipped)
+                    StringUtls.localizedSpeech("speech.macrosLoadedWithSkipped", playerName, loaded, skipped)
             ));
         } else if (loaded > 0) {
             EventBusManager.publish(new AiVoxResponseEvent(
-                    StringUtls.localizedSpeech("speech.macrosLoaded", loaded)
+                    StringUtls.localizedSpeech("speech.macrosLoaded", playerName, loaded)
             ));
         } else if (skipped > 0) {
             EventBusManager.publish(new AiVoxResponseEvent(
-                    StringUtls.localizedSpeech("speech.macrosSkipped", skipped)
+                    StringUtls.localizedSpeech("speech.macrosSkipped", playerName, skipped)
             ));
         }
 

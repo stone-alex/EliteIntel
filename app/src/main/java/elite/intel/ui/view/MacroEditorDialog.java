@@ -73,7 +73,7 @@ final class MacroEditorDialog extends JDialog {
     private void populate(MacroDefinition macro) {
         if (macro == null) {
             idField.setText("");
-            actionKeyField.setText("macro_new");
+            actionKeyField.setText("custom_command_new");
             return;
         }
         idField.setText(macro.getId());
@@ -376,7 +376,7 @@ final class MacroEditorDialog extends JDialog {
     private String uniqueGeneratedActionKey(String name) {
         String base = sanitizeId(name);
         if (base.isBlank()) {
-            base = "new_macro_action";
+            base = "new_custom_command";
         }
         List<String> existingKeys = existingMacros.stream()
                 .filter(macro -> !sameId(macro.getActionKey(), originalActionKey))

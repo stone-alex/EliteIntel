@@ -87,7 +87,7 @@ public final class MacroDefinition {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("Macro id is blank");
         }
-        if (actionKey == null || actionKey.isBlank()) {
+        if (getActionKey() == null || getActionKey().isBlank()) {
             throw new IllegalArgumentException("Macro '" + id + "': actionKey is blank");
         }
         if (name == null || name.isBlank()) {
@@ -133,8 +133,11 @@ public final class MacroDefinition {
     }
 
     public String getId() { return id; }
-    /** Returns the LLM-facing action token used for routing, handler lookup, and prompt output. */
-    public String getActionKey() { return actionKey; }
+    /**
+     * Returns the LLM-facing action token used for routing, handler lookup, and prompt output.
+     * Older persisted macros did not store {@code actionKey}; those fall back to {@code id}.
+     */
+    public String getActionKey() { return actionKey != null && !actionKey.isBlank() ? actionKey : id; }
     public String getName() { return name; }
     /** Returns description or empty string if not set. */
     public String getDescription() { return description != null ? description : ""; }

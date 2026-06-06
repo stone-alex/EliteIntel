@@ -60,6 +60,11 @@ public final class MacroRegistry {
         return repository.getLastSkippedLabels();
     }
 
+    /** Returns {@code true} if the most recent {@link #load()} restored macros from the backup file. */
+    public boolean wasLastLoadRestoredFromBackup() {
+        return repository.wasRestoredFromBackup();
+    }
+
     /**
      * Replaces the in-memory macro registry with a validated immutable snapshot.
      * Persistence is owned by {@link MacroRepository}; this method only updates runtime state.

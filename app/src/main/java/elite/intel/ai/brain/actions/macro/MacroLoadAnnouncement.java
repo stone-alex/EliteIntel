@@ -4,6 +4,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.i18n.MultiLingualTextProvider;
 import elite.intel.util.StringUtls;
 
 /**
@@ -50,6 +51,14 @@ public class MacroLoadAnnouncement {
         if (skipped > 0) {
             MacroRegistry.getInstance().getSkippedLabelsOnLastLoad()
                     .forEach(label -> EventBusManager.publish(new AppLogEvent("Invalid macro: " + label)));
+        }
+
+        if (MacroRegistry.getInstance().wasLastLoadRestoredFromBackup()) {
+            EventBusManager.publish(new AiVoxResponseEvent(
+                    StringUtls.localizedSpeech("speech.macrosRestoredFromBackup", playerName)
+            ));
+            EventBusManager.publish(new AppLogEvent(
+                    MultiLingualTextProvider.getText("actions.macros.load.corruptRestoredFromBackup", "macros.json")));
         }
     }
 }

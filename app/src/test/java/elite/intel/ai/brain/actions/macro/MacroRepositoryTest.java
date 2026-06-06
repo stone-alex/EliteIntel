@@ -69,8 +69,8 @@ class MacroRepositoryTest {
     void macroWithBlankIdIsSkipped() throws IOException {
         writeJson("""
                 [
-                  {"id":"","name":"Bad","phrases":"p","steps":[{"type":"SPEAK","text":"x"}]},
-                  {"id":"macro_good","name":"Good","phrases":"good","steps":[{"type":"SPEAK","text":"ok"}]}
+                  {"id":"","actionKey":"macro_bad_id","name":"Bad","phrases":"p","steps":[{"type":"SPEAK","text":"x"}]},
+                  {"id":"macro_good","actionKey":"macro_good","name":"Good","phrases":"good","steps":[{"type":"SPEAK","text":"ok"}]}
                 ]
                 """);
         List<MacroDefinition> result = repo.load(macrosFile());
@@ -82,8 +82,8 @@ class MacroRepositoryTest {
     void macroWithBlankNameIsSkipped() throws IOException {
         writeJson("""
                 [
-                  {"id":"macro_bad","name":"","phrases":"p","steps":[{"type":"SPEAK","text":"x"}]},
-                  {"id":"macro_ok","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"ok"}]}
+                  {"id":"macro_bad","actionKey":"macro_bad_name","name":"","phrases":"p","steps":[{"type":"SPEAK","text":"x"}]},
+                  {"id":"macro_ok","actionKey":"macro_ok_step","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"ok"}]}
                 ]
                 """);
         List<MacroDefinition> result = repo.load(macrosFile());
@@ -95,8 +95,8 @@ class MacroRepositoryTest {
     void macroWithBlankPhrasesIsSkipped() throws IOException {
         writeJson("""
                 [
-                  {"id":"macro_bad","name":"Bad","phrases":"","steps":[{"type":"SPEAK","text":"x"}]},
-                  {"id":"macro_ok","name":"OK","phrases":"ok phrase","steps":[{"type":"SPEAK","text":"ok"}]}
+                  {"id":"macro_bad","actionKey":"macro_bad_phrases","name":"Bad","phrases":"","steps":[{"type":"SPEAK","text":"x"}]},
+                  {"id":"macro_ok","actionKey":"macro_ok_step","name":"OK","phrases":"ok phrase","steps":[{"type":"SPEAK","text":"ok"}]}
                 ]
                 """);
         List<MacroDefinition> result = repo.load(macrosFile());
@@ -107,8 +107,8 @@ class MacroRepositoryTest {
     void macroWithEmptyStepsIsSkipped() throws IOException {
         writeJson("""
                 [
-                  {"id":"macro_bad","name":"Bad","phrases":"p","steps":[]},
-                  {"id":"macro_ok","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"ok"}]}
+                  {"id":"macro_bad","actionKey":"macro_bad_steps","name":"Bad","phrases":"p","steps":[]},
+                  {"id":"macro_ok","actionKey":"macro_ok_step","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"ok"}]}
                 ]
                 """);
         List<MacroDefinition> result = repo.load(macrosFile());
@@ -119,8 +119,8 @@ class MacroRepositoryTest {
     void bindingTapStepWithoutBindingIdIsSkipped() throws IOException {
         writeJson("""
                 [
-                  {"id":"macro_bad","name":"Bad","phrases":"p","steps":[{"type":"BINDING_TAP"}]},
-                  {"id":"macro_ok","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"x"}]}
+                  {"id":"macro_bad","actionKey":"macro_bad_binding","name":"Bad","phrases":"p","steps":[{"type":"BINDING_TAP"}]},
+                  {"id":"macro_ok","actionKey":"macro_ok_step","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"x"}]}
                 ]
                 """);
         List<MacroDefinition> result = repo.load(macrosFile());
@@ -136,6 +136,7 @@ class MacroRepositoryTest {
                 [
                   {
                     "id": "macro_test",
+                    "actionKey": "macro_test",
                     "name": "Test Macro",
                     "description": "A test",
                     "phrases": "test, run test",
@@ -166,7 +167,7 @@ class MacroRepositoryTest {
     @Test
     void resultIsUnmodifiable() throws IOException {
         writeJson("""
-                [{"id":"macro_x","name":"X","phrases":"p","steps":[{"type":"SPEAK","text":"ok"}]}]
+                [{"id":"macro_x","actionKey":"macro_x_item","name":"X","phrases":"p","steps":[{"type":"SPEAK","text":"ok"}]}]
                 """);
         List<MacroDefinition> result = repo.load(macrosFile());
         assertThrows(UnsupportedOperationException.class, () -> result.add(null));
@@ -209,21 +210,129 @@ class MacroRepositoryTest {
         assertEquals(1, repo.load(nestedFile).size());
     }
 
+    // --- backup fallback on corrupt main file ---
+
+    @Test
+    void loadFallsBackToBackupWhenMainFileIsCorrupt() throws IOException {
+        Files.writeString(macrosFile(), "not-valid-json", StandardCharsets.UTF_8);
+        Files.writeString(backupFile(), validOneMacroJson("macro_backup", "From Backup"),
+                StandardCharsets.UTF_8);
+
+        List<MacroDefinition> result = repo.load(macrosFile());
+
+        assertEquals(1, result.size());
+        assertEquals("macro_backup", result.getFirst().getId());
+    }
+
+    @Test
+    void loadReturnsEmptyWhenMainIsCorruptAndNoBackupExists() throws IOException {
+        writeJson("""
+                [
+                  {"id":"macro_bad","actionKey":"macro_bad_reset","name":"","phrases":"p","steps":[{"type":"SPEAK","text":"x"}]}
+                ]
+                """);
+        repo.load(macrosFile());
+        assertEquals(1, repo.getLastSkippedCount());
+
+        Files.writeString(macrosFile(), "not-valid-json", StandardCharsets.UTF_8);
+
+        List<MacroDefinition> result = repo.load(macrosFile());
+
+        assertTrue(result.isEmpty());
+        assertEquals(0, repo.getLastSkippedCount());
+        assertTrue(repo.getLastSkippedLabels().isEmpty());
+    }
+
+    @Test
+    void loadReturnsEmptyWhenBothMainAndBackupAreCorrupt() throws IOException {
+        Files.writeString(macrosFile(), "not-valid-json", StandardCharsets.UTF_8);
+        Files.writeString(backupFile(), "also-not-valid", StandardCharsets.UTF_8);
+
+        List<MacroDefinition> result = repo.load(macrosFile());
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void loadDoesNotCheckBackupWhenMainFileIsMissing() throws IOException {
+        Files.writeString(backupFile(), validOneMacroJson("macro_bak_item", "Bak Only"),
+                StandardCharsets.UTF_8);
+
+        // Main file does not exist, so backup should not be consulted.
+        List<MacroDefinition> result = repo.load(macrosFile());
+
+        assertTrue(result.isEmpty());
+    }
+
+    // --- safe save: backup + temp + atomic rename ---
+
+    @Test
+    void saveCreatesBackupOfPreviousFile() throws IOException {
+        repo.save(List.of(makeMacro("macro_first", "First")), macrosFile());
+        repo.save(List.of(makeMacro("macro_second", "Second")), macrosFile());
+
+        assertTrue(Files.exists(backupFile()), "Backup file should exist after second save");
+        List<MacroDefinition> fromBackup = repo.load(backupFile());
+        assertEquals(1, fromBackup.size());
+        assertEquals("macro_first", fromBackup.getFirst().getId());
+    }
+
+    @Test
+    void saveDoesNotCreateBackupOnFirstSave() {
+        assertFalse(Files.exists(backupFile()), "No backup before first save");
+        repo.save(List.of(makeMacro("macro_init", "Init")), macrosFile());
+        assertFalse(Files.exists(backupFile()), "No backup created when there was no previous file");
+    }
+
+    @Test
+    void saveTempFileIsRemovedAfterSuccessfulSave() {
+        repo.save(List.of(makeMacro("macro_tmp_file", "Temp")), macrosFile());
+
+        Path tmp = macrosFile().resolveSibling("macros.json.tmp");
+        assertFalse(Files.exists(tmp), "Temp file should not remain after a successful save");
+    }
+
+    @Test
+    void savedFileIsReadableAfterSave() {
+        MacroDefinition macro = makeMacro("macro_persisted", "Persisted");
+        repo.save(List.of(macro), macrosFile());
+
+        List<MacroDefinition> result = repo.load(macrosFile());
+        assertEquals(1, result.size());
+        assertEquals("macro_persisted", result.getFirst().getId());
+    }
+
     // --- helpers ---
 
     private void writeJson(String json) throws IOException {
         Files.writeString(macrosFile(), json, StandardCharsets.UTF_8);
     }
 
+    private Path backupFile() {
+        return macrosFile().resolveSibling("macros.json.bak");
+    }
+
     private Path jsonWithOneMacro() {
         try {
             writeJson("""
-                    [{"id":"macro_roundtrip","name":"Roundtrip","description":"desc",
+                    [{"id":"macro_roundtrip","actionKey":"macro_roundtrip","name":"Roundtrip","description":"desc",
                       "phrases":"do roundtrip","steps":[{"type":"SPEAK","text":"hi"}]}]
                     """);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return macrosFile();
+    }
+
+    /** Produces a minimal valid single-macro JSON array with the given {@code id} used as actionKey. */
+    private static String validOneMacroJson(String id, String name) {
+        return "[{\"id\":\"" + id + "\",\"actionKey\":\"" + id + "\","
+                + "\"name\":\"" + name + "\","
+                + "\"phrases\":\"trigger\",\"steps\":[{\"type\":\"SPEAK\",\"text\":\"ok\"}]}]";
+    }
+
+    private static MacroDefinition makeMacro(String id, String name) {
+        return new MacroDefinition(id, name, "", "trigger " + id,
+                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "ok", null)));
     }
 }

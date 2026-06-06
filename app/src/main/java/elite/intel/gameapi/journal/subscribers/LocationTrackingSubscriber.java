@@ -9,10 +9,12 @@ import elite.intel.gameapi.journal.events.DisembarkEvent;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
-import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.NavigationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static elite.intel.util.NavigationUtils.calculateGlideAngle;
 import static elite.intel.util.NavigationUtils.formatDistance;
@@ -41,6 +43,8 @@ public class LocationTrackingSubscriber {
     // Ideal descent initiation: 1000–2000 km from target at 200–300 km altitude.
     private static final double GLIDE_ENTRY_ALTITUDE_M = 50_000;
     private static final double GLIDE_ENTRY_TARGET_DISTANCE_M = 600_000;
+    private final ExecutorService navExecutor = Executors.newSingleThreadExecutor(
+            Thread.ofVirtual().name("nav-worker").factory());
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private boolean hasAnnouncedOrbital = false;
     private boolean hasAnnouncedSurface = false;
@@ -56,6 +60,7 @@ public class LocationTrackingSubscriber {
     private boolean isGliding = false;
     private boolean beginDescentCued = false; // true once "begin descent" has been announced at low priority
     private boolean levelOffCued = false;     // true once "level off" has been announced - stays silent until pilot actually levels off
+    private boolean speedWarningGiven = false;
 
     /**
      * Handles the event triggered when a player moves within the game environment.
@@ -69,7 +74,7 @@ public class LocationTrackingSubscriber {
      */
     @Subscribe
     public void onPlayerMoved(PlayerMovedEvent event) {
-        Thread.ofVirtual().start(() -> {
+        navExecutor.submit(() -> {
             TargetLocation targetLocation = playerSession.getTracking();
             if (targetLocation == null || !targetLocation.isEnabled()) {
                 resetTrackingState();
@@ -92,7 +97,6 @@ public class LocationTrackingSubscriber {
                 log.info("Navigation ON, but not on planet and not in orbit. Skipping navigation.");
                 return;
             } else {
-                EventBusManager.publish(new AppLogEvent(navigator.toString()));
                 log.info(navigator.toString());
             }
 
@@ -197,7 +201,6 @@ public class LocationTrackingSubscriber {
                 hasActualAngle ? String.format("%.1f°", actualDescentAngle) : "n/a",
                 commitAngle, bearingToTarget, userHeading);
         log.info(orbLog);
-        EventBusManager.publish(new AppLogEvent(orbLog));
 
         // Suppress descent guidance at supercruise speeds - still decelerating into orbit.
         if (speed > 50_000) {
@@ -275,7 +278,6 @@ public class LocationTrackingSubscriber {
                 altitude / 1000, distanceToTarget / 1000, (double) slopeAngle, navigator.bearingToTarget(),
                 climbing ? "CLIMBING" : "ok");
         log.info(glideLog);
-        EventBusManager.publish(new AppLogEvent(glideLog));
 
         if (climbing) {
             // Pitching up risks cancelling glide - warn immediately.
@@ -391,10 +393,19 @@ public class LocationTrackingSubscriber {
     }
 
     private void speedWarning(NavigationUtils.Direction navigator) {
-        if (navigator.distanceToTarget() <= 10_000 && navigator.getSpeed() >= 400) {
+        if (lastDistance == -1 || navigator.distanceToTarget() >= lastDistance) return;
+        double speed = navigator.getSpeed();
+        if (speed < 200) {
+            speedWarningGiven = false;
+            return;
+        }
+        if (speedWarningGiven) return;
+        if (navigator.distanceToTarget() <= 10_000 && speed >= 400) {
             vocalize("Reduce speed below 350", 0, 0, true);
-        } else if (navigator.distanceToTarget() <= 5_000 && navigator.getSpeed() >= 300) {
+            speedWarningGiven = true;
+        } else if (navigator.distanceToTarget() <= 5_000 && speed >= 300) {
             vocalize("Reduce speed below 200", 0, 0, true);
+            speedWarningGiven = true;
         }
     }
 
@@ -420,6 +431,7 @@ public class LocationTrackingSubscriber {
         lookForLandingSpotAnnounced = false;
         beginDescentCued = false;
         levelOffCued = false;
+        speedWarningGiven = false;
         playerSession.setTracking(new TargetLocation());
         lastTracking = null;
         lastDistance = -1;

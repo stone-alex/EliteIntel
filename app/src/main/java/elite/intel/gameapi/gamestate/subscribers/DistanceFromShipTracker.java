@@ -43,7 +43,7 @@ public class DistanceFromShipTracker {
 
         double[] landingCoordinates = currentLocation.getLandingCoordinates();
         if (landingCoordinates == null || landingCoordinates.length != 2) {
-            log.debug("Landing coordinates invalid, skipping distance check.");
+            //log.debug("Landing coordinates invalid, skipping distance check.");
             return;
         }
 

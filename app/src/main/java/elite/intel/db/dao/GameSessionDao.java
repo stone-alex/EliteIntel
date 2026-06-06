@@ -23,7 +23,8 @@ public interface GameSessionDao {
                                                              localLlmProvider, localLlmAddress, conversationModeOn,
                                                              ollamaAddress, ollamaCommandModel, ollamaQueryModel,
                                                              lmStudioAddress, lmStudioCommandModel, lmStudioQueryModel,
-                                                             aiLanguage
+                                                             aiLanguage,
+                                                             audioInputDevice, audioOutputDevice
                                                 )
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey,
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh,
@@ -33,7 +34,8 @@ public interface GameSessionDao {
                                                       :localLlmProvider, :localLlmAddress, :conversationModeOn,
                                                       :ollamaAddress, :ollamaCommandModel, :ollamaQueryModel,
                                                       :lmStudioAddress, :lmStudioCommandModel, :lmStudioQueryModel,
-                                                      :aiLanguage
+                                                      :aiLanguage,
+                                                      :audioInputDevice, :audioOutputDevice
                                           )
             """)
     void save(@BindBean GameSessionDao.GameSession data);
@@ -86,6 +88,8 @@ public interface GameSessionDao {
             session.setLmStudioCommandModel(rs.getString("lmStudioCommandModel"));
             session.setLmStudioQueryModel(rs.getString("lmStudioQueryModel"));
             session.setAiLanguage(rs.getString("aiLanguage"));
+            session.setAudioInputDevice(rs.getString("audioInputDevice"));
+            session.setAudioOutputDevice(rs.getString("audioOutputDevice"));
             return session;
         }
     }
@@ -129,6 +133,8 @@ public interface GameSessionDao {
         private String lmStudioCommandModel;
         private String lmStudioQueryModel;
         private String aiLanguage;
+        private String audioInputDevice;
+        private String audioOutputDevice;
 
 
         public String getAiPersonality() {
@@ -395,6 +401,22 @@ public interface GameSessionDao {
 
         public void setAiLanguage(String aiLanguage) {
             this.aiLanguage = aiLanguage;
+        }
+
+        public String getAudioInputDevice() {
+            return audioInputDevice;
+        }
+
+        public void setAudioInputDevice(String audioInputDevice) {
+            this.audioInputDevice = audioInputDevice;
+        }
+
+        public String getAudioOutputDevice() {
+            return audioOutputDevice;
+        }
+
+        public void setAudioOutputDevice(String audioOutputDevice) {
+            this.audioOutputDevice = audioOutputDevice;
         }
     }
 }

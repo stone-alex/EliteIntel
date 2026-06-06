@@ -176,6 +176,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
         map.put("alle ansagen deaktivieren, alle meldungen ausschalten", DISABLE_ALL_ANNOUNCEMENTS.getAction());
         map.put("erinnerungen löschen, erinnerungen zurücksetzen", CLEAR_REMINDERS.getAction());
         map.put("erinnerung setzen {key:X}, erinnere mich {key:X}", SET_REMINDER.getAction());
+        map.put("erinnere mich in {minutes:X} minuten {key:Y}, timer für {minutes:X} minuten {key:Y}, zeitgesteuerte erinnerung {minutes:X} minuten {key:Y}", SET_TIMED_REMINDER.getAction());
 
         // UI panels
         map.put("aktivieren, aktiviere", ACTIVATE.getAction());

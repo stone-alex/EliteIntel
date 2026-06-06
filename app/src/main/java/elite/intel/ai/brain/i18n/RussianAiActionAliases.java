@@ -177,6 +177,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
         map.put("отключи все объявления, выключи все уведомления", DISABLE_ALL_ANNOUNCEMENTS.getAction());
         map.put("очисти напоминания, сбрось напоминания", CLEAR_REMINDERS.getAction());
         map.put("установи напоминание {key:X}, напомни {key:X}", SET_REMINDER.getAction());
+        map.put("напомни мне через {minutes:X} минут {key:Y}, таймер на {minutes:X} минут {key:Y}, напоминание через {minutes:X} минут {key:Y}", SET_TIMED_REMINDER.getAction());
 
         // UI panels
         map.put("активировать выбранное, активируй выбранное, подтверди выбор, нажми активную кнопку", ACTIVATE.getAction());

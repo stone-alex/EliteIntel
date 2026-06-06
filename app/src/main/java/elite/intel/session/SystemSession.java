@@ -409,6 +409,32 @@ public class SystemSession {
         });
     }
 
+    public String getAudioInputDevice() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getAudioInputDevice());
+    }
+
+    public void setAudioInputDevice(String device) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setAudioInputDevice(device == null || device.isBlank() ? null : device);
+            dao.save(session);
+            return null;
+        });
+    }
+
+    public String getAudioOutputDevice() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getAudioOutputDevice());
+    }
+
+    public void setAudioOutputDevice(String device) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setAudioOutputDevice(device == null || device.isBlank() ? null : device);
+            dao.save(session);
+            return null;
+        });
+    }
+
     public void setConversationalMode(boolean b) {
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();

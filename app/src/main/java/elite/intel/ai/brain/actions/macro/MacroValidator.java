@@ -14,25 +14,62 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Validates editor-created macros before they are persisted or registered for command dispatch.
+ * Validates macro definitions.
+ * <p>
+ * Two public entry points:
+ * <ul>
+ *   <li>{@link #validateFormat} — self-contained format checks (actionKey pattern, length,
+ *       built-in collision). Used by the load path to reject individually malformed macros
+ *       without requiring cross-macro context.</li>
+ *   <li>{@link #validate} — full contextual validation including actionKey uniqueness,
+ *       phrase collision, parameter and step cross-references. Used by the macro editor
+ *       before saving.</li>
+ * </ul>
  */
-public final class MacroEditorValidator {
+public final class MacroValidator {
 
-    // Allows dot, colon, and dash so macro IDs can mirror the action ID conventions used by Commands enum.
-    private static final Pattern SAFE_ID = Pattern.compile("[A-Za-z0-9_.:-]+");
-    // Stricter than SAFE_ID: param names must be valid identifier fragments usable in ${…} templates.
+    /** Strict snake_case: lowercase letters, digits, and underscores only. */
+    static final Pattern SAFE_ID = Pattern.compile("[a-z0-9_]+");
+    static final int MIN_ACTION_KEY_LENGTH = 10;
+    static final int MAX_ACTION_KEY_LENGTH = 60;
+
     private static final Pattern VALID_PARAM_NAME = Pattern.compile("[A-Za-z0-9_]+");
 
-    private MacroEditorValidator() {
+    private MacroValidator() {
     }
 
     /**
-     * Returns validation errors for a candidate macro. An empty list means the macro is safe to save.
+     * Validates actionKey format rules that require no cross-macro context:
+     * pattern, length, and built-in command collision.
+     * Returns an empty list when all format rules pass.
+     */
+    public static List<String> validateFormat(MacroDefinition candidate) {
+        if (candidate == null) {
+            return List.of("Macro is missing.");
+        }
+        List<String> errors = new ArrayList<>();
+        String actionKey = candidate.getActionKey();
+        if (actionKey == null || actionKey.isBlank()) {
+            errors.add("Action key is required.");
+        } else {
+            appendActionKeyFormatErrors(actionKey, errors);
+            if (builtInCommandIds().contains(actionKey.toLowerCase(Locale.ROOT))) {
+                errors.add("Action key collides with a built-in command.");
+            }
+        }
+        return List.copyOf(errors);
+    }
+
+    /**
+     * Full macro validation including cross-macro context.
+     * Subsumes all checks from {@link #validateFormat} and additionally checks
+     * actionKey uniqueness, phrase collisions, parameter names/types, and step
+     * parameter references.
      *
-     * @param existingMacros    all currently saved macros, used for action-key and phrase collision checks
-     * @param originalActionKey the macro's {@code actionKey} before editing ({@code null} for new macros);
-     *                          allows a macro to keep its own action key during an edit without triggering
-     *                          a uniqueness error
+     * @param existingMacros    all currently saved macros, used for uniqueness and phrase checks
+     * @param originalActionKey the macro's {@code actionKey} before editing ({@code null} for
+     *                          new macros); allows a macro to keep its own key during an edit
+     *                          without triggering a uniqueness error
      */
     public static List<String> validate(
             MacroDefinition candidate,
@@ -43,7 +80,6 @@ public final class MacroEditorValidator {
         if (candidate == null) {
             return List.of("Macro is missing.");
         }
-
         validateIdentity(candidate, existingMacros, originalActionKey, errors);
         validatePhrases(candidate, existingMacros, originalActionKey, errors);
         validateParameters(candidate, errors);
@@ -61,9 +97,7 @@ public final class MacroEditorValidator {
         if (actionKey == null || actionKey.isBlank()) {
             errors.add("Action key is required.");
         } else {
-            if (!SAFE_ID.matcher(actionKey).matches()) {
-                errors.add("Action key may contain only letters, digits, underscore, dash, dot, or colon.");
-            }
+            appendActionKeyFormatErrors(actionKey, errors);
             if (builtInCommandIds().contains(normalize(actionKey))) {
                 errors.add("Action key collides with a built-in command.");
             }
@@ -77,6 +111,20 @@ public final class MacroEditorValidator {
 
         if (candidate.getName() == null || candidate.getName().isBlank()) {
             errors.add("Name is required.");
+        }
+    }
+
+    /**
+     * Appends pattern and length errors for {@code actionKey}.
+     * Length is checked only when the pattern passes so both errors never appear together.
+     */
+    private static void appendActionKeyFormatErrors(String actionKey, List<String> errors) {
+        if (!SAFE_ID.matcher(actionKey).matches()) {
+            errors.add("Action key must use lowercase letters, numbers, and underscores only.");
+        } else if (actionKey.length() < MIN_ACTION_KEY_LENGTH) {
+            errors.add("Action key must be at least " + MIN_ACTION_KEY_LENGTH + " characters.");
+        } else if (actionKey.length() > MAX_ACTION_KEY_LENGTH) {
+            errors.add("Action key must not exceed " + MAX_ACTION_KEY_LENGTH + " characters.");
         }
     }
 
@@ -158,7 +206,6 @@ public final class MacroEditorValidator {
         }
         macroIds.add(normalize(candidate.getActionKey()));
 
-        // Build the set of declared parameter names for reference checking.
         Set<String> declaredParamNames = new HashSet<>();
         for (MacroParameterSpec spec : candidate.getParameters()) {
             if (spec != null && spec.getName() != null) {
@@ -203,7 +250,6 @@ public final class MacroEditorValidator {
             String template, String stepPrefix, String fieldName,
             Set<String> declaredParamNames, List<String> errors
     ) {
-        // Skip ref checks for parameterless macros — they cannot have ${…} refs by definition.
         if (template == null || declaredParamNames.isEmpty()) return;
         Matcher m = MacroExecutionContext.PARAM_REF.matcher(template);
         while (m.find()) {
@@ -226,7 +272,7 @@ public final class MacroEditorValidator {
         }
     }
 
-    private static Set<String> builtInCommandIds() {
+    static Set<String> builtInCommandIds() {
         Set<String> ids = new HashSet<>();
         for (Commands command : Commands.values()) {
             ids.add(normalize(command.getAction()));

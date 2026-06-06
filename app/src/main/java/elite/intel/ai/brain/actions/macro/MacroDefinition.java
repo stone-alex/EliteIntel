@@ -18,7 +18,7 @@ import java.util.List;
 public final class MacroDefinition {
 
     private final String id;
-    /** LLM-facing action token; editable, unique, validated by {@link MacroEditorValidator}. */
+    /** LLM-facing action token; editable, unique, validated by {@link MacroValidator}. */
     private final String actionKey;
     private final String name;
     private final String description;

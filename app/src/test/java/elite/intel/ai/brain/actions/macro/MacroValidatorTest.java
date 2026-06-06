@@ -8,14 +8,14 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class MacroEditorValidatorTest {
+class MacroValidatorTest {
 
     @Test
     void validMacroHasNoErrors() {
         MacroDefinition macro = macro("macro_valid", "Valid", "valid phrase",
                 List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
 
-        assertTrue(MacroEditorValidator.validate(macro, List.of(), null).isEmpty());
+        assertTrue(MacroValidator.validate(macro, List.of(), null).isEmpty());
     }
 
     @Test
@@ -25,8 +25,8 @@ class MacroEditorValidatorTest {
         MacroDefinition builtIn = macro("deploy_landing_gear", "Bad", "another unique phrase",
                 List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
 
-        assertFalse(MacroEditorValidator.validate(unsafe, List.of(), null).isEmpty());
-        assertFalse(MacroEditorValidator.validate(builtIn, List.of(), null).isEmpty());
+        assertFalse(MacroValidator.validate(unsafe, List.of(), null).isEmpty());
+        assertFalse(MacroValidator.validate(builtIn, List.of(), null).isEmpty());
     }
 
     @Test
@@ -36,8 +36,8 @@ class MacroEditorValidatorTest {
         MacroDefinition candidate = macro("macro_same", "Candidate", "candidate phrase",
                 List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
 
-        assertFalse(MacroEditorValidator.validate(candidate, List.of(existing), null).isEmpty());
-        assertTrue(MacroEditorValidator.validate(candidate, List.of(existing), "macro_same").isEmpty());
+        assertFalse(MacroValidator.validate(candidate, List.of(existing), null).isEmpty());
+        assertTrue(MacroValidator.validate(candidate, List.of(existing), "macro_same").isEmpty());
     }
 
     @Test
@@ -47,7 +47,7 @@ class MacroEditorValidatorTest {
         MacroDefinition candidate = macro("macro_candidate", "Candidate", "duplicate phrase",
                 List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
 
-        assertFalse(MacroEditorValidator.validate(candidate, List.of(existing), null).isEmpty());
+        assertFalse(MacroValidator.validate(candidate, List.of(existing), null).isEmpty());
     }
 
     @Test
@@ -60,7 +60,7 @@ class MacroEditorValidatorTest {
                 new MacroStep(MacroStep.Type.RUN_COMMAND, null, 0, null, "macro_other")
         ));
 
-        assertFalse(MacroEditorValidator.validate(candidate, List.of(existing), null).isEmpty());
+        assertFalse(MacroValidator.validate(candidate, List.of(existing), null).isEmpty());
     }
 
     // --- parameter validation ---
@@ -73,7 +73,7 @@ class MacroEditorValidatorTest {
                 List.of(MacroStep.runCommandWithParams("navigate_to_coordinates",
                         Map.of("lat", "${lat}", "lon", "${lon}"))));
 
-        assertTrue(MacroEditorValidator.validate(macro, List.of(), null).isEmpty());
+        assertTrue(MacroValidator.validate(macro, List.of(), null).isEmpty());
     }
 
     @Test
@@ -83,7 +83,7 @@ class MacroEditorValidatorTest {
                         new MacroParameterSpec("speed", "number", false, "", null, null)),
                 List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
 
-        assertFalse(MacroEditorValidator.validate(macro, List.of(), null).isEmpty());
+        assertFalse(MacroValidator.validate(macro, List.of(), null).isEmpty());
     }
 
     @Test
@@ -92,7 +92,7 @@ class MacroEditorValidatorTest {
                 List.of(new MacroParameterSpec("val", "integer", true, "", null, null)),
                 List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
 
-        assertFalse(MacroEditorValidator.validate(macro, List.of(), null).isEmpty());
+        assertFalse(MacroValidator.validate(macro, List.of(), null).isEmpty());
     }
 
     @Test
@@ -101,7 +101,7 @@ class MacroEditorValidatorTest {
                 List.of(new MacroParameterSpec("bad name!", "string", true, "", null, null)),
                 List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
 
-        assertFalse(MacroEditorValidator.validate(macro, List.of(), null).isEmpty());
+        assertFalse(MacroValidator.validate(macro, List.of(), null).isEmpty());
     }
 
     @Test
@@ -112,7 +112,7 @@ class MacroEditorValidatorTest {
                 List.of(MacroStep.runCommandWithParams("navigate_to_coordinates",
                         Map.of("lat", "${lat}", "lon", "${lon}"))));
 
-        List<String> errors = MacroEditorValidator.validate(macro, List.of(), null);
+        List<String> errors = MacroValidator.validate(macro, List.of(), null);
         assertFalse(errors.isEmpty());
         assertTrue(errors.stream().anyMatch(e -> e.contains("lat")));
     }
@@ -125,7 +125,7 @@ class MacroEditorValidatorTest {
                 List.of(new MacroParameterSpec("future_param", "boolean", false, "", null, null)),
                 List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
 
-        assertTrue(MacroEditorValidator.validate(macro, List.of(), null).isEmpty());
+        assertTrue(MacroValidator.validate(macro, List.of(), null).isEmpty());
     }
 
     @Test
@@ -134,11 +134,85 @@ class MacroEditorValidatorTest {
                 List.of(new MacroParameterSpec("name", "string", true, "", null, null)),
                 List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "Hello ${name}, going to ${dest}", null)));
 
-        List<String> errors = MacroEditorValidator.validate(macro, List.of(), null);
+        List<String> errors = MacroValidator.validate(macro, List.of(), null);
         assertFalse(errors.isEmpty());
         assertTrue(errors.stream().anyMatch(e -> e.contains("dest")));
         // "name" is declared, so no error for it
         assertFalse(errors.stream().anyMatch(e -> e.contains("'name'")));
+    }
+
+    // --- actionKey format and length validation ---
+
+    @Test
+    void rejectsActionKeyWithUppercaseLetters() {
+        MacroDefinition macro = macro("Apply_Combat_Preset", "Test", "test phrase",
+                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
+
+        List<String> errors = MacroValidator.validate(macro, List.of(), null);
+        assertFalse(errors.isEmpty());
+        assertTrue(errors.stream().anyMatch(e -> e.contains("lowercase")));
+    }
+
+    @Test
+    void rejectsActionKeyWithHyphen() {
+        MacroDefinition macro = macro("apply-combat-preset", "Test", "test phrase",
+                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
+
+        List<String> errors = MacroValidator.validate(macro, List.of(), null);
+        assertFalse(errors.isEmpty());
+        assertTrue(errors.stream().anyMatch(e -> e.contains("lowercase")));
+    }
+
+    @Test
+    void rejectsActionKeyWithDotsAndColons() {
+        MacroDefinition macro = macro("apply.combat:preset", "Test", "test phrase",
+                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
+
+        List<String> errors = MacroValidator.validate(macro, List.of(), null);
+        assertFalse(errors.isEmpty());
+        assertTrue(errors.stream().anyMatch(e -> e.contains("lowercase")));
+    }
+
+    @Test
+    void rejectsActionKeyTooShort() {
+        MacroDefinition macro = macro("go", "Go", "go phrase",
+                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
+
+        List<String> errors = MacroValidator.validate(macro, List.of(), null);
+        assertFalse(errors.isEmpty());
+        assertTrue(errors.stream().anyMatch(e -> e.contains("at least")));
+    }
+
+    @Test
+    void rejectsActionKeyTooLong() {
+        String longKey = "a".repeat(MacroValidator.MAX_ACTION_KEY_LENGTH + 1);
+        MacroDefinition macro = macro(longKey, "Test", "test phrase",
+                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
+
+        List<String> errors = MacroValidator.validate(macro, List.of(), null);
+        assertFalse(errors.isEmpty());
+        assertTrue(errors.stream().anyMatch(e -> e.contains("must not exceed")));
+    }
+
+    @Test
+    void acceptsActionKeyAtMinimumLength() {
+        // "macro_test" is exactly MIN_ACTION_KEY_LENGTH (10) characters.
+        MacroDefinition macro = macro("macro_test", "Test", "test phrase",
+                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
+
+        assertTrue(MacroValidator.validate(macro, List.of(), null).isEmpty());
+    }
+
+    @Test
+    void patternErrorSuppressesLengthError() {
+        // "bad key!" is 8 chars (below minimum) AND contains invalid characters.
+        // Only the pattern error must be reported — not the length error.
+        MacroDefinition macro = macro("bad key!", "Bad", "bad phrase",
+                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
+
+        List<String> errors = MacroValidator.validate(macro, List.of(), null);
+        assertTrue(errors.stream().anyMatch(e -> e.contains("lowercase")));
+        assertFalse(errors.stream().anyMatch(e -> e.contains("at least")));
     }
 
     // --- helpers ---

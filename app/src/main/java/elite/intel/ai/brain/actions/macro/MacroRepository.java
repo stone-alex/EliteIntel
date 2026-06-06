@@ -26,6 +26,14 @@ public final class MacroRepository {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Type LIST_TYPE = new TypeToken<List<MacroDefinition>>() {}.getType();
 
+    /** Number of macros skipped during the most recent {@link #load()} call due to validation failures. */
+    private int lastSkippedCount = 0;
+    /** Human-readable labels for macros skipped during the most recent {@link #load()} call. */
+    private List<String> lastSkippedLabels = List.of();
+
+    int getLastSkippedCount() { return lastSkippedCount; }
+    List<String> getLastSkippedLabels() { return lastSkippedLabels; }
+
     /**
      * Loads all macros from {@code macros.json}. Returns an empty list if the file does not
      * exist or is empty. Invalid individual macros are skipped with an error log; the remaining
@@ -60,17 +68,36 @@ public final class MacroRepository {
                 log.warn("macros.json parsed to null - treating as empty");
                 return Collections.emptyList();
             }
+            int rawCount = raw.size();
             List<MacroDefinition> valid = new ArrayList<>();
+            List<String> skipped = new ArrayList<>();
             for (MacroDefinition def : raw) {
+                String label = macroLabel(def);
                 try {
                     def.validate();
-                    valid.add(def);
-                    log.info("Loaded macro: '{}' (actionKey={} id={})",
-                            def.getName(), def.getActionKey(), def.getId());
                 } catch (IllegalArgumentException e) {
-                    log.error("Skipping invalid macro entry: {}", e.getMessage());
+                    log.warn("Skipping macro {}: {}", label, e.getMessage());
+                    skipped.add(label);
+                    continue;
                 }
+                List<String> formatErrors = MacroValidator.validateFormat(def);
+                if (!formatErrors.isEmpty()) {
+                    log.warn("Skipping macro {}: {}", label, String.join("; ", formatErrors));
+                    skipped.add(label);
+                    continue;
+                }
+                String ak = def.getActionKey();
+                boolean duplicate = valid.stream().anyMatch(m -> m.getActionKey().equalsIgnoreCase(ak));
+                if (duplicate) {
+                    log.warn("Skipping macro {}: actionKey '{}' is a duplicate of an already-loaded macro", label, ak);
+                    skipped.add(label);
+                    continue;
+                }
+                valid.add(def);
+                log.info("Loaded macro: '{}' (actionKey={} id={})", def.getName(), ak, def.getId());
             }
+            lastSkippedCount = skipped.size();
+            lastSkippedLabels = Collections.unmodifiableList(skipped);
             return Collections.unmodifiableList(valid);
         } catch (Exception e) {
             log.error("Failed to load macros.json - no user macros will be available", e);
@@ -102,6 +129,16 @@ public final class MacroRepository {
      * Package-private test seam - saves macros to an explicit {@link Path}.
      * Production code always calls {@link #save(List)}.
      */
+    /** Returns the best human-readable identifier for a macro: name if present, else id + actionKey. */
+    private static String macroLabel(MacroDefinition def) {
+        String name = def.getName();
+        if (name != null && !name.isBlank()) return name;
+        String id = def.getId();
+        String ak = def.getActionKey();
+        if (ak != null && !ak.isBlank()) return (id != null ? id + " / " : "") + ak;
+        return id != null ? id : "(unnamed)";
+    }
+
     boolean save(List<MacroDefinition> macros, Path path) {
         try {
             if (path.getParent() != null) {

@@ -27,6 +27,7 @@ public final class MacroRegistry {
 
     /** Written once during {@link #load()}, read-only after. */
     private volatile List<MacroDefinition> macros = Collections.emptyList();
+    private final MacroRepository repository = new MacroRepository();
 
     private MacroRegistry() {}
 
@@ -39,13 +40,24 @@ public final class MacroRegistry {
      * {@code ResponseRouter} (and therefore {@code CommandHandlerFactory}) is first used.
      */
     public void load() {
-        macros = new MacroRepository().load();
-        log.info("MacroRegistry: {} macro(s) loaded", macros.size());
+        macros = repository.load();
+        log.info("MacroRegistry: {} macro(s) loaded, {} skipped",
+                macros.size(), repository.getLastSkippedCount());
     }
 
     /** Returns the loaded macro list as an immutable snapshot. Empty until {@link #load()} is called. */
     public List<MacroDefinition> getMacros() {
         return List.copyOf(macros);
+    }
+
+    /** Returns the number of macros skipped during the most recent {@link #load()} due to validation failures. */
+    public int getSkippedOnLastLoad() {
+        return repository.getLastSkippedCount();
+    }
+
+    /** Returns human-readable labels for macros skipped during the most recent {@link #load()}. */
+    public List<String> getSkippedLabelsOnLastLoad() {
+        return repository.getLastSkippedLabels();
     }
 
     /**

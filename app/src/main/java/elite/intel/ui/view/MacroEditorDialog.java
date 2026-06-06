@@ -1,7 +1,7 @@
 package elite.intel.ui.view;
 
 import elite.intel.ai.brain.actions.macro.MacroDefinition;
-import elite.intel.ai.brain.actions.macro.MacroEditorValidator;
+import elite.intel.ai.brain.actions.macro.MacroValidator;
 import elite.intel.ai.brain.actions.macro.MacroParameterSpec;
 import elite.intel.ai.brain.actions.macro.MacroStep;
 
@@ -343,7 +343,7 @@ final class MacroEditorDialog extends JDialog {
 
     private void save() {
         MacroDefinition candidate = buildCandidate();
-        List<String> errors = MacroEditorValidator.validate(candidate, existingMacros, originalActionKey);
+        List<String> errors = MacroValidator.validate(candidate, existingMacros, originalActionKey);
         if (!errors.isEmpty()) {
             showErrors(errors);
             return;
@@ -374,9 +374,9 @@ final class MacroEditorDialog extends JDialog {
     }
 
     private String uniqueGeneratedActionKey(String name) {
-        String base = "macro_" + sanitizeId(name);
-        if ("macro_".equals(base)) {
-            base = "macro_new";
+        String base = sanitizeId(name);
+        if (base.isBlank()) {
+            base = "new_macro_action";
         }
         List<String> existingKeys = existingMacros.stream()
                 .filter(macro -> !sameId(macro.getActionKey(), originalActionKey))

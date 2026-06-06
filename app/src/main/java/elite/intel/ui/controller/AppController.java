@@ -6,6 +6,7 @@ import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.hands.HandsService;
+import elite.intel.ai.brain.actions.macro.MacroLoadAnnouncement;
 import elite.intel.ai.hands.KeyBindCheck;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
@@ -221,6 +222,7 @@ public class AppController implements Runnable {
         connectionCheckTimer.start();
 
         KeyBindCheck.getInstance().check();
+        MacroLoadAnnouncement.getInstance().announce();
     }
 
     private void stopServices() {

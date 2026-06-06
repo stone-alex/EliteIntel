@@ -5,20 +5,15 @@ import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.db.managers.ShipManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
-import elite.intel.ui.event.NotificationVolumeChangedEvent;
-import elite.intel.ui.event.RestartMouthEvent;
-import elite.intel.ui.event.SpeechSpeedChangeEvent;
-import elite.intel.ui.event.SttThreadsChangedEvent;
-import elite.intel.ui.event.SttVolumeChangedEvent;
 import elite.intel.ui.event.*;
+import elite.intel.ui.view.AudioInterfaceDialog;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
-import static elite.intel.ui.view.AppTheme.BUTTON_BG;
-import static elite.intel.ui.view.AppTheme.baseGbc;
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
+import static elite.intel.ui.view.AppTheme.*;
 
 public class AudioSettingsPanel extends JPanel {
 
@@ -137,6 +132,12 @@ public class AudioSettingsPanel extends JPanel {
         waveformPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         waveformPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, AudioWaveformPanel.PANEL_HEIGHT));
         content.add(waveformPanel);
+
+        content.add(Box.createVerticalStrut(8));
+        JButton audioDevicesBtn = makeButton(getText("button.audioDevices"));
+        audioDevicesBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+        audioDevicesBtn.addActionListener(e -> new AudioInterfaceDialog(this).setVisible(true));
+        content.add(audioDevicesBtn);
 
         JPanel helpLabels = new JPanel();
         helpLabels.setLayout(new BoxLayout(helpLabels, BoxLayout.PAGE_AXIS));

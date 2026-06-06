@@ -169,6 +169,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("disable all announcements", DISABLE_ALL_ANNOUNCEMENTS.getAction());
         map.put("clear reminders", CLEAR_REMINDERS.getAction());
         map.put("set reminder {key:X}", SET_REMINDER.getAction());
+        map.put("remind me in {minutes:X} minutes to {key:Y}, set a {minutes:X} minute timer {key:Y}, set timer for {minutes:X} minutes {key:Y}, timed reminder {minutes:X} minutes {key:Y}", SET_TIMED_REMINDER.getAction());
 
         // UI panels
         map.put("activate", ACTIVATE.getAction());

@@ -356,8 +356,8 @@ public class PromptFactory implements AiPromptFactory {
         PlayerSession playerSession = PlayerSession.getInstance();
         String alternativeName = playerSession.getAlternativeName();
         String playerName = alternativeName != null ? alternativeName : playerSession.getPlayerName();
-        String playerMilitaryRank = playerSession.getPlayerHighestMilitaryRank();
-        String playerHonorific = Ranks.getPlayerHonorific();
+        String playerMilitaryRank = Ranks.getLocalizedPlayerMilitaryRank();
+        String playerHonorific = Ranks.getLocalizedPlayerHonorific();
         String carrierName = playerSession.getFleetCarrierData() != null ? playerSession.getFleetCarrierData().getCarrierName() : null;
 
         appendContext(sb,

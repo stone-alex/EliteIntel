@@ -2,9 +2,12 @@ package elite.intel.util;
 
 import elite.intel.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.ui.i18n.MultiLingualTextProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -299,5 +302,123 @@ public class Ranks {
     public static String getPlayerHonorific() {
         RankAndProgressDto rankDto = PlayerSession.getInstance().getRankAndProgressDto();
         return rankDto.getHonorific();
+    }
+
+    private static final Map<String, String> ALL_RANK_KEY_MAP;
+
+    static {
+        Map<String, String> m = new HashMap<>();
+        // Honorifics (getHonorificMap values stored in RankAndProgressDto.honorific)
+        m.put("Commander", "speech.commander");
+        m.put("Outsider", "rank.honorific.outsider");
+        m.put("Serf", "rank.honorific.serf");
+        m.put("Master", "rank.honorific.master");
+        m.put("Squire", "rank.honorific.squire");
+        m.put("Sir", "rank.honorific.sir");
+        m.put("My Lord", "rank.honorific.myLord");
+        m.put("Your Grace", "rank.honorific.yourGrace");
+        m.put("Your Highness", "rank.honorific.yourHighness");
+        m.put("Your Majesty", "rank.honorific.yourMajesty");
+        m.put("Recruit", "rank.honorific.recruit");
+        m.put("Cadet", "rank.honorific.cadet");
+        m.put("Midshipman", "rank.honorific.midshipman");
+        m.put("PO", "rank.honorific.po");
+        m.put("Chief", "rank.honorific.chief");
+        m.put("Warrant", "rank.honorific.warrant");
+        m.put("Ensign", "rank.honorific.ensign");
+        m.put("Lieutenant", "rank.honorific.lieutenant");
+        m.put("Captain", "rank.honorific.captain");
+        m.put("Admiral", "rank.honorific.admiral");
+        // Imperial rank names
+        m.put("Knight", "rank.imperial.knight");
+        m.put("Lord", "rank.imperial.lord");
+        m.put("Baron", "rank.imperial.baron");
+        m.put("Viscount", "rank.imperial.viscount");
+        m.put("Count", "rank.imperial.count");
+        m.put("Earl", "rank.imperial.earl");
+        m.put("Marquis", "rank.imperial.marquis");
+        m.put("Duke", "rank.imperial.duke");
+        m.put("Prince", "rank.imperial.prince");
+        m.put("King", "rank.imperial.king");
+        // Federation rank names
+        m.put("Petty Officer", "rank.federation.pettyOfficer");
+        m.put("Chief Petty Officer", "rank.federation.chiefPettyOfficer");
+        m.put("Warrant Officer", "rank.federation.warrantOfficer");
+        m.put("Lieutenant Commander", "rank.federation.lieutenantCommander");
+        m.put("Post Commander", "rank.federation.postCommander");
+        m.put("Post Captain", "rank.federation.postCaptain");
+        m.put("Rear Admiral", "rank.federation.rearAdmiral");
+        m.put("Vice Admiral", "rank.federation.viceAdmiral");
+        // Combat ranks
+        m.put("Harmless", "rank.combat.harmless");
+        m.put("Mostly Harmless", "rank.combat.mostlyHarmless");
+        m.put("Novice", "rank.combat.novice");
+        m.put("Competent", "rank.combat.competent");
+        m.put("Expert", "rank.combat.expert");
+        m.put("Dangerous", "rank.combat.dangerous");
+        m.put("Deadly", "rank.combat.deadly");
+        m.put("Elite", "rank.combat.elite");
+        m.put("Elite 1", "rank.combat.elite1");
+        m.put("Elite 2", "rank.combat.elite2");
+        m.put("Elite 3", "rank.combat.elite3");
+        m.put("Elite 4", "rank.combat.elite4");
+        m.put("Elite 5", "rank.combat.elite5");
+        // Trade ranks ("Entrepreneur" and "Elite*" reuse existing keys)
+        m.put("Penniless", "rank.trade.penniless");
+        m.put("Mostly Penniless", "rank.trade.mostlyPenniless");
+        m.put("Peddler", "rank.trade.peddler");
+        m.put("Dealer", "rank.trade.dealer");
+        m.put("Merchant", "rank.trade.merchant");
+        m.put("Broker", "rank.trade.broker");
+        m.put("Entrepreneur", "rank.trade.entrepreneur");
+        m.put("Tycoon", "rank.trade.tycoon");
+        // Exploration ranks ("Elite*" reuse combat keys)
+        m.put("Aimless", "rank.exploration.aimless");
+        m.put("Mostly Aimless", "rank.exploration.mostlyAimless");
+        m.put("Scout", "rank.exploration.scout");
+        m.put("Surveyor", "rank.exploration.surveyor");
+        m.put("Trailblazer", "rank.exploration.trailblazer");
+        m.put("Pathfinder", "rank.exploration.pathfinder");
+        m.put("Ranger", "rank.exploration.ranger");
+        m.put("Pioneer", "rank.exploration.pioneer");
+        // Exobiology ranks ("Knight" reuses imperial key, "Elite*" reuse combat keys)
+        m.put("Directionless", "rank.exobiology.directionless");
+        m.put("Mostly Directionless", "rank.exobiology.mostlyDirectionless");
+        m.put("Compiler", "rank.exobiology.compiler");
+        m.put("Cataloguer", "rank.exobiology.cataloguer");
+        m.put("Taxonomist", "rank.exobiology.taxonomist");
+        m.put("Ecologist", "rank.exobiology.ecologist");
+        m.put("Geneticist", "rank.exobiology.geneticist");
+        // Mercenary ranks
+        m.put("Defenceless", "rank.mercenary.defenceless");
+        m.put("Mostly Defenceless", "rank.mercenary.mostlyDefenceless");
+        m.put("Rookie", "rank.mercenary.rookie");
+        m.put("Soldier", "rank.mercenary.soldier");
+        m.put("Gunslinger", "rank.mercenary.gunslinger");
+        m.put("Warrior", "rank.mercenary.warrior");
+        m.put("Gladiator", "rank.mercenary.gladiator");
+        m.put("Deadeye", "rank.mercenary.deadeye");
+        m.put("Elite I", "rank.mercenary.eliteI");
+        m.put("Elite II", "rank.mercenary.eliteII");
+        m.put("Elite III", "rank.mercenary.eliteIII");
+        m.put("Elite VI", "rank.mercenary.eliteVI");
+        m.put("Elite V", "rank.mercenary.eliteV");
+        ALL_RANK_KEY_MAP = Collections.unmodifiableMap(m);
+    }
+
+    public static String localizeRankValue(String rank) {
+        if (rank == null) return null;
+        String key = ALL_RANK_KEY_MAP.get(rank);
+        return key != null ? MultiLingualTextProvider.getText(key) : rank;
+    }
+
+    public static String getLocalizedPlayerHonorific() {
+        String honorific = PlayerSession.getInstance().getRankAndProgressDto().getHonorific();
+        return localizeRankValue(honorific);
+    }
+
+    public static String getLocalizedPlayerMilitaryRank() {
+        String rank = PlayerSession.getInstance().getPlayerHighestMilitaryRank();
+        return localizeRankValue(rank);
     }
 }

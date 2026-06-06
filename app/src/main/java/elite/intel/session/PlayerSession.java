@@ -12,6 +12,7 @@ import elite.intel.gameapi.journal.events.CarrierStatsEvent;
 import elite.intel.gameapi.journal.events.ReputationEvent;
 import elite.intel.gameapi.journal.events.dto.*;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
+import elite.intel.ui.i18n.MultiLingualTextProvider;
 import elite.intel.util.OsDetector;
 import elite.intel.util.Ranks;
 
@@ -782,14 +783,14 @@ public class PlayerSession {
     public String getVariablePlayerName() {
         String alternativeName = trimToNull(getAlternativeName());
         String playerName = alternativeName != null ? alternativeName : trimToNull(getPlayerName());
-        String playerMilitaryRank = getPlayerHighestMilitaryRank();
-        String playerHonorific = Ranks.getPlayerHonorific();
+        String playerMilitaryRank = Ranks.getLocalizedPlayerMilitaryRank();
+        String playerHonorific = Ranks.getLocalizedPlayerHonorific();
 
         List<String> result = Arrays.stream(
                 new String[]{alternativeName, playerHonorific, playerName, playerMilitaryRank}
         ).map(name -> trimToNull(name)).filter(Objects::nonNull).toList();
         if (result.isEmpty()) {
-            return "Commander";
+            return MultiLingualTextProvider.getText("speech.commander");
         }
 
         return result.get(new Random().nextInt(result.size()));

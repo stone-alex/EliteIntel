@@ -25,6 +25,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
@@ -34,8 +35,13 @@ import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 final class MacroEditorDialog extends JDialog {
 
     private final List<MacroDefinition> existingMacros;
+    /** Immutable UUID carried through edits; {@code null} for new macros until saved. */
     private final String originalId;
+    /** Action key before editing; used by the validator for uniqueness self-check. */
+    private final String originalActionKey;
+    /** Read-only diagnostic field showing the internal UUID. */
     private final JTextField idField = new JTextField(36);
+    private final JTextField actionKeyField = new JTextField(36);
     private final JTextField nameField = new JTextField(36);
     private final JTextArea descriptionArea = textArea(3);
     private final JTextArea phrasesArea = textArea(4);
@@ -54,6 +60,7 @@ final class MacroEditorDialog extends JDialog {
         );
         this.existingMacros = existingMacros == null ? List.of() : List.copyOf(existingMacros);
         this.originalId = macro == null ? null : macro.getId();
+        this.originalActionKey = macro == null ? null : macro.getActionKey();
         populate(macro);
         buildUi(macro != null);
     }
@@ -65,10 +72,12 @@ final class MacroEditorDialog extends JDialog {
 
     private void populate(MacroDefinition macro) {
         if (macro == null) {
-            idField.setText("macro_new");
+            idField.setText("");
+            actionKeyField.setText("macro_new");
             return;
         }
         idField.setText(macro.getId());
+        actionKeyField.setText(macro.getActionKey());
         nameField.setText(macro.getName());
         descriptionArea.setText(macro.getDescription());
         phrasesArea.setText(macro.getPhrases());
@@ -101,9 +110,10 @@ final class MacroEditorDialog extends JDialog {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(AppTheme.BG);
         GridBagConstraints gbc = AppTheme.baseGbc();
-        idField.setEditable(!existing);
+        idField.setEditable(false);
+        idField.setForeground(AppTheme.FG_MUTED);
 
-        addField(panel, gbc, getText("actions.macros.editor.id"), idField);
+        addField(panel, gbc, getText("actions.macros.editor.actionKey"), actionKeyField);
         addField(panel, gbc, getText("actions.macros.editor.name"), nameField);
         addArea(panel, gbc, getText("actions.macros.editor.description"), descriptionArea);
         addArea(panel, gbc, getText("actions.macros.editor.phrases"), phrasesArea);
@@ -333,7 +343,7 @@ final class MacroEditorDialog extends JDialog {
 
     private void save() {
         MacroDefinition candidate = buildCandidate();
-        List<String> errors = MacroEditorValidator.validate(candidate, existingMacros, originalId);
+        List<String> errors = MacroEditorValidator.validate(candidate, existingMacros, originalActionKey);
         if (!errors.isEmpty()) {
             showErrors(errors);
             return;
@@ -344,13 +354,17 @@ final class MacroEditorDialog extends JDialog {
 
     private MacroDefinition buildCandidate() {
         String name = nameField.getText().trim();
-        String id = idField.getText().trim();
-        if (id.isBlank()) {
-            id = uniqueGeneratedId(name);
-            idField.setText(id);
+        // Preserve the existing UUID on edit; generate a new one for new macros.
+        String id = (originalId != null && !originalId.isBlank()) ? originalId : UUID.randomUUID().toString();
+        idField.setText(id);
+        String actionKey = actionKeyField.getText().trim();
+        if (actionKey.isBlank()) {
+            actionKey = uniqueGeneratedActionKey(name);
+            actionKeyField.setText(actionKey);
         }
         return new MacroDefinition(
                 id,
+                actionKey,
                 name,
                 descriptionArea.getText().trim(),
                 phrasesArea.getText().trim(),
@@ -359,19 +373,19 @@ final class MacroEditorDialog extends JDialog {
         );
     }
 
-    private String uniqueGeneratedId(String name) {
+    private String uniqueGeneratedActionKey(String name) {
         String base = "macro_" + sanitizeId(name);
         if ("macro_".equals(base)) {
             base = "macro_new";
         }
-        List<String> existingIds = existingMacros.stream()
-                .filter(macro -> !sameId(macro.getId(), originalId))
-                .map(MacroDefinition::getId)
+        List<String> existingKeys = existingMacros.stream()
+                .filter(macro -> !sameId(macro.getActionKey(), originalActionKey))
+                .map(MacroDefinition::getActionKey)
                 .map(value -> value.toLowerCase(Locale.ROOT))
                 .toList();
         String candidate = base;
         int suffix = 2;
-        while (existingIds.contains(candidate.toLowerCase(Locale.ROOT))) {
+        while (existingKeys.contains(candidate.toLowerCase(Locale.ROOT))) {
             candidate = base + "_" + suffix++;
         }
         return candidate;

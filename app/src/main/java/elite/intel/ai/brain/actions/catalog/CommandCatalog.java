@@ -60,7 +60,7 @@ public final class CommandCatalog {
             String desc = macro.getDescription().isBlank()
                     ? "User macro: " + macro.getName()
                     : macro.getDescription();
-            all.add(new CommandCatalogEntry(macro.getId(), macro.getName(), desc, CommandCatalogEntryType.USER_MACRO));
+            all.add(new CommandCatalogEntry(macro.getActionKey(), macro.getName(), desc, CommandCatalogEntryType.USER_MACRO));
         }
         return Collections.unmodifiableList(all);
     }

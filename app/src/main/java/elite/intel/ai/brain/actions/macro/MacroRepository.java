@@ -65,7 +65,8 @@ public final class MacroRepository {
                 try {
                     def.validate();
                     valid.add(def);
-                    log.info("Loaded macro: '{}' ({})", def.getName(), def.getId());
+                    log.info("Loaded macro: '{}' (actionKey={} id={})",
+                            def.getName(), def.getActionKey(), def.getId());
                 } catch (IllegalArgumentException e) {
                     log.error("Skipping invalid macro entry: {}", e.getMessage());
                 }

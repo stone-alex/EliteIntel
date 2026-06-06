@@ -7,10 +7,19 @@ import java.util.List;
 /**
  * A user-defined macro: a named sequence of steps triggered by voice phrases.
  * Gson populates fields directly; call {@link #validate()} after deserialization.
+ * <p>
+ * Identity model:
+ * <ul>
+ *   <li>{@code id} – immutable UUID generated at creation; used as stable storage identity only.</li>
+ *   <li>{@code actionKey} – human-readable routing token used by the LLM, handler map, and logs;
+ *       editable via the macro editor.</li>
+ * </ul>
  */
 public final class MacroDefinition {
 
     private final String id;
+    /** LLM-facing action token; editable, unique, validated by {@link MacroEditorValidator}. */
+    private final String actionKey;
     private final String name;
     private final String description;
     /**
@@ -26,12 +35,15 @@ public final class MacroDefinition {
     private final List<MacroStep> steps;
 
     /**
-     * Creates a parameterized macro definition for editor-created user macros.
-     * Both lists are defensively copied and exposed as immutable lists.
+     * Primary constructor for editor-created macros.
+     *
+     * @param id        immutable UUID; used only as stable storage identity
+     * @param actionKey LLM-facing routing token; editable, must be unique among macros
      */
-    public MacroDefinition(String id, String name, String description, String phrases,
+    public MacroDefinition(String id, String actionKey, String name, String description, String phrases,
                            List<MacroParameterSpec> parameters, List<MacroStep> steps) {
         this.id = id;
+        this.actionKey = actionKey;
         this.name = name;
         this.description = description;
         this.phrases = phrases;
@@ -44,15 +56,25 @@ public final class MacroDefinition {
     }
 
     /**
+     * Backward-compatible constructor: {@code actionKey} defaults to {@code id}.
+     * Prefer the 7-arg constructor for new code.
+     */
+    public MacroDefinition(String id, String name, String description, String phrases,
+                           List<MacroParameterSpec> parameters, List<MacroStep> steps) {
+        this(id, id, name, description, phrases, parameters, steps);
+    }
+
+    /**
      * Creates a parameterless macro definition. Equivalent to passing {@code null} for parameters.
      */
     public MacroDefinition(String id, String name, String description, String phrases, List<MacroStep> steps) {
-        this(id, name, description, phrases, null, steps);
+        this(id, id, name, description, phrases, null, steps);
     }
 
     @SuppressWarnings("unused")
     private MacroDefinition() {
         id = null;
+        actionKey = null;
         name = null;
         description = null;
         phrases = null;
@@ -64,6 +86,9 @@ public final class MacroDefinition {
     public void validate() {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("Macro id is blank");
+        }
+        if (actionKey == null || actionKey.isBlank()) {
+            throw new IllegalArgumentException("Macro '" + id + "': actionKey is blank");
         }
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Macro '" + id + "': name is blank");
@@ -108,6 +133,8 @@ public final class MacroDefinition {
     }
 
     public String getId() { return id; }
+    /** Returns the LLM-facing action token used for routing, handler lookup, and prompt output. */
+    public String getActionKey() { return actionKey; }
     public String getName() { return name; }
     /** Returns description or empty string if not set. */
     public String getDescription() { return description != null ? description : ""; }

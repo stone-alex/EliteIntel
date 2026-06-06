@@ -152,7 +152,7 @@ public final class CommandDetailsDialog extends JDialog {
         gbc.anchor = GridBagConstraints.NORTHWEST;
 
         addLabelValue(panel, gbc, getText("actions.commands.details.name"), entry.name());
-        addLabelValue(panel, gbc, getText("actions.commands.details.id"), entry.id());
+        addLabelValue(panel, gbc, getText("actions.commands.details.actionKey"), entry.id());
         addLabelValue(panel, gbc, getText("actions.commands.details.type"), readableType(entry.type()));
         addDescription(panel, gbc);
         addPhrases(panel, gbc);

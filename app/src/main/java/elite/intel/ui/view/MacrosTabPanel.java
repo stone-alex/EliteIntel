@@ -149,7 +149,7 @@ public class MacrosTabPanel extends JPanel {
         List<MacroDefinition> macros = MacroRegistry.getInstance().getMacros();
         Map<String, MacroDefinition> macrosById = macros.stream()
                 .collect(Collectors.toMap(
-                        MacroDefinition::getId,
+                        MacroDefinition::getActionKey,
                         Function.identity(),
                         (first, second) -> second,
                         LinkedHashMap::new

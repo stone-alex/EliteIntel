@@ -56,7 +56,7 @@ public abstract class CommandEndPoint extends AiEndPoint {
 
         String action = AiActionsMap.getInstance().actionMap(false).get(normalizedInput);
         Set<String> macroIds = MacroRegistry.getInstance().getMacros().stream()
-                .map(macro -> macro.getId().toLowerCase(Locale.ROOT))
+                .map(macro -> macro.getActionKey().toLowerCase(Locale.ROOT))
                 .collect(Collectors.toSet());
         if (action == null || !macroIds.contains(action.toLowerCase(Locale.ROOT))) {
             return false;

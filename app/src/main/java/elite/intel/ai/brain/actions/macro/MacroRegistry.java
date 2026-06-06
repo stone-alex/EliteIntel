@@ -75,9 +75,9 @@ public final class MacroRegistry {
                     log.warn("Macro phrase [{}] conflicts with an existing action map entry - phrase skipped", phrase);
                     continue;
                 }
-                map.put(normalizedPhrase, macro.getId());
+                map.put(normalizedPhrase, macro.getActionKey());
                 protectedPhrases.add(normalizedPhrase);
-                log.debug("Macro phrase registered: [{}] -> {}", normalizedPhrase, macro.getId());
+                log.debug("Macro phrase registered: [{}] -> {}", normalizedPhrase, macro.getActionKey());
             }
         }
     }
@@ -107,14 +107,14 @@ public final class MacroRegistry {
     public void appendMacroParamRules(Map<String, String> reducedActions, StringBuilder sb) {
         Set<String> activeIds = new HashSet<>(reducedActions.values());
         List<MacroDefinition> activeMacros = macros.stream()
-                .filter(m -> activeIds.contains(m.getId()))
+                .filter(m -> activeIds.contains(m.getActionKey()))
                 .filter(m -> !m.getParameters().isEmpty())
                 .toList();
         if (activeMacros.isEmpty()) return;
 
         sb.append("\nMACRO PARAMS (required for macro actions above — include ALL required params):\n\n");
         for (MacroDefinition macro : activeMacros) {
-            sb.append("  ").append(macro.getId()).append(":\n");
+            sb.append("  ").append(macro.getActionKey()).append(":\n");
             for (MacroParameterSpec param : macro.getParameters()) {
                 sb.append("    ").append(param.getName())
                   .append(" (").append(param.getType());
@@ -143,13 +143,13 @@ public final class MacroRegistry {
     public void contributeToHandlerMap(Map<String, CommandHandler> map) {
         Set<String> protectedActionIds = new HashSet<>(map.keySet());
         for (MacroDefinition macro : macros) {
-            if (protectedActionIds.contains(macro.getId())) {
-                log.warn("Macro id '{}' conflicts with an existing command handler - macro skipped",
-                        macro.getId());
+            if (protectedActionIds.contains(macro.getActionKey())) {
+                log.warn("Macro actionKey '{}' conflicts with an existing command handler - macro skipped",
+                        macro.getActionKey());
                 continue;
             }
-            map.put(macro.getId(), new MacroCommandHandler(macro));
-            log.debug("Macro handler registered: {}", macro.getId());
+            map.put(macro.getActionKey(), new MacroCommandHandler(macro));
+            log.debug("Macro handler registered: {}", macro.getActionKey());
         }
     }
 }

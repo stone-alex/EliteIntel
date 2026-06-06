@@ -29,22 +29,23 @@ public final class MacroEditorValidator {
     /**
      * Returns validation errors for a candidate macro. An empty list means the macro is safe to save.
      *
-     * @param existingMacros all currently saved macros, used for ID and phrase collision checks
-     * @param originalId     the macro's ID before editing ({@code null} for new macros); allows a macro
-     *                       to keep its own ID during an edit without triggering a uniqueness error
+     * @param existingMacros    all currently saved macros, used for action-key and phrase collision checks
+     * @param originalActionKey the macro's {@code actionKey} before editing ({@code null} for new macros);
+     *                          allows a macro to keep its own action key during an edit without triggering
+     *                          a uniqueness error
      */
     public static List<String> validate(
             MacroDefinition candidate,
             List<MacroDefinition> existingMacros,
-            String originalId
+            String originalActionKey
     ) {
         List<String> errors = new ArrayList<>();
         if (candidate == null) {
             return List.of("Macro is missing.");
         }
 
-        validateIdentity(candidate, existingMacros, originalId, errors);
-        validatePhrases(candidate, existingMacros, originalId, errors);
+        validateIdentity(candidate, existingMacros, originalActionKey, errors);
+        validatePhrases(candidate, existingMacros, originalActionKey, errors);
         validateParameters(candidate, errors);
         validateSteps(candidate, existingMacros, errors);
         return List.copyOf(errors);
@@ -53,22 +54,22 @@ public final class MacroEditorValidator {
     private static void validateIdentity(
             MacroDefinition candidate,
             List<MacroDefinition> existingMacros,
-            String originalId,
+            String originalActionKey,
             List<String> errors
     ) {
-        String id = candidate.getId();
-        if (id == null || id.isBlank()) {
-            errors.add("Id is required.");
+        String actionKey = candidate.getActionKey();
+        if (actionKey == null || actionKey.isBlank()) {
+            errors.add("Action key is required.");
         } else {
-            if (!SAFE_ID.matcher(id).matches()) {
-                errors.add("Id may contain only letters, digits, underscore, dash, dot, or colon.");
+            if (!SAFE_ID.matcher(actionKey).matches()) {
+                errors.add("Action key may contain only letters, digits, underscore, dash, dot, or colon.");
             }
-            if (builtInCommandIds().contains(normalize(id))) {
-                errors.add("Id collides with a built-in command.");
+            if (builtInCommandIds().contains(normalize(actionKey))) {
+                errors.add("Action key collides with a built-in command.");
             }
             for (MacroDefinition macro : safeMacros(existingMacros)) {
-                if (!sameId(macro.getId(), originalId) && sameId(macro.getId(), id)) {
-                    errors.add("Id must be unique among macros.");
+                if (!sameId(macro.getActionKey(), originalActionKey) && sameId(macro.getActionKey(), actionKey)) {
+                    errors.add("Action key must be unique among macros.");
                     break;
                 }
             }
@@ -82,7 +83,7 @@ public final class MacroEditorValidator {
     private static void validatePhrases(
             MacroDefinition candidate,
             List<MacroDefinition> existingMacros,
-            String originalId,
+            String originalActionKey,
             List<String> errors
     ) {
         List<String> phrases = AiActionLocalizations.splitPhraseGroup(candidate.getPhrases());
@@ -104,7 +105,7 @@ public final class MacroEditorValidator {
         }
 
         for (MacroDefinition macro : safeMacros(existingMacros)) {
-            if (sameId(macro.getId(), originalId)) {
+            if (sameId(macro.getActionKey(), originalActionKey)) {
                 continue;
             }
             Set<String> otherPhrases = normalizedPhrases(macro);
@@ -153,9 +154,9 @@ public final class MacroEditorValidator {
 
         Set<String> macroIds = new HashSet<>();
         for (MacroDefinition macro : safeMacros(existingMacros)) {
-            macroIds.add(normalize(macro.getId()));
+            macroIds.add(normalize(macro.getActionKey()));
         }
-        macroIds.add(normalize(candidate.getId()));
+        macroIds.add(normalize(candidate.getActionKey()));
 
         // Build the set of declared parameter names for reference checking.
         Set<String> declaredParamNames = new HashSet<>();

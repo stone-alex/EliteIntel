@@ -67,6 +67,7 @@ public class ParakeetSTTImpl implements EarsInterface {
     public double NOISE_FLOOR;
     private final double MINIMUM_NOISE_FLOOR_TO_RMS_RATIO = 300;
     private Thread processingThread;
+    private Mixer.Info inputMixerInfo;
 
     public ParakeetSTTImpl() {
         EventBusManager.register(this);
@@ -79,14 +80,15 @@ public class ParakeetSTTImpl implements EarsInterface {
             return;
         }
 
-        AudioFormatDetector.Format format = AudioFormatDetector.detectSupportedFormat();
+        inputMixerInfo = AudioDeviceEnumerator.resolveInputDevice(systemSession.getAudioInputDevice());
+        AudioFormatDetector.Format format = AudioFormatDetector.detectSupportedFormat(inputMixerInfo);
         this.sampleRateHertz = format.getSampleRate();
         this.bufferSize = format.getBufferSize();
 
         Double high = systemSession.getRmsThresholdHigh();
         Double low = systemSession.getRmsThresholdLow();
         if (high == 0 || low == 0) {
-            RmsTupple<Double, Double> cal = AudioCalibrator.calibrateRMS(sampleRateHertz, bufferSize);
+            RmsTupple<Double, Double> cal = AudioCalibrator.calibrateRMS(sampleRateHertz, bufferSize, inputMixerInfo);
             this.RMS_THRESHOLD_HIGH = cal.getRmsHigh();
             this.NOISE_FLOOR = cal.getRmsLow();
         } else {
@@ -233,7 +235,7 @@ public class ParakeetSTTImpl implements EarsInterface {
         AudioFormat audioFormat = new AudioFormat(sampleRateHertz, 16, CHANNELS, true, false);
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
 
-        try (TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info)) {
+        try (TargetDataLine line = AudioDeviceEnumerator.openInputLine(info, inputMixerInfo)) {
             line.open(audioFormat, bufferSize);
             line.start();
             byte[] buffer = new byte[bufferSize];

@@ -12,21 +12,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
 /**
- * Calibrates audio input levels for the VAD gate.
- * <p>
- * Phase 1 – Noise floor: captures ambient audio and uses the 75th-percentile
- * RMS to represent the typical ambient level robustly.  A hardcoded spike
- * threshold would miss the noise floor entirely in loud environments (e.g. music
- * at ~1400 RMS – every sample exceeds 50 and all are discarded, so the floor
- * would be reported as ~0).
- * <p>
- * Phase 2 – Speech: captures speech and computes the average RMS of frames that
- * exceed twice the noise floor.
- * <p>
- * The VAD trigger threshold (highThreshold / getRmsHigh) is set at the midpoint
- * between the noise floor and the average speech RMS, which is always above
- * ambient noise and below speech regardless of absolute levels.
+ * Provides audio calibration functionality to determine noise and speech
+ * levels for setting thresholds in voice-activated systems. This class
+ * performs multi-phase calibration to measure the ambient noise level
+ * (noise floor) and average speech RMS (Root Mean Square) to compute
+ * thresholds for voice activity detection.
  */
 public class AudioCalibrator {
     private static final Logger log = LogManager.getLogger(AudioCalibrator.class);
@@ -47,6 +39,23 @@ public class AudioCalibrator {
 
 
     public static RmsTupple<Double, Double> calibrateRMS(int sampleRateHertz, int bufferSize) {
+        return calibrateRMS(sampleRateHertz, bufferSize, null);
+    }
+
+    /**
+     * Calibrates the Root Mean Square (RMS) thresholds for audio input by analyzing noise and speech levels.
+     * This method performs a two-phase calibration process:
+     * 1. Noise calibration to determine the noise floor.
+     * 2. Speech calibration to identify the average speech RMS values.
+     * Based on these measurements, the method calculates thresholds for detecting speech in audio streams.
+     *
+     * @param sampleRateHertz the sample rate of the audio in Hertz.
+     * @param bufferSize      the size of the byte buffer used for audio data processing.
+     * @param mixerInfo       the audio mixer to be used for capturing audio input.
+     * @return a tuple containing the high RMS threshold and the low RMS threshold,
+     * which represent the settings for detecting speech effectively based on the calibration process.
+     */
+    public static RmsTupple<Double, Double> calibrateRMS(int sampleRateHertz, int bufferSize, Mixer.Info mixerInfo) {
         log.info("Starting RMS calibration: noise for {}ms, speech for {}ms, with {}ms TTS delays",
                 NOISE_CALIBRATION_DURATION_MS, SPEECH_CALIBRATION_DURATION_MS, TTS_PROMPT_DELAY_MS);
 
@@ -63,7 +72,7 @@ public class AudioCalibrator {
             log.warn("Noise TTS delay interrupted: {}", e.getMessage());
             Thread.currentThread().interrupt();
         }
-        double noiseFloor = calibrateNoiseFloor(format, bufferSize, buffer, info);
+        double noiseFloor = calibrateNoiseFloor(format, bufferSize, buffer, info, mixerInfo);
 
         // Phase 2: speech
         EventBusManager.publish(new AiVoxResponseEvent("Now count to 12 to calibrate audio..."));
@@ -74,7 +83,7 @@ public class AudioCalibrator {
             log.warn("Speech TTS delay interrupted: {}", e.getMessage());
             Thread.currentThread().interrupt();
         }
-        double avgSpeechRMS = calibrateSpeech(format, bufferSize, buffer, info, noiseFloor);
+        double avgSpeechRMS = calibrateSpeech(format, bufferSize, buffer, info, noiseFloor, mixerInfo);
 
         // VAD trigger = midpoint between noise and speech.
         // Always above ambient, always below speech, regardless of absolute levels.
@@ -105,11 +114,24 @@ public class AudioCalibrator {
         return new RmsTupple<>(highThreshold, lowThreshold);
     }
 
-    private static double calibrateNoiseFloor(AudioFormat format, int bufferSize, byte[] buffer, DataLine.Info info) {
+    /**
+     * Calibrates the noise floor by analyzing ambient noise levels over a fixed duration.
+     * The method records audio samples, calculates their Root Mean Square (RMS) values,
+     * and determines the noise floor based on a specified percentile of the collected data.
+     *
+     * @param format     the audio format to be used for capturing audio input.
+     * @param bufferSize the size of the audio buffer used for capturing data.
+     * @param buffer     a byte array to store the audio data read from the input line.
+     * @param info       the audio line information specifying the data line type.
+     * @param mixerInfo  the audio mixer information for selecting the input device.
+     * @return the calculated noise floor value as a double, representing the typical RMS
+     * level of ambient noise based on collected data.
+     */
+    private static double calibrateNoiseFloor(AudioFormat format, int bufferSize, byte[] buffer, DataLine.Info info, Mixer.Info mixerInfo) {
         List<Double> samples = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
-        try (TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info)) {
+        try (TargetDataLine line = AudioDeviceEnumerator.openInputLine(info, mixerInfo)) {
             line.open(format, bufferSize);
             line.start();
             while (System.currentTimeMillis() - startTime < NOISE_CALIBRATION_DURATION_MS) {
@@ -153,14 +175,29 @@ public class AudioCalibrator {
         return noiseFloor;
     }
 
-    private static double calibrateSpeech(AudioFormat format, int bufferSize, byte[] buffer, DataLine.Info info, double noiseFloor) {
+    /**
+     * Calibrates the average speech Root Mean Square (RMS) value by analyzing audio input
+     * and comparing it to a predefined noise floor. This method identifies speech levels
+     * based on RMS values greater than the noise floor and calculates the average RMS
+     * level for speech detection.
+     *
+     * @param format     the audio format to be used for capturing audio input.
+     * @param bufferSize the size of the audio buffer used for capturing data.
+     * @param buffer     a byte array to store the audio data read from the input line.
+     * @param info       the audio line information specifying the data line type.
+     * @param noiseFloor the noise floor threshold as a double for distinguishing speech from noise.
+     * @param mixerInfo  the audio mixer information for selecting the input device.
+     * @return the calculated average RMS value for speech as a double, or a default threshold
+     * if calibration fails or insufficient speech samples are detected.
+     */
+    private static double calibrateSpeech(AudioFormat format, int bufferSize, byte[] buffer, DataLine.Info info, double noiseFloor, Mixer.Info mixerInfo) {
         double sumSpeechRMS = 0.0;
         double peakSpeechRMS = 0.0;
         int speechSampleCount = 0;
         int totalSampleCount = 0;
         long startTime = System.currentTimeMillis();
 
-        try (TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info)) {
+        try (TargetDataLine line = AudioDeviceEnumerator.openInputLine(info, mixerInfo)) {
             line.open(format, bufferSize);
             line.start();
             while (System.currentTimeMillis() - startTime < SPEECH_CALIBRATION_DURATION_MS) {

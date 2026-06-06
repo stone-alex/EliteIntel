@@ -6,10 +6,7 @@ import elite.intel.gameapi.EventBusManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.TargetDataLine;
+import javax.sound.sampled.*;
 import java.util.Optional;
 
 
@@ -27,30 +24,50 @@ public class AudioFormatDetector {
     private static final int BYTES_PER_SAMPLE = 2; // 16-bit = 2 bytes
 
     public static Format detectSupportedFormat() {
+        return detectSupportedFormat(null);
+    }
+
+    public static Format detectSupportedFormat(Mixer.Info mixerInfo) {
         AudioFormatDetector detector = new AudioFormatDetector();
         try {
-            return detector.detectSupportedFormatInternal().orElseThrow(() -> new AudioFormatException("No supported audio format found for mono 16-bit input."));
+            return detector.detectSupportedFormatInternal(mixerInfo).orElseThrow(() -> new AudioFormatException("No supported audio format found for mono 16-bit input."));
         } catch (AudioFormatException e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Detects a supported audio format for mono 16-bit input by checking available sample rates.
+     * Detects the first supported audio format for mono 16-bit input from a list of predefined sample rates.
+     * This method verifies system or mixer support for each possible rate and calculates a buffer size
+     * for the supported format.
      *
-     * @return Optional containing AudioSettingsTuple with sample rate and buffer size, or empty if none found
-     * @throws AudioFormatException if an error occurs during detection (e.g., system issues)
+     * @param mixerInfo the {@link Mixer.Info} instance representing the audio mixer to query for format support.
+     *                  If null, the method checks system-wide support.
+     * @return an {@link Optional} containing the supported {@link Format} if detected, or an empty {@link Optional}
+     *         if no supported format is found.
+     * @throws AudioFormatException if a system error occurs while attempting to detect the supported audio format.
      */
-    public Optional<Format> detectSupportedFormatInternal() throws AudioFormatException {
+    public Optional<Format> detectSupportedFormatInternal(Mixer.Info mixerInfo) throws AudioFormatException {
         for (int rate : POSSIBLE_RATES) {
             try {
                 AudioFormat format = new AudioFormat(rate, 16, CHANNELS, true, false);
                 DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-                if (AudioSystem.isLineSupported(info)) {
+                boolean supported;
+                if (mixerInfo == null) {
+                    supported = AudioSystem.isLineSupported(info);
+                } else {
+                    try {
+                        supported = AudioSystem.getMixer(mixerInfo).isLineSupported(info);
+                    } catch (Exception ex) {
+                        log.warn("Could not query mixer '{}': {}", mixerInfo.getName(), ex.getMessage());
+                        supported = false;
+                    }
+                }
+                if (supported) {
                     int bufferSize = calculateBufferSize(rate);
                     if (bufferSize <= 0) {
                         log.warn("Invalid buffer size calculated for rate {}: {}", rate, bufferSize);
-                        continue; // Skip invalid rates
+                        continue;
                     }
                     log.info("Detected supported sample rate: {} Hz, buffer size: {} bytes", rate, bufferSize);
                     return Optional.of(new Format(rate, bufferSize));

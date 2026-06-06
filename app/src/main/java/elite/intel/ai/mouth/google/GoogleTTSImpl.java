@@ -2,6 +2,7 @@ package elite.intel.ai.mouth.google;
 
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.ears.AudioDeviceEnumerator;
 import elite.intel.ai.mouth.AudioDeClicker;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.MouthInterface;
@@ -18,9 +19,9 @@ import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import javax.sound.sampled.*;
 import java.lang.reflect.InvocationTargetException;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -265,8 +266,8 @@ public class GoogleTTSImpl implements MouthInterface {
             AudioFormat format = new AudioFormat(24000, 16, 1, true, false);
             DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
             int bufferBytes = (int) (format.getFrameSize() * format.getSampleRate() / 10);
-
-            persistentLine = (SourceDataLine) AudioSystem.getLine(info);
+            Mixer.Info outputMixer = AudioDeviceEnumerator.resolveOutputDevice(systemSession.getAudioOutputDevice());
+            persistentLine = AudioDeviceEnumerator.openOutputLine(info, outputMixer);
             persistentLine.open(format, bufferBytes);
             persistentLine.start();
             log.info("Persistent audio line opened successfully");

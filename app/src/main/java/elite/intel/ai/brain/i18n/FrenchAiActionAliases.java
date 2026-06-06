@@ -170,6 +170,7 @@ public class FrenchAiActionAliases implements AiActionAliasProvider {
         map.put("désactive toutes les annonces, desactive toutes les annonces, coupe toutes les annonces, silence annonces", DISABLE_ALL_ANNOUNCEMENTS.getAction());
         map.put("efface les rappels, supprime les rappels, clear reminders", CLEAR_REMINDERS.getAction());
         map.put("définis rappel {key:X}, definis rappel {key:X}, crée rappel {key:X}, cree rappel {key:X}, rappel {key:X}", SET_REMINDER.getAction());
+        map.put("rappelle-moi dans {minutes:X} minutes {key:Y}, rappelle moi dans {minutes:X} minutes {key:Y}, minuterie {minutes:X} minutes {key:Y}, rappel minuté {minutes:X} minutes {key:Y}", SET_TIMED_REMINDER.getAction());
 
         // UI panels
         map.put("active, activer, active ça, active ca", ACTIVATE.getAction());

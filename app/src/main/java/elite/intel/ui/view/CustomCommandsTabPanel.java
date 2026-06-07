@@ -11,7 +11,9 @@ import elite.intel.ai.brain.i18n.AiActionLocalizations;
 import elite.intel.util.AppPaths;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -129,16 +131,46 @@ public class CustomCommandsTabPanel extends JPanel {
         label.setForeground(AppTheme.FG);
         panel.add(label, BorderLayout.WEST);
 
-        searchField = new PlaceholderTextField(getText("actions.customCommands.search.placeholder"));
-        searchField.getDocument().addDocumentListener(new SearchDocumentListener());
-        panel.add(searchField, BorderLayout.CENTER);
+        // Wrapper that owns the ACCENT border so the clear button appears inside the field.
+        JPanel fieldWrapper = new JPanel(new BorderLayout());
+        fieldWrapper.setBackground(AppTheme.BG_PANEL);
+        fieldWrapper.setBorder(new LineBorder(AppTheme.ACCENT, 1, true));
 
-        JButton clearButton = new JButton("X");
+        searchField = new PlaceholderTextField(getText("actions.customCommands.search.placeholder"));
+        searchField.setOpaque(false);
+        searchField.getDocument().addDocumentListener(new SearchDocumentListener());
+
+        // When applyDarkPalette sets CompoundBorder(LineBorder, EmptyBorder) on the field,
+        // redirect the outer LineBorder to fieldWrapper so the button appears inside the border.
+        boolean[] redirecting = {false};
+        searchField.addPropertyChangeListener("border", evt -> {
+            if (redirecting[0]) return;
+            if (evt.getNewValue() instanceof CompoundBorder cb
+                    && cb.getOutsideBorder() instanceof LineBorder lb) {
+                redirecting[0] = true;
+                try {
+                    fieldWrapper.setBorder(lb);
+                    searchField.setBorder(cb.getInsideBorder());
+                } finally {
+                    redirecting[0] = false;
+                }
+            }
+        });
+
+        JButton clearButton = new JButton("×");
         clearButton.setToolTipText(getText("actions.commands.search.clearTooltip"));
-        clearButton.setMargin(new Insets(2, 8, 2, 8));
+        clearButton.setOpaque(false);
+        clearButton.setContentAreaFilled(false);
+        clearButton.setBorderPainted(false);
         clearButton.setFocusable(false);
+        clearButton.setForeground(AppTheme.FG_MUTED);
+        clearButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        clearButton.setMargin(new Insets(0, 8, 0, 8));
         clearButton.addActionListener(event -> resetSearch());
-        panel.add(clearButton, BorderLayout.EAST);
+
+        fieldWrapper.add(searchField, BorderLayout.CENTER);
+        fieldWrapper.add(clearButton, BorderLayout.EAST);
+        panel.add(fieldWrapper, BorderLayout.CENTER);
 
         return panel;
     }

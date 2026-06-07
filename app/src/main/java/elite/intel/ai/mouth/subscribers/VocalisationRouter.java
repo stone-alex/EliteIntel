@@ -1,6 +1,7 @@
 package elite.intel.ai.mouth.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.ears.IsSpeakingEvent;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.ai.mouth.subscribers.events.*;
@@ -8,6 +9,8 @@ import elite.intel.db.managers.ShipManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
+
+import java.util.concurrent.CompletableFuture;
 
 public class VocalisationRouter {
 
@@ -18,8 +21,16 @@ public class VocalisationRouter {
     /// --- always pass through
     @Subscribe
     public void onAiVoxResponseEvent(AiVoxResponseEvent event) {
-        // Pass completionFuture through so macro SPEAK can block until playback finishes
-        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), AiVoxResponseEvent.class, true, event.getCompletionFuture()));
+        boolean canBeInterrupted = event.getCompletionFuture() == null;
+        CompletableFuture<Void> completionFuture = event.getCompletionFuture();
+        if (canBeInterrupted) {
+            // Regular AI response: track playback end so STT is suppressed while the AI is speaking.
+            completionFuture = new CompletableFuture<>();
+            CompletableFuture<Void> cf = completionFuture;
+            EventBusManager.publish(new IsSpeakingEvent(true));
+            cf.whenComplete((v, t) -> EventBusManager.publish(new IsSpeakingEvent(false)));
+        }
+        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), AiVoxResponseEvent.class, canBeInterrupted, completionFuture));
     }
 
     @Subscribe

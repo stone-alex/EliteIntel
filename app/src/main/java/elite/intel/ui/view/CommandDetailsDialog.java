@@ -5,7 +5,6 @@ import elite.intel.ai.brain.AiActionsMap;
 import elite.intel.ai.brain.actions.catalog.CommandCatalogEntry;
 import elite.intel.ai.brain.actions.catalog.CommandCatalogEntryType;
 import elite.intel.ai.brain.actions.macro.MacroParameterSpec;
-import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.ai.brain.i18n.AiActionLocalizations;
 
 import javax.swing.*;
@@ -27,7 +26,6 @@ public final class CommandDetailsDialog extends JDialog {
 
     private static final Pattern PARAMETER_BLOCK = Pattern.compile("\\{([^}]+)}");
     private static final Color RUN_BUTTON_BG = new Color(0x1F8F3A);
-    private static final int GUI_COMMAND_DISPATCH_DELAY_MS = 350;
     private final CommandCatalogEntry entry;
     private final List<String> phrases;
     private final boolean showPhraseCorrection;
@@ -387,19 +385,7 @@ public final class CommandDetailsDialog extends JDialog {
             return;
         }
 
-        Window owner = getOwner();
-        dispose();
-        if (owner != null) {
-            owner.toBack();
-        }
-
-        // Keyboard-backed commands target the active OS window; give focus a moment to leave this dialog.
-        Timer dispatchTimer = new Timer(
-                GUI_COMMAND_DISPATCH_DELAY_MS,
-                event -> ResponseRouter.getInstance().executeCommandFromGUI(entry.id(), params, !entry.isMacro())
-        );
-        dispatchTimer.setRepeats(false);
-        dispatchTimer.start();
+        GuiCommandRunner.runAfterClosingWindow(this, entry.id(), params, !entry.isMacro());
     }
 
     private void openPhraseCorrectionDialog() {

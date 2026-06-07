@@ -455,12 +455,17 @@ public class ParakeetSTTImpl implements EarsInterface {
     }
 
     private void sendToAi(String transcript) {
+        if (isSpeaking.get()) {
+            log.debug("Ignoring transcript while TTS is speaking: {}", transcript);
+            return;
+        }
         EventBusManager.publish(new TTSInterruptEvent());
         //AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
         log.info("Dispatching transcript: {}", transcript.replace("computer", ""));
         EventBusManager.publish(new UserInputEvent(transcript.replace("computer", "")));
     }
 
+    /** Suppresses voice recognition while the application is speaking via TTS. */
     @Subscribe
     public void onIsSpeakingEvent(IsSpeakingEvent event) {
         isSpeaking.set(event.isSpeaking());

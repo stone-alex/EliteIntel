@@ -125,7 +125,7 @@ public class PlayerTabPanel extends JPanel {
         btns.add(saveButton);
 
         JButton automationButton = makeButtonSubtle("");
-        automationButton.setIcon(scaledIcon("/images/handicapped.png"));
+        automationButton.setIcon(scaledIcon("/images/settings.png"));
         automationButton.addActionListener(e -> GlobalSettingsPopup.create(this).setVisible(true));
         btns.add(automationButton);
 
@@ -277,7 +277,7 @@ public class PlayerTabPanel extends JPanel {
             c.weightx = 0.08;
             c.fill = GridBagConstraints.NONE;
             JButton shipSettingsBtn = makeButtonSubtle("");
-            shipSettingsBtn.setIcon(scaledIcon("/images/handicapped.png"));
+            shipSettingsBtn.setIcon(scaledIcon("/images/settings.png"));
             shipSettingsBtn.addActionListener(e -> ShipSettingsPopup.create(panel, shipDisplayName, shipSettings).setVisible(true));
             panel.add(shipSettingsBtn, c);
             c.fill = GridBagConstraints.HORIZONTAL;

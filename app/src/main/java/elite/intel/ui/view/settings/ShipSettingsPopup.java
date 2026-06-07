@@ -1,7 +1,9 @@
 package elite.intel.ui.view.settings;
 
 import elite.intel.db.dao.ShipSettingsDao;
+import elite.intel.db.dao.TradeProfileDao;
 import elite.intel.db.managers.ShipSettingsManager;
+import elite.intel.db.managers.TradeProfileManager;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -27,9 +29,14 @@ public class ShipSettingsPopup {
                 shipSettings::setHonkTrigger
         ));
 
+        TradeProfileDao.TradeProfile tradeProfile =
+                TradeProfileManager.getInstance().getOrCreateProfile(shipSettings.getShipId());
+        rows.addAll(TradeProfileSettingsPanel.buildRows(tradeProfile));
+
         String title = identifier != null ? getText("popup.shipSettings", identifier) : getText("popup.shipSettings.default");
-        return new SettingsPopup(parent, title, rows,
-                () -> ShipSettingsManager.getInstance().saveShipSettings(shipSettings)
-        );
+        return new SettingsPopup(parent, title, rows, () -> {
+            ShipSettingsManager.getInstance().saveShipSettings(shipSettings);
+            TradeProfileManager.getInstance().saveProfile(tradeProfile);
+        });
     }
 }

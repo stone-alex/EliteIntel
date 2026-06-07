@@ -295,4 +295,28 @@ public class TradeProfileManager {
             return Void.class;
         });
     }
+
+    /**
+     * Returns the trade profile for the given ship ID, creating a default one if absent.
+     * Intended for UI use where the ship object is not available but the ID is known.
+     */
+    public TradeProfileDao.TradeProfile getOrCreateProfile(int shipId) {
+        return Database.withDao(TradeProfileDao.class, dao -> {
+            TradeProfileDao.TradeProfile p = dao.getTradeProfile(shipId);
+            if (p == null) {
+                p = new TradeProfileDao.TradeProfile();
+                p.setShipId(shipId);
+                dao.save(p);
+            }
+            return p;
+        });
+    }
+
+    /** Persists the given trade profile to the database. */
+    public void saveProfile(TradeProfileDao.TradeProfile profile) {
+        Database.withDao(TradeProfileDao.class, dao -> {
+            dao.save(profile);
+            return Void.class;
+        });
+    }
 }

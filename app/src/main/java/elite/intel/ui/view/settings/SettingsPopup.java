@@ -51,7 +51,7 @@ public class SettingsPopup extends JDialog {
         int height = Math.clamp(60 + rows.size() * 40L, 140, 520);
         setPreferredSize(new Dimension(parent.getWidth() - 120, height));
         pack();
-        setLocationRelativeTo(parent);
+        setLocationRelativeTo(getOwner());
         setResizable(true);
         setModal(true);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

@@ -19,10 +19,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Loads and persists user macros from {@code macros.json} in the app data directory.
+ * Loads and persists custom commands from {@code custom_commands.json} in the app data directory.
  * <p>
- * Saves are written to a {@code .tmp} file and atomically renamed to {@code macros.json},
- * reducing the risk of corruption on crash. A {@code macros.json.bak} backup of the previous
+ * Saves are written to a {@code .tmp} file and atomically renamed to {@code custom_commands.json},
+ * reducing the risk of corruption on crash. A {@code custom_commands.json.bak} backup of the previous
  * file is kept alongside. If the main file is unreadable or corrupt, the backup is automatically
  * tried and a diagnostic warning is logged.
  * <p>
@@ -46,16 +46,16 @@ public final class MacroRepository {
     boolean wasRestoredFromBackup() { return restoredFromBackup; }
 
     /**
-     * Loads all macros from {@code macros.json}. Returns an empty list if the file does not
+     * Loads all custom commands from {@code custom_commands.json}. Returns an empty list if the file does not
      * exist or is empty. If the main file is corrupt, automatically attempts to restore from
-     * {@code macros.json.bak} with a logged warning. Invalid individual macros are skipped with
+     * {@code custom_commands.json.bak} with a logged warning. Invalid individual custom commands are skipped with
      * an error log; the remaining valid macros are still returned.
      */
     public List<MacroDefinition> load() {
         try {
-            return load(AppPaths.getMacrosFilePath());
+            return load(AppPaths.getCustomCommandsFilePath());
         } catch (Exception e) {
-            log.error("Failed to resolve macros file path - no user macros will be available", e);
+            log.error("Failed to resolve custom command file path - no custom commands will be available", e);
             return Collections.emptyList();
         }
     }
@@ -69,31 +69,31 @@ public final class MacroRepository {
         Path backup = path.resolveSibling(path.getFileName() + ".bak");
 
         if (!Files.exists(path)) {
-            log.info("macros.json not found at {} - no user macros loaded", path);
+            log.info("{} not found at {} - no custom commands loaded", path.getFileName(), path);
             return Collections.emptyList();
         }
 
         try {
             return parseAndFilter(path);
         } catch (Exception e) {
-            log.warn("macros.json at {} could not be read ({}), attempting restore from backup",
-                    path, e.getMessage());
+            log.warn("{} at {} could not be read ({}), attempting restore from backup",
+                    path.getFileName(), path, e.getMessage());
         }
 
         if (!Files.exists(backup)) {
-            log.error("macros.json is corrupt and no backup exists - no user macros will be available");
+            log.error("{} is corrupt and no backup exists - no custom commands will be available", path.getFileName());
             return Collections.emptyList();
         }
 
-        log.warn("Restoring user macros from backup: {}", backup);
+        log.warn("Restoring custom commands from backup: {}", backup);
         try {
             List<MacroDefinition> restored = parseAndFilter(backup);
-            log.warn("Macro restore from backup succeeded: {} macro(s) loaded. Inspect macros.json for corruption.",
-                    restored.size());
+            log.warn("Custom command restore from backup succeeded: {} command(s) loaded. Inspect {} for corruption.",
+                    restored.size(), path.getFileName());
             restoredFromBackup = true;
             return restored;
         } catch (Exception e) {
-            log.error("macros.json.bak is also invalid ({}) - no user macros will be available", e.getMessage());
+            log.error("{} is also invalid ({}) - no custom commands will be available", backup.getFileName(), e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -105,7 +105,7 @@ public final class MacroRepository {
     }
 
     /**
-     * Writes the macro list to {@code macros.json}, overwriting any existing content.
+     * Writes the custom command list to {@code custom_commands.json}, overwriting any existing content.
      * Caller must invoke this on a background thread.
      */
     public void save(List<MacroDefinition> macros) {
@@ -117,9 +117,9 @@ public final class MacroRepository {
      */
     public boolean trySave(List<MacroDefinition> macros) {
         try {
-            return save(macros, AppPaths.getMacrosFilePath());
+            return save(macros, AppPaths.getCustomCommandsFilePath());
         } catch (Exception e) {
-            log.error("Failed to resolve macros file path for save", e);
+            log.error("Failed to resolve custom command file path for save", e);
             return false;
         }
     }
@@ -143,7 +143,7 @@ public final class MacroRepository {
             // Guard: validate generated JSON parses back before touching any files.
             List<MacroDefinition> parsed = GSON.fromJson(json, LIST_TYPE);
             if (parsed == null) {
-                log.error("Generated macro JSON failed round-trip validation - macros.json not updated");
+                log.error("Generated custom command JSON failed round-trip validation - {} not updated", path.getFileName());
                 return false;
             }
 
@@ -154,7 +154,7 @@ public final class MacroRepository {
                     Files.copy(path, backup, StandardCopyOption.REPLACE_EXISTING);
                     log.debug("Backed up {} to {}", path.getFileName(), backup.getFileName());
                 } catch (IOException e) {
-                    log.warn("Could not create backup before saving macros - proceeding anyway: {}", e.getMessage());
+                    log.warn("Could not create backup before saving custom commands - proceeding anyway: {}", e.getMessage());
                 }
             }
 
@@ -168,10 +168,10 @@ public final class MacroRepository {
                 Files.move(tmp, path, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            log.info("Saved {} macro(s) to {}", macros.size(), path);
+            log.info("Saved {} custom command(s) to {}", macros.size(), path);
             return true;
         } catch (Exception e) {
-            log.error("Failed to save macros.json", e);
+            log.error("Failed to save custom command file", e);
             return false;
         }
     }
@@ -186,7 +186,7 @@ public final class MacroRepository {
     private List<MacroDefinition> parseAndFilter(Path path) throws IOException {
         String json = Files.readString(path, StandardCharsets.UTF_8);
         if (json.isBlank()) {
-            log.info("Macro file at {} is empty - no user macros loaded", path);
+            log.info("Custom command file at {} is empty - no custom commands loaded", path);
             lastSkippedCount = 0;
             lastSkippedLabels = List.of();
             return Collections.emptyList();
@@ -202,25 +202,25 @@ public final class MacroRepository {
             try {
                 def.validate();
             } catch (IllegalArgumentException e) {
-                log.warn("Skipping macro {}: {}", label, e.getMessage());
+                log.warn("Skipping custom command {}: {}", label, e.getMessage());
                 skipped.add(label);
                 continue;
             }
             List<String> formatErrors = MacroValidator.validateFormat(def);
             if (!formatErrors.isEmpty()) {
-                log.warn("Skipping macro {}: {}", label, String.join("; ", formatErrors));
+                log.warn("Skipping custom command {}: {}", label, String.join("; ", formatErrors));
                 skipped.add(label);
                 continue;
             }
             String ak = def.getActionKey();
             boolean duplicate = valid.stream().anyMatch(m -> m.getActionKey().equalsIgnoreCase(ak));
             if (duplicate) {
-                log.warn("Skipping macro {}: actionKey '{}' is a duplicate of an already-loaded macro", label, ak);
+                log.warn("Skipping custom command {}: actionKey '{}' is a duplicate of an already-loaded custom command", label, ak);
                 skipped.add(label);
                 continue;
             }
             valid.add(def);
-            log.info("Loaded macro: '{}' (actionKey={} id={})", def.getName(), ak, def.getId());
+            log.info("Loaded custom command: '{}' (actionKey={} id={})", def.getName(), ak, def.getId());
         }
         lastSkippedCount = skipped.size();
         lastSkippedLabels = Collections.unmodifiableList(skipped);

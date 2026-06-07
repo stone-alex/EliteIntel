@@ -10,6 +10,8 @@ import java.nio.file.Path;
 
 public final class AppPaths {
 
+    public static final String CUSTOM_COMMANDS_FILE_NAME = "custom_commands.json";
+
     private static Path APP_DIR;
 
     private AppPaths() {
@@ -43,8 +45,8 @@ public final class AppPaths {
         return dbDir.resolve("database.db");
     }
 
-    /** Returns the user macro JSON file path, creating the macro data directory if needed. */
-    public static Path getMacrosFilePath() throws IOException {
+    /** Returns the custom command JSON file path, creating the custom command data directory if needed. */
+    public static Path getCustomCommandsFilePath() throws IOException {
         Path base;
         if (OsDetector.getOs() == OsDetector.OS.LINUX || OsDetector.getOs() == OsDetector.OS.MAC) {
             String dataHome = System.getenv("XDG_DATA_HOME");
@@ -60,9 +62,9 @@ public final class AppPaths {
         } else {
             throw new IllegalStateException("Unsupported OS");
         }
-        Path dir = base.resolve("elite-intel/macros");
+        Path dir = base.resolve("elite-intel/custom-commands");
         Files.createDirectories(dir);
-        return dir.resolve("macros.json");
+        return dir.resolve(CUSTOM_COMMANDS_FILE_NAME);
     }
 
     public static Path getTtsModelDir() {

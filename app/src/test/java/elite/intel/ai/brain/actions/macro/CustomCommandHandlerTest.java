@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MacroCommandHandlerTest {
+class CustomCommandHandlerTest {
 
     private static final Gson GSON = new Gson();
 
@@ -123,7 +123,7 @@ class MacroCommandHandlerTest {
                   {"type":"SPEAK","text":"Wait for me"},
                   {"type":"BINDING_TAP","bindingId":"AfterSpeak"}
                 ]}""");
-        MacroCommandHandler handler = new MacroCommandHandler(macro, blockingExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(macro, blockingExecutor);
 
         Thread t = new Thread(() -> handler.handle("m", new JsonObject(), ""));
         t.start();
@@ -155,12 +155,12 @@ class MacroCommandHandlerTest {
     }
 
     @Test
-    void runCommandStepSkipsWhenTargetHandlerIsMacroCommandHandler() {
+    void runCommandStepSkipsWhenTargetHandlerIsCustomCommandHandler() {
         // Register a second macro handler as the RUN_COMMAND target.
         MacroDefinition nested = deserialize("""
                 {"id":"macro_nested","name":"Nested","phrases":"p",
                  "steps":[{"type":"SPEAK","text":"nested called"}]}""");
-        MacroCommandHandler nestedHandler = new MacroCommandHandler(nested, testSpeakExecutor);
+        CustomCommandHandler nestedHandler = new CustomCommandHandler(nested, testSpeakExecutor);
         registerHandler("macro_nested", nestedHandler);
 
         // Macro that tries to call another macro.
@@ -341,8 +341,8 @@ class MacroCommandHandlerTest {
                   {"type":"BINDING_TAP","bindingId":"Macro2Step2"}
                 ]}""");
 
-        MacroCommandHandler h1 = new MacroCommandHandler(macro1, testSpeakExecutor);
-        MacroCommandHandler h2 = new MacroCommandHandler(macro2, testSpeakExecutor);
+        CustomCommandHandler h1 = new CustomCommandHandler(macro1, testSpeakExecutor);
+        CustomCommandHandler h2 = new CustomCommandHandler(macro2, testSpeakExecutor);
 
         CountDownLatch ready = new CountDownLatch(2);
         CountDownLatch go = new CountDownLatch(1);
@@ -401,7 +401,7 @@ class MacroCommandHandlerTest {
                 List.of(new MacroParameterSpec("commodity", "string", true, "", null, null)),
                 List.of(MacroStep.runCommandWithParams("builtin_with_params", Map.of("key", "${commodity}")))
         );
-        MacroCommandHandler handler = new MacroCommandHandler(macro, testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(macro, testSpeakExecutor);
         JsonObject params = JsonParser.parseString("{\"commodity\": \"gold\"}").getAsJsonObject();
         handler.handle("m", params, "");
 
@@ -423,7 +423,7 @@ class MacroCommandHandlerTest {
                 ),
                 List.of(MacroStep.runCommandWithParams("navigate_fake", Map.of("lat", "${lat}", "lon", "${lon}")))
         );
-        MacroCommandHandler handler = new MacroCommandHandler(macro, testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(macro, testSpeakExecutor);
         JsonObject params = JsonParser.parseString("{\"lat\": -10.5, \"lon\": 45.2}").getAsJsonObject();
         handler.handle("m", params, "");
 
@@ -443,7 +443,7 @@ class MacroCommandHandlerTest {
                 List.of(new MacroParameterSpec("speed", "string", true, "", null, null)),
                 List.of(MacroStep.runCommandWithParams("cmd_fake", Map.of("key", "${speed}")))
         );
-        MacroCommandHandler handler = new MacroCommandHandler(macro, testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(macro, testSpeakExecutor);
         // No params provided — required "speed" is missing.
         handler.handle("m", new JsonObject(), "");
 
@@ -457,7 +457,7 @@ class MacroCommandHandlerTest {
                 List.of(new MacroParameterSpec("target", "string", true, "", null, null)),
                 List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "Targeting ${target}", null))
         );
-        MacroCommandHandler handler = new MacroCommandHandler(macro, testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(macro, testSpeakExecutor);
         JsonObject params = JsonParser.parseString("{\"target\": \"drive\"}").getAsJsonObject();
         handler.handle("m", params, "");
 
@@ -477,7 +477,7 @@ class MacroCommandHandlerTest {
                 // step doesn't use the optional param at all
                 List.of(new MacroStep(MacroStep.Type.RUN_COMMAND, null, 0, null, "cmd_optional"))
         );
-        MacroCommandHandler handler = new MacroCommandHandler(macro, testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(macro, testSpeakExecutor);
         handler.handle("m", new JsonObject(), "");
 
         assertTrue(called.get(), "Macro with absent optional param must still execute");
@@ -494,8 +494,8 @@ class MacroCommandHandlerTest {
                   {"type":"BINDING_TAP","bindingId":"FastBinding"}
                 ]}""");
 
-        MacroCommandHandler slowHandler = new MacroCommandHandler(slowMacro, testSpeakExecutor);
-        MacroCommandHandler fastHandler = new MacroCommandHandler(fastMacro, testSpeakExecutor);
+        CustomCommandHandler slowHandler = new CustomCommandHandler(slowMacro, testSpeakExecutor);
+        CustomCommandHandler fastHandler = new CustomCommandHandler(fastMacro, testSpeakExecutor);
 
         Thread slowThread = new Thread(() -> slowHandler.handle("slow", new JsonObject(), ""));
         slowThread.start();
@@ -522,7 +522,7 @@ class MacroCommandHandlerTest {
                   {"type":"DELAY","durationMs":5000},
                   {"type":"SPEAK","text":"should not reach here"}
                 ]}""");
-        MacroCommandHandler handler = new MacroCommandHandler(macro, testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(macro, testSpeakExecutor);
 
         Thread t = new Thread(() -> handler.handle("m", new JsonObject(), ""));
         t.start();
@@ -538,7 +538,7 @@ class MacroCommandHandlerTest {
     // --- helpers ---
 
     private void runMacro(String json) {
-        MacroCommandHandler handler = new MacroCommandHandler(deserialize(json), testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(deserialize(json), testSpeakExecutor);
         handler.handle("test_action", new JsonObject(), "");
     }
 

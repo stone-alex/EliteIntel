@@ -36,12 +36,12 @@ public final class MacroRegistry {
     }
 
     /**
-     * Loads macros from {@code macros.json}. Must be called before
+     * Loads custom commands from {@code custom_commands.json}. Must be called before
      * {@code ResponseRouter} (and therefore {@code CommandHandlerFactory}) is first used.
      */
     public void load() {
         macros = repository.load();
-        log.info("MacroRegistry: {} macro(s) loaded, {} skipped",
+        log.info("Custom command registry: {} command(s) loaded, {} skipped",
                 macros.size(), repository.getLastSkippedCount());
     }
 
@@ -71,7 +71,7 @@ public final class MacroRegistry {
      */
     public void replaceMacros(List<MacroDefinition> macros) {
         setMacros(macros);
-        log.info("MacroRegistry: {} macro(s) active after replace", this.macros.size());
+        log.info("Custom command registry: {} command(s) active after replace", this.macros.size());
     }
 
     /**
@@ -153,20 +153,20 @@ public final class MacroRegistry {
     }
 
     /**
-     * Registers a {@link MacroCommandHandler} per macro into the command handler map.
+     * Registers a {@link CustomCommandHandler} per custom command into the command handler map.
      * Called from {@code CommandHandlerFactory.registerCommandHandlers()} so that
-     * {@code ResponseRouter} routes macro action IDs through the normal command dispatch path.
+     * {@code ResponseRouter} routes user-defined action IDs through the normal command dispatch path.
      */
     public void contributeToHandlerMap(Map<String, CommandHandler> map) {
         Set<String> protectedActionIds = new HashSet<>(map.keySet());
         for (MacroDefinition macro : macros) {
             if (protectedActionIds.contains(macro.getActionKey())) {
-                log.warn("Macro actionKey '{}' conflicts with an existing command handler - macro skipped",
+                log.warn("Custom command actionKey '{}' conflicts with an existing command handler - custom command skipped",
                         macro.getActionKey());
                 continue;
             }
-            map.put(macro.getActionKey(), new MacroCommandHandler(macro));
-            log.debug("Macro handler registered: {}", macro.getActionKey());
+            map.put(macro.getActionKey(), new CustomCommandHandler(macro));
+            log.debug("Custom command handler registered: {}", macro.getActionKey());
         }
     }
 }

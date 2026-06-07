@@ -29,9 +29,9 @@ import java.util.Map;
  * Fair ordering (FIFO) ensures the second macro starts only after the first completes.
  * The lock is released in {@code finally} regardless of error or interruption.
  */
-public final class MacroCommandHandler implements CommandHandler {
+public final class CustomCommandHandler implements CommandHandler {
 
-    private static final Logger log = LogManager.getLogger(MacroCommandHandler.class);
+    private static final Logger log = LogManager.getLogger(CustomCommandHandler.class);
 
     /** Serializes all macro executions. Fair ordering ensures FIFO execution when macros queue up. */
     private static final ReentrantLock MACRO_LOCK = new ReentrantLock(true);
@@ -39,12 +39,12 @@ public final class MacroCommandHandler implements CommandHandler {
     private final MacroDefinition macro;
     private final MacroSpeakExecutor speakExecutor;
 
-    public MacroCommandHandler(MacroDefinition macro) {
+    public CustomCommandHandler(MacroDefinition macro) {
         this(macro, SynchronousMacroSpeech.DEFAULT);
     }
 
     /** Package-private: allows tests to inject a fast non-blocking speak executor. */
-    MacroCommandHandler(MacroDefinition macro, MacroSpeakExecutor speakExecutor) {
+    CustomCommandHandler(MacroDefinition macro, MacroSpeakExecutor speakExecutor) {
         this.macro = macro;
         this.speakExecutor = speakExecutor;
     }
@@ -57,11 +57,11 @@ public final class MacroCommandHandler implements CommandHandler {
             List<String> paramErrors = ctx.validateRequiredParams();
             if (!paramErrors.isEmpty()) {
                 String errorSummary = String.join(", ", paramErrors);
-                log.warn("Macro '{}' aborted: {}", macro.getName(), errorSummary);
-                EventBusManager.publish(new AppLogEvent("Macro '" + macro.getName() + "' aborted: " + errorSummary));
+                log.warn("Custom command '{}' aborted: {}", macro.getName(), errorSummary);
+                EventBusManager.publish(new AppLogEvent("Custom command '" + macro.getName() + "' aborted: " + errorSummary));
                 return;
             }
-            log.info("Executing macro '{}' ({} step(s))", macro.getName(), macro.getSteps().size());
+            log.info("Executing custom command '{}' ({} step(s))", macro.getName(), macro.getSteps().size());
             PendingInputSequence pendingInput = new PendingInputSequence();
             for (int i = 0; i < macro.getSteps().size(); i++) {
                 MacroStep step = macro.getSteps().get(i);
@@ -69,15 +69,15 @@ public final class MacroCommandHandler implements CommandHandler {
                     executeStep(step, i, pendingInput, ctx);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    log.warn("Macro '{}' interrupted at step {}", macro.getName(), i);
+                    log.warn("Custom command '{}' interrupted at step {}", macro.getName(), i);
                     return;
                 } catch (UnresolvedMacroParamException e) {
-                    log.error("Macro '{}' step {} ({}): {} — step skipped",
+                    log.error("Custom command '{}' step {} ({}): {} — step skipped",
                             macro.getName(), i, step.getType(), e.getMessage());
                     EventBusManager.publish(new AppLogEvent(
-                            "Macro step error: " + e.getMessage() + " (step skipped)"));
+                            "Custom command step error: " + e.getMessage() + " (step skipped)"));
                 } catch (Exception e) {
-                    log.error("Macro '{}' step {} ({}) failed: {}", macro.getName(), i, step.getType(), e.getMessage(), e);
+                    log.error("Custom command '{}' step {} ({}) failed: {}", macro.getName(), i, step.getType(), e.getMessage(), e);
                     // continue to next step rather than aborting the whole macro
                 }
             }
@@ -85,10 +85,10 @@ public final class MacroCommandHandler implements CommandHandler {
                 flushPendingInputSteps(pendingInput);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                log.warn("Macro '{}' interrupted while flushing input sequence", macro.getName());
+                log.warn("Custom command '{}' interrupted while flushing input sequence", macro.getName());
                 return;
             }
-            log.debug("Macro '{}' completed", macro.getName());
+            log.debug("Custom command '{}' completed", macro.getName());
         } finally {
             MACRO_LOCK.unlock();
         }
@@ -98,17 +98,17 @@ public final class MacroCommandHandler implements CommandHandler {
                              MacroExecutionContext ctx) throws InterruptedException {
         switch (step.getType()) {
             case BINDING_TAP -> {
-                EventBusManager.publish(new AppLogEvent("Macro step: BINDING_TAP " + step.getBindingId()));
+                EventBusManager.publish(new AppLogEvent("Custom command step: BINDING_TAP " + step.getBindingId()));
                 pendingInput.addInput(GameInputStep.bindingTap(step.getBindingId()));
             }
 
             case BINDING_HOLD -> {
-                EventBusManager.publish(new AppLogEvent("Macro step: BINDING_HOLD " + step.getBindingId() + " " + step.getDurationMs() + "ms"));
+                EventBusManager.publish(new AppLogEvent("Custom command step: BINDING_HOLD " + step.getBindingId() + " " + step.getDurationMs() + "ms"));
                 pendingInput.addInput(GameInputStep.bindingHold(step.getBindingId(), step.getDurationMs()));
             }
 
             case DELAY -> {
-                EventBusManager.publish(new AppLogEvent("Macro step: DELAY " + step.getDurationMs() + "ms"));
+                EventBusManager.publish(new AppLogEvent("Custom command step: DELAY " + step.getDurationMs() + "ms"));
                 pendingInput.addDelay(GameInputStep.delay(step.getDurationMs()));
             }
 
@@ -116,17 +116,17 @@ public final class MacroCommandHandler implements CommandHandler {
                 // Flush accumulated input before speaking so keystrokes reach the game first.
                 flushPendingInputSteps(pendingInput);
                 String resolvedText = ctx.resolveString(step.getText());
-                EventBusManager.publish(new AppLogEvent("Macro step: SPEAK " + resolvedText));
+                EventBusManager.publish(new AppLogEvent("Custom command step: SPEAK " + resolvedText));
                 speakExecutor.speak(resolvedText);
             }
 
             case RAW_KEY -> {
                 Integer keyCode = KeyBindingExecutor.resolveKeyCode(step.getRawKey());
                 if (keyCode == null) {
-                    log.warn("Macro '{}' step {}: unknown rawKey '{}' — step skipped",
+                    log.warn("Custom command '{}' step {}: unknown rawKey '{}' — step skipped",
                             macro.getName(), index, step.getRawKey());
                     EventBusManager.publish(new AppLogEvent(
-                            "Macro step: RAW_KEY " + step.getRawKey() + " (unknown key - skipped)"));
+                            "Custom command step: RAW_KEY " + step.getRawKey() + " (unknown key - skipped)"));
                     break;
                 }
                 int modCode = 0;
@@ -134,7 +134,7 @@ public final class MacroCommandHandler implements CommandHandler {
                 if (rawMod != null && !rawMod.isBlank()) {
                     Integer resolved = KeyBindingExecutor.resolveKeyCode(rawMod);
                     if (resolved == null) {
-                        log.warn("Macro '{}' step {}: unknown rawKeyModifier '{}' — executing without modifier",
+                        log.warn("Custom command '{}' step {}: unknown rawKeyModifier '{}' — executing without modifier",
                                 macro.getName(), index, rawMod);
                     } else {
                         modCode = resolved;
@@ -142,7 +142,7 @@ public final class MacroCommandHandler implements CommandHandler {
                 }
                 String logSuffix = (modCode != 0 ? " + " + rawMod : "")
                         + (step.getDurationMs() > 0 ? " " + step.getDurationMs() + "ms" : "");
-                EventBusManager.publish(new AppLogEvent("Macro step: RAW_KEY " + step.getRawKey() + logSuffix));
+                EventBusManager.publish(new AppLogEvent("Custom command step: RAW_KEY " + step.getRawKey() + logSuffix));
                 pendingInput.addInput(GameInputStep.rawKey(keyCode, modCode, step.getDurationMs()));
             }
 
@@ -153,19 +153,19 @@ public final class MacroCommandHandler implements CommandHandler {
                         .getCommandHandlers()
                         .get(step.getActionId());
                 if (nested == null) {
-                    log.warn("Macro '{}' step {}: unknown actionId '{}' - step skipped",
+                    log.warn("Custom command '{}' step {}: unknown actionId '{}' - step skipped",
                             macro.getName(), index, step.getActionId());
-                    EventBusManager.publish(new AppLogEvent("Macro step: RUN_COMMAND " + step.getActionId() + " (unknown - skipped)"));
-                } else if (nested instanceof MacroCommandHandler) {
+                    EventBusManager.publish(new AppLogEvent("Custom command step: RUN_COMMAND " + step.getActionId() + " (unknown - skipped)"));
+                } else if (nested instanceof CustomCommandHandler) {
                     // Prevent cross-macro delegation - macros must not call other macros.
-                    log.warn("Macro '{}' step {}: RUN_COMMAND may not target another macro ('{}') - step skipped",
+                    log.warn("Custom command '{}' step {}: RUN_COMMAND may not target another custom command ('{}') - step skipped",
                             macro.getName(), index, step.getActionId());
-                    EventBusManager.publish(new AppLogEvent("Macro step: RUN_COMMAND " + step.getActionId() + " (cross-macro blocked)"));
+                    EventBusManager.publish(new AppLogEvent("Custom command step: RUN_COMMAND " + step.getActionId() + " (nested custom command blocked)"));
                 } else {
                     // Resolve step-level param mapping; preserves JSON types for bare ${ref} values.
                     Map<String, String> stepParamMapping = step.getStepParams();
                     JsonObject resolvedParams = ctx.resolveStepParams(stepParamMapping);
-                    EventBusManager.publish(new AppLogEvent("Macro step: RUN_COMMAND " + step.getActionId()));
+                    EventBusManager.publish(new AppLogEvent("Custom command step: RUN_COMMAND " + step.getActionId()));
                     nested.handle(step.getActionId(), resolvedParams, "");
                 }
             }

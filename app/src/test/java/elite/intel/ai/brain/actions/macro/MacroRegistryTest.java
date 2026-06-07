@@ -134,7 +134,7 @@ class MacroRegistryTest {
     // --- contributeToHandlerMap() ---
 
     @Test
-    void contributeToHandlerMapAddsMacroCommandHandlerPerMacro() {
+    void contributeToHandlerMapAddsCustomCommandHandlerPerMacro() {
         registry.setMacros(List.of(
                 buildMacro("macro_a", "phrase_a"),
                 buildMacro("macro_b", "phrase_b")
@@ -144,8 +144,8 @@ class MacroRegistryTest {
 
         assertTrue(handlers.containsKey("macro_a"));
         assertTrue(handlers.containsKey("macro_b"));
-        assertInstanceOf(MacroCommandHandler.class, handlers.get("macro_a"));
-        assertInstanceOf(MacroCommandHandler.class, handlers.get("macro_b"));
+        assertInstanceOf(CustomCommandHandler.class, handlers.get("macro_a"));
+        assertInstanceOf(CustomCommandHandler.class, handlers.get("macro_b"));
     }
 
     @Test

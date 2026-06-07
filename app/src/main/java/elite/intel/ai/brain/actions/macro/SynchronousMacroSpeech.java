@@ -39,6 +39,6 @@ class SynchronousMacroSpeech implements MacroSpeakExecutor {
         } catch (ExecutionException e) {
             log.warn("Macro SPEAK completed exceptionally: {}", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
         }
-        // InterruptedException propagates to MacroCommandHandler, which will interrupt macro execution
+        // InterruptedException propagates to CustomCommandHandler, which will interrupt macro execution
     }
 }

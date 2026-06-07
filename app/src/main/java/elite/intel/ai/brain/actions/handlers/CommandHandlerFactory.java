@@ -48,10 +48,10 @@ public class CommandHandlerFactory {
     }
 
     /**
-     * Refreshes only user macro handlers in-place so existing ResponseRouter references see edits immediately.
+     * Refreshes only custom command handlers in-place so existing ResponseRouter references see edits immediately.
      */
     public void refreshMacroHandlers() {
-        commandHandlers.entrySet().removeIf(entry -> entry.getValue() instanceof elite.intel.ai.brain.actions.macro.MacroCommandHandler);
+        commandHandlers.entrySet().removeIf(entry -> entry.getValue() instanceof elite.intel.ai.brain.actions.macro.CustomCommandHandler);
         MacroRegistry.getInstance().contributeToHandlerMap(commandHandlers);
     }
 

@@ -8,6 +8,7 @@ import elite.intel.ai.brain.actions.macro.MacroRepository;
 import elite.intel.ai.brain.actions.macro.MacroRegistry;
 import elite.intel.ai.brain.actions.macro.MacroStep;
 import elite.intel.ai.brain.i18n.AiActionLocalizations;
+import elite.intel.util.AppPaths;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -256,7 +257,7 @@ public class MacrosTabPanel extends JPanel {
         if (!macroRepository.trySave(macros)) {
             JOptionPane.showMessageDialog(
                     this,
-                    getText("actions.macros.save.error"),
+                    getText("actions.macros.save.error", AppPaths.CUSTOM_COMMANDS_FILE_NAME),
                     getText("actions.macros.title"),
                     JOptionPane.ERROR_MESSAGE
             );

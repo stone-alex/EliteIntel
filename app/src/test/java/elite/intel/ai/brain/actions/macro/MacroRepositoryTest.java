@@ -18,49 +18,49 @@ class MacroRepositoryTest {
 
     private final MacroRepository repo = new MacroRepository();
 
-    private Path macrosFile() {
-        return tempDir.resolve("macros.json");
+    private Path customCommandsFile() {
+        return tempDir.resolve("custom_commands.json");
     }
 
     // --- missing / empty file ---
 
     @Test
     void missingFileReturnsEmptyList() {
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
         assertTrue(result.isEmpty());
     }
 
     @Test
     void emptyFileReturnsEmptyList() throws IOException {
-        Files.writeString(macrosFile(), "", StandardCharsets.UTF_8);
-        assertTrue(repo.load(macrosFile()).isEmpty());
+        Files.writeString(customCommandsFile(), "", StandardCharsets.UTF_8);
+        assertTrue(repo.load(customCommandsFile()).isEmpty());
     }
 
     @Test
     void blankWhitespaceFileReturnsEmptyList() throws IOException {
-        Files.writeString(macrosFile(), "   \n  ", StandardCharsets.UTF_8);
-        assertTrue(repo.load(macrosFile()).isEmpty());
+        Files.writeString(customCommandsFile(), "   \n  ", StandardCharsets.UTF_8);
+        assertTrue(repo.load(customCommandsFile()).isEmpty());
     }
 
     // --- malformed JSON ---
 
     @Test
     void malformedJsonReturnsEmptyListWithoutException() throws IOException {
-        Files.writeString(macrosFile(), "{not valid json at all", StandardCharsets.UTF_8);
-        assertDoesNotThrow(() -> repo.load(macrosFile()));
-        assertTrue(repo.load(macrosFile()).isEmpty());
+        Files.writeString(customCommandsFile(), "{not valid json at all", StandardCharsets.UTF_8);
+        assertDoesNotThrow(() -> repo.load(customCommandsFile()));
+        assertTrue(repo.load(customCommandsFile()).isEmpty());
     }
 
     @Test
     void truncatedJsonReturnsEmptyListWithoutException() throws IOException {
-        Files.writeString(macrosFile(), "[{\"id\":\"x\",\"name\":\"", StandardCharsets.UTF_8);
-        assertDoesNotThrow(() -> repo.load(macrosFile()));
+        Files.writeString(customCommandsFile(), "[{\"id\":\"x\",\"name\":\"", StandardCharsets.UTF_8);
+        assertDoesNotThrow(() -> repo.load(customCommandsFile()));
     }
 
     @Test
     void jsonObjectInsteadOfArrayReturnsEmptyList() throws IOException {
-        Files.writeString(macrosFile(), "{\"id\":\"x\"}", StandardCharsets.UTF_8);
-        assertTrue(repo.load(macrosFile()).isEmpty());
+        Files.writeString(customCommandsFile(), "{\"id\":\"x\"}", StandardCharsets.UTF_8);
+        assertTrue(repo.load(customCommandsFile()).isEmpty());
     }
 
     // --- invalid macro entries skipped ---
@@ -73,7 +73,7 @@ class MacroRepositoryTest {
                   {"id":"macro_good","actionKey":"macro_good","name":"Good","phrases":"good","steps":[{"type":"SPEAK","text":"ok"}]}
                 ]
                 """);
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
         assertEquals("macro_good", result.getFirst().getId());
     }
@@ -86,7 +86,7 @@ class MacroRepositoryTest {
                   {"id":"macro_ok","actionKey":"macro_ok_step","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"ok"}]}
                 ]
                 """);
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
         assertEquals("macro_ok", result.getFirst().getId());
     }
@@ -99,7 +99,7 @@ class MacroRepositoryTest {
                   {"id":"macro_ok","actionKey":"macro_ok_step","name":"OK","phrases":"ok phrase","steps":[{"type":"SPEAK","text":"ok"}]}
                 ]
                 """);
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
     }
 
@@ -111,7 +111,7 @@ class MacroRepositoryTest {
                   {"id":"macro_ok","actionKey":"macro_ok_step","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"ok"}]}
                 ]
                 """);
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
     }
 
@@ -123,7 +123,7 @@ class MacroRepositoryTest {
                   {"id":"macro_ok","actionKey":"macro_ok_step","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"x"}]}
                 ]
                 """);
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
         assertEquals("macro_ok", result.getFirst().getId());
     }
@@ -148,7 +148,7 @@ class MacroRepositoryTest {
                   }
                 ]
                 """);
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
         MacroDefinition m = result.getFirst();
         assertEquals("macro_test", m.getId());
@@ -169,7 +169,7 @@ class MacroRepositoryTest {
         writeJson("""
                 [{"id":"macro_x","actionKey":"macro_x_item","name":"X","phrases":"p","steps":[{"type":"SPEAK","text":"ok"}]}]
                 """);
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
         assertThrows(UnsupportedOperationException.class, () -> result.add(null));
     }
 
@@ -179,8 +179,8 @@ class MacroRepositoryTest {
     void saveAndLoadRoundtripPreservesAllFields() {
         List<MacroDefinition> original = repo.load(jsonWithOneMacro());
 
-        assertTrue(repo.save(original, macrosFile()));
-        List<MacroDefinition> reloaded = repo.load(macrosFile());
+        assertTrue(repo.save(original, customCommandsFile()));
+        List<MacroDefinition> reloaded = repo.load(customCommandsFile());
 
         assertEquals(1, reloaded.size());
         MacroDefinition m = reloaded.getFirst();
@@ -195,7 +195,7 @@ class MacroRepositoryTest {
 
     @Test
     void saveCreatesParentDirectories() {
-        Path nestedFile = tempDir.resolve("nested").resolve("macros").resolve("macros.json");
+        Path nestedFile = tempDir.resolve("nested").resolve("custom-commands").resolve("custom_commands.json");
         MacroDefinition macro = new MacroDefinition(
                 "macro_nested_save",
                 "Nested Save",
@@ -214,11 +214,11 @@ class MacroRepositoryTest {
 
     @Test
     void loadFallsBackToBackupWhenMainFileIsCorrupt() throws IOException {
-        Files.writeString(macrosFile(), "not-valid-json", StandardCharsets.UTF_8);
+        Files.writeString(customCommandsFile(), "not-valid-json", StandardCharsets.UTF_8);
         Files.writeString(backupFile(), validOneMacroJson("macro_backup", "From Backup"),
                 StandardCharsets.UTF_8);
 
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
 
         assertEquals(1, result.size());
         assertEquals("macro_backup", result.getFirst().getId());
@@ -231,12 +231,12 @@ class MacroRepositoryTest {
                   {"id":"macro_bad","actionKey":"macro_bad_reset","name":"","phrases":"p","steps":[{"type":"SPEAK","text":"x"}]}
                 ]
                 """);
-        repo.load(macrosFile());
+        repo.load(customCommandsFile());
         assertEquals(1, repo.getLastSkippedCount());
 
-        Files.writeString(macrosFile(), "not-valid-json", StandardCharsets.UTF_8);
+        Files.writeString(customCommandsFile(), "not-valid-json", StandardCharsets.UTF_8);
 
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
 
         assertTrue(result.isEmpty());
         assertEquals(0, repo.getLastSkippedCount());
@@ -245,10 +245,10 @@ class MacroRepositoryTest {
 
     @Test
     void loadReturnsEmptyWhenBothMainAndBackupAreCorrupt() throws IOException {
-        Files.writeString(macrosFile(), "not-valid-json", StandardCharsets.UTF_8);
+        Files.writeString(customCommandsFile(), "not-valid-json", StandardCharsets.UTF_8);
         Files.writeString(backupFile(), "also-not-valid", StandardCharsets.UTF_8);
 
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
 
         assertTrue(result.isEmpty());
     }
@@ -259,7 +259,7 @@ class MacroRepositoryTest {
                 StandardCharsets.UTF_8);
 
         // Main file does not exist, so backup should not be consulted.
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
 
         assertTrue(result.isEmpty());
     }
@@ -268,8 +268,8 @@ class MacroRepositoryTest {
 
     @Test
     void saveCreatesBackupOfPreviousFile() throws IOException {
-        repo.save(List.of(makeMacro("macro_first", "First")), macrosFile());
-        repo.save(List.of(makeMacro("macro_second", "Second")), macrosFile());
+        repo.save(List.of(makeMacro("macro_first", "First")), customCommandsFile());
+        repo.save(List.of(makeMacro("macro_second", "Second")), customCommandsFile());
 
         assertTrue(Files.exists(backupFile()), "Backup file should exist after second save");
         List<MacroDefinition> fromBackup = repo.load(backupFile());
@@ -280,24 +280,24 @@ class MacroRepositoryTest {
     @Test
     void saveDoesNotCreateBackupOnFirstSave() {
         assertFalse(Files.exists(backupFile()), "No backup before first save");
-        repo.save(List.of(makeMacro("macro_init", "Init")), macrosFile());
+        repo.save(List.of(makeMacro("macro_init", "Init")), customCommandsFile());
         assertFalse(Files.exists(backupFile()), "No backup created when there was no previous file");
     }
 
     @Test
     void saveTempFileIsRemovedAfterSuccessfulSave() {
-        repo.save(List.of(makeMacro("macro_tmp_file", "Temp")), macrosFile());
+        repo.save(List.of(makeMacro("macro_tmp_file", "Temp")), customCommandsFile());
 
-        Path tmp = macrosFile().resolveSibling("macros.json.tmp");
+        Path tmp = customCommandsFile().resolveSibling("custom_commands.json.tmp");
         assertFalse(Files.exists(tmp), "Temp file should not remain after a successful save");
     }
 
     @Test
     void savedFileIsReadableAfterSave() {
         MacroDefinition macro = makeMacro("macro_persisted", "Persisted");
-        repo.save(List.of(macro), macrosFile());
+        repo.save(List.of(macro), customCommandsFile());
 
-        List<MacroDefinition> result = repo.load(macrosFile());
+        List<MacroDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
         assertEquals("macro_persisted", result.getFirst().getId());
     }
@@ -305,11 +305,11 @@ class MacroRepositoryTest {
     // --- helpers ---
 
     private void writeJson(String json) throws IOException {
-        Files.writeString(macrosFile(), json, StandardCharsets.UTF_8);
+        Files.writeString(customCommandsFile(), json, StandardCharsets.UTF_8);
     }
 
     private Path backupFile() {
-        return macrosFile().resolveSibling("macros.json.bak");
+        return customCommandsFile().resolveSibling("custom_commands.json.bak");
     }
 
     private Path jsonWithOneMacro() {
@@ -321,7 +321,7 @@ class MacroRepositoryTest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return macrosFile();
+        return customCommandsFile();
     }
 
     /** Produces a minimal valid single-macro JSON array with the given {@code id} used as actionKey. */

@@ -28,6 +28,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
         map.put("unterbrich, unterbrechen, sprache stoppen, hör auf zu reden", INTERRUPT_TTS.getAction());
 
         // navigation
+        map.put("handelsroute abbrechen, handelsroute stoppen, handelsroute löschen, handelsroute stornieren", CANCEL_TRADE_ROUTE.getAction());
         map.put("navigiere zu koordinaten {lat:X, lon:Y}, kurs auf koordinaten {lat:X, lon:Y}, fliege zu koordinaten {lat:X, lon:Y}", NAVIGATE_TO_TARGET.getAction());
         map.put("navigiere zur aktiven mission, route zur aktiven mission planen, route zur mission planen, bring mich zur mission, fliege zur mission {key:X}", NAVIGATE_TO_NEXT_MISSION.getAction());
         map.put("navigiere zum fleet carrier, fliege zum carrier, kurs zum carrier, zurück zum carrier, bring uns zum carrier, zurück zum träger", NAVIGATE_TO_FLEET_CARRIER.getAction());

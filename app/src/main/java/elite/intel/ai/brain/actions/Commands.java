@@ -54,6 +54,7 @@ public enum Commands {
 
     NAVIGATE_TO_TARGET                                  ("navigate_to_coordinates", null,  NavigateToCoordinatesHandler.class),
     NAVIGATION_OFF                                      ("cancel_navigation", null,  NavigationOnOffHandler.class),
+    CANCEL_TRADE_ROUTE                                  ("cancel_trade_route", null,  CancelTradeRouteHandler.class),
     DISCOVERY_ON_OFF                                    ("toggle_discovery_announcements", null, DiscoveryOnOffHandler.class),
     MINING_ON_OFF                                       ("toggle_mining_announcements", null, MiningOnOffHandler.class),
     ROUTE_ON_OFF                                        ("toggle_route_announcements", null, RouteAnnouncementsOnOffHandler.class),

@@ -29,6 +29,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("interrupt", INTERRUPT_TTS.getAction());
 
         // navigation
+        map.put("cancel trade route, stop trade route, clear trade route, abort trade route", CANCEL_TRADE_ROUTE.getAction());
         map.put("navigate to coordinates {lat:X, lon:Y}", NAVIGATE_TO_TARGET.getAction());
         map.put("navigate to active mission, plot route to active mission, plot route to mission, take me to mission, go to mission {key:X}", NAVIGATE_TO_NEXT_MISSION.getAction());
         map.put("navigate to fleet carrier, go to carrier, head to carrier, return to carrier, take us to carrier", NAVIGATE_TO_FLEET_CARRIER.getAction());

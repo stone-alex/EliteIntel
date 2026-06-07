@@ -28,6 +28,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
         map.put("перебей, прерви, останови речь, прекрати говорить", INTERRUPT_TTS.getAction());
 
         // navigation
+        map.put("отмени торговый маршрут, останови торговый маршрут, очисти торговый маршрут, прерви торговый маршрут, сбрось торговый маршрут", CANCEL_TRADE_ROUTE.getAction());
         map.put("лети к координатам {lat:X, lon:Y}, навигация к координатам {lat:X, lon:Y}, курс на координаты {lat:X, lon:Y}", NAVIGATE_TO_TARGET.getAction());
         map.put("навигация к активной миссии, проложи маршрут к активной миссии, проложи маршрут к миссии, веди к миссии, лети к миссии {key:X}", NAVIGATE_TO_NEXT_MISSION.getAction());
         map.put("лети к авианосцу, навигация к авианосцу, курс к авианосцу, вернись к авианосцу, веди нас к авианосцу", NAVIGATE_TO_FLEET_CARRIER.getAction());

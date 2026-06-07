@@ -29,6 +29,7 @@ public class FrenchAiActionAliases implements AiActionAliasProvider {
         map.put("interromps, interruption, arrête de parler, arrete de parler, coupe la voix, stop voix, silence", INTERRUPT_TTS.getAction());
 
         // navigation
+        map.put("annule la route commerciale, arrête la route commerciale, arrete la route commerciale, supprime la route commerciale, abandonne la route commerciale, annule l'itinéraire commercial, annule l'itineraire commercial", CANCEL_TRADE_ROUTE.getAction());
         map.put("navigue vers les coordonnées {lat:X, lon:Y}, cap sur les coordonnées {lat:X, lon:Y}, va aux coordonnées {lat:X, lon:Y}", NAVIGATE_TO_TARGET.getAction());
         map.put("navigue vers la mission active, trace une route vers la mission active, trace une route vers la mission, amène-moi à la mission, amene-moi a la mission, va à la mission {key:X}, va a la mission {key:X}", NAVIGATE_TO_NEXT_MISSION.getAction());
         map.put("navigue vers le porte-vaisseaux, va au porte-vaisseaux, va au carrier, cap sur le carrier, retourne au carrier, retourne au porte-vaisseaux, ramène-nous au carrier, ramene-nous au carrier", NAVIGATE_TO_FLEET_CARRIER.getAction());

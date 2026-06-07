@@ -28,6 +28,7 @@ public class UkrainianAiActionAliases implements AiActionAliasProvider {
         map.put("перебий, перерви, зупини мову, припини говорити", INTERRUPT_TTS.getAction());
 
         // navigation
+        map.put("скасуй торговий маршрут, зупини торговий маршрут, очисти торговий маршрут, перерви торговий маршрут, скинь торговий маршрут", CANCEL_TRADE_ROUTE.getAction());
         map.put("лети до координат {lat:X, lon:Y}, навігація до координат {lat:X, lon:Y}, курс на координати {lat:X, lon:Y}", NAVIGATE_TO_TARGET.getAction());
         map.put("навігація до активної місії, проклади маршрут до активної місії, проклади маршрут до місії, веди до місії, лети до місії {key:X}", NAVIGATE_TO_NEXT_MISSION.getAction());
         map.put("лети до авіаносця, навігація до авіаносця, курс до авіаносця, повернись до авіаносця, веди нас до авіаносця", NAVIGATE_TO_FLEET_CARRIER.getAction());

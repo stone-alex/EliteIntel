@@ -2,6 +2,7 @@ package elite.intel.ai.ears.parakeet;
 
 import com.google.common.eventbus.Subscribe;
 import com.k2fsa.sherpa.onnx.*;
+import elite.intel.ai.brain.actions.Commands;
 import elite.intel.ai.brain.i18n.AiActionLocalizations;
 import elite.intel.ai.ears.*;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
@@ -212,10 +213,6 @@ public class ParakeetSTTImpl implements EarsInterface {
         int retryCount = 0;
         while (isListening.get()) {
             try {
-                if (isSpeaking.get()) {
-                    Thread.sleep(100);
-                    continue;
-                }
                 runVadAndTranscribe();
                 retryCount = 0;
             } catch (LineUnavailableException e) {
@@ -247,7 +244,6 @@ public class ParakeetSTTImpl implements EarsInterface {
             preRoll.clear();
 
             while (isListening.get() && line.isOpen()) {
-                if (isSpeaking.get()) break;
                 int bytesRead = line.read(buffer, 0, buffer.length);
                 if (bytesRead <= 0) continue;
 
@@ -278,7 +274,7 @@ public class ParakeetSTTImpl implements EarsInterface {
                 }
 
                 boolean justActivated = false;
-                if (!isActive && consecutiveVoice >= ENTER_VOICE_FRAMES && !isSpeaking.get()) {
+                if (!isActive && consecutiveVoice >= ENTER_VOICE_FRAMES) {
                     isActive = true;
                     justActivated = true;
                     audioCollector.reset();
@@ -456,7 +452,12 @@ public class ParakeetSTTImpl implements EarsInterface {
 
     private void sendToAi(String transcript) {
         if (isSpeaking.get()) {
-            log.debug("Ignoring transcript while TTS is speaking: {}", transcript);
+            if (isInterruptPhrase(transcript)) {
+                log.info("Interrupt phrase detected during TTS playback: {}", transcript);
+                EventBusManager.publish(new TTSInterruptEvent());
+            } else {
+                log.debug("Ignoring transcript while TTS is speaking: {}", transcript);
+            }
             return;
         }
         EventBusManager.publish(new TTSInterruptEvent());
@@ -465,7 +466,19 @@ public class ParakeetSTTImpl implements EarsInterface {
         EventBusManager.publish(new UserInputEvent(transcript.replace("computer", "")));
     }
 
-    /** Suppresses voice recognition while the application is speaking via TTS. */
+    /**
+     * Returns true if the transcript exactly matches one of the localized interrupt phrases
+     * for the current language. Used to allow TTS interruption while the app is speaking.
+     */
+    private boolean isInterruptPhrase(String transcript) {
+        String lower = transcript.trim().toLowerCase(Locale.ROOT);
+        for (String phrase : AiActionLocalizations.phrasesForAction(Commands.INTERRUPT_TTS.getAction())) {
+            if (lower.equals(phrase.trim().toLowerCase(Locale.ROOT))) return true;
+        }
+        return false;
+    }
+
+    /** Tracks TTS playback state to gate non-interrupt transcripts while the app is speaking. */
     @Subscribe
     public void onIsSpeakingEvent(IsSpeakingEvent event) {
         isSpeaking.set(event.isSpeaking());

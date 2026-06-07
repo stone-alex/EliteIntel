@@ -62,6 +62,7 @@ public class AiActionsMap {
         map.put("navigate to landing zone, bearing to landing zone, heading to landing zone, back to LZ", GET_HEADING_TO_LZ.getAction());
         map.put("navigate to next trade stop, go to next trade stop", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
         map.put("navigate from memory, paste from memory", NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
+        map.put("cancel trade route, stop trade route, clear trade route, abort trade route", CANCEL_TRADE_ROUTE.getAction());
         map.put("cancel navigation, abort navigation, stop navigation", NAVIGATION_OFF.getAction());
         map.put("set home system, set current system as home, mark home system", SET_HOME_SYSTEM.getAction());
         map.put("take me home, go home, navigate home, return home, plot route home, head home, take us home", TAKE_ME_HOME.getAction());

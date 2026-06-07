@@ -19,11 +19,13 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -107,6 +109,8 @@ public class CustomCommandsTabPanel extends JPanel {
     private JPanel actionPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         panel.setOpaque(false);
+        addActionButton(panel, "actions.customCommands.action.import", this::importCustomCommands);
+        addActionButton(panel, "actions.customCommands.action.export", this::exportCustomCommands);
         addActionButton(panel, "actions.customCommands.action.new", this::newCustomCommand);
         return panel;
     }
@@ -212,6 +216,40 @@ public class CustomCommandsTabPanel extends JPanel {
                 () -> editCustomCommand(row),
                 () -> deleteCustomCommand(row)
         ).showDialog();
+    }
+
+    private void exportCustomCommands() {
+        List<CustomCommandDefinition> commands = CustomCommandRegistry.getInstance().getCustomCommands();
+        if (commands.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                getText("actions.customCommands.export.noSelection"),
+                getText("actions.customCommands.export.title"),
+                JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        new CustomCommandExportDialog(this, commands).showDialog();
+    }
+
+    private void importCustomCommands() {
+        List<CustomCommandDefinition> existing = CustomCommandRegistry.getInstance().getCustomCommands();
+        List<CustomCommandDefinition> toImport = CustomCommandImportDialog.showImportFlow(this, existing);
+        if (toImport == null || toImport.isEmpty()) {
+            return;
+        }
+
+        // Overwrite existing commands that share an actionKey with an imported command
+        Set<String> importKeys = toImport.stream()
+            .map(d -> d.getActionKey().toLowerCase(Locale.ROOT))
+            .collect(Collectors.toSet());
+        List<CustomCommandDefinition> merged = new ArrayList<>(existing);
+        merged.removeIf(e -> importKeys.contains(e.getActionKey().toLowerCase(Locale.ROOT)));
+        merged.addAll(toImport);
+
+        persistAndRefresh(merged);
+        JOptionPane.showMessageDialog(this,
+            getText("actions.customCommands.import.success", toImport.size()),
+            getText("actions.customCommands.import.title"),
+            JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void newCustomCommand() {

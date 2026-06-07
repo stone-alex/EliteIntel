@@ -23,9 +23,11 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
@@ -367,7 +369,7 @@ final class CustomCommandEditorDialog extends JDialog {
                 actionKey,
                 name,
                 descriptionArea.getText().trim(),
-                phrasesArea.getText().trim(),
+                normalizePhrases(phrasesArea.getText()),
                 paramsModel.parameters(),
                 stepsModel.steps()
         );
@@ -389,6 +391,21 @@ final class CustomCommandEditorDialog extends JDialog {
             candidate = base + "_" + suffix++;
         }
         return candidate;
+    }
+
+    /**
+     * Normalizes a phrases string entered in the editor: treats newlines as phrase separators
+     * so users can type one phrase per line instead of comma-separating them manually.
+     * The result is always a comma-separated string, matching the storage format.
+     * Commas within a single line are preserved as-is so parameter templates like
+     * {@code {lat:X, lon:Y}} are not broken.
+     */
+    private static String normalizePhrases(String raw) {
+        if (raw == null) return "";
+        return Arrays.stream(raw.replace("\r\n", "\n").replace('\r', '\n').split("\n"))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .collect(Collectors.joining(", "));
     }
 
     private static String sanitizeId(String value) {

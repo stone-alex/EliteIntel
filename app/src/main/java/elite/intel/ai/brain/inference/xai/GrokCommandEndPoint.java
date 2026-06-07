@@ -105,7 +105,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
         log.info("Sanitized voice userInput:\n{}", userInput);
 
-        if (tryProcessExactMacroCommand(userInput)) {
+        if (tryProcessExactCustomCommandCommand(userInput)) {
             return;
         }
 

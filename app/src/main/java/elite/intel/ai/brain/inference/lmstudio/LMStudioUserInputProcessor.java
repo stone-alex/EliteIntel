@@ -95,7 +95,7 @@ public class LMStudioUserInputProcessor extends CommandEndPoint implements AiCom
             return;
         }
 
-        if (tryProcessExactMacroCommand(userInput)) {
+        if (tryProcessExactCustomCommandCommand(userInput)) {
             return;
         }
 

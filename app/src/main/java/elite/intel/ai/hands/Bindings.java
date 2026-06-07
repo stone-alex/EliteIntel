@@ -17,7 +17,7 @@ public class Bindings {
         BINDING_UIFOCUS("UIFocus"),
 
         /// ------------------------------------------------------------------------------------------------------------
-        /// mappings for custom commands
+        /// mappings for customCommands
         BINDING_TOGGLE_CARGO_SCOOP("ToggleCargoScoop"),
         BINDING_TOGGLE_CARGO_SCOOP_BUGGY("ToggleCargoScoop_Buggy"),
         BINDING_HARDPOINTS_TOGGLE("DeployHardpointToggle"),

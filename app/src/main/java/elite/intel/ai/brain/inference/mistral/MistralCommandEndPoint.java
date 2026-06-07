@@ -108,7 +108,7 @@ public class MistralCommandEndPoint extends CommandEndPoint implements AiCommand
 
         log.info("Sanitized voice userInput:\n{}", userInput);
 
-        if (tryProcessExactMacroCommand(userInput)) {
+        if (tryProcessExactCustomCommandCommand(userInput)) {
             return;
         }
 

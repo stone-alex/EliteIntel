@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.AiActionsMap;
 import elite.intel.ai.brain.actions.catalog.CommandCatalogEntry;
 import elite.intel.ai.brain.actions.catalog.CommandCatalogEntryType;
-import elite.intel.ai.brain.actions.macro.MacroParameterSpec;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandParameterSpec;
 import elite.intel.ai.brain.i18n.AiActionLocalizations;
 
 import javax.swing.*;
@@ -30,7 +30,7 @@ public final class CommandDetailsDialog extends JDialog {
     private final List<String> phrases;
     private final boolean showPhraseCorrection;
     private final String sequenceText;
-    private final List<MacroParameterSpec> macroParameters;
+    private final List<CustomCommandParameterSpec> customCommandParameters;
     private final Runnable editAction;
     private final Runnable deleteAction;
 
@@ -51,7 +51,7 @@ public final class CommandDetailsDialog extends JDialog {
     }
 
     /**
-     * Creates a details dialog with an extra read-only macro sequence section.
+     * Creates a details dialog with an extra read-only customCommand sequence section.
      */
     CommandDetailsDialog(
             Component parent,
@@ -64,8 +64,8 @@ public final class CommandDetailsDialog extends JDialog {
     }
 
     /**
-     * Creates a macro details dialog with optional editing actions owned by the macro list panel.
-     * Use the overload with {@code macroParameters} to show declared macro parameters.
+     * Creates a customCommand details dialog with optional editing actions owned by the custom command list panel.
+     * Use the overload with {@code customCommandParameters} to show declared custom command parameters.
      */
     CommandDetailsDialog(
             Component parent,
@@ -80,7 +80,7 @@ public final class CommandDetailsDialog extends JDialog {
     }
 
     /**
-     * Creates a macro details dialog that shows declared macro parameters and prompts for them on Run.
+     * Creates a customCommand details dialog that shows declared custom command parameters and prompts for them on Run.
      */
     CommandDetailsDialog(
             Component parent,
@@ -88,7 +88,7 @@ public final class CommandDetailsDialog extends JDialog {
             List<String> phrases,
             boolean showPhraseCorrection,
             String sequenceText,
-            List<MacroParameterSpec> macroParameters,
+            List<CustomCommandParameterSpec> customCommandParameters,
             Runnable editAction,
             Runnable deleteAction
     ) {
@@ -97,7 +97,7 @@ public final class CommandDetailsDialog extends JDialog {
         this.phrases = phrases == null ? List.of() : List.copyOf(phrases);
         this.showPhraseCorrection = showPhraseCorrection;
         this.sequenceText = sequenceText == null ? "" : sequenceText;
-        this.macroParameters = macroParameters == null ? List.of() : List.copyOf(macroParameters);
+        this.customCommandParameters = customCommandParameters == null ? List.of() : List.copyOf(customCommandParameters);
         this.editAction = editAction;
         this.deleteAction = deleteAction;
         buildUi();
@@ -211,25 +211,25 @@ public final class CommandDetailsDialog extends JDialog {
     }
 
     private void addParameters(JPanel panel, GridBagConstraints gbc) {
-        if (macroParameters.isEmpty()) return;
+        if (customCommandParameters.isEmpty()) return;
 
         gbc.gridx = 0;
         gbc.weightx = 0.0;
         gbc.fill = GridBagConstraints.NONE;
-        panel.add(detailLabel(getText("actions.macros.details.parameters")), gbc);
+        panel.add(detailLabel(getText("actions.customCommands.details.parameters")), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         StringBuilder sb = new StringBuilder();
-        for (MacroParameterSpec spec : macroParameters) {
+        for (CustomCommandParameterSpec spec : customCommandParameters) {
             sb.append(spec.getName()).append(" (").append(spec.getType());
             if (spec.isRequired()) sb.append(", required");
             sb.append(")");
             sb.append(System.lineSeparator());
         }
         JTextArea area = readOnlyTextArea(sb.toString().stripTrailing());
-        area.setRows(macroParameters.size());
+        area.setRows(customCommandParameters.size());
         panel.add(area, gbc);
         gbc.gridy++;
     }
@@ -242,7 +242,7 @@ public final class CommandDetailsDialog extends JDialog {
         gbc.gridx = 0;
         gbc.weightx = 0.0;
         gbc.fill = GridBagConstraints.NONE;
-        panel.add(detailLabel(getText("actions.macros.details.sequence")), gbc);
+        panel.add(detailLabel(getText("actions.customCommands.details.sequence")), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
@@ -324,12 +324,12 @@ public final class CommandDetailsDialog extends JDialog {
         JPanel rightButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         rightButtons.setOpaque(false);
         if (editAction != null) {
-            JButton edit = AppTheme.makeButtonSubtle(getText("actions.macros.action.edit"));
+            JButton edit = AppTheme.makeButtonSubtle(getText("actions.customCommands.action.edit"));
             edit.addActionListener(event -> runAfterClose(editAction));
             rightButtons.add(edit);
         }
         if (deleteAction != null) {
-            JButton delete = AppTheme.makeButtonSubtle(getText("actions.macros.action.delete"));
+            JButton delete = AppTheme.makeButtonSubtle(getText("actions.customCommands.action.delete"));
             delete.addActionListener(event -> runAfterClose(deleteAction));
             rightButtons.add(delete);
         }
@@ -385,7 +385,7 @@ public final class CommandDetailsDialog extends JDialog {
             return;
         }
 
-        GuiCommandRunner.runAfterClosingWindow(this, entry.id(), params, !entry.isMacro());
+        GuiCommandRunner.runAfterClosingWindow(this, entry.id(), params, !entry.isCustomCommand());
     }
 
     private void openPhraseCorrectionDialog() {
@@ -397,8 +397,8 @@ public final class CommandDetailsDialog extends JDialog {
     }
 
     private JsonObject promptForParams() {
-        if (entry.isMacro()) {
-            return macroParameters.isEmpty() ? new JsonObject() : promptForMacroParams();
+        if (entry.isCustomCommand()) {
+            return customCommandParameters.isEmpty() ? new JsonObject() : promptForCustomCommandParams();
         }
         List<CommandParameter> parameters = commandParameters();
         JsonObject params = new JsonObject();
@@ -463,17 +463,17 @@ public final class CommandDetailsDialog extends JDialog {
         return params;
     }
 
-    private JsonObject promptForMacroParams() {
+    private JsonObject promptForCustomCommandParams() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(AppTheme.BG);
-        Map<MacroParameterSpec, JComponent> fields = new LinkedHashMap<>();
+        Map<CustomCommandParameterSpec, JComponent> fields = new LinkedHashMap<>();
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0;
         gbc.insets = new Insets(6, 6, 6, 6);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        for (MacroParameterSpec spec : macroParameters) {
+        for (CustomCommandParameterSpec spec : customCommandParameters) {
             gbc.gridx = 0;
             gbc.weightx = 0.0;
             String labelText = spec.getName() + (spec.isRequired() ? " *" : "");
@@ -510,8 +510,8 @@ public final class CommandDetailsDialog extends JDialog {
         }
 
         JsonObject params = new JsonObject();
-        for (Map.Entry<MacroParameterSpec, JComponent> e : fields.entrySet()) {
-            MacroParameterSpec spec = e.getKey();
+        for (Map.Entry<CustomCommandParameterSpec, JComponent> e : fields.entrySet()) {
+            CustomCommandParameterSpec spec = e.getKey();
             JComponent field = e.getValue();
             if (field instanceof JComboBox<?> combo) {
                 Object selected = combo.getSelectedItem();
@@ -561,13 +561,13 @@ public final class CommandDetailsDialog extends JDialog {
         return switch (type) {
             case BUILT_IN_BINDING -> getText("actions.commands.type.builtInBinding");
             case BUILT_IN_ACTION -> getText("actions.commands.type.builtInAction");
-            case USER_MACRO -> getText("actions.commands.type.userMacro");
+            case CUSTOM_COMMAND -> getText("actions.commands.type.customCommand");
         };
     }
 
     private static String dialogTitle(CommandCatalogEntry entry) {
-        return entry != null && entry.isMacro()
-                ? getText("actions.macros.details.title")
+        return entry != null && entry.isCustomCommand()
+                ? getText("actions.customCommands.details.title")
                 : getText("actions.commands.details.title");
     }
 

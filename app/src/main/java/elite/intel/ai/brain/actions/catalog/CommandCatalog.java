@@ -2,7 +2,7 @@ package elite.intel.ai.brain.actions.catalog;
 
 import elite.intel.ai.brain.actions.Commands;
 import elite.intel.ai.brain.actions.handlers.commands.SimpleCommandActionHandler;
-import elite.intel.ai.brain.actions.macro.MacroDefinition;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandDefinition;
 import elite.intel.ui.i18n.MultiLingualTextProvider;
 import elite.intel.util.StringUtls;
 
@@ -49,18 +49,18 @@ public final class CommandCatalog {
     }
 
     /**
-     * Returns all catalog entries: built-in commands followed by user-defined macros.
-     * Built-in entries are derived from {@link Commands#values()} as before; macro entries
+     * Returns all catalog entries: built-in commands followed by user-defined customCommands.
+     * Built-in entries are derived from {@link Commands#values()} as before; custom command entries
      * are built from the provided list. The existing {@link #entries()} method is unchanged.
      */
-    public List<CommandCatalogEntry> entries(List<MacroDefinition> macros) {
-        Objects.requireNonNull(macros, "macros");
+    public List<CommandCatalogEntry> entries(List<CustomCommandDefinition> customCommands) {
+        Objects.requireNonNull(customCommands, "customCommands");
         List<CommandCatalogEntry> all = new ArrayList<>(entries());
-        for (MacroDefinition macro : macros) {
-            String desc = macro.getDescription().isBlank()
-                    ? "User macro: " + macro.getName()
-                    : macro.getDescription();
-            all.add(new CommandCatalogEntry(macro.getActionKey(), macro.getName(), desc, CommandCatalogEntryType.USER_MACRO));
+        for (CustomCommandDefinition customCommand : customCommands) {
+            String desc = customCommand.getDescription().isBlank()
+                    ? "User custom command: " + customCommand.getName()
+                    : customCommand.getDescription();
+            all.add(new CommandCatalogEntry(customCommand.getActionKey(), customCommand.getName(), desc, CommandCatalogEntryType.CUSTOM_COMMAND));
         }
         return Collections.unmodifiableList(all);
     }

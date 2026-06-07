@@ -108,7 +108,7 @@ public class DeepSeekCommandEndPoint extends CommandEndPoint implements AiComman
 
         log.info("Sanitized voice userInput:\n{}", userInput);
 
-        if (tryProcessExactMacroCommand(userInput)) {
+        if (tryProcessExactCustomCommandCommand(userInput)) {
             return;
         }
 

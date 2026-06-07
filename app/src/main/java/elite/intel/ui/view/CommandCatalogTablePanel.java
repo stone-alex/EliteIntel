@@ -139,7 +139,7 @@ public class CommandCatalogTablePanel extends JPanel {
         return switch (type) {
             case BUILT_IN_BINDING -> getText("actions.commands.type.builtInBinding");
             case BUILT_IN_ACTION -> getText("actions.commands.type.builtInAction");
-            case USER_MACRO -> getText("actions.commands.type.userMacro");
+            case CUSTOM_COMMAND -> getText("actions.commands.type.customCommand");
         };
     }
 

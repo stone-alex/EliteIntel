@@ -1,4 +1,4 @@
-package elite.intel.ai.brain.actions.macro;
+package elite.intel.ai.brain.actions.customcommand;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -11,14 +11,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Runtime invocation context for a parameterized macro.
+ * Runtime invocation context for a parameterized customCommand.
  * <p>
  * Stores the original LLM {@link JsonObject params} and resolves {@code ${paramName}} templates
  * against them. Bare direct references like {@code "${lat}"} preserve the original JSON type
  * (number, boolean) rather than coercing to string; mixed templates like {@code "prefix_${lat}"}
  * are always resolved to a string.
  */
-public final class MacroExecutionContext {
+public final class CustomCommandExecutionContext {
 
     /** Matches any {@code ${paramName}} occurrence within a template string. Used by validator and resolver. */
     static final Pattern PARAM_REF = Pattern.compile("\\$\\{([^}]+)\\}");
@@ -29,30 +29,30 @@ public final class MacroExecutionContext {
      */
     private static final Pattern BARE_REF = Pattern.compile("^\\s*\\$\\{([^}]+)\\}\\s*$");
 
-    private final MacroDefinition macro;
+    private final CustomCommandDefinition customCommand;
     private final JsonObject jsonParams;
 
-    private MacroExecutionContext(MacroDefinition macro, JsonObject jsonParams) {
-        this.macro = macro;
+    private CustomCommandExecutionContext(CustomCommandDefinition customCommand, JsonObject jsonParams) {
+        this.customCommand = customCommand;
         this.jsonParams = jsonParams != null ? jsonParams : new JsonObject();
     }
 
     /**
-     * Builds a context from the macro definition and the LLM's raw {@code JsonObject params}.
+     * Builds a context from the custom command definition and the LLM's raw {@code JsonObject params}.
      * An empty or null params object produces a context with no resolved values.
      */
-    public static MacroExecutionContext fromJson(MacroDefinition macro, JsonObject json) {
-        return new MacroExecutionContext(macro, json);
+    public static CustomCommandExecutionContext fromJson(CustomCommandDefinition customCommand, JsonObject json) {
+        return new CustomCommandExecutionContext(customCommand, json);
     }
 
     /**
-     * Validates that all required macro parameters are present in the LLM params.
+     * Validates that all required custom command parameters are present in the LLM params.
      *
      * @return a list of error messages (empty means all required params are present)
      */
     public List<String> validateRequiredParams() {
         List<String> errors = new ArrayList<>();
-        for (MacroParameterSpec spec : macro.getParameters()) {
+        for (CustomCommandParameterSpec spec : customCommand.getParameters()) {
             if (!spec.isRequired()) continue;
             JsonElement element = jsonParams.get(spec.getName());
             boolean missing = element == null || element.isJsonNull()
@@ -71,7 +71,7 @@ public final class MacroExecutionContext {
      *
      * @param template the template string, or {@code null} (returns {@code null})
      * @return the resolved string
-     * @throws UnresolvedMacroParamException if a referenced parameter is absent from the context
+     * @throws UnresolvedCustomCommandParamException if a referenced parameter is absent from the context
      */
     public String resolveString(String template) {
         if (template == null) return null;
@@ -81,7 +81,7 @@ public final class MacroExecutionContext {
             String paramName = m.group(1);
             JsonElement element = jsonParams.get(paramName);
             if (element == null || element.isJsonNull()) {
-                throw new UnresolvedMacroParamException(paramName, template);
+                throw new UnresolvedCustomCommandParamException(paramName, template);
             }
             m.appendReplacement(sb, Matcher.quoteReplacement(element.getAsString()));
         }
@@ -97,7 +97,7 @@ public final class MacroExecutionContext {
      *
      * @param stepParamMapping mapping of handler-side param names to value templates (may be null)
      * @return resolved {@code JsonObject} (empty if mapping is null or empty)
-     * @throws UnresolvedMacroParamException if a referenced parameter is absent from the context
+     * @throws UnresolvedCustomCommandParamException if a referenced parameter is absent from the context
      */
     public JsonObject resolveStepParams(Map<String, String> stepParamMapping) {
         JsonObject result = new JsonObject();
@@ -116,7 +116,7 @@ public final class MacroExecutionContext {
                 String paramName = bareMatch.group(1);
                 JsonElement element = jsonParams.get(paramName);
                 if (element == null || element.isJsonNull()) {
-                    throw new UnresolvedMacroParamException(paramName, template);
+                    throw new UnresolvedCustomCommandParamException(paramName, template);
                 }
                 result.add(key, element);
             } else {

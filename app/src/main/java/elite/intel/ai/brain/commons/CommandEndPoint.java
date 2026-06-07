@@ -8,7 +8,7 @@ import elite.intel.ai.brain.AIRouterInterface;
 import elite.intel.ai.brain.AiPromptFactory;
 import elite.intel.ai.brain.AiActionsMap;
 import elite.intel.ai.brain.InputNormalizer;
-import elite.intel.ai.brain.actions.macro.MacroRegistry;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandRegistry;
 import elite.intel.gameapi.SensorDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,25 +44,25 @@ public abstract class CommandEndPoint extends AiEndPoint {
     }
 
     /**
-     * Dispatches an exact user macro phrase before LLM classification.
+     * Dispatches an exact user custom command phrase before LLM classification.
      * <p>
-     * User macros are explicit user-authored commands, so exact phrase matches should be deterministic.
+     * User customCommands are explicit user-authored commands, so exact phrase matches should be deterministic.
      */
-    protected boolean tryProcessExactMacroCommand(String userInput) {
-        String normalizedInput = normalizeForExactMacroMatch(userInput);
+    protected boolean tryProcessExactCustomCommandCommand(String userInput) {
+        String normalizedInput = normalizeForExactCustomCommandMatch(userInput);
         if (normalizedInput.isBlank()) {
             return false;
         }
 
         String action = AiActionsMap.getInstance().actionMap(false).get(normalizedInput);
-        Set<String> macroIds = MacroRegistry.getInstance().getMacros().stream()
-                .map(macro -> macro.getActionKey().toLowerCase(Locale.ROOT))
+        Set<String> customCommandIds = CustomCommandRegistry.getInstance().getCustomCommands().stream()
+                .map(customCommand -> customCommand.getActionKey().toLowerCase(Locale.ROOT))
                 .collect(Collectors.toSet());
-        if (action == null || !macroIds.contains(action.toLowerCase(Locale.ROOT))) {
+        if (action == null || !customCommandIds.contains(action.toLowerCase(Locale.ROOT))) {
             return false;
         }
 
-        log.info("Exact macro phrase matched STT input: [{}] -> {}", normalizedInput, action);
+        log.info("Exact custom command phrase matched STT input: [{}] -> {}", normalizedInput, action);
         JsonObject direct = new JsonObject();
         direct.addProperty(AIConstants.TYPE_ACTION, action);
         direct.add(AIConstants.PARAMS, new JsonObject());
@@ -70,7 +70,7 @@ public abstract class CommandEndPoint extends AiEndPoint {
         return true;
     }
 
-    private String normalizeForExactMacroMatch(String value) {
+    private String normalizeForExactCustomCommandMatch(String value) {
         String normalized = inputNormalizer.normalize(value == null ? "" : value);
         return normalized == null ? "" : normalized.trim().toLowerCase(Locale.ROOT);
     }

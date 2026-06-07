@@ -3,10 +3,10 @@ package elite.intel.ui.view;
 import elite.intel.ai.brain.actions.catalog.CommandCatalog;
 import elite.intel.ai.brain.actions.catalog.CommandCatalogEntry;
 import elite.intel.ai.brain.actions.handlers.CommandHandlerFactory;
-import elite.intel.ai.brain.actions.macro.MacroDefinition;
-import elite.intel.ai.brain.actions.macro.MacroRepository;
-import elite.intel.ai.brain.actions.macro.MacroRegistry;
-import elite.intel.ai.brain.actions.macro.MacroStep;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandDefinition;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandRepository;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandRegistry;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandStep;
 import elite.intel.ai.brain.i18n.AiActionLocalizations;
 import elite.intel.util.AppPaths;
 
@@ -30,18 +30,18 @@ import java.util.stream.Collectors;
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 /**
- * Read-only macro catalog view backed by the loaded macro registry.
+ * Read-only customCommand catalog view backed by the loaded customCommand registry.
  */
-public class MacrosTabPanel extends JPanel {
+public class CustomCommandsTabPanel extends JPanel {
 
     private final CommandCatalog commandCatalog = new CommandCatalog();
-    private final MacroRepository macroRepository = new MacroRepository();
-    private List<MacroRow> visibleRows = List.of();
+    private final CustomCommandRepository customCommandRepository = new CustomCommandRepository();
+    private List<CustomCommandRow> visibleRows = List.of();
     private JTextField searchField;
     private JTable table;
     private DefaultTableModel tableModel;
 
-    public MacrosTabPanel() {
+    public CustomCommandsTabPanel() {
         buildUi();
         initData();
     }
@@ -64,13 +64,13 @@ public class MacrosTabPanel extends JPanel {
         tableModel = new ReadOnlyTableModel(columnNames(), 0);
         table = new JTable(tableModel);
         styleTable(table);
-        table.addMouseListener(new MacroTableMouseListener());
+        table.addMouseListener(new CustomCommandTableMouseListener());
         table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("ENTER"), "openMacroDetails");
-        table.getActionMap().put("openMacroDetails", new AbstractAction() {
+                .put(KeyStroke.getKeyStroke("ENTER"), "openCustomCommandDetails");
+        table.getActionMap().put("openCustomCommandDetails", new AbstractAction() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent event) {
-                openMacroDetailsAtViewRow(table.getSelectedRow());
+                openCustomCommandDetailsAtViewRow(table.getSelectedRow());
             }
         });
 
@@ -82,9 +82,9 @@ public class MacrosTabPanel extends JPanel {
     public void initData() {
         tableModel.setRowCount(0);
         visibleRows = filteredRows();
-        for (MacroRow row : visibleRows) {
+        for (CustomCommandRow row : visibleRows) {
             tableModel.addRow(new Object[]{
-                    new MacroNameCell(row.entry().name(), row.entry().id()),
+                    new CustomCommandNameCell(row.entry().name(), row.entry().id()),
                     row.phrasesText()
             });
         }
@@ -95,7 +95,7 @@ public class MacrosTabPanel extends JPanel {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setOpaque(false);
 
-        JLabel title = new JLabel(getText("actions.macros.title"));
+        JLabel title = new JLabel(getText("actions.customCommands.title"));
         title.setFont(title.getFont().deriveFont(Font.BOLD, title.getFont().getSize2D() + 4f));
         title.setForeground(AppTheme.FG);
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -107,7 +107,7 @@ public class MacrosTabPanel extends JPanel {
     private JPanel actionPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         panel.setOpaque(false);
-        addActionButton(panel, "actions.macros.action.new", this::newMacro);
+        addActionButton(panel, "actions.customCommands.action.new", this::newCustomCommand);
         return panel;
     }
 
@@ -125,7 +125,7 @@ public class MacrosTabPanel extends JPanel {
         label.setForeground(AppTheme.FG);
         panel.add(label, BorderLayout.WEST);
 
-        searchField = new PlaceholderTextField(getText("actions.macros.search.placeholder"));
+        searchField = new PlaceholderTextField(getText("actions.customCommands.search.placeholder"));
         searchField.getDocument().addDocumentListener(new SearchDocumentListener());
         panel.add(searchField, BorderLayout.CENTER);
 
@@ -141,39 +141,39 @@ public class MacrosTabPanel extends JPanel {
 
     private String[] columnNames() {
         return new String[]{
-                getText("actions.macros.column.name"),
-                getText("actions.macros.column.phrases")
+                getText("actions.customCommands.column.name"),
+                getText("actions.customCommands.column.phrases")
         };
     }
 
-    private List<MacroRow> sortedRows() {
-        List<MacroDefinition> macros = MacroRegistry.getInstance().getMacros();
-        Map<String, MacroDefinition> macrosById = macros.stream()
+    private List<CustomCommandRow> sortedRows() {
+        List<CustomCommandDefinition> customCommands = CustomCommandRegistry.getInstance().getCustomCommands();
+        Map<String, CustomCommandDefinition> customCommandsById = customCommands.stream()
                 .collect(Collectors.toMap(
-                        MacroDefinition::getActionKey,
+                        CustomCommandDefinition::getActionKey,
                         Function.identity(),
                         (first, second) -> second,
                         LinkedHashMap::new
                 ));
 
-        return commandCatalog.entries(macros).stream()
-                .filter(CommandCatalogEntry::isMacro)
-                .map(entry -> new MacroRow(entry, macrosById.get(entry.id())))
-                .filter(row -> row.macro() != null)
+        return commandCatalog.entries(customCommands).stream()
+                .filter(CommandCatalogEntry::isCustomCommand)
+                .map(entry -> new CustomCommandRow(entry, customCommandsById.get(entry.id())))
+                .filter(row -> row.customCommand() != null)
                 .sorted(Comparator
-                        .comparing((MacroRow row) -> row.entry().name(), String.CASE_INSENSITIVE_ORDER)
+                        .comparing((CustomCommandRow row) -> row.entry().name(), String.CASE_INSENSITIVE_ORDER)
                         .thenComparing(row -> row.entry().id()))
                 .toList();
     }
 
-    private List<MacroRow> filteredRows() {
+    private List<CustomCommandRow> filteredRows() {
         String query = normalizedSearchText();
         return sortedRows().stream()
                 .filter(row -> query.isBlank() || matchesSearch(row, query))
                 .toList();
     }
 
-    private boolean matchesSearch(MacroRow row, String query) {
+    private boolean matchesSearch(CustomCommandRow row, String query) {
         return row.entry().name().toLowerCase(Locale.ROOT).contains(query)
                 || row.entry().id().toLowerCase(Locale.ROOT).contains(query)
                 || row.entry().description().toLowerCase(Locale.ROOT).contains(query)
@@ -192,7 +192,7 @@ public class MacrosTabPanel extends JPanel {
         initData();
     }
 
-    private void openMacroDetailsAtViewRow(int viewRow) {
+    private void openCustomCommandDetailsAtViewRow(int viewRow) {
         if (viewRow < 0) {
             return;
         }
@@ -201,45 +201,45 @@ public class MacrosTabPanel extends JPanel {
             return;
         }
 
-        MacroRow row = visibleRows.get(modelRow);
+        CustomCommandRow row = visibleRows.get(modelRow);
         new CommandDetailsDialog(
                 this,
                 row.entry(),
                 row.phrases(),
                 false,
                 row.sequenceText(),
-                row.macro().getParameters(),
-                () -> editMacro(row),
-                () -> deleteMacro(row)
+                row.customCommand().getParameters(),
+                () -> editCustomCommand(row),
+                () -> deleteCustomCommand(row)
         ).showDialog();
     }
 
-    private void newMacro() {
-        MacroDefinition saved = new MacroEditorDialog(this, null, MacroRegistry.getInstance().getMacros()).showDialog();
+    private void newCustomCommand() {
+        CustomCommandDefinition saved = new CustomCommandEditorDialog(this, null, CustomCommandRegistry.getInstance().getCustomCommands()).showDialog();
         if (saved == null) {
             return;
         }
-        List<MacroDefinition> macros = new java.util.ArrayList<>(MacroRegistry.getInstance().getMacros());
-        macros.add(saved);
-        persistAndRefresh(macros);
+        List<CustomCommandDefinition> customCommands = new java.util.ArrayList<>(CustomCommandRegistry.getInstance().getCustomCommands());
+        customCommands.add(saved);
+        persistAndRefresh(customCommands);
     }
 
-    private void editMacro(MacroRow row) {
-        MacroDefinition saved = new MacroEditorDialog(this, row.macro(), MacroRegistry.getInstance().getMacros()).showDialog();
+    private void editCustomCommand(CustomCommandRow row) {
+        CustomCommandDefinition saved = new CustomCommandEditorDialog(this, row.customCommand(), CustomCommandRegistry.getInstance().getCustomCommands()).showDialog();
         if (saved == null) {
             return;
         }
-        List<MacroDefinition> macros = MacroRegistry.getInstance().getMacros().stream()
-                .map(macro -> macro.getId().equalsIgnoreCase(row.macro().getId()) ? saved : macro)
+        List<CustomCommandDefinition> customCommands = CustomCommandRegistry.getInstance().getCustomCommands().stream()
+                .map(customCommand -> customCommand.getId().equalsIgnoreCase(row.customCommand().getId()) ? saved : customCommand)
                 .toList();
-        persistAndRefresh(macros);
+        persistAndRefresh(customCommands);
     }
 
-    private void deleteMacro(MacroRow row) {
+    private void deleteCustomCommand(CustomCommandRow row) {
         int result = JOptionPane.showConfirmDialog(
                 this,
-                getText("actions.macros.delete.confirm", row.entry().name()),
-                getText("actions.macros.delete.title"),
+                getText("actions.customCommands.delete.confirm", row.entry().name()),
+                getText("actions.customCommands.delete.title"),
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.WARNING_MESSAGE
         );
@@ -247,24 +247,24 @@ public class MacrosTabPanel extends JPanel {
             return;
         }
 
-        List<MacroDefinition> macros = MacroRegistry.getInstance().getMacros().stream()
-                .filter(macro -> !macro.getId().equalsIgnoreCase(row.macro().getId()))
+        List<CustomCommandDefinition> customCommands = CustomCommandRegistry.getInstance().getCustomCommands().stream()
+                .filter(customCommand -> !customCommand.getId().equalsIgnoreCase(row.customCommand().getId()))
                 .toList();
-        persistAndRefresh(macros);
+        persistAndRefresh(customCommands);
     }
 
-    private void persistAndRefresh(List<MacroDefinition> macros) {
-        if (!macroRepository.trySave(macros)) {
+    private void persistAndRefresh(List<CustomCommandDefinition> customCommands) {
+        if (!customCommandRepository.trySave(customCommands)) {
             JOptionPane.showMessageDialog(
                     this,
-                    getText("actions.macros.save.error", AppPaths.CUSTOM_COMMANDS_FILE_NAME),
-                    getText("actions.macros.title"),
+                    getText("actions.customCommands.save.error", AppPaths.CUSTOM_COMMANDS_FILE_NAME),
+                    getText("actions.customCommands.title"),
                     JOptionPane.ERROR_MESSAGE
             );
             return;
         }
-        MacroRegistry.getInstance().replaceMacros(macros);
-        CommandHandlerFactory.getInstance().refreshMacroHandlers();
+        CustomCommandRegistry.getInstance().replaceCustomCommands(customCommands);
+        CommandHandlerFactory.getInstance().refreshCustomCommandHandlers();
         initData();
     }
 
@@ -292,9 +292,9 @@ public class MacrosTabPanel extends JPanel {
         table.getColumnModel().getColumn(1).setPreferredWidth(520);
     }
 
-    private record MacroRow(CommandCatalogEntry entry, MacroDefinition macro) {
+    private record CustomCommandRow(CommandCatalogEntry entry, CustomCommandDefinition customCommand) {
         private List<String> phrases() {
-            return AiActionLocalizations.splitPhraseGroup(macro.getPhrases());
+            return AiActionLocalizations.splitPhraseGroup(customCommand.getPhrases());
         }
 
         private String phrasesText() {
@@ -302,27 +302,27 @@ public class MacrosTabPanel extends JPanel {
         }
 
         private String sequenceText() {
-            if (macro.getSteps() == null || macro.getSteps().isEmpty()) {
+            if (customCommand.getSteps() == null || customCommand.getSteps().isEmpty()) {
                 return "";
             }
 
             StringBuilder text = new StringBuilder();
-            for (int i = 0; i < macro.getSteps().size(); i++) {
+            for (int i = 0; i < customCommand.getSteps().size(); i++) {
                 if (!text.isEmpty()) {
                     text.append(System.lineSeparator());
                 }
                 text.append(i + 1)
                         .append(". ")
-                        .append(stepText(macro.getSteps().get(i)));
+                        .append(stepText(customCommand.getSteps().get(i)));
             }
             return text.toString();
         }
 
-        private static String stepText(MacroStep step) {
+        private static String stepText(CustomCommandStep step) {
             if (step == null || step.getType() == null) {
                 return "INVALID_STEP";
             }
-            String label = MacroStepEditorDialog.stepTypeLabel(step.getType()) + ": ";
+            String label = CustomCommandStepEditorDialog.stepTypeLabel(step.getType()) + ": ";
             return switch (step.getType()) {
                 case SPEAK        -> label + "\"" + step.getText() + "\"";
                 case DELAY        -> label + step.getDurationMs() + " ms";
@@ -388,9 +388,9 @@ public class MacrosTabPanel extends JPanel {
                 int column
         ) {
             JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            if (value instanceof MacroNameCell macroNameCell) {
-                label.setText(macroNameCell.toHtml());
-                label.setToolTipText(macroNameCell.toString());
+            if (value instanceof CustomCommandNameCell customCommandNameCell) {
+                label.setText(customCommandNameCell.toHtml());
+                label.setToolTipText(customCommandNameCell.toString());
             } else {
                 String text = String.valueOf(value);
                 label.setText(text);
@@ -409,7 +409,7 @@ public class MacrosTabPanel extends JPanel {
         }
     }
 
-    private record MacroNameCell(String name, String id) {
+    private record CustomCommandNameCell(String name, String id) {
         private String toHtml() {
             return "<html><div>"
                     + escapeHtml(name)
@@ -477,7 +477,7 @@ public class MacrosTabPanel extends JPanel {
         }
     }
 
-    private final class MacroTableMouseListener extends MouseAdapter {
+    private final class CustomCommandTableMouseListener extends MouseAdapter {
         @Override
         public void mousePressed(MouseEvent event) {
             if (!SwingUtilities.isLeftMouseButton(event)) {
@@ -498,7 +498,7 @@ public class MacrosTabPanel extends JPanel {
             }
             int row = table.rowAtPoint(event.getPoint());
             if (row >= 0) {
-                openMacroDetailsAtViewRow(row);
+                openCustomCommandDetailsAtViewRow(row);
             }
         }
     }

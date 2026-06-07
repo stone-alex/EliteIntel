@@ -13,7 +13,7 @@ public class AiVoxResponseEvent extends BaseVoxEvent {
 
     /**
      * Carries a completion signal; the TTS pipeline must complete {@code completionFuture} after
-     * audio playback finishes. Used by macro SPEAK steps to block until TTS is done.
+     * audio playback finishes. Used by customCommand SPEAK steps to block until TTS is done.
      */
     public AiVoxResponseEvent(String textToVoice, @Nullable CompletableFuture<Void> completionFuture) {
         super(textToVoice, false);

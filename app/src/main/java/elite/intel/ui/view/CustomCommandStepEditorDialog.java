@@ -1,7 +1,7 @@
 package elite.intel.ui.view;
 
-import elite.intel.ai.brain.actions.macro.MacroParameterSpec;
-import elite.intel.ai.brain.actions.macro.MacroStep;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandParameterSpec;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandStep;
 import elite.intel.ai.brain.commons.ActionParameterKeyExtractor;
 import elite.intel.ai.hands.BindingModifier;
 import elite.intel.ai.hands.KeyBindingExecutor;
@@ -26,74 +26,74 @@ import java.util.function.Consumer;
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 /**
- * Modal editor for one macro step.
+ * Modal editor for one custom command step.
  */
-final class MacroStepEditorDialog extends JDialog {
+final class CustomCommandStepEditorDialog extends JDialog {
 
     private static final int DIALOG_MIN_WIDTH = 760;
     private static final int PICKER_FIELD_WIDTH = 500;
     private static final int PICKER_FIELD_HEIGHT = 42;
 
-    private final JComboBox<MacroStep.Type> typeCombo = buildTypeCombo();
+    private final JComboBox<CustomCommandStep.Type> typeCombo = buildTypeCombo();
     private final JLabel valueLabel = new JLabel();
     private final JTextField valueField = new JTextField(32);
-    private final JLabel commandLabel = new JLabel(getText("actions.macros.editor.step.commandId"));
-    private final List<MacroStepPickerItem> commandItems = new ArrayList<>(MacroStepPickerItem.builtInCommandItems());
-    private final JComboBox<MacroStepPickerItem> commandCombo = picker(commandItems);
-    private final JLabel bindingLabel = new JLabel(getText("actions.macros.editor.step.bindingId"));
-    private final List<MacroStepPickerItem> bindingItems = new ArrayList<>(MacroStepPickerItem.bindingItems());
-    private final JComboBox<MacroStepPickerItem> bindingCombo = picker(bindingItems);
-    private final JLabel rawKeyLabel = new JLabel(getText("actions.macros.editor.step.rawKey"));
-    private final List<MacroStepPickerItem> rawKeyItems = buildRawKeyPickerItems();
-    private final JComboBox<MacroStepPickerItem> rawKeyCombo = picker(rawKeyItems);
-    private final JLabel rawModLabel = new JLabel(getText("actions.macros.editor.step.rawKeyModifier"));
+    private final JLabel commandLabel = new JLabel(getText("actions.customCommands.editor.step.commandId"));
+    private final List<CustomCommandStepPickerItem> commandItems = new ArrayList<>(CustomCommandStepPickerItem.builtInCommandItems());
+    private final JComboBox<CustomCommandStepPickerItem> commandCombo = picker(commandItems);
+    private final JLabel bindingLabel = new JLabel(getText("actions.customCommands.editor.step.bindingId"));
+    private final List<CustomCommandStepPickerItem> bindingItems = new ArrayList<>(CustomCommandStepPickerItem.bindingItems());
+    private final JComboBox<CustomCommandStepPickerItem> bindingCombo = picker(bindingItems);
+    private final JLabel rawKeyLabel = new JLabel(getText("actions.customCommands.editor.step.rawKey"));
+    private final List<CustomCommandStepPickerItem> rawKeyItems = buildRawKeyPickerItems();
+    private final JComboBox<CustomCommandStepPickerItem> rawKeyCombo = picker(rawKeyItems);
+    private final JLabel rawModLabel = new JLabel(getText("actions.customCommands.editor.step.rawKeyModifier"));
     private final JComboBox<RawModOption> rawModCombo = buildRawModCombo();
-    private final JLabel durationLabel = new JLabel(getText("actions.macros.editor.step.durationMs"));
+    private final JLabel durationLabel = new JLabel(getText("actions.customCommands.editor.step.durationMs"));
     private final JSpinner durationSpinner = new JSpinner(new SpinnerNumberModel(250, 0, Integer.MAX_VALUE, 50));
-    private final JLabel stepParamsLabel = new JLabel(getText("actions.macros.editor.step.params"));
+    private final JLabel stepParamsLabel = new JLabel(getText("actions.customCommands.editor.step.params"));
     private final JButton stepParamsInfoButton = new JButton("\u24D8");
     private final DefaultTableModel stepParamsModel = new DefaultTableModel(
-            new String[]{getText("actions.macros.editor.step.params.column.key"),
-                         getText("actions.macros.editor.step.params.column.value")}, 0) {
+            new String[]{getText("actions.customCommands.editor.step.params.column.key"),
+                         getText("actions.customCommands.editor.step.params.column.value")}, 0) {
         @Override public boolean isCellEditable(int r, int c) { return true; }
     };
     private final JTable stepParamsTable = new JTable(stepParamsModel);
     private final JPanel stepParamsPanel = buildStepParamsPanel();
-    private final Set<String> macroParameterNames;
-    private final Consumer<List<MacroParameterSpec>> missingMacroParamsConsumer;
+    private final Set<String> customCommandParameterNames;
+    private final Consumer<List<CustomCommandParameterSpec>> missingCustomCommandParamsConsumer;
     private String lastParamHintActionId;
-    private MacroStep result;
+    private CustomCommandStep result;
 
-    MacroStepEditorDialog(Component parent, MacroStep step) {
+    CustomCommandStepEditorDialog(Component parent, CustomCommandStep step) {
         this(parent, step, List.of(), missingParams -> {});
     }
 
-    MacroStepEditorDialog(Component parent, MacroStep step, List<MacroParameterSpec> macroParameters) {
-        this(parent, step, macroParameters, missingParams -> {});
+    CustomCommandStepEditorDialog(Component parent, CustomCommandStep step, List<CustomCommandParameterSpec> customCommandParameters) {
+        this(parent, step, customCommandParameters, missingParams -> {});
     }
 
-    MacroStepEditorDialog(
+    CustomCommandStepEditorDialog(
             Component parent,
-            MacroStep step,
-            List<MacroParameterSpec> macroParameters,
-            Consumer<List<MacroParameterSpec>> missingMacroParamsConsumer
+            CustomCommandStep step,
+            List<CustomCommandParameterSpec> customCommandParameters,
+            Consumer<List<CustomCommandParameterSpec>> missingCustomCommandParamsConsumer
     ) {
-        super(SwingUtilities.getWindowAncestor(parent), getText("actions.macros.editor.step.title"), ModalityType.APPLICATION_MODAL);
-        this.macroParameterNames = macroParameterNames(macroParameters);
-        this.missingMacroParamsConsumer = missingMacroParamsConsumer == null ? missingParams -> {} : missingMacroParamsConsumer;
+        super(SwingUtilities.getWindowAncestor(parent), getText("actions.customCommands.editor.step.title"), ModalityType.APPLICATION_MODAL);
+        this.customCommandParameterNames = customCommandParameterNames(customCommandParameters);
+        this.missingCustomCommandParamsConsumer = missingCustomCommandParamsConsumer == null ? missingParams -> {} : missingCustomCommandParamsConsumer;
         populate(step);
         buildUi();
         updateFieldsForType();
     }
 
-    MacroStep showDialog() {
+    CustomCommandStep showDialog() {
         setVisible(true);
         return result;
     }
 
-    private void populate(MacroStep step) {
+    private void populate(CustomCommandStep step) {
         if (step == null) {
-            typeCombo.setSelectedItem(MacroStep.Type.SPEAK);
+            typeCombo.setSelectedItem(CustomCommandStep.Type.SPEAK);
             commandCombo.setSelectedItem("");
             return;
         }
@@ -102,15 +102,15 @@ final class MacroStepEditorDialog extends JDialog {
         switch (step.getType()) {
             case SPEAK -> valueField.setText(step.getText());
             case BINDING_TAP, BINDING_HOLD ->
-                    selectPickerItem(bindingCombo, bindingItems, step.getBindingId(), getText("actions.macros.editor.step.unknownBinding"));
+                    selectPickerItem(bindingCombo, bindingItems, step.getBindingId(), getText("actions.customCommands.editor.step.unknownBinding"));
             case RUN_COMMAND -> {
-                selectPickerItem(commandCombo, commandItems, step.getActionId(), getText("actions.macros.editor.step.unknownCommand"));
+                selectPickerItem(commandCombo, commandItems, step.getActionId(), getText("actions.customCommands.editor.step.unknownCommand"));
                 stepParamsModel.setRowCount(0);
                 step.getStepParams().forEach((k, v) -> stepParamsModel.addRow(new Object[]{k, v}));
             }
             case DELAY -> valueField.setText("");
             case RAW_KEY -> {
-                selectPickerItem(rawKeyCombo, rawKeyItems, step.getRawKey(), getText("actions.macros.editor.step.unknownRawKey"));
+                selectPickerItem(rawKeyCombo, rawKeyItems, step.getRawKey(), getText("actions.customCommands.editor.step.unknownRawKey"));
                 selectRawMod(step.getRawKeyModifier());
             }
         }
@@ -138,7 +138,7 @@ final class MacroStepEditorDialog extends JDialog {
         panel.setBackground(AppTheme.BG);
         GridBagConstraints gbc = AppTheme.baseGbc();
 
-        addRow(panel, gbc, getText("actions.macros.editor.step.type"), typeCombo);
+        addRow(panel, gbc, getText("actions.customCommands.editor.step.type"), typeCombo);
         addRow(panel, gbc, valueLabel, valueField);
         addRow(panel, gbc, commandLabel, commandCombo);
 
@@ -200,12 +200,12 @@ final class MacroStepEditorDialog extends JDialog {
     }
 
     private void updateFieldsForType() {
-        MacroStep.Type type = selectedType();
-        boolean hasText = type == MacroStep.Type.SPEAK;
-        boolean hasCommand = type == MacroStep.Type.RUN_COMMAND;
-        boolean hasBinding = type == MacroStep.Type.BINDING_TAP || type == MacroStep.Type.BINDING_HOLD;
-        boolean isRawKey = type == MacroStep.Type.RAW_KEY;
-        boolean hasDuration = type == MacroStep.Type.BINDING_HOLD || type == MacroStep.Type.DELAY || isRawKey;
+        CustomCommandStep.Type type = selectedType();
+        boolean hasText = type == CustomCommandStep.Type.SPEAK;
+        boolean hasCommand = type == CustomCommandStep.Type.RUN_COMMAND;
+        boolean hasBinding = type == CustomCommandStep.Type.BINDING_TAP || type == CustomCommandStep.Type.BINDING_HOLD;
+        boolean isRawKey = type == CustomCommandStep.Type.RAW_KEY;
+        boolean hasDuration = type == CustomCommandStep.Type.BINDING_HOLD || type == CustomCommandStep.Type.DELAY || isRawKey;
         if (hasCommand) {
             addMissingHintedStepParams();
         }
@@ -224,15 +224,15 @@ final class MacroStepEditorDialog extends JDialog {
         durationLabel.setVisible(hasDuration);
         durationSpinner.setVisible(hasDuration);
 
-        valueLabel.setText(getText("actions.macros.editor.step.text"));
+        valueLabel.setText(getText("actions.customCommands.editor.step.text"));
         packPreservingWidth();
     }
 
     private void updateFieldsForSelectedCommand() {
-        if (selectedType() != MacroStep.Type.RUN_COMMAND) {
+        if (selectedType() != CustomCommandStep.Type.RUN_COMMAND) {
             return;
         }
-        if (!(commandCombo.getSelectedItem() instanceof MacroStepPickerItem)) {
+        if (!(commandCombo.getSelectedItem() instanceof CustomCommandStepPickerItem)) {
             return;
         }
         syncStepParamsForSelectedCommand();
@@ -299,54 +299,54 @@ final class MacroStepEditorDialog extends JDialog {
     }
 
     private void save() {
-        MacroStep step = buildStep();
+        CustomCommandStep step = buildStep();
         try {
             step.validate(0);
         } catch (IllegalArgumentException e) {
             showError(e.getMessage());
             return;
         }
-        addMissingMacroParams(step);
+        addMissingCustomCommandParams(step);
         result = step;
         dispose();
     }
 
-    private void addMissingMacroParams(MacroStep step) {
-        if (step.getType() != MacroStep.Type.RUN_COMMAND) {
+    private void addMissingCustomCommandParams(CustomCommandStep step) {
+        if (step.getType() != CustomCommandStep.Type.RUN_COMMAND) {
             return;
         }
-        List<MacroParameterSpec> missing = step.getStepParams().entrySet().stream()
-                .filter(entry -> isSameNameMacroTemplate(entry.getKey(), entry.getValue()))
+        List<CustomCommandParameterSpec> missing = step.getStepParams().entrySet().stream()
+                .filter(entry -> isSameNameCustomCommandTemplate(entry.getKey(), entry.getValue()))
                 .map(Map.Entry::getKey)
-                .filter(key -> !macroParameterNames.contains(key))
+                .filter(key -> !customCommandParameterNames.contains(key))
                 .distinct()
-                .map(key -> new MacroParameterSpec(
+                .map(key -> new CustomCommandParameterSpec(
                         key,
-                        inferredMacroParamType(step.getActionId(), key),
+                        inferredCustomCommandParamType(step.getActionId(), key),
                         true,
-                        getText("actions.macros.editor.step.params.autoDescription", commandNameForActionId(step.getActionId()), key),
+                        getText("actions.customCommands.editor.step.params.autoDescription", commandNameForActionId(step.getActionId()), key),
                         List.of(),
                         null
                 ))
                 .toList();
         if (!missing.isEmpty()) {
-            missingMacroParamsConsumer.accept(missing);
+            missingCustomCommandParamsConsumer.accept(missing);
         }
     }
 
-    private static boolean isSameNameMacroTemplate(String key, String value) {
+    private static boolean isSameNameCustomCommandTemplate(String key, String value) {
         return key != null && !key.isBlank() && ("${" + key + "}").equals(value);
     }
 
     private String commandNameForActionId(String actionId) {
         return commandItems.stream()
                 .filter(item -> item.id().equals(actionId))
-                .map(MacroStepPickerItem::label)
+                .map(CustomCommandStepPickerItem::label)
                 .findFirst()
                 .orElse(actionId);
     }
 
-    private static String inferredMacroParamType(String actionId, String key) {
+    private static String inferredCustomCommandParamType(String actionId, String key) {
         return ActionParameterKeyExtractor.getInstance().parameterHintsForAction(actionId).stream()
                 .filter(hint -> hint.name().equals(key))
                 .map(ActionParameterKeyExtractor.ActionParameterHint::type)
@@ -354,15 +354,15 @@ final class MacroStepEditorDialog extends JDialog {
                 .orElse("string");
     }
 
-    private MacroStep buildStep() {
-        MacroStep.Type type = selectedType();
+    private CustomCommandStep buildStep() {
+        CustomCommandStep.Type type = selectedType();
         String value = valueField.getText().trim();
         int duration = ((Number) durationSpinner.getValue()).intValue();
         return switch (type) {
-            case SPEAK -> new MacroStep(type, null, 0, value, null);
-            case BINDING_TAP -> new MacroStep(type, selectedPickerId(bindingCombo), 0, null, null);
-            case BINDING_HOLD -> new MacroStep(type, selectedPickerId(bindingCombo), duration, null, null);
-            case DELAY -> new MacroStep(type, null, duration, null, null);
+            case SPEAK -> new CustomCommandStep(type, null, 0, value, null);
+            case BINDING_TAP -> new CustomCommandStep(type, selectedPickerId(bindingCombo), 0, null, null);
+            case BINDING_HOLD -> new CustomCommandStep(type, selectedPickerId(bindingCombo), duration, null, null);
+            case DELAY -> new CustomCommandStep(type, null, duration, null, null);
             case RUN_COMMAND -> {
                 // Stop any in-progress cell edit so the last typed value is committed.
                 if (stepParamsTable.isEditing()) {
@@ -379,29 +379,29 @@ final class MacroStepEditorDialog extends JDialog {
                     }
                 }
                 yield paramMap.isEmpty()
-                        ? new MacroStep(type, null, 0, null, selectedPickerId(commandCombo))
-                        : MacroStep.runCommandWithParams(selectedPickerId(commandCombo), paramMap);
+                        ? new CustomCommandStep(type, null, 0, null, selectedPickerId(commandCombo))
+                        : CustomCommandStep.runCommandWithParams(selectedPickerId(commandCombo), paramMap);
             }
             case RAW_KEY -> {
                 String rawKey = selectedPickerId(rawKeyCombo);
                 RawModOption modOption = (RawModOption) rawModCombo.getSelectedItem();
                 String rawMod = (modOption != null && !modOption.key().isBlank()) ? modOption.key() : null;
-                yield new MacroStep(type, null, duration, null, null, rawKey, rawMod);
+                yield new CustomCommandStep(type, null, duration, null, null, rawKey, rawMod);
             }
         };
     }
 
-    private MacroStep.Type selectedType() {
+    private CustomCommandStep.Type selectedType() {
         Object selected = typeCombo.getSelectedItem();
-        return selected instanceof MacroStep.Type type ? type : MacroStep.Type.SPEAK;
+        return selected instanceof CustomCommandStep.Type type ? type : CustomCommandStep.Type.SPEAK;
     }
 
     private void showError(String message) {
-        JOptionPane.showMessageDialog(this, message, getText("actions.macros.editor.validation.title"), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, message, getText("actions.customCommands.editor.validation.title"), JOptionPane.ERROR_MESSAGE);
     }
 
-    private static JComboBox<MacroStepPickerItem> picker(List<MacroStepPickerItem> items) {
-        JComboBox<MacroStepPickerItem> combo = new JComboBox<>(new DefaultComboBoxModel<>(items.toArray(MacroStepPickerItem[]::new)));
+    private static JComboBox<CustomCommandStepPickerItem> picker(List<CustomCommandStepPickerItem> items) {
+        JComboBox<CustomCommandStepPickerItem> combo = new JComboBox<>(new DefaultComboBoxModel<>(items.toArray(CustomCommandStepPickerItem[]::new)));
         combo.setEditable(true);
         combo.setPreferredSize(new Dimension(PICKER_FIELD_WIDTH, PICKER_FIELD_HEIGHT));
         combo.setMinimumSize(new Dimension(PICKER_FIELD_WIDTH, PICKER_FIELD_HEIGHT));
@@ -410,7 +410,7 @@ final class MacroStepEditorDialog extends JDialog {
         return combo;
     }
 
-    private static void stylePicker(JComboBox<MacroStepPickerItem> combo) {
+    private static void stylePicker(JComboBox<CustomCommandStepPickerItem> combo) {
         combo.setBackground(AppTheme.BG_PANEL);
         combo.setForeground(AppTheme.FG);
         combo.setRenderer(new DefaultListCellRenderer() {
@@ -442,7 +442,7 @@ final class MacroStepEditorDialog extends JDialog {
         }
     }
 
-    private static void configureSearch(JComboBox<MacroStepPickerItem> combo, List<MacroStepPickerItem> sourceItems) {
+    private static void configureSearch(JComboBox<CustomCommandStepPickerItem> combo, List<CustomCommandStepPickerItem> sourceItems) {
         Component editorComponent = combo.getEditor().getEditorComponent();
         if (!(editorComponent instanceof JTextComponent editor)) {
             return;
@@ -452,10 +452,10 @@ final class MacroStepEditorDialog extends JDialog {
         combo.addPopupMenuListener(new PopupMenuListener() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                if (combo.getSelectedItem() instanceof MacroStepPickerItem selected
+                if (combo.getSelectedItem() instanceof CustomCommandStepPickerItem selected
                         && combo.getModel().getSize() != sourceItems.size()) {
                     updating[0] = true;
-                    combo.setModel(new DefaultComboBoxModel<>(sourceItems.toArray(MacroStepPickerItem[]::new)));
+                    combo.setModel(new DefaultComboBoxModel<>(sourceItems.toArray(CustomCommandStepPickerItem[]::new)));
                     combo.setSelectedItem(selected);
                     updating[0] = false;
                 }
@@ -491,16 +491,16 @@ final class MacroStepEditorDialog extends JDialog {
                 }
                 SwingUtilities.invokeLater(() -> {
                     String query = editor.getText();
-                    MacroStepPickerItem exactDisplayItem = findByDisplayText(sourceItems, query);
+                    CustomCommandStepPickerItem exactDisplayItem = findByDisplayText(sourceItems, query);
                     if (exactDisplayItem != null) {
                         updating[0] = true;
-                        combo.setModel(new DefaultComboBoxModel<>(sourceItems.toArray(MacroStepPickerItem[]::new)));
+                        combo.setModel(new DefaultComboBoxModel<>(sourceItems.toArray(CustomCommandStepPickerItem[]::new)));
                         combo.setSelectedItem(exactDisplayItem);
                         updating[0] = false;
                         return;
                     }
 
-                    DefaultComboBoxModel<MacroStepPickerItem> model = new DefaultComboBoxModel<>();
+                    DefaultComboBoxModel<CustomCommandStepPickerItem> model = new DefaultComboBoxModel<>();
                     sourceItems.stream()
                             .filter(item -> item.matches(query))
                             .forEach(model::addElement);
@@ -516,11 +516,11 @@ final class MacroStepEditorDialog extends JDialog {
         });
     }
 
-    private static MacroStepPickerItem findByDisplayText(List<MacroStepPickerItem> items, String text) {
+    private static CustomCommandStepPickerItem findByDisplayText(List<CustomCommandStepPickerItem> items, String text) {
         if (text == null || text.isBlank()) {
             return null;
         }
-        for (MacroStepPickerItem item : items) {
+        for (CustomCommandStepPickerItem item : items) {
             if (item.toString().equals(text)) {
                 return item;
             }
@@ -529,37 +529,37 @@ final class MacroStepEditorDialog extends JDialog {
     }
 
     private static void selectPickerItem(
-            JComboBox<MacroStepPickerItem> combo,
-            List<MacroStepPickerItem> items,
+            JComboBox<CustomCommandStepPickerItem> combo,
+            List<CustomCommandStepPickerItem> items,
             String id,
             String unknownLabel
     ) {
         if (id == null || id.isBlank()) {
             return;
         }
-        for (MacroStepPickerItem item : items) {
+        for (CustomCommandStepPickerItem item : items) {
             if (item.id().equalsIgnoreCase(id)) {
                 combo.setSelectedItem(item);
                 return;
             }
         }
-        MacroStepPickerItem unknown = MacroStepPickerItem.unknown(id, unknownLabel);
+        CustomCommandStepPickerItem unknown = CustomCommandStepPickerItem.unknown(id, unknownLabel);
         items.add(0, unknown);
         combo.addItem(unknown);
         combo.setSelectedItem(unknown);
     }
 
-    private static String selectedPickerId(JComboBox<MacroStepPickerItem> combo) {
-        return MacroStepPickerItem.resolveId(combo.getEditor().getItem()).trim();
+    private static String selectedPickerId(JComboBox<CustomCommandStepPickerItem> combo) {
+        return CustomCommandStepPickerItem.resolveId(combo.getEditor().getItem()).trim();
     }
 
-    private static JComboBox<MacroStep.Type> buildTypeCombo() {
-        JComboBox<MacroStep.Type> combo = new JComboBox<>(MacroStep.Type.values());
+    private static JComboBox<CustomCommandStep.Type> buildTypeCombo() {
+        JComboBox<CustomCommandStep.Type> combo = new JComboBox<>(CustomCommandStep.Type.values());
         combo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                setText(value instanceof MacroStep.Type t ? stepTypeLabel(t) : String.valueOf(value));
+                setText(value instanceof CustomCommandStep.Type t ? stepTypeLabel(t) : String.valueOf(value));
                 return this;
             }
         });
@@ -567,29 +567,29 @@ final class MacroStepEditorDialog extends JDialog {
     }
 
     /** Returns the localized display label for a step type. */
-    static String stepTypeLabel(MacroStep.Type type) {
+    static String stepTypeLabel(CustomCommandStep.Type type) {
         if (type == null) return "";
         return switch (type) {
-            case BINDING_TAP  -> getText("actions.macros.editor.step.type.bindingTap");
-            case BINDING_HOLD -> getText("actions.macros.editor.step.type.bindingHold");
-            case DELAY        -> getText("actions.macros.editor.step.type.delay");
-            case SPEAK        -> getText("actions.macros.editor.step.type.speak");
-            case RUN_COMMAND  -> getText("actions.macros.editor.step.type.runCommand");
-            case RAW_KEY      -> getText("actions.macros.editor.step.type.rawKey");
+            case BINDING_TAP  -> getText("actions.customCommands.editor.step.type.bindingTap");
+            case BINDING_HOLD -> getText("actions.customCommands.editor.step.type.bindingHold");
+            case DELAY        -> getText("actions.customCommands.editor.step.type.delay");
+            case SPEAK        -> getText("actions.customCommands.editor.step.type.speak");
+            case RUN_COMMAND  -> getText("actions.customCommands.editor.step.type.runCommand");
+            case RAW_KEY      -> getText("actions.customCommands.editor.step.type.rawKey");
         };
     }
 
-    private static List<MacroStepPickerItem> buildRawKeyPickerItems() {
+    private static List<CustomCommandStepPickerItem> buildRawKeyPickerItems() {
         BindingSlotDisplayFormatter formatter = new BindingSlotDisplayFormatter();
         return KeyBindingExecutor.knownEliteKeyNames().stream()
                 .sorted()
-                .map(name -> new MacroStepPickerItem(name, formatter.formatBindingToken(BindingSlotDisplayFormatter.toEliteKeyFormat(name)), true))
+                .map(name -> new CustomCommandStepPickerItem(name, formatter.formatBindingToken(BindingSlotDisplayFormatter.toEliteKeyFormat(name)), true))
                 .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
     }
 
     private static JComboBox<RawModOption> buildRawModCombo() {
         List<RawModOption> items = new ArrayList<>();
-        items.add(new RawModOption("", getText("actions.macros.editor.step.noModifier")));
+        items.add(new RawModOption("", getText("actions.customCommands.editor.step.noModifier")));
         BindingModifier.supportedKeyboardModifiers().forEach(bm ->
                 items.add(new RawModOption(bm.key().toUpperCase(), bm.key())));
         JComboBox<RawModOption> combo = new JComboBox<>(items.toArray(RawModOption[]::new));
@@ -635,15 +635,15 @@ final class MacroStepEditorDialog extends JDialog {
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         buttons.setOpaque(false);
-        JButton add = AppTheme.makeButtonSubtle(getText("actions.macros.editor.step.params.add"));
+        JButton add = AppTheme.makeButtonSubtle(getText("actions.customCommands.editor.step.params.add"));
         add.addActionListener(e -> stepParamsModel.addRow(new Object[]{"", ""}));
-        JButton remove = AppTheme.makeButtonSubtle(getText("actions.macros.editor.step.params.remove"));
+        JButton remove = AppTheme.makeButtonSubtle(getText("actions.customCommands.editor.step.params.remove"));
         remove.addActionListener(e -> {
             int row = stepParamsTable.getSelectedRow();
             if (row >= 0) {
                 if (stepParamsTable.isEditing()) stepParamsTable.getCellEditor().cancelCellEditing();
                 stepParamsModel.removeRow(row);
-                stepParamsPanel.setVisible(shouldShowStepParamsPanel(selectedType() == MacroStep.Type.RUN_COMMAND));
+                stepParamsPanel.setVisible(shouldShowStepParamsPanel(selectedType() == CustomCommandStep.Type.RUN_COMMAND));
                 packPreservingWidth();
             }
         });
@@ -671,8 +671,8 @@ final class MacroStepEditorDialog extends JDialog {
     private void showStepParamsInfo() {
         JOptionPane.showMessageDialog(
                 this,
-                getText("actions.macros.editor.step.params.hint"),
-                getText("actions.macros.editor.step.params"),
+                getText("actions.customCommands.editor.step.params.hint"),
+                getText("actions.customCommands.editor.step.params"),
                 JOptionPane.INFORMATION_MESSAGE
         );
     }
@@ -693,13 +693,13 @@ final class MacroStepEditorDialog extends JDialog {
         }
     }
 
-    private static Set<String> macroParameterNames(List<MacroParameterSpec> parameters) {
+    private static Set<String> customCommandParameterNames(List<CustomCommandParameterSpec> parameters) {
         if (parameters == null || parameters.isEmpty()) {
             return Set.of();
         }
         Set<String> names = new LinkedHashSet<>();
         parameters.stream()
-                .map(MacroParameterSpec::getName)
+                .map(CustomCommandParameterSpec::getName)
                 .filter(name -> name != null && !name.isBlank())
                 .forEach(names::add);
         return Set.copyOf(names);

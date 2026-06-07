@@ -1,12 +1,12 @@
-package elite.intel.ai.brain.actions.macro;
+package elite.intel.ai.brain.actions.customcommand;
 
 import java.util.Map;
 
 /**
- * One step in a user-defined macro sequence.
+ * One step in a user-defined customCommand sequence.
  * Gson populates fields directly; call {@link #validate(int)} after deserialization.
  */
-public final class MacroStep {
+public final class CustomCommandStep {
 
     public enum Type {
         /** Tap an Elite Dangerous game binding once. Requires {@code bindingId}. */
@@ -19,7 +19,7 @@ public final class MacroStep {
         SPEAK,
         /**
          * Delegate to an existing built-in command handler by {@code actionId}.
-         * Must reference a Commands action ID, not another macro ID.
+         * Must reference a Commands action ID, not another custom command ID.
          */
         RUN_COMMAND,
         /**
@@ -45,9 +45,9 @@ public final class MacroStep {
     private final Map<String, String> stepParams;
 
     /**
-     * Creates one macro step. Only the fields required by {@code type} are used at execution time.
+     * Creates one custom command step. Only the fields required by {@code type} are used at execution time.
      */
-    public MacroStep(Type type, String bindingId, int durationMs, String text, String actionId) {
+    public CustomCommandStep(Type type, String bindingId, int durationMs, String text, String actionId) {
         this(type, bindingId, durationMs, text, actionId, null, null, null);
     }
 
@@ -55,12 +55,12 @@ public final class MacroStep {
      * Creates a RAW_KEY step or any step that needs {@code rawKey}/{@code rawKeyModifier}.
      * For all other types, pass {@code null} for the last two parameters.
      */
-    public MacroStep(Type type, String bindingId, int durationMs, String text, String actionId,
+    public CustomCommandStep(Type type, String bindingId, int durationMs, String text, String actionId,
                      String rawKey, String rawKeyModifier) {
         this(type, bindingId, durationMs, text, actionId, rawKey, rawKeyModifier, null);
     }
 
-    private MacroStep(Type type, String bindingId, int durationMs, String text, String actionId,
+    private CustomCommandStep(Type type, String bindingId, int durationMs, String text, String actionId,
                       String rawKey, String rawKeyModifier, Map<String, String> stepParams) {
         this.type = type;
         this.bindingId = bindingId;
@@ -73,18 +73,18 @@ public final class MacroStep {
     }
 
     /**
-     * Creates a {@link Type#RUN_COMMAND} step with a step-level param mapping for macro param substitution.
+     * Creates a {@link Type#RUN_COMMAND} step with a step-level param mapping for customCommand param substitution.
      *
      * @param actionId   the built-in command action ID to invoke
      * @param stepParams mapping of handler param names to value templates (e.g. {@code {"key": "${speed}"}})
      */
-    public static MacroStep runCommandWithParams(String actionId, Map<String, String> stepParams) {
-        return new MacroStep(Type.RUN_COMMAND, null, 0, null, actionId, null, null,
+    public static CustomCommandStep runCommandWithParams(String actionId, Map<String, String> stepParams) {
+        return new CustomCommandStep(Type.RUN_COMMAND, null, 0, null, actionId, null, null,
                 stepParams == null ? null : Map.copyOf(stepParams));
     }
 
     @SuppressWarnings("unused")
-    private MacroStep() {
+    private CustomCommandStep() {
         type = null;
         bindingId = null;
         durationMs = 0;
@@ -98,7 +98,7 @@ public final class MacroStep {
     /** Validates required fields for this step's type. */
     public void validate(int stepIndex) {
         if (type == null) {
-            throw new IllegalArgumentException("MacroStep[" + stepIndex + "]: type is null");
+            throw new IllegalArgumentException("CustomCommandStep[" + stepIndex + "]: type is null");
         }
         switch (type) {
             case BINDING_TAP ->
@@ -120,7 +120,7 @@ public final class MacroStep {
 
     private static void require(boolean ok, int idx, String field) {
         if (!ok) {
-            throw new IllegalArgumentException("MacroStep[" + idx + "]: " + field + " is missing or invalid");
+            throw new IllegalArgumentException("CustomCommandStep[" + idx + "]: " + field + " is missing or invalid");
         }
     }
 

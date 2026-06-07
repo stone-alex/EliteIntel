@@ -154,7 +154,7 @@ public class GoogleTTSImpl implements MouthInterface {
     public synchronized void interruptAndClear() {
         if(!canBeInterrupted.get()) return;
 
-        // Drain queues and complete any pending macro completion futures to avoid 30s timeout
+        // Drain queues and complete any pending customCommand completion futures to avoid 30s timeout
         List<VoiceRequest> drainedTts = new ArrayList<>();
         ttsQueue.drainTo(drainedTts);
         drainedTts.stream().map(VoiceRequest::completionFuture).filter(Objects::nonNull).forEach(f -> f.complete(null));

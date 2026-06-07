@@ -1,4 +1,4 @@
-package elite.intel.ai.brain.actions.macro;
+package elite.intel.ai.brain.actions.customcommand;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.Gson;
@@ -54,7 +54,7 @@ class CustomCommandHandlerTest {
 
     @Test
     void bindingTapStepPublishesGameInputWithCorrectBindingId() {
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"BINDING_TAP","bindingId":"TestBinding"}
                 ]}""");
@@ -69,7 +69,7 @@ class CustomCommandHandlerTest {
 
     @Test
     void bindingHoldStepPreservesBindingIdAndDuration() {
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"BINDING_HOLD","bindingId":"HoldBinding","durationMs":300}
                 ]}""");
@@ -85,7 +85,7 @@ class CustomCommandHandlerTest {
 
     @Test
     void delayStepProducesNoInputEvents() {
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"DELAY","durationMs":0}
                 ]}""");
@@ -98,7 +98,7 @@ class CustomCommandHandlerTest {
 
     @Test
     void speakStepCallsSpeakExecutorWithCorrectText() {
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"SPEAK","text":"Hello pilot"}
                 ]}""");
@@ -113,17 +113,17 @@ class CustomCommandHandlerTest {
         CountDownLatch speakStarted = new CountDownLatch(1);
         CountDownLatch speakRelease = new CountDownLatch(1);
 
-        MacroSpeakExecutor blockingExecutor = text -> {
+        CustomCommandSpeakExecutor blockingExecutor = text -> {
             speakStarted.countDown();
             speakRelease.await();
         };
 
-        MacroDefinition macro = deserialize("""
+        CustomCommandDefinition customCommand = deserialize("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"SPEAK","text":"Wait for me"},
                   {"type":"BINDING_TAP","bindingId":"AfterSpeak"}
                 ]}""");
-        CustomCommandHandler handler = new CustomCommandHandler(macro, blockingExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(customCommand, blockingExecutor);
 
         Thread t = new Thread(() -> handler.handle("m", new JsonObject(), ""));
         t.start();
@@ -146,7 +146,7 @@ class CustomCommandHandlerTest {
         CommandHandler fakeBuiltin = (a, p, r) -> called.set(true);
         registerHandler("builtin_action", fakeBuiltin);
 
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"RUN_COMMAND","actionId":"builtin_action"}
                 ]}""");
@@ -156,27 +156,27 @@ class CustomCommandHandlerTest {
 
     @Test
     void runCommandStepSkipsWhenTargetHandlerIsCustomCommandHandler() {
-        // Register a second macro handler as the RUN_COMMAND target.
-        MacroDefinition nested = deserialize("""
-                {"id":"macro_nested","name":"Nested","phrases":"p",
+        // Register a second customCommand handler as the RUN_COMMAND target.
+        CustomCommandDefinition nested = deserialize("""
+                {"id":"custom_command_nested","name":"Nested","phrases":"p",
                  "steps":[{"type":"SPEAK","text":"nested called"}]}""");
         CustomCommandHandler nestedHandler = new CustomCommandHandler(nested, testSpeakExecutor);
-        registerHandler("macro_nested", nestedHandler);
+        registerHandler("custom_command_nested", nestedHandler);
 
-        // Macro that tries to call another macro.
-        runMacro("""
-                {"id":"macro_caller","name":"Caller","phrases":"p","steps":[
-                  {"type":"RUN_COMMAND","actionId":"macro_nested"}
+        // CustomCommand that tries to call another custom command.
+        runCustomCommand("""
+                {"id":"custom_command_caller","name":"Caller","phrases":"p","steps":[
+                  {"type":"RUN_COMMAND","actionId":"custom_command_nested"}
                 ]}""");
 
-        // Guard must prevent the nested macro from running - no speech from nested.
-        assertTrue(testSpeakExecutor.spoken.isEmpty(), "Cross-macro call must be blocked");
+        // Guard must prevent the nested customCommand from running - no speech from nested.
+        assertTrue(testSpeakExecutor.spoken.isEmpty(), "Cross-customCommand call must be blocked");
     }
 
     @Test
     void runCommandStepSkipsUnknownActionId() {
         // No exception - just logs a warning.
-        assertDoesNotThrow(() -> runMacro("""
+        assertDoesNotThrow(() -> runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"RUN_COMMAND","actionId":"does_not_exist_12345"}
                 ]}"""));
@@ -187,7 +187,7 @@ class CustomCommandHandlerTest {
 
     @Test
     void rawKeyStepPublishesGameInputWithCorrectKeyCode() {
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"RAW_KEY","rawKey":"KEY_F5","durationMs":0}
                 ]}""");
@@ -202,7 +202,7 @@ class CustomCommandHandlerTest {
 
     @Test
     void rawKeyStepWithModifierSetsModifierKeyCode() {
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"RAW_KEY","rawKey":"KEY_W","rawKeyModifier":"KEY_LEFTCONTROL","durationMs":0}
                 ]}""");
@@ -217,7 +217,7 @@ class CustomCommandHandlerTest {
 
     @Test
     void rawKeyStepWithHoldDurationPreservesDuration() {
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"RAW_KEY","rawKey":"KEY_SPACE","durationMs":500}
                 ]}""");
@@ -231,7 +231,7 @@ class CustomCommandHandlerTest {
 
     @Test
     void rawKeyStepWithUnknownKeyIsSkipped() {
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"RAW_KEY","rawKey":"KEY_DOES_NOT_EXIST_99999","durationMs":0}
                 ]}""");
@@ -241,7 +241,7 @@ class CustomCommandHandlerTest {
 
     @Test
     void rawKeyStepWithUnknownModifierFallsBackToNoModifier() {
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"RAW_KEY","rawKey":"KEY_W","rawKeyModifier":"KEY_BAD_MODIFIER","durationMs":0}
                 ]}""");
@@ -256,7 +256,7 @@ class CustomCommandHandlerTest {
 
     @Test
     void rawKeyStepCaseInsensitiveKeyName() {
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"RAW_KEY","rawKey":"Key_LeftControl","durationMs":0}
                 ]}""");
@@ -269,8 +269,8 @@ class CustomCommandHandlerTest {
     // --- multi-step ordering ---
 
     @Test
-    void multiStepMacroProducesEventsInOrder() {
-        runMacro("""
+    void multiStepCustomCommandProducesEventsInOrder() {
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"BINDING_TAP","bindingId":"FirstBinding"},
                   {"type":"DELAY","durationMs":0},
@@ -288,7 +288,7 @@ class CustomCommandHandlerTest {
 
     @Test
     void speakDelayBindingSequenceStillPublishesFinalBindingTap() {
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"SPEAK","text":"Hello pilot"},
                   {"type":"DELAY","durationMs":0},
@@ -308,7 +308,7 @@ class CustomCommandHandlerTest {
 
     @Test
     void bindingDelayBindingPublishesSingleSequenceInOrder() {
-        runMacro("""
+        runCustomCommand("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"BINDING_TAP","bindingId":"FirstBinding"},
                   {"type":"DELAY","durationMs":250},
@@ -324,25 +324,25 @@ class CustomCommandHandlerTest {
         assertEquals("SecondBinding", steps.get(2).getBindingId());
     }
 
-    // --- macro atomicity: two macros must not interleave ---
+    // --- customCommand atomicity: two customCommands must not interleave ---
 
     @Test
-    void twoMacrosDoNotInterleaveInputSteps() throws InterruptedException {
-        MacroDefinition macro1 = deserialize("""
+    void twoCustomCommandsDoNotInterleaveInputSteps() throws InterruptedException {
+        CustomCommandDefinition customCommand1 = deserialize("""
                 {"id":"m1","name":"M1","phrases":"p","steps":[
-                  {"type":"BINDING_TAP","bindingId":"Macro1Step1"},
+                  {"type":"BINDING_TAP","bindingId":"CustomCommand1Step1"},
                   {"type":"DELAY","durationMs":0},
-                  {"type":"BINDING_TAP","bindingId":"Macro1Step2"}
+                  {"type":"BINDING_TAP","bindingId":"CustomCommand1Step2"}
                 ]}""");
-        MacroDefinition macro2 = deserialize("""
+        CustomCommandDefinition customCommand2 = deserialize("""
                 {"id":"m2","name":"M2","phrases":"p","steps":[
-                  {"type":"BINDING_TAP","bindingId":"Macro2Step1"},
+                  {"type":"BINDING_TAP","bindingId":"CustomCommand2Step1"},
                   {"type":"DELAY","durationMs":0},
-                  {"type":"BINDING_TAP","bindingId":"Macro2Step2"}
+                  {"type":"BINDING_TAP","bindingId":"CustomCommand2Step2"}
                 ]}""");
 
-        CustomCommandHandler h1 = new CustomCommandHandler(macro1, testSpeakExecutor);
-        CustomCommandHandler h2 = new CustomCommandHandler(macro2, testSpeakExecutor);
+        CustomCommandHandler h1 = new CustomCommandHandler(customCommand1, testSpeakExecutor);
+        CustomCommandHandler h2 = new CustomCommandHandler(customCommand2, testSpeakExecutor);
 
         CountDownLatch ready = new CountDownLatch(2);
         CountDownLatch go = new CountDownLatch(1);
@@ -365,9 +365,9 @@ class CustomCommandHandlerTest {
         t1.join(5000);
         t2.join(5000);
 
-        assertEquals(2, inputCapture.events.size(), "Each macro must produce exactly one GameInputSequenceEvent");
+        assertEquals(2, inputCapture.events.size(), "Each customCommand must produce exactly one GameInputSequenceEvent");
 
-        // No interleaving: each event's bindings must all belong to the same macro
+        // No interleaving: each event's bindings must all belong to the same customCommand
         List<String> first = inputCapture.events.get(0).getSteps().stream()
                 .filter(s -> s.getType() != GameInputStep.Type.DELAY)
                 .map(GameInputStep::getBindingId)
@@ -377,18 +377,18 @@ class CustomCommandHandlerTest {
                 .map(GameInputStep::getBindingId)
                 .toList();
 
-        boolean firstIsMacro1 = first.stream().allMatch(b -> b.startsWith("Macro1"));
-        boolean firstIsMacro2 = first.stream().allMatch(b -> b.startsWith("Macro2"));
-        assertTrue(firstIsMacro1 || firstIsMacro2, "First event must belong entirely to one macro");
+        boolean firstIsCustomCommand1 = first.stream().allMatch(b -> b.startsWith("CustomCommand1"));
+        boolean firstIsCustomCommand2 = first.stream().allMatch(b -> b.startsWith("CustomCommand2"));
+        assertTrue(firstIsCustomCommand1 || firstIsCustomCommand2, "First event must belong entirely to one customCommand");
 
-        if (firstIsMacro1) {
-            assertTrue(second.stream().allMatch(b -> b.startsWith("Macro2")), "Second event must be Macro2's steps");
+        if (firstIsCustomCommand1) {
+            assertTrue(second.stream().allMatch(b -> b.startsWith("CustomCommand2")), "Second event must be CustomCommand2's steps");
         } else {
-            assertTrue(second.stream().allMatch(b -> b.startsWith("Macro1")), "Second event must be Macro1's steps");
+            assertTrue(second.stream().allMatch(b -> b.startsWith("CustomCommand1")), "Second event must be CustomCommand1's steps");
         }
     }
 
-    // --- parameterized macros ---
+    // --- parameterized customCommands ---
 
     @Test
     void runCommandStepPassesResolvedStepParamsToNestedHandler() {
@@ -396,12 +396,12 @@ class CustomCommandHandlerTest {
         CommandHandler fakeBuiltin = (a, p, r) -> capturedParams.set(p);
         registerHandler("builtin_with_params", fakeBuiltin);
 
-        MacroDefinition macro = new MacroDefinition(
+        CustomCommandDefinition customCommand = new CustomCommandDefinition(
                 "m", "M", "", "phrase",
-                List.of(new MacroParameterSpec("commodity", "string", true, "", null, null)),
-                List.of(MacroStep.runCommandWithParams("builtin_with_params", Map.of("key", "${commodity}")))
+                List.of(new CustomCommandParameterSpec("commodity", "string", true, "", null, null)),
+                List.of(CustomCommandStep.runCommandWithParams("builtin_with_params", Map.of("key", "${commodity}")))
         );
-        CustomCommandHandler handler = new CustomCommandHandler(macro, testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(customCommand, testSpeakExecutor);
         JsonObject params = JsonParser.parseString("{\"commodity\": \"gold\"}").getAsJsonObject();
         handler.handle("m", params, "");
 
@@ -415,15 +415,15 @@ class CustomCommandHandlerTest {
         CommandHandler fakeBuiltin = (a, p, r) -> capturedParams.set(p);
         registerHandler("navigate_fake", fakeBuiltin);
 
-        MacroDefinition macro = new MacroDefinition(
+        CustomCommandDefinition customCommand = new CustomCommandDefinition(
                 "m", "M", "", "phrase",
                 List.of(
-                        new MacroParameterSpec("lat", "number", true, "", null, null),
-                        new MacroParameterSpec("lon", "number", true, "", null, null)
+                        new CustomCommandParameterSpec("lat", "number", true, "", null, null),
+                        new CustomCommandParameterSpec("lon", "number", true, "", null, null)
                 ),
-                List.of(MacroStep.runCommandWithParams("navigate_fake", Map.of("lat", "${lat}", "lon", "${lon}")))
+                List.of(CustomCommandStep.runCommandWithParams("navigate_fake", Map.of("lat", "${lat}", "lon", "${lon}")))
         );
-        CustomCommandHandler handler = new CustomCommandHandler(macro, testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(customCommand, testSpeakExecutor);
         JsonObject params = JsonParser.parseString("{\"lat\": -10.5, \"lon\": 45.2}").getAsJsonObject();
         handler.handle("m", params, "");
 
@@ -433,31 +433,31 @@ class CustomCommandHandlerTest {
     }
 
     @Test
-    void abortsMacroWhenRequiredParamIsMissing() {
+    void abortsCustomCommandWhenRequiredParamIsMissing() {
         AtomicBoolean called = new AtomicBoolean(false);
         CommandHandler fakeBuiltin = (a, p, r) -> called.set(true);
         registerHandler("cmd_fake", fakeBuiltin);
 
-        MacroDefinition macro = new MacroDefinition(
+        CustomCommandDefinition customCommand = new CustomCommandDefinition(
                 "m", "M", "", "phrase",
-                List.of(new MacroParameterSpec("speed", "string", true, "", null, null)),
-                List.of(MacroStep.runCommandWithParams("cmd_fake", Map.of("key", "${speed}")))
+                List.of(new CustomCommandParameterSpec("speed", "string", true, "", null, null)),
+                List.of(CustomCommandStep.runCommandWithParams("cmd_fake", Map.of("key", "${speed}")))
         );
-        CustomCommandHandler handler = new CustomCommandHandler(macro, testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(customCommand, testSpeakExecutor);
         // No params provided — required "speed" is missing.
         handler.handle("m", new JsonObject(), "");
 
-        assertFalse(called.get(), "Macro must be aborted when required param is missing");
+        assertFalse(called.get(), "CustomCommand must be aborted when required param is missing");
     }
 
     @Test
     void speakStepResolvesParamTemplate() {
-        MacroDefinition macro = new MacroDefinition(
+        CustomCommandDefinition customCommand = new CustomCommandDefinition(
                 "m", "M", "", "phrase",
-                List.of(new MacroParameterSpec("target", "string", true, "", null, null)),
-                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "Targeting ${target}", null))
+                List.of(new CustomCommandParameterSpec("target", "string", true, "", null, null)),
+                List.of(new CustomCommandStep(CustomCommandStep.Type.SPEAK, null, 0, "Targeting ${target}", null))
         );
-        CustomCommandHandler handler = new CustomCommandHandler(macro, testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(customCommand, testSpeakExecutor);
         JsonObject params = JsonParser.parseString("{\"target\": \"drive\"}").getAsJsonObject();
         handler.handle("m", params, "");
 
@@ -466,49 +466,49 @@ class CustomCommandHandlerTest {
     }
 
     @Test
-    void optionalParamAbsentDoesNotAbortMacro() {
+    void optionalParamAbsentDoesNotAbortCustomCommand() {
         AtomicBoolean called = new AtomicBoolean(false);
         CommandHandler fakeBuiltin = (a, p, r) -> called.set(true);
         registerHandler("cmd_optional", fakeBuiltin);
 
-        MacroDefinition macro = new MacroDefinition(
+        CustomCommandDefinition customCommand = new CustomCommandDefinition(
                 "m", "M", "", "phrase",
-                List.of(new MacroParameterSpec("hint", "string", false, "", null, null)),
+                List.of(new CustomCommandParameterSpec("hint", "string", false, "", null, null)),
                 // step doesn't use the optional param at all
-                List.of(new MacroStep(MacroStep.Type.RUN_COMMAND, null, 0, null, "cmd_optional"))
+                List.of(new CustomCommandStep(CustomCommandStep.Type.RUN_COMMAND, null, 0, null, "cmd_optional"))
         );
-        CustomCommandHandler handler = new CustomCommandHandler(macro, testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(customCommand, testSpeakExecutor);
         handler.handle("m", new JsonObject(), "");
 
-        assertTrue(called.get(), "Macro with absent optional param must still execute");
+        assertTrue(called.get(), "CustomCommand with absent optional param must still execute");
     }
 
     @Test
-    void macroLockReleasedAfterInterrupt() throws InterruptedException {
-        MacroDefinition slowMacro = deserialize("""
+    void customCommandLockReleasedAfterInterrupt() throws InterruptedException {
+        CustomCommandDefinition slowCustomCommand = deserialize("""
                 {"id":"slow","name":"Slow","phrases":"p","steps":[
                   {"type":"DELAY","durationMs":5000}
                 ]}""");
-        MacroDefinition fastMacro = deserialize("""
+        CustomCommandDefinition fastCustomCommand = deserialize("""
                 {"id":"fast","name":"Fast","phrases":"p","steps":[
                   {"type":"BINDING_TAP","bindingId":"FastBinding"}
                 ]}""");
 
-        CustomCommandHandler slowHandler = new CustomCommandHandler(slowMacro, testSpeakExecutor);
-        CustomCommandHandler fastHandler = new CustomCommandHandler(fastMacro, testSpeakExecutor);
+        CustomCommandHandler slowHandler = new CustomCommandHandler(slowCustomCommand, testSpeakExecutor);
+        CustomCommandHandler fastHandler = new CustomCommandHandler(fastCustomCommand, testSpeakExecutor);
 
         Thread slowThread = new Thread(() -> slowHandler.handle("slow", new JsonObject(), ""));
         slowThread.start();
-        Thread.sleep(50); // let slow macro acquire lock and enter DELAY
+        Thread.sleep(50); // let slow customCommand acquire lock and enter DELAY
         slowThread.interrupt();
         slowThread.join(2000);
 
-        // The lock must be released - the fast macro must now complete
+        // The lock must be released - the fast customCommand must now complete
         Thread fastThread = new Thread(() -> fastHandler.handle("fast", new JsonObject(), ""));
         fastThread.start();
         fastThread.join(2000);
 
-        assertFalse(fastThread.isAlive(), "Fast macro must complete after slow macro is interrupted");
+        assertFalse(fastThread.isAlive(), "Fast customCommand must complete after slow customCommand is interrupted");
         assertEquals(1, inputCapture.events.size());
         assertEquals("FastBinding", inputCapture.events.getFirst().getSteps().getFirst().getBindingId());
     }
@@ -517,12 +517,12 @@ class CustomCommandHandlerTest {
 
     @Test
     void interruptedThreadStopsAfterCurrentStep() throws InterruptedException {
-        MacroDefinition macro = deserialize("""
+        CustomCommandDefinition customCommand = deserialize("""
                 {"id":"m","name":"M","phrases":"p","steps":[
                   {"type":"DELAY","durationMs":5000},
                   {"type":"SPEAK","text":"should not reach here"}
                 ]}""");
-        CustomCommandHandler handler = new CustomCommandHandler(macro, testSpeakExecutor);
+        CustomCommandHandler handler = new CustomCommandHandler(customCommand, testSpeakExecutor);
 
         Thread t = new Thread(() -> handler.handle("m", new JsonObject(), ""));
         t.start();
@@ -537,13 +537,13 @@ class CustomCommandHandlerTest {
 
     // --- helpers ---
 
-    private void runMacro(String json) {
+    private void runCustomCommand(String json) {
         CustomCommandHandler handler = new CustomCommandHandler(deserialize(json), testSpeakExecutor);
         handler.handle("test_action", new JsonObject(), "");
     }
 
-    private MacroDefinition deserialize(String json) {
-        return GSON.fromJson(json, MacroDefinition.class);
+    private CustomCommandDefinition deserialize(String json) {
+        return GSON.fromJson(json, CustomCommandDefinition.class);
     }
 
     private void registerHandler(String key, CommandHandler handler) {
@@ -554,7 +554,7 @@ class CustomCommandHandlerTest {
     // --- test doubles ---
 
     /** Captures spoken texts without blocking or publishing events. */
-    static class TestSpeakExecutor implements MacroSpeakExecutor {
+    static class TestSpeakExecutor implements CustomCommandSpeakExecutor {
         final List<String> spoken = new ArrayList<>();
 
         @Override

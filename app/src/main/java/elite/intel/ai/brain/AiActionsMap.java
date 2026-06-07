@@ -1,6 +1,6 @@
 package elite.intel.ai.brain;
 
-import elite.intel.ai.brain.actions.macro.MacroRegistry;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandRegistry;
 import elite.intel.ai.brain.i18n.AiActionLocalizations;
 import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
@@ -57,7 +57,7 @@ public class AiActionsMap {
         // Machine-only command, not user-facing language.
         map.put(CONNECTION_CHECK_COMMAND, CONNECTION_CHECK.getAction());
 
-        MacroRegistry.getInstance().contributeToActionMap(map);
+        CustomCommandRegistry.getInstance().contributeToActionMap(map);
 
         return map;
     }

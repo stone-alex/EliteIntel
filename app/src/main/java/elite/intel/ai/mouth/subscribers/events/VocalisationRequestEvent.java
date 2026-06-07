@@ -10,7 +10,7 @@ public class VocalisationRequestEvent extends BaseVoxEvent {
     private boolean canBeInterrupted;
     private final boolean isRadio;
     /**
-     * Non-null only when a caller (e.g. macro SPEAK) needs to block until playback finishes.
+     * Non-null only when a caller (e.g. customCommand SPEAK) needs to block until playback finishes.
      * The TTS implementation must call {@link CompletableFuture#complete} after the last sentence plays.
      */
     @Nullable private final CompletableFuture<Void> completionFuture;
@@ -28,7 +28,7 @@ public class VocalisationRequestEvent extends BaseVoxEvent {
     }
 
     /**
-     * Used when a completion signal is required (e.g. when routing a macro SPEAK request).
+     * Used when a completion signal is required (e.g. when routing a customCommand SPEAK request).
      */
     public VocalisationRequestEvent(String textToVoice, Class<? extends BaseVoxEvent> originType, boolean canBeInterrupted, @Nullable CompletableFuture<Void> completionFuture) {
         this(textToVoice, null, originType, canBeInterrupted, false, completionFuture);

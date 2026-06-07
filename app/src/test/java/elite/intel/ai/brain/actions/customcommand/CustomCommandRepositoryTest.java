@@ -1,4 +1,4 @@
-package elite.intel.ai.brain.actions.macro;
+package elite.intel.ai.brain.actions.customcommand;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -11,12 +11,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MacroRepositoryTest {
+class CustomCommandRepositoryTest {
 
     @TempDir
     Path tempDir;
 
-    private final MacroRepository repo = new MacroRepository();
+    private final CustomCommandRepository repo = new CustomCommandRepository();
 
     private Path customCommandsFile() {
         return tempDir.resolve("custom_commands.json");
@@ -26,7 +26,7 @@ class MacroRepositoryTest {
 
     @Test
     void missingFileReturnsEmptyList() {
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
         assertTrue(result.isEmpty());
     }
 
@@ -63,55 +63,55 @@ class MacroRepositoryTest {
         assertTrue(repo.load(customCommandsFile()).isEmpty());
     }
 
-    // --- invalid macro entries skipped ---
+    // --- invalid custom command entries skipped ---
 
     @Test
-    void macroWithBlankIdIsSkipped() throws IOException {
+    void customCommandWithBlankIdIsSkipped() throws IOException {
         writeJson("""
                 [
-                  {"id":"","actionKey":"macro_bad_id","name":"Bad","phrases":"p","steps":[{"type":"SPEAK","text":"x"}]},
-                  {"id":"macro_good","actionKey":"macro_good","name":"Good","phrases":"good","steps":[{"type":"SPEAK","text":"ok"}]}
+                  {"id":"","actionKey":"custom_command_bad_id","name":"Bad","phrases":"p","steps":[{"type":"SPEAK","text":"x"}]},
+                  {"id":"custom_command_good","actionKey":"custom_command_good","name":"Good","phrases":"good","steps":[{"type":"SPEAK","text":"ok"}]}
                 ]
                 """);
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
-        assertEquals("macro_good", result.getFirst().getId());
+        assertEquals("custom_command_good", result.getFirst().getId());
     }
 
     @Test
-    void macroWithBlankNameIsSkipped() throws IOException {
+    void customCommandWithBlankNameIsSkipped() throws IOException {
         writeJson("""
                 [
-                  {"id":"macro_bad","actionKey":"macro_bad_name","name":"","phrases":"p","steps":[{"type":"SPEAK","text":"x"}]},
-                  {"id":"macro_ok","actionKey":"macro_ok_step","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"ok"}]}
+                  {"id":"custom_command_bad","actionKey":"custom_command_bad_name","name":"","phrases":"p","steps":[{"type":"SPEAK","text":"x"}]},
+                  {"id":"custom_command_ok","actionKey":"custom_command_ok_step","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"ok"}]}
                 ]
                 """);
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
-        assertEquals("macro_ok", result.getFirst().getId());
+        assertEquals("custom_command_ok", result.getFirst().getId());
     }
 
     @Test
-    void macroWithBlankPhrasesIsSkipped() throws IOException {
+    void customCommandWithBlankPhrasesIsSkipped() throws IOException {
         writeJson("""
                 [
-                  {"id":"macro_bad","actionKey":"macro_bad_phrases","name":"Bad","phrases":"","steps":[{"type":"SPEAK","text":"x"}]},
-                  {"id":"macro_ok","actionKey":"macro_ok_step","name":"OK","phrases":"ok phrase","steps":[{"type":"SPEAK","text":"ok"}]}
+                  {"id":"custom_command_bad","actionKey":"custom_command_bad_phrases","name":"Bad","phrases":"","steps":[{"type":"SPEAK","text":"x"}]},
+                  {"id":"custom_command_ok","actionKey":"custom_command_ok_step","name":"OK","phrases":"ok phrase","steps":[{"type":"SPEAK","text":"ok"}]}
                 ]
                 """);
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
     }
 
     @Test
-    void macroWithEmptyStepsIsSkipped() throws IOException {
+    void customCommandWithEmptyStepsIsSkipped() throws IOException {
         writeJson("""
                 [
-                  {"id":"macro_bad","actionKey":"macro_bad_steps","name":"Bad","phrases":"p","steps":[]},
-                  {"id":"macro_ok","actionKey":"macro_ok_step","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"ok"}]}
+                  {"id":"custom_command_bad","actionKey":"custom_command_bad_steps","name":"Bad","phrases":"p","steps":[]},
+                  {"id":"custom_command_ok","actionKey":"custom_command_ok_step","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"ok"}]}
                 ]
                 """);
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
     }
 
@@ -119,25 +119,25 @@ class MacroRepositoryTest {
     void bindingTapStepWithoutBindingIdIsSkipped() throws IOException {
         writeJson("""
                 [
-                  {"id":"macro_bad","actionKey":"macro_bad_binding","name":"Bad","phrases":"p","steps":[{"type":"BINDING_TAP"}]},
-                  {"id":"macro_ok","actionKey":"macro_ok_step","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"x"}]}
+                  {"id":"custom_command_bad","actionKey":"custom_command_bad_binding","name":"Bad","phrases":"p","steps":[{"type":"BINDING_TAP"}]},
+                  {"id":"custom_command_ok","actionKey":"custom_command_ok_step","name":"OK","phrases":"ok","steps":[{"type":"SPEAK","text":"x"}]}
                 ]
                 """);
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
-        assertEquals("macro_ok", result.getFirst().getId());
+        assertEquals("custom_command_ok", result.getFirst().getId());
     }
 
-    // --- valid macro loaded correctly ---
+    // --- valid customCommand loaded correctly ---
 
     @Test
-    void validSingleMacroIsLoaded() throws IOException {
+    void validSingleCustomCommandIsLoaded() throws IOException {
         writeJson("""
                 [
                   {
-                    "id": "macro_test",
-                    "actionKey": "macro_test",
-                    "name": "Test Macro",
+                    "id": "custom_command_test",
+                    "actionKey": "custom_command_test",
+                    "name": "Test Custom Command",
                     "description": "A test",
                     "phrases": "test, run test",
                     "steps": [
@@ -148,28 +148,28 @@ class MacroRepositoryTest {
                   }
                 ]
                 """);
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
-        MacroDefinition m = result.getFirst();
-        assertEquals("macro_test", m.getId());
-        assertEquals("Test Macro", m.getName());
+        CustomCommandDefinition m = result.getFirst();
+        assertEquals("custom_command_test", m.getId());
+        assertEquals("Test Custom Command", m.getName());
         assertEquals("A test", m.getDescription());
         assertEquals("test, run test", m.getPhrases());
         assertEquals(3, m.getSteps().size());
-        assertEquals(MacroStep.Type.BINDING_TAP, m.getSteps().get(0).getType());
+        assertEquals(CustomCommandStep.Type.BINDING_TAP, m.getSteps().get(0).getType());
         assertEquals("MyBinding", m.getSteps().get(0).getBindingId());
-        assertEquals(MacroStep.Type.DELAY, m.getSteps().get(1).getType());
+        assertEquals(CustomCommandStep.Type.DELAY, m.getSteps().get(1).getType());
         assertEquals(200, m.getSteps().get(1).getDurationMs());
-        assertEquals(MacroStep.Type.SPEAK, m.getSteps().get(2).getType());
+        assertEquals(CustomCommandStep.Type.SPEAK, m.getSteps().get(2).getType());
         assertEquals("Done", m.getSteps().get(2).getText());
     }
 
     @Test
     void resultIsUnmodifiable() throws IOException {
         writeJson("""
-                [{"id":"macro_x","actionKey":"macro_x_item","name":"X","phrases":"p","steps":[{"type":"SPEAK","text":"ok"}]}]
+                [{"id":"custom_command_x","actionKey":"custom_command_x_item","name":"X","phrases":"p","steps":[{"type":"SPEAK","text":"ok"}]}]
                 """);
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
         assertThrows(UnsupportedOperationException.class, () -> result.add(null));
     }
 
@@ -177,34 +177,34 @@ class MacroRepositoryTest {
 
     @Test
     void saveAndLoadRoundtripPreservesAllFields() {
-        List<MacroDefinition> original = repo.load(jsonWithOneMacro());
+        List<CustomCommandDefinition> original = repo.load(jsonWithOneCustomCommand());
 
         assertTrue(repo.save(original, customCommandsFile()));
-        List<MacroDefinition> reloaded = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> reloaded = repo.load(customCommandsFile());
 
         assertEquals(1, reloaded.size());
-        MacroDefinition m = reloaded.getFirst();
-        assertEquals("macro_roundtrip", m.getId());
+        CustomCommandDefinition m = reloaded.getFirst();
+        assertEquals("custom_command_roundtrip", m.getId());
         assertEquals("Roundtrip", m.getName());
         assertEquals("desc", m.getDescription());
         assertEquals("do roundtrip", m.getPhrases());
         assertEquals(1, m.getSteps().size());
-        assertEquals(MacroStep.Type.SPEAK, m.getSteps().getFirst().getType());
+        assertEquals(CustomCommandStep.Type.SPEAK, m.getSteps().getFirst().getType());
         assertEquals("hi", m.getSteps().getFirst().getText());
     }
 
     @Test
     void saveCreatesParentDirectories() {
         Path nestedFile = tempDir.resolve("nested").resolve("custom-commands").resolve("custom_commands.json");
-        MacroDefinition macro = new MacroDefinition(
-                "macro_nested_save",
+        CustomCommandDefinition customCommand = new CustomCommandDefinition(
+                "custom_command_nested_save",
                 "Nested Save",
                 "",
                 "nested save",
-                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hi", null))
+                List.of(new CustomCommandStep(CustomCommandStep.Type.SPEAK, null, 0, "hi", null))
         );
 
-        assertTrue(repo.save(List.of(macro), nestedFile));
+        assertTrue(repo.save(List.of(customCommand), nestedFile));
 
         assertTrue(Files.exists(nestedFile));
         assertEquals(1, repo.load(nestedFile).size());
@@ -215,20 +215,20 @@ class MacroRepositoryTest {
     @Test
     void loadFallsBackToBackupWhenMainFileIsCorrupt() throws IOException {
         Files.writeString(customCommandsFile(), "not-valid-json", StandardCharsets.UTF_8);
-        Files.writeString(backupFile(), validOneMacroJson("macro_backup", "From Backup"),
+        Files.writeString(backupFile(), validOneCustomCommandJson("custom_command_backup", "From Backup"),
                 StandardCharsets.UTF_8);
 
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
 
         assertEquals(1, result.size());
-        assertEquals("macro_backup", result.getFirst().getId());
+        assertEquals("custom_command_backup", result.getFirst().getId());
     }
 
     @Test
     void loadReturnsEmptyWhenMainIsCorruptAndNoBackupExists() throws IOException {
         writeJson("""
                 [
-                  {"id":"macro_bad","actionKey":"macro_bad_reset","name":"","phrases":"p","steps":[{"type":"SPEAK","text":"x"}]}
+                  {"id":"custom_command_bad","actionKey":"custom_command_bad_reset","name":"","phrases":"p","steps":[{"type":"SPEAK","text":"x"}]}
                 ]
                 """);
         repo.load(customCommandsFile());
@@ -236,7 +236,7 @@ class MacroRepositoryTest {
 
         Files.writeString(customCommandsFile(), "not-valid-json", StandardCharsets.UTF_8);
 
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
 
         assertTrue(result.isEmpty());
         assertEquals(0, repo.getLastSkippedCount());
@@ -248,18 +248,18 @@ class MacroRepositoryTest {
         Files.writeString(customCommandsFile(), "not-valid-json", StandardCharsets.UTF_8);
         Files.writeString(backupFile(), "also-not-valid", StandardCharsets.UTF_8);
 
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
 
         assertTrue(result.isEmpty());
     }
 
     @Test
     void loadDoesNotCheckBackupWhenMainFileIsMissing() throws IOException {
-        Files.writeString(backupFile(), validOneMacroJson("macro_bak_item", "Bak Only"),
+        Files.writeString(backupFile(), validOneCustomCommandJson("custom_command_bak_item", "Bak Only"),
                 StandardCharsets.UTF_8);
 
         // Main file does not exist, so backup should not be consulted.
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
 
         assertTrue(result.isEmpty());
     }
@@ -268,25 +268,25 @@ class MacroRepositoryTest {
 
     @Test
     void saveCreatesBackupOfPreviousFile() throws IOException {
-        repo.save(List.of(makeMacro("macro_first", "First")), customCommandsFile());
-        repo.save(List.of(makeMacro("macro_second", "Second")), customCommandsFile());
+        repo.save(List.of(makeCustomCommand("custom_command_first", "First")), customCommandsFile());
+        repo.save(List.of(makeCustomCommand("custom_command_second", "Second")), customCommandsFile());
 
         assertTrue(Files.exists(backupFile()), "Backup file should exist after second save");
-        List<MacroDefinition> fromBackup = repo.load(backupFile());
+        List<CustomCommandDefinition> fromBackup = repo.load(backupFile());
         assertEquals(1, fromBackup.size());
-        assertEquals("macro_first", fromBackup.getFirst().getId());
+        assertEquals("custom_command_first", fromBackup.getFirst().getId());
     }
 
     @Test
     void saveDoesNotCreateBackupOnFirstSave() {
         assertFalse(Files.exists(backupFile()), "No backup before first save");
-        repo.save(List.of(makeMacro("macro_init", "Init")), customCommandsFile());
+        repo.save(List.of(makeCustomCommand("custom_command_init", "Init")), customCommandsFile());
         assertFalse(Files.exists(backupFile()), "No backup created when there was no previous file");
     }
 
     @Test
     void saveTempFileIsRemovedAfterSuccessfulSave() {
-        repo.save(List.of(makeMacro("macro_tmp_file", "Temp")), customCommandsFile());
+        repo.save(List.of(makeCustomCommand("custom_command_tmp_file", "Temp")), customCommandsFile());
 
         Path tmp = customCommandsFile().resolveSibling("custom_commands.json.tmp");
         assertFalse(Files.exists(tmp), "Temp file should not remain after a successful save");
@@ -294,12 +294,12 @@ class MacroRepositoryTest {
 
     @Test
     void savedFileIsReadableAfterSave() {
-        MacroDefinition macro = makeMacro("macro_persisted", "Persisted");
-        repo.save(List.of(macro), customCommandsFile());
+        CustomCommandDefinition customCommand = makeCustomCommand("custom_command_persisted", "Persisted");
+        repo.save(List.of(customCommand), customCommandsFile());
 
-        List<MacroDefinition> result = repo.load(customCommandsFile());
+        List<CustomCommandDefinition> result = repo.load(customCommandsFile());
         assertEquals(1, result.size());
-        assertEquals("macro_persisted", result.getFirst().getId());
+        assertEquals("custom_command_persisted", result.getFirst().getId());
     }
 
     // --- helpers ---
@@ -312,10 +312,10 @@ class MacroRepositoryTest {
         return customCommandsFile().resolveSibling("custom_commands.json.bak");
     }
 
-    private Path jsonWithOneMacro() {
+    private Path jsonWithOneCustomCommand() {
         try {
             writeJson("""
-                    [{"id":"macro_roundtrip","actionKey":"macro_roundtrip","name":"Roundtrip","description":"desc",
+                    [{"id":"custom_command_roundtrip","actionKey":"custom_command_roundtrip","name":"Roundtrip","description":"desc",
                       "phrases":"do roundtrip","steps":[{"type":"SPEAK","text":"hi"}]}]
                     """);
         } catch (IOException e) {
@@ -324,15 +324,15 @@ class MacroRepositoryTest {
         return customCommandsFile();
     }
 
-    /** Produces a minimal valid single-macro JSON array with the given {@code id} used as actionKey. */
-    private static String validOneMacroJson(String id, String name) {
+    /** Produces a minimal valid single-customCommand JSON array with the given {@code id} used as actionKey. */
+    private static String validOneCustomCommandJson(String id, String name) {
         return "[{\"id\":\"" + id + "\",\"actionKey\":\"" + id + "\","
                 + "\"name\":\"" + name + "\","
                 + "\"phrases\":\"trigger\",\"steps\":[{\"type\":\"SPEAK\",\"text\":\"ok\"}]}]";
     }
 
-    private static MacroDefinition makeMacro(String id, String name) {
-        return new MacroDefinition(id, name, "", "trigger " + id,
-                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "ok", null)));
+    private static CustomCommandDefinition makeCustomCommand(String id, String name) {
+        return new CustomCommandDefinition(id, name, "", "trigger " + id,
+                List.of(new CustomCommandStep(CustomCommandStep.Type.SPEAK, null, 0, "ok", null)));
     }
 }

@@ -72,7 +72,7 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
             return;
         }
 
-        if (tryProcessExactMacroCommand(userInput)) {
+        if (tryProcessExactCustomCommandCommand(userInput)) {
             return;
         }
 

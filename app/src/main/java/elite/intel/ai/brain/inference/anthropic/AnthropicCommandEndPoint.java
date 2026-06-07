@@ -136,7 +136,7 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
 
         log.info("Anthropic voice input: {}", userInput);
 
-        if (tryProcessExactMacroCommand(userInput)) {
+        if (tryProcessExactCustomCommandCommand(userInput)) {
             return;
         }
 

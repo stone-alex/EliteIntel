@@ -107,7 +107,7 @@ public class GeminiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         log.info("Sanitized voice userInput:\n{}", userInput);
 
-        if (tryProcessExactMacroCommand(userInput)) {
+        if (tryProcessExactCustomCommandCommand(userInput)) {
             return;
         }
 

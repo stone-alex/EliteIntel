@@ -10,12 +10,12 @@ public enum CommandCatalogEntryType {
     BUILT_IN_BINDING,
 
     /**
-     * Built-in handler-driven action. This is not a user-editable macro.
+     * Built-in handler-driven action. This is not a user-editable customCommand.
      */
     BUILT_IN_ACTION,
 
     /**
-     * Reserved for future user-defined editable macros.
+     * Reserved for future user-defined editable customCommands.
      */
-    USER_MACRO
+    CUSTOM_COMMAND
 }

@@ -172,7 +172,7 @@ public class KokoroTTS implements MouthInterface {
     public void interruptAndClear() {
         if (!canBeInterrupted.get()) return;
 
-        // Drain queues and complete any pending macro completion futures to avoid 30s timeout
+        // Drain queues and complete any pending customCommand completion futures to avoid 30s timeout
         List<SynthesisTask> drainedSynthesis = new ArrayList<>();
         synthesisQueue.drainTo(drainedSynthesis);
         drainedSynthesis.stream().map(SynthesisTask::completionFuture).filter(Objects::nonNull).forEach(f -> f.complete(null));
@@ -238,7 +238,7 @@ public class KokoroTTS implements MouthInterface {
             try {
                 SynthesisTask task = synthesisQueue.take();
                 if (interruptRequested.get()) {
-                    // Complete future immediately so macro doesn't wait until timeout
+                    // Complete future immediately so customCommand doesn't wait until timeout
                     if (task.completionFuture() != null) task.completionFuture().complete(null);
                     continue;
                 }
@@ -289,7 +289,7 @@ public class KokoroTTS implements MouthInterface {
                 PlaybackTask task = playbackQueue.poll(200, TimeUnit.MILLISECONDS);
                 if (task == null) continue;
                 if (interruptRequested.get()) {
-                    // Complete future immediately so macro doesn't wait until timeout
+                    // Complete future immediately so customCommand doesn't wait until timeout
                     if (task.completionFuture() != null) task.completionFuture().complete(null);
                     continue;
                 }

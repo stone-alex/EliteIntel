@@ -1,7 +1,7 @@
 package elite.intel.ai.brain.commons;
 
 import elite.intel.ai.brain.*;
-import elite.intel.ai.brain.actions.macro.MacroRegistry;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandRegistry;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.i18n.Language;
 import elite.intel.session.PlayerSession;
@@ -222,9 +222,9 @@ public class PromptFactory implements AiPromptFactory {
         buildCommandRules(sb);
         Map<String, String> reduced = reduce(rawUserInput);
         sb.append(Reducer.formatActions(reduced));
-        // Macro param rules are appended after reduction so only the matched macro's params are shown,
-        // avoiding token overhead from param rules of unrelated macros.
-        MacroRegistry.getInstance().appendMacroParamRules(reduced, sb);
+        // CustomCommand param rules are appended after reduction so only the matched customCommand's params are shown,
+        // avoiding token overhead from param rules of unrelated customCommands.
+        CustomCommandRegistry.getInstance().appendCustomCommandParamRules(reduced, sb);
         return sb.toString();
     }
 

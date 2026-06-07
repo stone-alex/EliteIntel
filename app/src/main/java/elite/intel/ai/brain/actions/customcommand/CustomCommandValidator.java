@@ -1,4 +1,4 @@
-package elite.intel.ai.brain.actions.macro;
+package elite.intel.ai.brain.actions.customcommand;
 
 import elite.intel.ai.brain.actions.Commands;
 import elite.intel.ai.brain.i18n.AiActionLocalizations;
@@ -14,19 +14,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Validates macro definitions.
+ * Validates custom command definitions.
  * <p>
  * Two public entry points:
  * <ul>
  *   <li>{@link #validateFormat} — self-contained format checks (actionKey pattern, length,
- *       built-in collision). Used by the load path to reject individually malformed macros
- *       without requiring cross-macro context.</li>
+ *       built-in collision). Used by the load path to reject individually malformed customCommands
+ *       without requiring cross-custom command context.</li>
  *   <li>{@link #validate} — full contextual validation including actionKey uniqueness,
- *       phrase collision, parameter and step cross-references. Used by the macro editor
+ *       phrase collision, parameter and step cross-references. Used by the custom command editor
  *       before saving.</li>
  * </ul>
  */
-public final class MacroValidator {
+public final class CustomCommandValidator {
 
     /** Strict snake_case: lowercase letters, digits, and underscores only. */
     static final Pattern SAFE_ID = Pattern.compile("[a-z0-9_]+");
@@ -35,17 +35,17 @@ public final class MacroValidator {
 
     private static final Pattern VALID_PARAM_NAME = Pattern.compile("[A-Za-z0-9_]+");
 
-    private MacroValidator() {
+    private CustomCommandValidator() {
     }
 
     /**
-     * Validates actionKey format rules that require no cross-macro context:
+     * Validates actionKey format rules that require no cross-custom command context:
      * pattern, length, and built-in command collision.
      * Returns an empty list when all format rules pass.
      */
-    public static List<String> validateFormat(MacroDefinition candidate) {
+    public static List<String> validateFormat(CustomCommandDefinition candidate) {
         if (candidate == null) {
-            return List.of("Macro is missing.");
+            return List.of("CustomCommand is missing.");
         }
         List<String> errors = new ArrayList<>();
         String actionKey = candidate.getActionKey();
@@ -61,35 +61,35 @@ public final class MacroValidator {
     }
 
     /**
-     * Full macro validation including cross-macro context.
+     * Full customCommand validation including cross-custom command context.
      * Subsumes all checks from {@link #validateFormat} and additionally checks
      * actionKey uniqueness, phrase collisions, parameter names/types, and step
      * parameter references.
      *
-     * @param existingMacros    all currently saved macros, used for uniqueness and phrase checks
-     * @param originalActionKey the macro's {@code actionKey} before editing ({@code null} for
-     *                          new macros); allows a macro to keep its own key during an edit
+     * @param existingCustomCommands    all currently saved customCommands, used for uniqueness and phrase checks
+     * @param originalActionKey the customCommand's {@code actionKey} before editing ({@code null} for
+     *                          new customCommands); allows a customCommand to keep its own key during an edit
      *                          without triggering a uniqueness error
      */
     public static List<String> validate(
-            MacroDefinition candidate,
-            List<MacroDefinition> existingMacros,
+            CustomCommandDefinition candidate,
+            List<CustomCommandDefinition> existingCustomCommands,
             String originalActionKey
     ) {
         List<String> errors = new ArrayList<>();
         if (candidate == null) {
-            return List.of("Macro is missing.");
+            return List.of("CustomCommand is missing.");
         }
-        validateIdentity(candidate, existingMacros, originalActionKey, errors);
-        validatePhrases(candidate, existingMacros, originalActionKey, errors);
+        validateIdentity(candidate, existingCustomCommands, originalActionKey, errors);
+        validatePhrases(candidate, existingCustomCommands, originalActionKey, errors);
         validateParameters(candidate, errors);
-        validateSteps(candidate, existingMacros, errors);
+        validateSteps(candidate, existingCustomCommands, errors);
         return List.copyOf(errors);
     }
 
     private static void validateIdentity(
-            MacroDefinition candidate,
-            List<MacroDefinition> existingMacros,
+            CustomCommandDefinition candidate,
+            List<CustomCommandDefinition> existingCustomCommands,
             String originalActionKey,
             List<String> errors
     ) {
@@ -101,9 +101,9 @@ public final class MacroValidator {
             if (builtInCommandIds().contains(normalize(actionKey))) {
                 errors.add("Action key collides with a built-in command.");
             }
-            for (MacroDefinition macro : safeMacros(existingMacros)) {
-                if (!sameId(macro.getActionKey(), originalActionKey) && sameId(macro.getActionKey(), actionKey)) {
-                    errors.add("Action key must be unique among macros.");
+            for (CustomCommandDefinition customCommand : safeCustomCommands(existingCustomCommands)) {
+                if (!sameId(customCommand.getActionKey(), originalActionKey) && sameId(customCommand.getActionKey(), actionKey)) {
+                    errors.add("Action key must be unique among customCommands.");
                     break;
                 }
             }
@@ -129,8 +129,8 @@ public final class MacroValidator {
     }
 
     private static void validatePhrases(
-            MacroDefinition candidate,
-            List<MacroDefinition> existingMacros,
+            CustomCommandDefinition candidate,
+            List<CustomCommandDefinition> existingCustomCommands,
             String originalActionKey,
             List<String> errors
     ) {
@@ -152,25 +152,25 @@ public final class MacroValidator {
             }
         }
 
-        for (MacroDefinition macro : safeMacros(existingMacros)) {
-            if (sameId(macro.getActionKey(), originalActionKey)) {
+        for (CustomCommandDefinition customCommand : safeCustomCommands(existingCustomCommands)) {
+            if (sameId(customCommand.getActionKey(), originalActionKey)) {
                 continue;
             }
-            Set<String> otherPhrases = normalizedPhrases(macro);
+            Set<String> otherPhrases = normalizedPhrases(customCommand);
             for (String phrase : phrases) {
                 if (otherPhrases.contains(normalize(phrase))) {
-                    errors.add("Phrase collides with another macro: " + phrase);
+                    errors.add("Phrase collides with another custom command: " + phrase);
                 }
             }
         }
     }
 
-    private static void validateParameters(MacroDefinition candidate, List<String> errors) {
-        List<MacroParameterSpec> params = candidate.getParameters();
+    private static void validateParameters(CustomCommandDefinition candidate, List<String> errors) {
+        List<CustomCommandParameterSpec> params = candidate.getParameters();
         if (params.isEmpty()) return;
 
         Set<String> seen = new HashSet<>();
-        for (MacroParameterSpec param : params) {
+        for (CustomCommandParameterSpec param : params) {
             if (param == null || param.getName() == null || param.getName().isBlank()) {
                 errors.add("Parameter name is required.");
                 continue;
@@ -182,39 +182,39 @@ public final class MacroValidator {
             if (!seen.add(normalizedName)) {
                 errors.add("Duplicate parameter name: " + param.getName());
             }
-            if (param.getType() == null || !MacroParameterSpec.VALID_TYPES.contains(param.getType())) {
+            if (param.getType() == null || !CustomCommandParameterSpec.VALID_TYPES.contains(param.getType())) {
                 errors.add("Parameter '" + param.getName() + "': type must be one of "
-                        + MacroParameterSpec.VALID_TYPES + ".");
+                        + CustomCommandParameterSpec.VALID_TYPES + ".");
             }
         }
     }
 
     private static void validateSteps(
-            MacroDefinition candidate,
-            List<MacroDefinition> existingMacros,
+            CustomCommandDefinition candidate,
+            List<CustomCommandDefinition> existingCustomCommands,
             List<String> errors
     ) {
-        List<MacroStep> steps = candidate.getSteps();
+        List<CustomCommandStep> steps = candidate.getSteps();
         if (steps.isEmpty()) {
             errors.add("At least one step is required.");
             return;
         }
 
-        Set<String> macroIds = new HashSet<>();
-        for (MacroDefinition macro : safeMacros(existingMacros)) {
-            macroIds.add(normalize(macro.getActionKey()));
+        Set<String> customCommandIds = new HashSet<>();
+        for (CustomCommandDefinition customCommand : safeCustomCommands(existingCustomCommands)) {
+            customCommandIds.add(normalize(customCommand.getActionKey()));
         }
-        macroIds.add(normalize(candidate.getActionKey()));
+        customCommandIds.add(normalize(candidate.getActionKey()));
 
         Set<String> declaredParamNames = new HashSet<>();
-        for (MacroParameterSpec spec : candidate.getParameters()) {
+        for (CustomCommandParameterSpec spec : candidate.getParameters()) {
             if (spec != null && spec.getName() != null) {
                 declaredParamNames.add(spec.getName());
             }
         }
 
         for (int i = 0; i < steps.size(); i++) {
-            MacroStep step = steps.get(i);
+            CustomCommandStep step = steps.get(i);
             String prefix = "Step " + (i + 1) + ": ";
             if (step == null || step.getType() == null) {
                 errors.add(prefix + "type is required.");
@@ -234,8 +234,8 @@ public final class MacroValidator {
                 case RAW_KEY -> requireText(step.getRawKey(), prefix + "rawKey is required.", errors);
                 case RUN_COMMAND -> {
                     requireText(step.getActionId(), prefix + "commandId is required.", errors);
-                    if (macroIds.contains(normalize(step.getActionId()))) {
-                        errors.add(prefix + "RUN_COMMAND cannot target another macro.");
+                    if (customCommandIds.contains(normalize(step.getActionId()))) {
+                        errors.add(prefix + "RUN_COMMAND cannot target another custom command.");
                     }
                     step.getStepParams().forEach((key, template) ->
                             validateParamRefs(template, prefix, "stepParams[" + key + "]",
@@ -245,13 +245,13 @@ public final class MacroValidator {
         }
     }
 
-    /** Checks that all {@code ${name}} references in {@code template} are declared macro parameters. */
+    /** Checks that all {@code ${name}} references in {@code template} are declared custom command parameters. */
     private static void validateParamRefs(
             String template, String stepPrefix, String fieldName,
             Set<String> declaredParamNames, List<String> errors
     ) {
         if (template == null || declaredParamNames.isEmpty()) return;
-        Matcher m = MacroExecutionContext.PARAM_REF.matcher(template);
+        Matcher m = CustomCommandExecutionContext.PARAM_REF.matcher(template);
         while (m.find()) {
             String ref = m.group(1);
             if (!declaredParamNames.contains(ref)) {
@@ -289,14 +289,14 @@ public final class MacroValidator {
         return phrases;
     }
 
-    private static Set<String> normalizedPhrases(MacroDefinition macro) {
+    private static Set<String> normalizedPhrases(CustomCommandDefinition customCommand) {
         Set<String> phrases = new HashSet<>();
-        AiActionLocalizations.splitPhraseGroup(macro.getPhrases()).forEach(phrase -> phrases.add(normalize(phrase)));
+        AiActionLocalizations.splitPhraseGroup(customCommand.getPhrases()).forEach(phrase -> phrases.add(normalize(phrase)));
         return phrases;
     }
 
-    private static List<MacroDefinition> safeMacros(List<MacroDefinition> macros) {
-        return macros == null ? List.of() : macros;
+    private static List<CustomCommandDefinition> safeCustomCommands(List<CustomCommandDefinition> customCommands) {
+        return customCommands == null ? List.of() : customCommands;
     }
 
     private static boolean sameId(String left, String right) {

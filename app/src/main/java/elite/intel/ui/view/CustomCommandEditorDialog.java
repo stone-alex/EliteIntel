@@ -1,9 +1,9 @@
 package elite.intel.ui.view;
 
-import elite.intel.ai.brain.actions.macro.MacroDefinition;
-import elite.intel.ai.brain.actions.macro.MacroValidator;
-import elite.intel.ai.brain.actions.macro.MacroParameterSpec;
-import elite.intel.ai.brain.actions.macro.MacroStep;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandDefinition;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandValidator;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandParameterSpec;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandStep;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -30,12 +30,12 @@ import java.util.UUID;
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 /**
- * Modal CRUD editor for one macro definition. It returns a validated macro but does not persist it.
+ * Modal CRUD editor for one custom command definition. It returns a validated customCommand but does not persist it.
  */
-final class MacroEditorDialog extends JDialog {
+final class CustomCommandEditorDialog extends JDialog {
 
-    private final List<MacroDefinition> existingMacros;
-    /** Immutable UUID carried through edits; {@code null} for new macros until saved. */
+    private final List<CustomCommandDefinition> existingCustomCommands;
+    /** Immutable UUID carried through edits; {@code null} for new customCommands until saved. */
     private final String originalId;
     /** Action key before editing; used by the validator for uniqueness self-check. */
     private final String originalActionKey;
@@ -50,39 +50,39 @@ final class MacroEditorDialog extends JDialog {
     private final StepsTableModel stepsModel = new StepsTableModel();
     private final JTable stepsTable = new JTable(stepsModel);
     private final JTextArea errorsArea = textArea(4);
-    private MacroDefinition result;
+    private CustomCommandDefinition result;
 
-    MacroEditorDialog(Component parent, MacroDefinition macro, List<MacroDefinition> existingMacros) {
+    CustomCommandEditorDialog(Component parent, CustomCommandDefinition customCommand, List<CustomCommandDefinition> existingCustomCommands) {
         super(
                 SwingUtilities.getWindowAncestor(parent),
-                macro == null ? getText("actions.macros.editor.newTitle") : getText("actions.macros.editor.editTitle"),
+                customCommand == null ? getText("actions.customCommands.editor.newTitle") : getText("actions.customCommands.editor.editTitle"),
                 ModalityType.APPLICATION_MODAL
         );
-        this.existingMacros = existingMacros == null ? List.of() : List.copyOf(existingMacros);
-        this.originalId = macro == null ? null : macro.getId();
-        this.originalActionKey = macro == null ? null : macro.getActionKey();
-        populate(macro);
-        buildUi(macro != null);
+        this.existingCustomCommands = existingCustomCommands == null ? List.of() : List.copyOf(existingCustomCommands);
+        this.originalId = customCommand == null ? null : customCommand.getId();
+        this.originalActionKey = customCommand == null ? null : customCommand.getActionKey();
+        populate(customCommand);
+        buildUi(customCommand != null);
     }
 
-    MacroDefinition showDialog() {
+    CustomCommandDefinition showDialog() {
         setVisible(true);
         return result;
     }
 
-    private void populate(MacroDefinition macro) {
-        if (macro == null) {
+    private void populate(CustomCommandDefinition customCommand) {
+        if (customCommand == null) {
             idField.setText("");
             actionKeyField.setText("custom_command_new");
             return;
         }
-        idField.setText(macro.getId());
-        actionKeyField.setText(macro.getActionKey());
-        nameField.setText(macro.getName());
-        descriptionArea.setText(macro.getDescription());
-        phrasesArea.setText(macro.getPhrases());
-        paramsModel.setParameters(macro.getParameters());
-        stepsModel.setSteps(macro.getSteps());
+        idField.setText(customCommand.getId());
+        actionKeyField.setText(customCommand.getActionKey());
+        nameField.setText(customCommand.getName());
+        descriptionArea.setText(customCommand.getDescription());
+        phrasesArea.setText(customCommand.getPhrases());
+        paramsModel.setParameters(customCommand.getParameters());
+        stepsModel.setSteps(customCommand.getSteps());
     }
 
     private void buildUi(boolean existing) {
@@ -113,10 +113,10 @@ final class MacroEditorDialog extends JDialog {
         idField.setEditable(false);
         idField.setForeground(AppTheme.FG_MUTED);
 
-        addField(panel, gbc, getText("actions.macros.editor.actionKey"), actionKeyField);
-        addField(panel, gbc, getText("actions.macros.editor.name"), nameField);
-        addArea(panel, gbc, getText("actions.macros.editor.description"), descriptionArea);
-        addArea(panel, gbc, getText("actions.macros.editor.phrases"), phrasesArea);
+        addField(panel, gbc, getText("actions.customCommands.editor.actionKey"), actionKeyField);
+        addField(panel, gbc, getText("actions.customCommands.editor.name"), nameField);
+        addArea(panel, gbc, getText("actions.customCommands.editor.description"), descriptionArea);
+        addArea(panel, gbc, getText("actions.customCommands.editor.phrases"), phrasesArea);
         return panel;
     }
 
@@ -124,7 +124,7 @@ final class MacroEditorDialog extends JDialog {
         JPanel panel = new JPanel(new BorderLayout(0, 8));
         panel.setOpaque(false);
 
-        JLabel label = new JLabel(getText("actions.macros.editor.parameters"));
+        JLabel label = new JLabel(getText("actions.customCommands.editor.parameters"));
         label.setForeground(AppTheme.FG_MUTED);
         panel.add(label, BorderLayout.NORTH);
 
@@ -149,15 +149,15 @@ final class MacroEditorDialog extends JDialog {
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         buttons.setOpaque(false);
-        addStepButton(buttons, "actions.macros.editor.param.add", this::addParam);
-        addStepButton(buttons, "actions.macros.editor.param.edit", this::editParam);
-        addStepButton(buttons, "actions.macros.editor.param.remove", this::removeParam);
+        addStepButton(buttons, "actions.customCommands.editor.param.add", this::addParam);
+        addStepButton(buttons, "actions.customCommands.editor.param.edit", this::editParam);
+        addStepButton(buttons, "actions.customCommands.editor.param.remove", this::removeParam);
         panel.add(buttons, BorderLayout.SOUTH);
         return panel;
     }
 
     private void addParam() {
-        MacroParameterSpec spec = new MacroParamSpecEditorDialog(this, null).showDialog();
+        CustomCommandParameterSpec spec = new CustomCommandParamSpecEditorDialog(this, null).showDialog();
         if (spec != null) {
             paramsModel.addParameter(spec);
         }
@@ -166,7 +166,7 @@ final class MacroEditorDialog extends JDialog {
     private void editParam() {
         int row = selectedParamRow();
         if (row < 0) return;
-        MacroParameterSpec edited = new MacroParamSpecEditorDialog(this, paramsModel.getParameter(row)).showDialog();
+        CustomCommandParameterSpec edited = new CustomCommandParamSpecEditorDialog(this, paramsModel.getParameter(row)).showDialog();
         if (edited != null) {
             paramsModel.setParameter(row, edited);
         }
@@ -188,7 +188,7 @@ final class MacroEditorDialog extends JDialog {
         JPanel panel = new JPanel(new BorderLayout(0, 8));
         panel.setOpaque(false);
 
-        JLabel label = new JLabel(getText("actions.macros.editor.steps"));
+        JLabel label = new JLabel(getText("actions.customCommands.editor.steps"));
         label.setForeground(AppTheme.FG_MUTED);
         panel.add(label, BorderLayout.NORTH);
 
@@ -211,11 +211,11 @@ final class MacroEditorDialog extends JDialog {
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         buttons.setOpaque(false);
-        addStepButton(buttons, "actions.macros.editor.step.add", this::addStep);
-        addStepButton(buttons, "actions.macros.editor.step.edit", this::editStep);
-        addStepButton(buttons, "actions.macros.editor.step.remove", this::removeStep);
-        addStepButton(buttons, "actions.macros.editor.step.up", () -> moveSelected(-1));
-        addStepButton(buttons, "actions.macros.editor.step.down", () -> moveSelected(1));
+        addStepButton(buttons, "actions.customCommands.editor.step.add", this::addStep);
+        addStepButton(buttons, "actions.customCommands.editor.step.edit", this::editStep);
+        addStepButton(buttons, "actions.customCommands.editor.step.remove", this::removeStep);
+        addStepButton(buttons, "actions.customCommands.editor.step.up", () -> moveSelected(-1));
+        addStepButton(buttons, "actions.customCommands.editor.step.down", () -> moveSelected(1));
         panel.add(buttons, BorderLayout.SOUTH);
         return panel;
     }
@@ -282,11 +282,11 @@ final class MacroEditorDialog extends JDialog {
     }
 
     private void addStep() {
-        MacroStep step = new MacroStepEditorDialog(
+        CustomCommandStep step = new CustomCommandStepEditorDialog(
                 this,
                 null,
                 paramsModel.parameters(),
-                this::addMissingMacroParameters
+                this::addMissingCustomCommandParameters
         ).showDialog();
         if (step != null) {
             stepsModel.addStep(step);
@@ -298,22 +298,22 @@ final class MacroEditorDialog extends JDialog {
         if (row < 0) {
             return;
         }
-        MacroStep edited = new MacroStepEditorDialog(
+        CustomCommandStep edited = new CustomCommandStepEditorDialog(
                 this,
                 stepsModel.getStep(row),
                 paramsModel.parameters(),
-                this::addMissingMacroParameters
+                this::addMissingCustomCommandParameters
         ).showDialog();
         if (edited != null) {
             stepsModel.setStep(row, edited);
         }
     }
 
-    private void addMissingMacroParameters(List<MacroParameterSpec> specs) {
+    private void addMissingCustomCommandParameters(List<CustomCommandParameterSpec> specs) {
         if (specs == null || specs.isEmpty()) {
             return;
         }
-        for (MacroParameterSpec spec : specs) {
+        for (CustomCommandParameterSpec spec : specs) {
             String name = spec == null ? null : spec.getName();
             if (name == null || name.isBlank() || paramsModel.hasParameter(name)) {
                 continue;
@@ -342,8 +342,8 @@ final class MacroEditorDialog extends JDialog {
     }
 
     private void save() {
-        MacroDefinition candidate = buildCandidate();
-        List<String> errors = MacroValidator.validate(candidate, existingMacros, originalActionKey);
+        CustomCommandDefinition candidate = buildCandidate();
+        List<String> errors = CustomCommandValidator.validate(candidate, existingCustomCommands, originalActionKey);
         if (!errors.isEmpty()) {
             showErrors(errors);
             return;
@@ -352,9 +352,9 @@ final class MacroEditorDialog extends JDialog {
         dispose();
     }
 
-    private MacroDefinition buildCandidate() {
+    private CustomCommandDefinition buildCandidate() {
         String name = nameField.getText().trim();
-        // Preserve the existing UUID on edit; generate a new one for new macros.
+        // Preserve the existing UUID on edit; generate a new one for new customCommands.
         String id = (originalId != null && !originalId.isBlank()) ? originalId : UUID.randomUUID().toString();
         idField.setText(id);
         String actionKey = actionKeyField.getText().trim();
@@ -362,7 +362,7 @@ final class MacroEditorDialog extends JDialog {
             actionKey = uniqueGeneratedActionKey(name);
             actionKeyField.setText(actionKey);
         }
-        return new MacroDefinition(
+        return new CustomCommandDefinition(
                 id,
                 actionKey,
                 name,
@@ -378,9 +378,9 @@ final class MacroEditorDialog extends JDialog {
         if (base.isBlank()) {
             base = "new_custom_command";
         }
-        List<String> existingKeys = existingMacros.stream()
-                .filter(macro -> !sameId(macro.getActionKey(), originalActionKey))
-                .map(MacroDefinition::getActionKey)
+        List<String> existingKeys = existingCustomCommands.stream()
+                .filter(customCommand -> !sameId(customCommand.getActionKey(), originalActionKey))
+                .map(CustomCommandDefinition::getActionKey)
                 .map(value -> value.toLowerCase(Locale.ROOT))
                 .toList();
         String candidate = base;
@@ -505,31 +505,31 @@ final class MacroEditorDialog extends JDialog {
     }
 
     private static final class ParamsTableModel extends AbstractTableModel {
-        private final List<MacroParameterSpec> params = new ArrayList<>();
+        private final List<CustomCommandParameterSpec> params = new ArrayList<>();
         private final String[] columns = {
-                getText("actions.macros.editor.param.column.name"),
-                getText("actions.macros.editor.param.column.type"),
-                getText("actions.macros.editor.param.column.required"),
-                getText("actions.macros.editor.param.column.description"),
-                getText("actions.macros.editor.param.column.examples")
+                getText("actions.customCommands.editor.param.column.name"),
+                getText("actions.customCommands.editor.param.column.type"),
+                getText("actions.customCommands.editor.param.column.required"),
+                getText("actions.customCommands.editor.param.column.description"),
+                getText("actions.customCommands.editor.param.column.examples")
         };
 
-        void setParameters(List<MacroParameterSpec> newParams) {
+        void setParameters(List<CustomCommandParameterSpec> newParams) {
             params.clear();
             if (newParams != null) params.addAll(newParams);
             fireTableDataChanged();
         }
 
-        List<MacroParameterSpec> parameters() { return List.copyOf(params); }
+        List<CustomCommandParameterSpec> parameters() { return List.copyOf(params); }
 
-        MacroParameterSpec getParameter(int row) { return params.get(row); }
+        CustomCommandParameterSpec getParameter(int row) { return params.get(row); }
 
-        void addParameter(MacroParameterSpec spec) {
+        void addParameter(CustomCommandParameterSpec spec) {
             params.add(spec);
             fireTableRowsInserted(params.size() - 1, params.size() - 1);
         }
 
-        void setParameter(int row, MacroParameterSpec spec) {
+        void setParameter(int row, CustomCommandParameterSpec spec) {
             params.set(row, spec);
             fireTableRowsUpdated(row, row);
         }
@@ -549,7 +549,7 @@ final class MacroEditorDialog extends JDialog {
 
         @Override
         public Object getValueAt(int row, int col) {
-            MacroParameterSpec spec = params.get(row);
+            CustomCommandParameterSpec spec = params.get(row);
             return switch (col) {
                 case 0 -> spec.getName();
                 case 1 -> spec.getType();
@@ -562,14 +562,14 @@ final class MacroEditorDialog extends JDialog {
     }
 
     private static final class StepsTableModel extends AbstractTableModel {
-        private final List<MacroStep> steps = new ArrayList<>();
+        private final List<CustomCommandStep> steps = new ArrayList<>();
         private final String[] columns = {
-                getText("actions.macros.editor.step.type"),
-                getText("actions.macros.editor.step.column.value"),
-                getText("actions.macros.editor.step.durationMs")
+                getText("actions.customCommands.editor.step.type"),
+                getText("actions.customCommands.editor.step.column.value"),
+                getText("actions.customCommands.editor.step.durationMs")
         };
 
-        private void setSteps(List<MacroStep> newSteps) {
+        private void setSteps(List<CustomCommandStep> newSteps) {
             steps.clear();
             if (newSteps != null) {
                 steps.addAll(newSteps);
@@ -577,20 +577,20 @@ final class MacroEditorDialog extends JDialog {
             fireTableDataChanged();
         }
 
-        private List<MacroStep> steps() {
+        private List<CustomCommandStep> steps() {
             return List.copyOf(steps);
         }
 
-        private MacroStep getStep(int row) {
+        private CustomCommandStep getStep(int row) {
             return steps.get(row);
         }
 
-        private void addStep(MacroStep step) {
+        private void addStep(CustomCommandStep step) {
             steps.add(step);
             fireTableRowsInserted(steps.size() - 1, steps.size() - 1);
         }
 
-        private void setStep(int row, MacroStep step) {
+        private void setStep(int row, CustomCommandStep step) {
             steps.set(row, step);
             fireTableRowsUpdated(row, row);
         }
@@ -605,7 +605,7 @@ final class MacroEditorDialog extends JDialog {
             if (row < 0 || target < 0 || target >= steps.size()) {
                 return false;
             }
-            MacroStep step = steps.remove(row);
+            CustomCommandStep step = steps.remove(row);
             steps.add(target, step);
             fireTableDataChanged();
             return true;
@@ -628,16 +628,16 @@ final class MacroEditorDialog extends JDialog {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            MacroStep step = steps.get(rowIndex);
+            CustomCommandStep step = steps.get(rowIndex);
             return switch (columnIndex) {
-                case 0 -> MacroStepEditorDialog.stepTypeLabel(step.getType());
+                case 0 -> CustomCommandStepEditorDialog.stepTypeLabel(step.getType());
                 case 1 -> stepValue(step);
                 case 2 -> durationValue(step);
                 default -> "";
             };
         }
 
-        private static String stepValue(MacroStep step) {
+        private static String stepValue(CustomCommandStep step) {
             return switch (step.getType()) {
                 case SPEAK -> step.getText();
                 case BINDING_TAP, BINDING_HOLD -> step.getBindingId();
@@ -647,7 +647,7 @@ final class MacroEditorDialog extends JDialog {
             };
         }
 
-        private static String durationValue(MacroStep step) {
+        private static String durationValue(CustomCommandStep step) {
             return switch (step.getType()) {
                 case BINDING_HOLD, DELAY, RAW_KEY -> Integer.toString(step.getDurationMs());
                 default -> "";

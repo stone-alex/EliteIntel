@@ -1,4 +1,4 @@
-package elite.intel.ai.brain.actions.macro;
+package elite.intel.ai.brain.actions.customcommand;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -9,38 +9,38 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MacroExecutionContextTest {
+class CustomCommandExecutionContextTest {
 
     // --- resolveString ---
 
     @Test
     void resolveStringReplacesKnownParam() {
-        MacroExecutionContext ctx = contextWithJson("{\"speed\": \"50\"}");
+        CustomCommandExecutionContext ctx = contextWithJson("{\"speed\": \"50\"}");
         assertEquals("set speed 50", ctx.resolveString("set speed ${speed}"));
     }
 
     @Test
     void resolveStringMultipleParams() {
-        MacroExecutionContext ctx = contextWithJson("{\"lat\": \"-10.5\", \"lon\": \"45.2\"}");
+        CustomCommandExecutionContext ctx = contextWithJson("{\"lat\": \"-10.5\", \"lon\": \"45.2\"}");
         assertEquals("navigate to -10.5, 45.2", ctx.resolveString("navigate to ${lat}, ${lon}"));
     }
 
     @Test
     void resolveStringNullTemplateReturnsNull() {
-        MacroExecutionContext ctx = contextWithJson("{}");
+        CustomCommandExecutionContext ctx = contextWithJson("{}");
         assertNull(ctx.resolveString(null));
     }
 
     @Test
     void resolveStringNoRefsReturnedUnchanged() {
-        MacroExecutionContext ctx = contextWithJson("{}");
+        CustomCommandExecutionContext ctx = contextWithJson("{}");
         assertEquals("hello pilot", ctx.resolveString("hello pilot"));
     }
 
     @Test
     void resolveStringThrowsForUnresolvedRef() {
-        MacroExecutionContext ctx = contextWithJson("{}");
-        assertThrows(UnresolvedMacroParamException.class,
+        CustomCommandExecutionContext ctx = contextWithJson("{}");
+        assertThrows(UnresolvedCustomCommandParamException.class,
                 () -> ctx.resolveString("navigate to ${lat}"));
     }
 
@@ -48,7 +48,7 @@ class MacroExecutionContextTest {
 
     @Test
     void resolveStepParamsPreservesNumberTypeForBareRef() {
-        MacroExecutionContext ctx = contextWithJson("{\"lat\": -10.5, \"lon\": 45.2}");
+        CustomCommandExecutionContext ctx = contextWithJson("{\"lat\": -10.5, \"lon\": 45.2}");
         JsonObject result = ctx.resolveStepParams(Map.of("lat", "${lat}", "lon", "${lon}"));
         // Bare refs must preserve JSON number type, not coerce to string.
         assertFalse(result.get("lat").isJsonPrimitive() && result.get("lat").getAsJsonPrimitive().isString());
@@ -58,7 +58,7 @@ class MacroExecutionContextTest {
 
     @Test
     void resolveStepParamsPreservesBooleanTypeForBareRef() {
-        MacroExecutionContext ctx = contextWithJson("{\"enabled\": true}");
+        CustomCommandExecutionContext ctx = contextWithJson("{\"enabled\": true}");
         JsonObject result = ctx.resolveStepParams(Map.of("state", "${enabled}"));
         assertTrue(result.get("state").getAsBoolean());
         assertTrue(result.get("state").getAsJsonPrimitive().isBoolean());
@@ -66,29 +66,29 @@ class MacroExecutionContextTest {
 
     @Test
     void resolveStepParamsMixedTemplateBecomesString() {
-        MacroExecutionContext ctx = contextWithJson("{\"name\": \"gold\"}");
+        CustomCommandExecutionContext ctx = contextWithJson("{\"name\": \"gold\"}");
         JsonObject result = ctx.resolveStepParams(Map.of("key", "find_${name}"));
         assertEquals("find_gold", result.get("key").getAsString());
     }
 
     @Test
     void resolveStepParamsEmptyMappingReturnsEmptyObject() {
-        MacroExecutionContext ctx = contextWithJson("{\"lat\": 1.0}");
+        CustomCommandExecutionContext ctx = contextWithJson("{\"lat\": 1.0}");
         JsonObject result = ctx.resolveStepParams(Map.of());
         assertTrue(result.entrySet().isEmpty());
     }
 
     @Test
     void resolveStepParamsNullMappingReturnsEmptyObject() {
-        MacroExecutionContext ctx = contextWithJson("{}");
+        CustomCommandExecutionContext ctx = contextWithJson("{}");
         JsonObject result = ctx.resolveStepParams(null);
         assertTrue(result.entrySet().isEmpty());
     }
 
     @Test
     void resolveStepParamsThrowsForUnresolvedBareRef() {
-        MacroExecutionContext ctx = contextWithJson("{}");
-        assertThrows(UnresolvedMacroParamException.class,
+        CustomCommandExecutionContext ctx = contextWithJson("{}");
+        assertThrows(UnresolvedCustomCommandParamException.class,
                 () -> ctx.resolveStepParams(Map.of("lat", "${lat}")));
     }
 
@@ -96,23 +96,23 @@ class MacroExecutionContextTest {
 
     @Test
     void validateRequiredParamsNoErrorsWhenAllPresent() {
-        MacroDefinition macro = macroWithParams(List.of(
-                new MacroParameterSpec("lat", "number", true, "", null, null),
-                new MacroParameterSpec("lon", "number", true, "", null, null)
+        CustomCommandDefinition customCommand = customCommandWithParams(List.of(
+                new CustomCommandParameterSpec("lat", "number", true, "", null, null),
+                new CustomCommandParameterSpec("lon", "number", true, "", null, null)
         ));
-        MacroExecutionContext ctx = MacroExecutionContext.fromJson(macro,
+        CustomCommandExecutionContext ctx = CustomCommandExecutionContext.fromJson(customCommand,
                 JsonParser.parseString("{\"lat\": -10.5, \"lon\": 45.2}").getAsJsonObject());
         assertTrue(ctx.validateRequiredParams().isEmpty());
     }
 
     @Test
     void validateRequiredParamsReportsEachMissingRequired() {
-        MacroDefinition macro = macroWithParams(List.of(
-                new MacroParameterSpec("lat", "number", true, "", null, null),
-                new MacroParameterSpec("lon", "number", true, "", null, null),
-                new MacroParameterSpec("comment", "string", false, "", null, null)
+        CustomCommandDefinition customCommand = customCommandWithParams(List.of(
+                new CustomCommandParameterSpec("lat", "number", true, "", null, null),
+                new CustomCommandParameterSpec("lon", "number", true, "", null, null),
+                new CustomCommandParameterSpec("comment", "string", false, "", null, null)
         ));
-        MacroExecutionContext ctx = MacroExecutionContext.fromJson(macro, new JsonObject());
+        CustomCommandExecutionContext ctx = CustomCommandExecutionContext.fromJson(customCommand, new JsonObject());
         List<String> errors = ctx.validateRequiredParams();
         assertEquals(2, errors.size(), "Only required params should be reported missing");
         assertTrue(errors.stream().anyMatch(e -> e.contains("lat")));
@@ -121,30 +121,30 @@ class MacroExecutionContextTest {
 
     @Test
     void validateRequiredParamsIgnoresOptional() {
-        MacroDefinition macro = macroWithParams(List.of(
-                new MacroParameterSpec("hint", "string", false, "", null, null)
+        CustomCommandDefinition customCommand = customCommandWithParams(List.of(
+                new CustomCommandParameterSpec("hint", "string", false, "", null, null)
         ));
-        MacroExecutionContext ctx = MacroExecutionContext.fromJson(macro, new JsonObject());
+        CustomCommandExecutionContext ctx = CustomCommandExecutionContext.fromJson(customCommand, new JsonObject());
         assertTrue(ctx.validateRequiredParams().isEmpty());
     }
 
     @Test
-    void validateRequiredParamsNoErrorsForParamlessMacro() {
-        MacroDefinition macro = macroWithParams(List.of());
-        MacroExecutionContext ctx = MacroExecutionContext.fromJson(macro, new JsonObject());
+    void validateRequiredParamsNoErrorsForParamlessCustomCommand() {
+        CustomCommandDefinition customCommand = customCommandWithParams(List.of());
+        CustomCommandExecutionContext ctx = CustomCommandExecutionContext.fromJson(customCommand, new JsonObject());
         assertTrue(ctx.validateRequiredParams().isEmpty());
     }
 
     // --- helpers ---
 
-    private static MacroExecutionContext contextWithJson(String json) {
-        MacroDefinition macro = macroWithParams(List.of());
+    private static CustomCommandExecutionContext contextWithJson(String json) {
+        CustomCommandDefinition customCommand = customCommandWithParams(List.of());
         JsonObject params = JsonParser.parseString(json).getAsJsonObject();
-        return MacroExecutionContext.fromJson(macro, params);
+        return CustomCommandExecutionContext.fromJson(customCommand, params);
     }
 
-    private static MacroDefinition macroWithParams(List<MacroParameterSpec> params) {
-        return new MacroDefinition("test", "Test", "", "test phrase", params,
-                List.of(new MacroStep(MacroStep.Type.SPEAK, null, 0, "hello", null)));
+    private static CustomCommandDefinition customCommandWithParams(List<CustomCommandParameterSpec> params) {
+        return new CustomCommandDefinition("test", "Test", "", "test phrase", params,
+                List.of(new CustomCommandStep(CustomCommandStep.Type.SPEAK, null, 0, "hello", null)));
     }
 }

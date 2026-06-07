@@ -1,4 +1,4 @@
-package elite.intel.ai.brain.actions.macro;
+package elite.intel.ai.brain.actions.customcommand;
 
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
@@ -7,150 +7,150 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MacroDefinitionTest {
+class CustomCommandDefinitionTest {
 
     private static final Gson GSON = new Gson();
 
     // --- validate() ---
 
     @Test
-    void validMacroPassesValidation() {
-        MacroDefinition macro = deserialize("""
+    void validCustomCommandPassesValidation() {
+        CustomCommandDefinition customCommand = deserialize("""
                 {
-                  "id": "macro_test",
+                  "id": "custom_command_test",
                   "name": "Test",
                   "phrases": "test me",
                   "steps": [{"type": "SPEAK", "text": "hi"}]
                 }
                 """);
-        assertDoesNotThrow(macro::validate);
+        assertDoesNotThrow(customCommand::validate);
     }
 
     @Test
     void blankIdIsRejected() {
-        MacroDefinition macro = deserialize("""
+        CustomCommandDefinition customCommand = deserialize("""
                 {"id": "", "name": "T", "phrases": "p", "steps": [{"type":"SPEAK","text":"x"}]}
                 """);
-        assertThrows(IllegalArgumentException.class, macro::validate);
+        assertThrows(IllegalArgumentException.class, customCommand::validate);
     }
 
     @Test
     void blankNameIsRejected() {
-        MacroDefinition macro = deserialize("""
-                {"id": "macro_x", "name": "", "phrases": "p", "steps": [{"type":"SPEAK","text":"x"}]}
+        CustomCommandDefinition customCommand = deserialize("""
+                {"id": "custom_command_x", "name": "", "phrases": "p", "steps": [{"type":"SPEAK","text":"x"}]}
                 """);
-        assertThrows(IllegalArgumentException.class, macro::validate);
+        assertThrows(IllegalArgumentException.class, customCommand::validate);
     }
 
     @Test
     void blankPhrasesIsRejected() {
-        MacroDefinition macro = deserialize("""
-                {"id": "macro_x", "name": "T", "phrases": "", "steps": [{"type":"SPEAK","text":"x"}]}
+        CustomCommandDefinition customCommand = deserialize("""
+                {"id": "custom_command_x", "name": "T", "phrases": "", "steps": [{"type":"SPEAK","text":"x"}]}
                 """);
-        assertThrows(IllegalArgumentException.class, macro::validate);
+        assertThrows(IllegalArgumentException.class, customCommand::validate);
     }
 
     @Test
     void emptyStepsIsRejected() {
-        MacroDefinition macro = deserialize("""
-                {"id": "macro_x", "name": "T", "phrases": "p", "steps": []}
+        CustomCommandDefinition customCommand = deserialize("""
+                {"id": "custom_command_x", "name": "T", "phrases": "p", "steps": []}
                 """);
-        assertThrows(IllegalArgumentException.class, macro::validate);
+        assertThrows(IllegalArgumentException.class, customCommand::validate);
     }
 
     @Test
     void nullStepInsideListIsRejected() {
-        MacroDefinition macro = deserialize("""
-                {"id": "macro_x", "name": "T", "phrases": "p", "steps": [null]}
+        CustomCommandDefinition customCommand = deserialize("""
+                {"id": "custom_command_x", "name": "T", "phrases": "p", "steps": [null]}
                 """);
-        assertThrows(IllegalArgumentException.class, macro::validate);
+        assertThrows(IllegalArgumentException.class, customCommand::validate);
     }
 
     @Test
     void bindingTapStepWithoutBindingIdIsRejected() {
-        MacroDefinition macro = deserialize("""
-                {"id": "macro_x", "name": "T", "phrases": "p",
+        CustomCommandDefinition customCommand = deserialize("""
+                {"id": "custom_command_x", "name": "T", "phrases": "p",
                  "steps": [{"type":"BINDING_TAP"}]}
                 """);
-        assertThrows(IllegalArgumentException.class, macro::validate);
+        assertThrows(IllegalArgumentException.class, customCommand::validate);
     }
 
     @Test
     void speakStepWithoutTextIsRejected() {
-        MacroDefinition macro = deserialize("""
-                {"id": "macro_x", "name": "T", "phrases": "p",
+        CustomCommandDefinition customCommand = deserialize("""
+                {"id": "custom_command_x", "name": "T", "phrases": "p",
                  "steps": [{"type":"SPEAK"}]}
                 """);
-        assertThrows(IllegalArgumentException.class, macro::validate);
+        assertThrows(IllegalArgumentException.class, customCommand::validate);
     }
 
     @Test
     void descriptionIsOptionalAndDefaultsToEmpty() {
-        MacroDefinition macro = deserialize("""
-                {"id": "macro_x", "name": "T", "phrases": "p",
+        CustomCommandDefinition customCommand = deserialize("""
+                {"id": "custom_command_x", "name": "T", "phrases": "p",
                  "steps": [{"type":"SPEAK","text":"ok"}]}
                 """);
-        assertDoesNotThrow(macro::validate);
-        assertEquals("", macro.getDescription());
+        assertDoesNotThrow(customCommand::validate);
+        assertEquals("", customCommand.getDescription());
     }
 
     // --- distinctBindingIds() ---
 
     @Test
     void distinctBindingIdsForBindingTapAndHold() {
-        MacroDefinition macro = deserialize("""
+        CustomCommandDefinition customCommand = deserialize("""
                 {"id":"m","name":"N","phrases":"p","steps":[
                   {"type":"BINDING_TAP","bindingId":"A"},
                   {"type":"BINDING_HOLD","bindingId":"B","durationMs":200}
                 ]}""");
-        assertEquals(List.of("A", "B"), macro.distinctBindingIds());
+        assertEquals(List.of("A", "B"), customCommand.distinctBindingIds());
     }
 
     @Test
     void distinctBindingIdsDeduplicates() {
-        MacroDefinition macro = deserialize("""
+        CustomCommandDefinition customCommand = deserialize("""
                 {"id":"m","name":"N","phrases":"p","steps":[
                   {"type":"BINDING_TAP","bindingId":"A"},
                   {"type":"BINDING_TAP","bindingId":"A"},
                   {"type":"BINDING_HOLD","bindingId":"B","durationMs":100}
                 ]}""");
-        assertEquals(List.of("A", "B"), macro.distinctBindingIds());
+        assertEquals(List.of("A", "B"), customCommand.distinctBindingIds());
     }
 
     @Test
     void distinctBindingIdsExcludesDelayAndSpeakAndRunCommand() {
-        MacroDefinition macro = deserialize("""
+        CustomCommandDefinition customCommand = deserialize("""
                 {"id":"m","name":"N","phrases":"p","steps":[
                   {"type":"DELAY","durationMs":500},
                   {"type":"SPEAK","text":"hi"},
                   {"type":"RUN_COMMAND","actionId":"deploy_landing_gear"}
                 ]}""");
-        assertTrue(macro.distinctBindingIds().isEmpty());
+        assertTrue(customCommand.distinctBindingIds().isEmpty());
     }
 
     @Test
     void distinctBindingIdsReturnsEmptyWhenNoBindingSteps() {
-        MacroDefinition macro = deserialize("""
+        CustomCommandDefinition customCommand = deserialize("""
                 {"id":"m","name":"N","phrases":"p","steps":[
                   {"type":"SPEAK","text":"hello"}
                 ]}""");
-        assertTrue(macro.distinctBindingIds().isEmpty());
+        assertTrue(customCommand.distinctBindingIds().isEmpty());
     }
 
     @Test
     void distinctBindingIdsPreservesFirstOccurrenceOrder() {
-        MacroDefinition macro = deserialize("""
+        CustomCommandDefinition customCommand = deserialize("""
                 {"id":"m","name":"N","phrases":"p","steps":[
                   {"type":"BINDING_TAP","bindingId":"B"},
                   {"type":"BINDING_TAP","bindingId":"A"},
                   {"type":"BINDING_TAP","bindingId":"B"}
                 ]}""");
-        assertEquals(List.of("B", "A"), macro.distinctBindingIds());
+        assertEquals(List.of("B", "A"), customCommand.distinctBindingIds());
     }
 
     // --- helpers ---
 
-    private MacroDefinition deserialize(String json) {
-        return GSON.fromJson(json, MacroDefinition.class);
+    private CustomCommandDefinition deserialize(String json) {
+        return GSON.fromJson(json, CustomCommandDefinition.class);
     }
 }

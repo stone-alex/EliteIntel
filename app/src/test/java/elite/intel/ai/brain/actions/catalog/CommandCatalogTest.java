@@ -3,7 +3,7 @@ package elite.intel.ai.brain.actions.catalog;
 import com.google.gson.Gson;
 import elite.intel.ai.brain.actions.Commands;
 import elite.intel.ai.brain.actions.handlers.commands.SimpleCommandActionHandler;
-import elite.intel.ai.brain.actions.macro.MacroDefinition;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandDefinition;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -88,92 +88,92 @@ class CommandCatalogTest {
         void accept(Commands command, CommandCatalogEntry entry);
     }
 
-    // ---- entries(List<MacroDefinition>) overload ----
+    // ---- entries(List<CustomCommandDefinition>) overload ----
 
     @Test
-    void builtInEntriesStillPresentWhenMacroListIsEmpty() {
+    void builtInEntriesStillPresentWhenCustomCommandListIsEmpty() {
         List<CommandCatalogEntry> entries = catalog.entries(List.of());
         assertEquals(Commands.values().length, entries.size());
     }
 
     @Test
-    void macroEntriesAppendedAfterBuiltIns() {
-        MacroDefinition macro = buildMacro("macro_test", "Test Macro", "desc");
-        List<CommandCatalogEntry> entries = catalog.entries(List.of(macro));
+    void customCommandEntriesAppendedAfterBuiltIns() {
+        CustomCommandDefinition customCommand = buildCustomCommand("custom_command_test", "Test Custom Command", "desc");
+        List<CommandCatalogEntry> entries = catalog.entries(List.of(customCommand));
 
         assertEquals(Commands.values().length + 1, entries.size());
-        CommandCatalogEntry macroEntry = entries.getLast();
-        assertEquals("macro_test", macroEntry.id());
-        assertEquals("Test Macro", macroEntry.name());
+        CommandCatalogEntry customCommandEntry = entries.getLast();
+        assertEquals("custom_command_test", customCommandEntry.id());
+        assertEquals("Test Custom Command", customCommandEntry.name());
     }
 
     @Test
-    void macroEntryTypeIsUserMacroAndIsMacroReturnsTrue() {
-        MacroDefinition macro = buildMacro("macro_x", "X", "desc");
-        CommandCatalogEntry entry = catalog.entries(List.of(macro)).getLast();
+    void customCommandEntryTypeIsUserCustomCommandAndIsCustomCommandReturnsTrue() {
+        CustomCommandDefinition customCommand = buildCustomCommand("custom_command_x", "X", "desc");
+        CommandCatalogEntry entry = catalog.entries(List.of(customCommand)).getLast();
 
-        assertEquals(CommandCatalogEntryType.USER_MACRO, entry.type());
-        assertTrue(entry.isMacro());
+        assertEquals(CommandCatalogEntryType.CUSTOM_COMMAND, entry.type());
+        assertTrue(entry.isCustomCommand());
     }
 
     @Test
-    void builtInEntriesHaveIsMacroFalse() {
+    void builtInEntriesHaveIsCustomCommandFalse() {
         for (CommandCatalogEntry entry : catalog.entries()) {
-            assertFalse(entry.isMacro(), "Built-in entry " + entry.id() + " must not be a macro");
+            assertFalse(entry.isCustomCommand(), "Built-in entry " + entry.id() + " must not be a customCommand");
         }
     }
 
     @Test
-    void blankMacroDescriptionFallsBackToDefaultText() {
-        MacroDefinition macro = buildMacro("macro_nodesc", "My Macro", "");
-        CommandCatalogEntry entry = catalog.entries(List.of(macro)).getLast();
+    void blankCustomCommandDescriptionFallsBackToDefaultText() {
+        CustomCommandDefinition customCommand = buildCustomCommand("custom_command_nodesc", "My Custom Command", "");
+        CommandCatalogEntry entry = catalog.entries(List.of(customCommand)).getLast();
 
-        assertEquals("User macro: My Macro", entry.description());
+        assertEquals("User custom command: My Custom Command", entry.description());
     }
 
     @Test
-    void nonBlankMacroDescriptionIsPreserved() {
-        MacroDefinition macro = buildMacro("macro_desc", "My Macro", "Custom description");
-        CommandCatalogEntry entry = catalog.entries(List.of(macro)).getLast();
+    void nonBlankCustomCommandDescriptionIsPreserved() {
+        CustomCommandDefinition customCommand = buildCustomCommand("custom_command_desc", "My Custom Command", "Custom description");
+        CommandCatalogEntry entry = catalog.entries(List.of(customCommand)).getLast();
 
         assertEquals("Custom description", entry.description());
     }
 
     @Test
     void distinctBindingIdsDeduplicatesAndExcludesNonBindingSteps() {
-        MacroDefinition macro = buildMacro("macro_bindings", "Bindings", "desc",
+        CustomCommandDefinition customCommand = buildCustomCommand("custom_command_bindings", "Bindings", "desc",
                 "[{\"type\":\"BINDING_TAP\",\"bindingId\":\"A\"}," +
                 "{\"type\":\"BINDING_HOLD\",\"bindingId\":\"B\",\"durationMs\":200}," +
                 "{\"type\":\"DELAY\",\"durationMs\":100}," +
                 "{\"type\":\"SPEAK\",\"text\":\"hi\"}," +
                 "{\"type\":\"BINDING_TAP\",\"bindingId\":\"A\"}]");
 
-        List<String> ids = macro.distinctBindingIds();
+        List<String> ids = customCommand.distinctBindingIds();
         assertEquals(List.of("A", "B"), ids);
     }
 
     @Test
     void distinctBindingIdsEmptyWhenOnlyDelayAndSpeak() {
-        MacroDefinition macro = buildMacro("macro_nodeps", "No Deps", "",
+        CustomCommandDefinition customCommand = buildCustomCommand("custom_command_nodeps", "No Deps", "",
                 "[{\"type\":\"DELAY\",\"durationMs\":0},{\"type\":\"SPEAK\",\"text\":\"x\"}]");
 
-        assertTrue(macro.distinctBindingIds().isEmpty());
+        assertTrue(customCommand.distinctBindingIds().isEmpty());
     }
 
-    // ---- helpers for macro tests ----
+    // ---- helpers for custom command tests ----
 
-    private static final Gson MACRO_GSON = new Gson();
+    private static final Gson CUSTOM_COMMAND_GSON = new Gson();
 
-    private MacroDefinition buildMacro(String id, String name, String description) {
-        return buildMacro(id, name, description,
+    private CustomCommandDefinition buildCustomCommand(String id, String name, String description) {
+        return buildCustomCommand(id, name, description,
                 "[{\"type\":\"SPEAK\",\"text\":\"ok\"}]");
     }
 
-    private MacroDefinition buildMacro(String id, String name, String description, String stepsJson) {
+    private CustomCommandDefinition buildCustomCommand(String id, String name, String description, String stepsJson) {
         String json = "{\"id\":\"" + id + "\",\"name\":\"" + name + "\"," +
                       "\"description\":\"" + description + "\"," +
                       "\"phrases\":\"trigger " + id + "\"," +
                       "\"steps\":" + stepsJson + "}";
-        return MACRO_GSON.fromJson(json, MacroDefinition.class);
+        return CUSTOM_COMMAND_GSON.fromJson(json, CustomCommandDefinition.class);
     }
 }

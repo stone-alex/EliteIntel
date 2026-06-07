@@ -6,13 +6,13 @@ import java.awt.*;
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 /**
- * Groups bindings, command catalog, and future macros under one Actions tab.
+ * Groups bindings, command catalog, and future customCommands under one Actions tab.
  */
 public class ActionsTabPanel extends JPanel {
 
     private final BindingsTabPanel bindingsTabPanel = new BindingsTabPanel();
     private final CommandCatalogTablePanel commandCatalogTablePanel = new CommandCatalogTablePanel();
-    private final MacrosTabPanel macrosTabPanel = new MacrosTabPanel();
+    private final CustomCommandsTabPanel customCommandsTabPanel = new CustomCommandsTabPanel();
 
     public ActionsTabPanel() {
         buildUi();
@@ -27,7 +27,7 @@ public class ActionsTabPanel extends JPanel {
         AppTheme.styleTabbedPane(tabs);
         tabs.addTab(getText("actions.tab.bindings"), bindingsTabPanel);
         tabs.addTab(getText("actions.tab.commands"), commandCatalogTablePanel);
-        tabs.addTab(getText("actions.tab.macros"), macrosTabPanel);
+        tabs.addTab(getText("actions.tab.customCommands"), customCommandsTabPanel);
 
         add(tabs, BorderLayout.CENTER);
     }
@@ -35,7 +35,7 @@ public class ActionsTabPanel extends JPanel {
     public void initData() {
         bindingsTabPanel.initData();
         commandCatalogTablePanel.initData();
-        macrosTabPanel.initData();
+        customCommandsTabPanel.initData();
     }
 
     public void dispose() {

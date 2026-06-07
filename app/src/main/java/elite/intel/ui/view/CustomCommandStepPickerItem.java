@@ -11,22 +11,22 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Display item for macro step pickers; the UI shows a label, while persistence stores only {@link #id()}.
+ * Display item for custom command step pickers; the UI shows a label, while persistence stores only {@link #id()}.
  */
-record MacroStepPickerItem(String id, String label, boolean known) {
+record CustomCommandStepPickerItem(String id, String label, boolean known) {
 
-    MacroStepPickerItem {
+    CustomCommandStepPickerItem {
         id = Objects.requireNonNull(id, "id");
         label = Objects.requireNonNull(label, "label");
     }
 
     /**
-     * Returns built-in command picker items only; macro commands are intentionally excluded for Macro Editor v1.
+     * Returns built-in command picker items only; customCommand commands are intentionally excluded for CustomCommand Editor v1.
      */
-    static List<MacroStepPickerItem> builtInCommandItems() {
+    static List<CustomCommandStepPickerItem> builtInCommandItems() {
         return new CommandCatalog().entries().stream()
-                .filter(entry -> !entry.isMacro())
-                .map(entry -> new MacroStepPickerItem(entry.id(), entry.name(), true))
+                .filter(entry -> !entry.isCustomCommand())
+                .map(entry -> new CustomCommandStepPickerItem(entry.id(), entry.name(), true))
                 .sorted((left, right) -> left.label().compareToIgnoreCase(right.label()))
                 .toList();
     }
@@ -34,11 +34,11 @@ record MacroStepPickerItem(String id, String label, boolean known) {
     /**
      * Returns known Elite Dangerous binding ids exposed by the input binding layer.
      */
-    static List<MacroStepPickerItem> bindingItems() {
-        Map<String, MacroStepPickerItem> byId = new LinkedHashMap<>();
+    static List<CustomCommandStepPickerItem> bindingItems() {
+        Map<String, CustomCommandStepPickerItem> byId = new LinkedHashMap<>();
         for (Bindings.GameCommand command : Bindings.GameCommand.values()) {
             String id = command.getGameBinding();
-            byId.putIfAbsent(id, new MacroStepPickerItem(id, StringUtls.humanizeBindingName(id), true));
+            byId.putIfAbsent(id, new CustomCommandStepPickerItem(id, StringUtls.humanizeBindingName(id), true));
         }
         return new ArrayList<>(byId.values()).stream()
                 .sorted((left, right) -> left.label().compareToIgnoreCase(right.label()))
@@ -48,15 +48,15 @@ record MacroStepPickerItem(String id, String label, boolean known) {
     /**
      * Creates a visible fallback item for legacy or unknown ids so editing does not silently drop them.
      */
-    static MacroStepPickerItem unknown(String id, String labelPrefix) {
-        return new MacroStepPickerItem(id == null ? "" : id, labelPrefix, false);
+    static CustomCommandStepPickerItem unknown(String id, String labelPrefix) {
+        return new CustomCommandStepPickerItem(id == null ? "" : id, labelPrefix, false);
     }
 
     /**
      * Extracts the stable stored id from either a picker item or editable combo-box text.
      */
     static String resolveId(Object selected) {
-        if (selected instanceof MacroStepPickerItem item) {
+        if (selected instanceof CustomCommandStepPickerItem item) {
             return item.id();
         }
         String text = selected == null ? "" : selected.toString().trim();

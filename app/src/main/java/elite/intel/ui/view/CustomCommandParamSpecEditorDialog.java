@@ -1,6 +1,6 @@
 package elite.intel.ui.view;
 
-import elite.intel.ai.brain.actions.macro.MacroParameterSpec;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandParameterSpec;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 /**
- * Modal editor for one {@link MacroParameterSpec}.
+ * Modal editor for one {@link CustomCommandParameterSpec}.
  */
-final class MacroParamSpecEditorDialog extends JDialog {
+final class CustomCommandParamSpecEditorDialog extends JDialog {
 
     private static final String[] TYPES = {"string", "number", "boolean"};
 
@@ -24,22 +24,22 @@ final class MacroParamSpecEditorDialog extends JDialog {
     private final JTextField descriptionField = new JTextField(28);
     private final JTextField examplesField = new JTextField(28);
     private final JTextField extractionHintField = new JTextField(28);
-    private MacroParameterSpec result;
+    private CustomCommandParameterSpec result;
 
-    MacroParamSpecEditorDialog(Component parent, MacroParameterSpec spec) {
+    CustomCommandParamSpecEditorDialog(Component parent, CustomCommandParameterSpec spec) {
         super(SwingUtilities.getWindowAncestor(parent),
-                getText("actions.macros.editor.param.title"),
+                getText("actions.customCommands.editor.param.title"),
                 ModalityType.APPLICATION_MODAL);
         populate(spec);
         buildUi();
     }
 
-    MacroParameterSpec showDialog() {
+    CustomCommandParameterSpec showDialog() {
         setVisible(true);
         return result;
     }
 
-    private void populate(MacroParameterSpec spec) {
+    private void populate(CustomCommandParameterSpec spec) {
         if (spec == null) return;
         nameField.setText(spec.getName() != null ? spec.getName() : "");
         typeCombo.setSelectedItem(spec.getType() != null ? spec.getType() : "string");
@@ -67,12 +67,12 @@ final class MacroParamSpecEditorDialog extends JDialog {
         panel.setBackground(AppTheme.BG);
         GridBagConstraints gbc = AppTheme.baseGbc();
 
-        addRow(panel, gbc, getText("actions.macros.editor.param.name"), nameField);
-        addRow(panel, gbc, getText("actions.macros.editor.param.type"), typeCombo);
-        addRow(panel, gbc, getText("actions.macros.editor.param.required"), requiredCheck);
-        addRow(panel, gbc, getText("actions.macros.editor.param.description"), descriptionField);
-        addRow(panel, gbc, getText("actions.macros.editor.param.examples"), examplesField);
-        addRow(panel, gbc, getText("actions.macros.editor.param.extractionHint"), extractionHintField);
+        addRow(panel, gbc, getText("actions.customCommands.editor.param.name"), nameField);
+        addRow(panel, gbc, getText("actions.customCommands.editor.param.type"), typeCombo);
+        addRow(panel, gbc, getText("actions.customCommands.editor.param.required"), requiredCheck);
+        addRow(panel, gbc, getText("actions.customCommands.editor.param.description"), descriptionField);
+        addRow(panel, gbc, getText("actions.customCommands.editor.param.examples"), examplesField);
+        addRow(panel, gbc, getText("actions.customCommands.editor.param.extractionHint"), extractionHintField);
 
         AppTheme.applyDarkPalette(panel);
         return panel;
@@ -111,8 +111,8 @@ final class MacroParamSpecEditorDialog extends JDialog {
         String name = nameField.getText().trim();
         if (name.isBlank()) {
             JOptionPane.showMessageDialog(this,
-                    getText("actions.macros.editor.param.name") + " is required.",
-                    getText("actions.macros.editor.validation.title"),
+                    getText("actions.customCommands.editor.param.name") + " is required.",
+                    getText("actions.customCommands.editor.validation.title"),
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -126,7 +126,7 @@ final class MacroParamSpecEditorDialog extends JDialog {
                 .collect(Collectors.toList());
         String hint = extractionHintField.getText().trim();
 
-        result = new MacroParameterSpec(name, type, required, description,
+        result = new CustomCommandParameterSpec(name, type, required, description,
                 examples.isEmpty() ? null : examples,
                 hint.isBlank() ? null : hint);
         dispose();

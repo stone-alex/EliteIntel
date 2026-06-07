@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  *   <li>JSON examples in {@code PromptFactory.buildCommandRules()} — provide more accurate types
  *       (e.g. JSON {@code -10.5} is inferred as {@code number}, overriding a prior {@code string} guess)</li>
  * </ol>
- * Used by the macro step editor to auto-suggest known parameter keys when a command is selected.
+ * Used by the custom command step editor to auto-suggest known parameter keys when a command is selected.
  */
 public final class ActionParameterKeyExtractor {
 

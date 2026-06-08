@@ -5,9 +5,7 @@ import elite.intel.ai.brain.actions.catalog.CommandCatalogEntry;
 import elite.intel.ai.brain.actions.catalog.CommandCatalogEntryType;
 
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -72,46 +70,12 @@ public class CommandCatalogTablePanel extends JPanel {
         label.setForeground(AppTheme.FG);
         panel.add(label, BorderLayout.WEST);
 
-        // Wrapper that owns the ACCENT border so the clear button appears inside the field.
-        JPanel fieldWrapper = new JPanel(new BorderLayout());
-        fieldWrapper.setBackground(AppTheme.HUD_PANEL_BG_ALT);
-        fieldWrapper.setBorder(AppTheme.hudFieldBorder());
-
-        searchField = new PlaceholderTextField(getText("actions.commands.search.placeholder"));
-        searchField.setOpaque(false);
+        HudSearchField hudSearchField = new HudSearchField(
+                getText("actions.commands.search.placeholder"),
+                getText("actions.commands.search.clearTooltip"));
+        searchField = hudSearchField.textField();
         searchField.getDocument().addDocumentListener(new SearchDocumentListener());
-
-        // When applyDarkPalette sets CompoundBorder(LineBorder, EmptyBorder) on the field,
-        // redirect the outer LineBorder to fieldWrapper so the button appears inside the border.
-        boolean[] redirecting = {false};
-        searchField.addPropertyChangeListener("border", evt -> {
-            if (redirecting[0]) return;
-            if (evt.getNewValue() instanceof CompoundBorder cb
-                    && cb.getOutsideBorder() instanceof LineBorder lb) {
-                redirecting[0] = true;
-                try {
-                    fieldWrapper.setBorder(lb);
-                    searchField.setBorder(cb.getInsideBorder());
-                } finally {
-                    redirecting[0] = false;
-                }
-            }
-        });
-
-        JButton clearButton = new JButton("×");
-        clearButton.setToolTipText(getText("actions.commands.search.clearTooltip"));
-        clearButton.setOpaque(false);
-        clearButton.setContentAreaFilled(false);
-        clearButton.setBorderPainted(false);
-        clearButton.setFocusable(false);
-        clearButton.setForeground(AppTheme.FG_MUTED);
-        clearButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        clearButton.setMargin(new Insets(0, 8, 0, 8));
-        clearButton.addActionListener(event -> resetSearch());
-
-        fieldWrapper.add(searchField, BorderLayout.CENTER);
-        fieldWrapper.add(clearButton, BorderLayout.EAST);
-        panel.add(fieldWrapper, BorderLayout.CENTER);
+        panel.add(hudSearchField, BorderLayout.CENTER);
 
         return panel;
     }
@@ -235,34 +199,6 @@ public class CommandCatalogTablePanel extends JPanel {
                 .replace(">", "&gt;");
     }
 
-    private static final class PlaceholderTextField extends JTextField {
-        private final String placeholder;
-
-        private PlaceholderTextField(String placeholder) {
-            this.placeholder = placeholder;
-            setToolTipText(placeholder);
-        }
-
-        @Override
-        protected void paintComponent(Graphics graphics) {
-            super.paintComponent(graphics);
-            if (!getText().isEmpty() || placeholder == null || placeholder.isBlank()) {
-                return;
-            }
-
-            Graphics2D g2 = (Graphics2D) graphics.create();
-            try {
-                g2.setColor(AppTheme.FG_MUTED);
-                FontMetrics metrics = g2.getFontMetrics();
-                Insets insets = getInsets();
-                int x = insets.left + 2;
-                int y = (getHeight() - metrics.getHeight()) / 2 + metrics.getAscent();
-                g2.drawString(placeholder, x, y);
-            } finally {
-                g2.dispose();
-            }
-        }
-    }
 
     private final class SearchDocumentListener implements DocumentListener {
         @Override

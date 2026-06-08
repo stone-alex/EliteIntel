@@ -7,6 +7,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
+import elite.intel.ui.view.HudSection;
+
 import static elite.intel.ui.view.AppTheme.FG_MUTED;
 import static elite.intel.ui.view.AppTheme.HUD_BG;
 import static elite.intel.ui.view.AppTheme.hudScrollPane;
@@ -40,7 +42,10 @@ public class SettingsPopup extends JDialog {
             }
         }
 
-        JScrollPane scroll = hudScrollPane(content);
+        HudSection section = new HudSection(title, new BorderLayout());
+        section.body().add(content, BorderLayout.CENTER);
+
+        JScrollPane scroll = hudScrollPane(section);
         scroll.getVerticalScrollBar().setUnitIncrement(16);
         scroll.setBorder(BorderFactory.createEmptyBorder());
 

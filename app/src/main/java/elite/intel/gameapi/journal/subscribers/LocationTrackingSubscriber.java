@@ -60,7 +60,6 @@ public class LocationTrackingSubscriber {
     private boolean isGliding = false;
     private boolean beginDescentCued = false; // true once "begin descent" has been announced at low priority
     private boolean levelOffCued = false;     // true once "level off" has been announced - stays silent until pilot actually levels off
-    private boolean speedWarningGiven = false;
 
     /**
      * Handles the event triggered when a player moves within the game environment.
@@ -239,11 +238,11 @@ public class LocationTrackingSubscriber {
                 double scaleFactor = planetRadius / (planetRadius + altitude);
                 int geoAngle = (int) Math.round(Math.toDegrees(Math.atan((altitude / distanceToTarget) * scaleFactor)));
                 boolean urgent = commitAngle > 20.0 || speed > 15_000;
-                vocalize("Minus " + geoAngle + " degrees to target. " + headingCorrection + formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, urgent);
+                vocalize("Pitch  Minus " + geoAngle + " degrees. " + headingCorrection + formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, urgent);
             } else if (commitAngle >= 5.0 && commitAngle <= 45.0) {
                 // Comfortable descent window - cue the pilot with the required angle.
                 boolean urgent = commitAngle > 20.0 || speed > 15_000;
-                vocalize("Begin descent minus " + (int) Math.round(commitAngle) + " degrees. " + headingCorrection + formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, !beginDescentCued || urgent);
+                vocalize("Pitch  minus " + (int) Math.round(commitAngle) + " degrees. " + headingCorrection + formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, !beginDescentCued || urgent);
                 beginDescentCued = true;
             } else if (commitAngle > 45.0 && altitude < 400_000) {
                 // Too steep from here - orbit for a better pass.
@@ -257,7 +256,7 @@ public class LocationTrackingSubscriber {
         } else {
             // Actively descending - confirm actual angle so pilot can compare with HUD.
             beginDescentCued = false;
-            vocalize("Minus " + (int) Math.round(actualDescentAngle) + " degrees. " + headingCorrection + formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
+            vocalize("Pitch Minus " + (int) Math.round(actualDescentAngle) + " degrees. " + headingCorrection + formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
         }
     }
 
@@ -350,7 +349,6 @@ public class LocationTrackingSubscriber {
 
         boolean headingDeviation = isHeadingDeviation(navigator);
         boolean glideAngleOk = isGlideAngleOk(event, navigator);
-        speedWarning(navigator);
 
         int glideAngle = -calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget());
         boolean movingAway = navigator.distanceToTarget() > lastDistance;
@@ -392,23 +390,6 @@ public class LocationTrackingSubscriber {
         }
     }
 
-    private void speedWarning(NavigationUtils.Direction navigator) {
-        if (lastDistance == -1 || navigator.distanceToTarget() >= lastDistance) return;
-        double speed = navigator.getSpeed();
-        if (speed < 200) {
-            speedWarningGiven = false;
-            return;
-        }
-        if (speedWarningGiven) return;
-        if (navigator.distanceToTarget() <= 10_000 && speed >= 400) {
-            vocalize("Reduce speed below 350", 0, 0, true);
-            speedWarningGiven = true;
-        } else if (navigator.distanceToTarget() <= 5_000 && speed >= 300) {
-            vocalize("Reduce speed below 200", 0, 0, true);
-            speedWarningGiven = true;
-        }
-    }
-
     private boolean isHeadingDeviation(NavigationUtils.Direction navigator) {
         return (Math.abs(navigator.bearingToTarget()) - navigator.userHeading()) > HYSTERESIS;
     }
@@ -431,7 +412,6 @@ public class LocationTrackingSubscriber {
         lookForLandingSpotAnnounced = false;
         beginDescentCued = false;
         levelOffCued = false;
-        speedWarningGiven = false;
         playerSession.setTracking(new TargetLocation());
         lastTracking = null;
         lastDistance = -1;

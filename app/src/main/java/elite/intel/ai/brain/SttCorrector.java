@@ -36,8 +36,10 @@ public class SttCorrector {
             "we", "us", "it", "this", "that", "get", "have",
             "has", "can", "could", "would", "should", "not", "no", "up",
             "here", "there", "some", "much", "many",
+            // large numbers - never game commands; "millions" → "missions" edit-distance collision
+            "million", "millions", "billion", "billions", "trillion", "trillions",
             // annotation noise from map-key inline notes ("NOTE: Sol and Earth...")
-            "note", "never", "mean", "always", "only", "true", "false", "also", "use"
+            "note", "never", "mean", "always", "only", "true", "false", "also", "use", "about"
     );
 
     private SttCorrector() {
@@ -102,6 +104,7 @@ public class SttCorrector {
         String lower = token.toLowerCase().replaceAll("[^a-z]", "");
         int threshold = maxDistance(lower);
         if (threshold == 0) return token;          // too short - collision risk too high
+        if (STOP_WORDS.contains(lower)) return token; // common word - never correct away
         if (vocabulary.contains(lower)) return token; // already correct
 
         String bestMatch = null;

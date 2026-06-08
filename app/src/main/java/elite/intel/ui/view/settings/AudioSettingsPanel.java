@@ -7,9 +7,9 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
 import elite.intel.ui.view.AudioInterfaceDialog;
+import elite.intel.ui.view.HudSection;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
@@ -37,8 +37,10 @@ public class AudioSettingsPanel extends JPanel {
 
     private void buildUi() {
         setLayout(new BorderLayout());
+        setBackground(HUD_BG);
 
-        JPanel grid = new JPanel(new GridBagLayout());
+        HudSection controlsSection = new HudSection(getText("settings.tab.audio"), new GridBagLayout());
+        JPanel grid = controlsSection.body();
         GridBagConstraints ag = baseGbc();
 
         // Row 0: Speech Volume | Beep Volume
@@ -111,20 +113,16 @@ public class AudioSettingsPanel extends JPanel {
         ag.gridwidth = 4;
         ag.weightx = 0;
         ag.fill = GridBagConstraints.NONE;
-        useLocalTTSCheck = new JCheckBox(getText("settings.audio.useLocalTts"), false);
+        useLocalTTSCheck = makeCheckBox(getText("settings.audio.useLocalTts"), false);
         useLocalTTSCheck.addActionListener(a -> saveLocalTts());
         grid.add(useLocalTTSCheck, ag);
 
         grid.setAlignmentX(Component.LEFT_ALIGNMENT);
-        grid.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(BUTTON_BG, 1),
-                BorderFactory.createEmptyBorder(8, 8, 8, 8)
-        ));
 
-        JPanel content = new JPanel();
+        JPanel content = transparentPanel(null);
         content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
         content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-        content.add(grid);
+        content.add(controlsSection);
 
         // -- Mic monitor ------------------------------------------------------
         content.add(Box.createVerticalStrut(8));
@@ -139,12 +137,12 @@ public class AudioSettingsPanel extends JPanel {
         audioDevicesBtn.addActionListener(e -> new AudioInterfaceDialog(this).setVisible(true));
         content.add(audioDevicesBtn);
 
-        JPanel helpLabels = new JPanel();
+        JPanel helpLabels = transparentPanel(null);
         helpLabels.setLayout(new BoxLayout(helpLabels, BoxLayout.PAGE_AXIS));
-        helpLabels.setOpaque(false);
         helpLabels.setAlignmentX(Component.LEFT_ALIGNMENT);
         helpLabels.add(Box.createVerticalStrut(18));
         JLabel graphLabel = new JLabel(getText("settings.audio.micHelp"));
+        graphLabel.setForeground(FG_MUTED);
         helpLabels.add(graphLabel);
         content.add(helpLabels);
 
@@ -196,6 +194,7 @@ public class AudioSettingsPanel extends JPanel {
         s.setSnapToTicks(true);
         s.setPaintTicks(false);
         s.setPaintLabels(true);
+        styleSlider(s);
         return s;
     }
 }

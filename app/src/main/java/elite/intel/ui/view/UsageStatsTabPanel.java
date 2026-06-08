@@ -85,7 +85,10 @@ public class UsageStatsTabPanel extends JPanel {
 
     private void buildUi() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBorder(new EmptyBorder(16, 2, 16, 20));
+        setBorder(BorderFactory.createCompoundBorder(
+                AppTheme.hudBorder(),
+                new EmptyBorder(8, 8, 8, 8)
+        ));
         setOpaque(false);
         boolean usingLocalLLMs = systemSession.useLocalCommandLlm() && systemSession.useLocalQueryLlm();
         // Header
@@ -114,7 +117,7 @@ public class UsageStatsTabPanel extends JPanel {
         footer.setLayout(new BoxLayout(footer, BoxLayout.Y_AXIS));
         footer.setOpaque(false);
         footer.setBorder(new EmptyBorder(8, 0, 0, 0));
-        footer.setBackground(AppTheme.LOG_BG);
+        footer.setBackground(AppTheme.HUD_PANEL_BG);
         footer.setPreferredSize(new Dimension(super.getPreferredSize().width, 180));
 
         if (usingLocalLLMs) {
@@ -220,12 +223,12 @@ public class UsageStatsTabPanel extends JPanel {
                 getText("stats.chart.cacheWrittenTotal")
         };
         private static final Color[] COLORS = {
-                new Color(0x03529F),   // blue   – prompt
-                new Color(0x2E8B57),   // green  – completion
-                new Color(0xFF8C00),   // orange – cache hits
-                new Color(0x6A6A8A)    // grey   – cache written
+                AppTheme.HUD_CYAN,
+                AppTheme.HUD_OK,
+                AppTheme.ACCENT,
+                AppTheme.HUD_DISABLED
         };
-        private static final Color TPS_COLOR = new Color(0x20B2AA); // teal – speed
+        private static final Color TPS_COLOR = AppTheme.HUD_CYAN;
 
         private final boolean localMode;
         private int[] values = new int[4];
@@ -289,7 +292,7 @@ public class UsageStatsTabPanel extends JPanel {
                     g2.setColor(AppTheme.FG_MUTED);
                     g2.drawString(LABELS[i], 0, y + baseline);
 
-                    g2.setColor(AppTheme.BG_PANEL);
+                    g2.setColor(AppTheme.HUD_PANEL_BG_ALT);
                     g2.fillRoundRect(labelW, y, barAreaW, barH, 6, 6);
 
                     if (values[i] > 0) {
@@ -307,7 +310,7 @@ public class UsageStatsTabPanel extends JPanel {
                 g2.setColor(AppTheme.FG_MUTED);
                 g2.drawString("Last Speed (t/s)", 0, tpsY + baseline);
 
-                g2.setColor(AppTheme.BG_PANEL);
+                g2.setColor(AppTheme.HUD_PANEL_BG_ALT);
                 g2.fillRoundRect(labelW, tpsY, barAreaW, barH, 6, 6);
 
                 if (lastTps > 0) {

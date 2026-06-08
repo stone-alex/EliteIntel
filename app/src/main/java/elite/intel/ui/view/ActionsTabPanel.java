@@ -20,7 +20,7 @@ public class ActionsTabPanel extends JPanel {
 
     private void buildUi() {
         setLayout(new BorderLayout());
-        setBackground(AppTheme.BG);
+        setBackground(AppTheme.HUD_BG);
 
         JTabbedPane tabs = new JTabbedPane();
         tabs.setTabPlacement(JTabbedPane.TOP);

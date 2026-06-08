@@ -156,10 +156,9 @@ public class BindingsTabPanel extends JPanel {
     private void buildUi() {
         setLayout(new BorderLayout(8, 8));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        setBackground(BG);
+        setBackground(HUD_BG);
 
-        JPanel details = new JPanel(new GridBagLayout());
-        details.setOpaque(false);
+        JPanel details = transparentPanel(new GridBagLayout());
         GridBagConstraints gbc = baseGbc();
         // Compact header: ~30% less vertical space than the app-wide default (42px / 12px insets → 30px / 4px).
         gbc.insets = new Insets(2, 6, 2, 6);
@@ -211,8 +210,7 @@ public class BindingsTabPanel extends JPanel {
         tabs.addTab(getText("bindings.missingBindings"), nestedTabContent(missingBindingsScrollPane));
         tabs.addChangeListener(e -> selectionController.clearSelection());
 
-        JPanel center = new JPanel(new BorderLayout(0, 8));
-        center.setBackground(BG);
+        JPanel center = transparentPanel(new BorderLayout(0, HUD_GAP));
         center.add(tabs, BorderLayout.CENTER);
         add(center, BorderLayout.CENTER);
 
@@ -226,8 +224,7 @@ public class BindingsTabPanel extends JPanel {
         syncStatusLabel = new JLabel();
         syncStatusLabel.setFont(syncStatusLabel.getFont().deriveFont(Font.PLAIN));
 
-        JPanel statusArea = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-        statusArea.setOpaque(false);
+        JPanel statusArea = transparentPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         statusArea.add(syncStatusIcon);
         statusArea.add(syncStatusLabel);
 
@@ -237,14 +234,12 @@ public class BindingsTabPanel extends JPanel {
         applyButton = makeButton(getText("bindings.button.apply"));
         applyButton.addActionListener(e -> performApply());
 
-        JPanel footer = new JPanel(new BorderLayout(8, 0));
-        footer.setOpaque(false);
+        JPanel footer = transparentPanel(new BorderLayout(HUD_GAP, 0));
         footer.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(0x35354A)),
+                BorderFactory.createMatteBorder(1, 0, 0, 0, HUD_BORDER_DIM),
                 BorderFactory.createEmptyBorder(6, 0, 0, 0)));
 
-        JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        buttonBar.setOpaque(false);
+        JPanel buttonBar = transparentPanel(new FlowLayout(FlowLayout.RIGHT, HUD_GAP, 0));
         buttonBar.add(revertButton);
         buttonBar.add(applyButton);
 
@@ -419,11 +414,9 @@ public class BindingsTabPanel extends JPanel {
     private static final int HEADER_ROW_HEIGHT = 30;
 
     private JTextField readOnlyField() {
-        JTextField field = new JTextField();
+        JTextField field = makeTextField();
         field.setEditable(false);
         field.setPreferredSize(new Dimension(0, HEADER_ROW_HEIGHT));
-        field.setBackground(BG_PANEL);
-        field.setForeground(FG);
         return field;
     }
 
@@ -497,7 +490,7 @@ public class BindingsTabPanel extends JPanel {
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder());
         button.setForeground(FG_MUTED);
-        button.setBackground(BG);
+        button.setBackground(HUD_BG);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setFont(button.getFont().deriveFont(Font.PLAIN, button.getFont().getSize2D() + 2f));
         Dimension size = new Dimension(HEADER_ROW_HEIGHT, HEADER_ROW_HEIGHT);
@@ -527,16 +520,15 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private JPanel groupedTablesPanel() {
-        JPanel panel = new JPanel();
+        JPanel panel = transparentPanel(null);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(BG);
         panel.setBorder(new EmptyBorder(8, 8, 8, 8));
         return panel;
     }
 
     private JScrollPane groupedTablesScrollPane(JPanel panel) {
-        JScrollPane scrollPane = new JScrollPane(panel);
-        scrollPane.getViewport().setBackground(BG);
+        JScrollPane scrollPane = hudScrollPane(panel);
+        scrollPane.getViewport().setBackground(HUD_BG);
         scrollPane.getVerticalScrollBar().setUnitIncrement(BindingsGroupTableFactory.TABLE_ROW_HEIGHT * SCROLL_UNIT_ROWS);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         return scrollPane;
@@ -551,8 +543,7 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private JPanel nestedTabContent(JComponent content) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(BG);
+        JPanel panel = transparentPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(6, 0, 0, 0));
         panel.add(content, BorderLayout.CENTER);
         return panel;

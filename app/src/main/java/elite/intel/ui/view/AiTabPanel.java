@@ -35,6 +35,7 @@ public class AiTabPanel extends JPanel {
 
     private void buildUi(Font monoFont) {
         setLayout(new GridBagLayout());
+        setBackground(HUD_BG);
         GridBagConstraints gbc = baseGbc();
 
         // Row 1: Button bar
@@ -45,9 +46,8 @@ public class AiTabPanel extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        JPanel buttons = new JPanel();
+        JPanel buttons = transparentPanel(null);
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-        buttons.setOpaque(false);
 
         startStopServicesButton = makeToggleButton(getText("button.startServices"));
         startStopServicesButton.addActionListener(e -> {
@@ -55,19 +55,19 @@ public class AiTabPanel extends JPanel {
             startStopServicesButton.setEnabled(false);
         });
 
-        JCheckBox showDetailedLog = new JCheckBox(getText("ai.detailedLog"), false);
+        JCheckBox showDetailedLog = makeCheckBox(getText("ai.detailedLog"), false);
         showDetailedLog.addActionListener(
                 e -> EventBusManager.publish(new ToggleDetailedLogEvent(showDetailedLog.isSelected())));
         showDetailedLog.setForeground(ACCENT);
 
-        toggleWakeWordOnOff = new JCheckBox(getText("ai.sleepWake"), false);
+        toggleWakeWordOnOff = makeCheckBox(getText("ai.sleepWake"), false);
         toggleWakeWordOnOff.addActionListener(
                 e -> EventBusManager.publish(new ToggleWakeWordEvent(toggleWakeWordOnOff.isSelected())));
         toggleWakeWordOnOff.setEnabled(false);
         toggleWakeWordOnOff.setForeground(ACCENT);
 
         final OBSOverlayWindow[] obsOverlay = {null};
-        JCheckBox toggleObsOverlay = new JCheckBox(getText("ai.obsOverlay"), false);
+        JCheckBox toggleObsOverlay = makeCheckBox(getText("ai.obsOverlay"), false);
         toggleObsOverlay.setForeground(ACCENT);
         toggleObsOverlay.setToolTipText(getText("ai.obsOverlay.tooltip"));
         toggleObsOverlay.addActionListener(e -> SwingUtilities.invokeLater(() -> {
@@ -94,7 +94,6 @@ public class AiTabPanel extends JPanel {
         buttons.add(Box.createRigidArea(new Dimension(8, 0)));
         //buttons.add(showDetailedLog);
 
-        add(new JLabel(" "));
         add(buttons, gbc);
 
         // Row 2: Three log panels in split panes

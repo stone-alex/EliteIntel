@@ -41,6 +41,7 @@ public class SettingsTabPanel extends JPanel {
 
     private void buildUi() {
         setLayout(new BorderLayout());
+        setBackground(AppTheme.HUD_BG);
 
         JTabbedPane tabs = new JTabbedPane();
         tabs.setTabPlacement(JTabbedPane.TOP);
@@ -69,8 +70,7 @@ public class SettingsTabPanel extends JPanel {
             });
         });
 
-        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
-        footer.setOpaque(false);
+        JPanel footer = AppTheme.transparentPanel(new FlowLayout(FlowLayout.RIGHT, AppTheme.HUD_GAP, 4));
         footer.add(updateAppButton);
 
         add(tabs, BorderLayout.CENTER);
@@ -92,8 +92,6 @@ public class SettingsTabPanel extends JPanel {
     }
 
     private ImageIcon scaledIcon(String resource) {
-        return new ImageIcon(
-                new ImageIcon(Objects.requireNonNull(getClass().getResource(resource)))
-                        .getImage().getScaledInstance(42, 42, Image.SCALE_SMOOTH));
+        return AppTheme.scaledIcon(getClass(), resource, AppTheme.HUD_ICON_MAIN);
     }
 }

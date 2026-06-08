@@ -45,6 +45,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private MarkdownViewPanel creditsPanel;
     private MarkdownViewPanel userManualPanel;
     private AiTabController aiTabController;
+    private TopStatusBar topStatusBar;
     private boolean servicesRunning;
 
     public AppView() {
@@ -77,11 +78,8 @@ public class AppView extends JFrame implements AppViewInterface {
 
         JPanel root = new JPanel(new BorderLayout());
         root.setBorder(new EmptyBorder(10, 10, 10, 10));
+        root.setBackground(AppTheme.HUD_BG);
         setContentPane(root);
-
-        JLabel titleLabel = new JLabel(getText("app.name"), SwingConstants.CENTER);
-        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, titleLabel.getFont().getSize2D() + 3f));
-        root.add(titleLabel, BorderLayout.NORTH);
 
         JTabbedPane tabs = new JTabbedPane();
         AppTheme.styleTabbedPane(tabs);
@@ -112,16 +110,18 @@ public class AppView extends JFrame implements AppViewInterface {
 
         root.add(tabs, BorderLayout.CENTER);
         AppTheme.applyDarkPalette(getContentPane());
+        topStatusBar = new TopStatusBar(
+                getText("app.name"),
+                systemSession.readVersionFromResources(),
+                servicesRunning
+        );
+        root.add(topStatusBar, BorderLayout.NORTH);
 
         aiTabController = new AiTabController(aiTabPanel);
     }
 
     private ImageIcon scaledIcon(String resource) {
-        return new ImageIcon(
-                new ImageIcon(Objects.requireNonNull(getClass().getResource(resource)))
-                        .getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH)
-
-        );
+        return AppTheme.scaledIcon(getClass(), resource, AppTheme.HUD_ICON_MAIN);
     }
 
     @Override
@@ -135,6 +135,9 @@ public class AppView extends JFrame implements AppViewInterface {
     @Subscribe
     public void onServiceStatusEvent(ServicesStateEvent event) {
         servicesRunning = event.isRunning();
+        if (topStatusBar != null) {
+            SwingUtilities.invokeLater(() -> topStatusBar.setServicesRunning(servicesRunning));
+        }
     }
 
     @Subscribe
@@ -221,5 +224,11 @@ public class AppView extends JFrame implements AppViewInterface {
         UIManager.put("PasswordField.inactiveForeground", AppTheme.FG_MUTED);
         UIManager.put("TextArea.inactiveForeground", AppTheme.FG_MUTED);
         UIManager.put("EditorPane.inactiveForeground", AppTheme.FG_MUTED);
+        UIManager.put("Table.background", AppTheme.HUD_PANEL_BG);
+        UIManager.put("Table.foreground", AppTheme.FG);
+        UIManager.put("Table.selectionBackground", AppTheme.HUD_CYAN);
+        UIManager.put("Table.selectionForeground", AppTheme.SEL_FG);
+        UIManager.put("ComboBox.background", AppTheme.HUD_PANEL_BG_ALT);
+        UIManager.put("ComboBox.foreground", AppTheme.FG);
     }
 }

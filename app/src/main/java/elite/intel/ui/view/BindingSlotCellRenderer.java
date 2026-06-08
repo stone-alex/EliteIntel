@@ -1,14 +1,12 @@
 package elite.intel.ui.view;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
-import static elite.intel.ui.view.AppTheme.BG_PANEL;
 import static elite.intel.ui.view.AppTheme.FG;
 import static elite.intel.ui.view.AppTheme.FG_MUTED;
-import static elite.intel.ui.view.AppTheme.SEL_BG;
-import static elite.intel.ui.view.AppTheme.SEL_FG;
+import static elite.intel.ui.view.AppTheme.HUD_HOVER;
+import static elite.intel.ui.view.AppTheme.HUD_PANEL_BG;
 
 /**
  * Table renderer for binding rows.
@@ -16,9 +14,7 @@ import static elite.intel.ui.view.AppTheme.SEL_FG;
  * The comparison uses the localized "Not defined" text because the table model
  * stores already formatted display values, not raw slot objects.
  */
-class BindingSlotCellRenderer extends DefaultTableCellRenderer {
-    private static final Color HOVER_BG = new Color(0x282A40);
-
+class BindingSlotCellRenderer extends HudTable.CellRenderer {
     BindingSlotCellRenderer() {
         setOpaque(true);
     }
@@ -36,14 +32,10 @@ class BindingSlotCellRenderer extends DefaultTableCellRenderer {
         boolean notDefined = elite.intel.ui.i18n.MultiLingualTextProvider
                 .getText("bindings.status.notDefined")
                 .equals(value);
-        if (isSelected) {
-            label.setBackground(SEL_BG);
-            label.setForeground(SEL_FG);
-            return label;
+        if (!isSelected) {
+            label.setBackground(isHovered(table, row) ? HUD_HOVER : HUD_PANEL_BG);
+            label.setForeground(notDefined ? FG_MUTED : FG);
         }
-
-        label.setBackground(isHovered(table, row) ? HOVER_BG : BG_PANEL);
-        label.setForeground(notDefined ? FG_MUTED : FG);
         return label;
     }
 

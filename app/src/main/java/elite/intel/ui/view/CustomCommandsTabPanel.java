@@ -16,7 +16,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -53,10 +52,9 @@ public class CustomCommandsTabPanel extends JPanel {
     private void buildUi() {
         setLayout(new BorderLayout(8, 8));
         setBorder(new EmptyBorder(10, 10, 10, 10));
-        setBackground(AppTheme.BG);
+        setBackground(AppTheme.HUD_BG);
 
-        JPanel controls = new JPanel(new BorderLayout(8, 0));
-        controls.setOpaque(false);
+        JPanel controls = AppTheme.transparentPanel(new BorderLayout(AppTheme.HUD_GAP, 0));
         controls.add(searchPanel(), BorderLayout.CENTER);
         controls.add(actionPanel(), BorderLayout.EAST);
         add(controls, BorderLayout.NORTH);
@@ -74,8 +72,7 @@ public class CustomCommandsTabPanel extends JPanel {
             }
         });
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.getViewport().setBackground(AppTheme.BG_PANEL);
+        JScrollPane scrollPane = HudTable.scrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -91,8 +88,7 @@ public class CustomCommandsTabPanel extends JPanel {
     }
 
     private JPanel actionPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        panel.setOpaque(false);
+        JPanel panel = AppTheme.transparentPanel(new FlowLayout(FlowLayout.RIGHT, AppTheme.HUD_GAP, 0));
         addActionButton(panel, "actions.customCommands.action.import", this::importCustomCommands);
         addActionButton(panel, "actions.customCommands.action.export", this::exportCustomCommands);
         addActionButton(panel, "actions.customCommands.action.new", this::newCustomCommand);
@@ -106,8 +102,7 @@ public class CustomCommandsTabPanel extends JPanel {
     }
 
     private JPanel searchPanel() {
-        JPanel panel = new JPanel(new BorderLayout(8, 0));
-        panel.setOpaque(false);
+        JPanel panel = AppTheme.transparentPanel(new BorderLayout(AppTheme.HUD_GAP, 0));
 
         JLabel label = new JLabel(getText("actions.commands.search.label"));
         label.setForeground(AppTheme.FG);
@@ -115,8 +110,8 @@ public class CustomCommandsTabPanel extends JPanel {
 
         // Wrapper that owns the ACCENT border so the clear button appears inside the field.
         JPanel fieldWrapper = new JPanel(new BorderLayout());
-        fieldWrapper.setBackground(AppTheme.BG_PANEL);
-        fieldWrapper.setBorder(new LineBorder(AppTheme.ACCENT, 1, true));
+        fieldWrapper.setBackground(AppTheme.HUD_PANEL_BG_ALT);
+        fieldWrapper.setBorder(AppTheme.hudFieldBorder());
 
         searchField = new PlaceholderTextField(getText("actions.customCommands.search.placeholder"));
         searchField.setOpaque(false);
@@ -321,23 +316,12 @@ public class CustomCommandsTabPanel extends JPanel {
     }
 
     private void styleTable(JTable table) {
-        table.setFillsViewportHeight(true);
+        HudTable.style(table);
         table.setRowHeight(56);
         table.setAutoCreateRowSorter(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
-        table.setBackground(AppTheme.BG_PANEL);
-        table.setForeground(AppTheme.FG);
-        table.setGridColor(AppTheme.BG);
-        table.setSelectionBackground(AppTheme.SEL_BG);
-        table.setSelectionForeground(AppTheme.SEL_FG);
-        table.setShowVerticalLines(false);
-        table.setShowHorizontalLines(true);
-        table.getTableHeader().setBackground(AppTheme.BG);
-        table.getTableHeader().setForeground(AppTheme.FG);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.getTableHeader().setDefaultRenderer(new HeaderRenderer());
         table.setDefaultRenderer(Object.class, new CellRenderer());
 
         table.getColumnModel().getColumn(0).setPreferredWidth(220);
@@ -401,31 +385,7 @@ public class CustomCommandsTabPanel extends JPanel {
         }
     }
 
-    private static final class HeaderRenderer extends DefaultTableCellRenderer {
-        private HeaderRenderer() {
-            setOpaque(true);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(
-                JTable table,
-                Object value,
-                boolean isSelected,
-                boolean hasFocus,
-                int row,
-                int column
-        ) {
-            JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            label.setBackground(AppTheme.BG);
-            label.setForeground(AppTheme.FG);
-            label.setFont(label.getFont().deriveFont(Font.BOLD));
-            label.setBorder(new EmptyBorder(6, 8, 6, 8));
-            label.setHorizontalAlignment(SwingConstants.LEFT);
-            return label;
-        }
-    }
-
-    private static final class CellRenderer extends DefaultTableCellRenderer {
+    private static final class CellRenderer extends HudTable.CellRenderer {
         private CellRenderer() {
             setOpaque(true);
         }
@@ -448,15 +408,6 @@ public class CustomCommandsTabPanel extends JPanel {
                 label.setText(text);
                 label.setToolTipText(text);
             }
-            if (!isSelected) {
-                label.setBackground(row % 2 == 0 ? AppTheme.BG_PANEL : AppTheme.LOG_BG);
-                label.setForeground(AppTheme.FG);
-            } else {
-                label.setBackground(table.getSelectionBackground());
-                label.setForeground(table.getSelectionForeground());
-            }
-            label.setBorder(new EmptyBorder(4, 8, 4, 8));
-            label.setHorizontalAlignment(SwingConstants.LEFT);
             return label;
         }
     }

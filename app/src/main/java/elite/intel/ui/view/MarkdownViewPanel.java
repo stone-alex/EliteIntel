@@ -31,7 +31,7 @@ public class MarkdownViewPanel extends JPanel {
 
     private void buildUi() {
         setLayout(new BorderLayout());
-        setBackground(AppTheme.BG);
+        setBackground(AppTheme.HUD_BG);
 
         editorPane = new JEditorPane();
         editorPane.setContentType("text/html");
@@ -48,17 +48,15 @@ public class MarkdownViewPanel extends JPanel {
             }
         });
 
-        JScrollPane scrollPane = new JScrollPane(editorPane);
+        JScrollPane scrollPane = AppTheme.hudScrollPane(editorPane);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setBackground(AppTheme.BG);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         JButton reloadButton = AppTheme.makeButtonSubtle(getText("button.reload"));
         reloadButton.addActionListener(e -> loadContent());
-        JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
-        toolbar.setOpaque(false);
+        JPanel toolbar = AppTheme.transparentPanel(new FlowLayout(FlowLayout.RIGHT, AppTheme.HUD_GAP, 4));
         toolbar.add(reloadButton);
 
         add(toolbar, BorderLayout.NORTH);

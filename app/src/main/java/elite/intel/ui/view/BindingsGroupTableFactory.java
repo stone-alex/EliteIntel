@@ -16,10 +16,10 @@ import java.util.function.BiConsumer;
 import static elite.intel.ui.view.AppTheme.*;
 
 class BindingsGroupTableFactory {
-    static final int TABLE_ROW_HEIGHT = 28;
+    static final int TABLE_ROW_HEIGHT = AppTheme.HUD_TABLE_ROW_HEIGHT;
     static final String HOVER_ROW_PROPERTY = "elite.intel.bindings.hoverRow";
     private static final Border TABLE_SECTION_BORDER = BorderFactory.createMatteBorder(1, 0, 0, 0, ACCENT);
-    private static final Border TABLE_HEADER_BORDER = BorderFactory.createMatteBorder(0, 0, 1, 0, BUTTON_BG);
+    private static final Border TABLE_HEADER_BORDER = BorderFactory.createMatteBorder(0, 0, 1, 0, HUD_BORDER);
 
     private final BindingsSelectionController selectionController;
     private final BiConsumer<String, BindingSlotType> slotClickHandler;
@@ -58,7 +58,7 @@ class BindingsGroupTableFactory {
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setWheelScrollingEnabled(false);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-        scrollPane.getViewport().setBackground(BG_PANEL);
+        scrollPane.getViewport().setBackground(HUD_PANEL_BG);
         scrollPane.setBorder(TABLE_SECTION_BORDER);
         forwardMouseWheelToOuterScrollPane(scrollPane, outerScrollPane);
         forwardMouseWheelToOuterScrollPane(scrollPane.getViewport(), outerScrollPane);
@@ -152,16 +152,13 @@ class BindingsGroupTableFactory {
 
     private void styleGroupTable(JTable table) {
         table.setFillsViewportHeight(false);
+        HudTable.style(table);
         table.setRowHeight(TABLE_ROW_HEIGHT);
         table.setAutoCreateRowSorter(false);
-        table.setBackground(BG_PANEL);
-        table.setForeground(FG);
         table.setShowGrid(false);
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(false);
         table.setIntercellSpacing(new Dimension(0, 0));
-        table.getTableHeader().setBackground(BG);
-        table.getTableHeader().setForeground(FG);
         table.getTableHeader().setBorder(TABLE_HEADER_BORDER);
         table.getTableHeader().setDefaultRenderer(new GroupTableHeaderRenderer());
         table.setDefaultRenderer(Object.class, new BindingSlotCellRenderer());
@@ -202,9 +199,8 @@ class BindingsGroupTableFactory {
         });
     }
 
-    private static class GroupTableHeaderRenderer extends DefaultTableCellRenderer {
+    private static class GroupTableHeaderRenderer extends HudTable.HeaderRenderer {
         private GroupTableHeaderRenderer() {
-            setOpaque(true);
             setBorder(TABLE_HEADER_BORDER);
         }
 
@@ -224,11 +220,7 @@ class BindingsGroupTableFactory {
                     hasFocus,
                     row,
                     column);
-            label.setBackground(BG);
-            label.setForeground(FG);
-            label.setFont(label.getFont().deriveFont(Font.BOLD));
             label.setBorder(TABLE_HEADER_BORDER);
-            label.setHorizontalAlignment(SwingConstants.LEFT);
             return label;
         }
     }

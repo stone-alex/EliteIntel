@@ -61,11 +61,12 @@ public class PlayerTabPanel extends JPanel {
 
     private void buildUi() {
         setLayout(new GridBagLayout());
+        setBackground(HUD_BG);
         GridBagConstraints gbc = baseGbc();
 
         // Row 0: Commander Name
         addLabel(this, getText("player.commanderName"), gbc);
-        playerAltNameField = new JTextField();
+        playerAltNameField = makeTextField();
         playerAltNameField.setToolTipText(getText("player.commanderName.tooltip"));
         playerAltNameField.setPreferredSize(new Dimension(200, 42));
         addField(this, playerAltNameField, gbc, 1, 1.0);
@@ -73,7 +74,7 @@ public class PlayerTabPanel extends JPanel {
         // Row 1: Journal Directory
         nextRow(gbc);
         addLabel(this, getText("player.journalDirectory"), gbc);
-        journalDirField = new JTextField();
+        journalDirField = makeTextField();
         journalDirField.setEditable(false);
         journalDirField.setPreferredSize(new Dimension(200, 42));
         journalDirField.setToolTipText(getText("player.journalDirectory.tooltip"));
@@ -118,7 +119,7 @@ public class PlayerTabPanel extends JPanel {
         gbc.weightx = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
-        JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        JPanel btns = transparentPanel(new FlowLayout(FlowLayout.LEFT, HUD_GAP, 0));
         btns.setOpaque(false);
         JButton saveButton = makeButton(getText("button.save"));
         saveButton.addActionListener(e -> savePlayerConfig());
@@ -129,7 +130,7 @@ public class PlayerTabPanel extends JPanel {
         automationButton.addActionListener(e -> GlobalSettingsPopup.create(this).setVisible(true));
         btns.add(automationButton);
 
-        conversationModeCheckBox = new JCheckBox(getText("player.conversationMode"));
+        conversationModeCheckBox = makeCheckBox(getText("player.conversationMode"), false);
         conversationModeCheckBox.addActionListener(e -> systemSession.setConversationalMode(conversationModeCheckBox.isSelected()));
         btns.add(conversationModeCheckBox);
 
@@ -154,7 +155,7 @@ public class PlayerTabPanel extends JPanel {
         gbc.insets = new Insets(0, 6, 6, 6);
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        fleetScrollPane = new JScrollPane();
+        fleetScrollPane = hudScrollPane(new JPanel());
         fleetScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         fleetScrollPane.setBackground(BG);
         fleetScrollPane.getViewport().setBackground(BG);
@@ -187,8 +188,7 @@ public class PlayerTabPanel extends JPanel {
         String[] personalityOptions = Arrays.stream(ShipPersonality.values()).map(Enum::name).toArray(String[]::new);
         String[] cadenceOptions = Arrays.stream(ShipCadence.values()).map(Enum::name).toArray(String[]::new);
 
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(BG);
+        JPanel panel = transparentPanel(new GridBagLayout());
 
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(3, 6, 3, 6);
@@ -312,12 +312,13 @@ public class PlayerTabPanel extends JPanel {
 
     private JComboBox<String> makeCombo(String[] options, String selected, Function<String, String> displayText) {
         JComboBox<String> combo = new JComboBox<>(options);
-        combo.setBackground(BG_PANEL);
-        combo.setForeground(FG);
+        styleComboBox(combo);
         combo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
             JLabel label = (JLabel) new DefaultListCellRenderer()
                     .getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             label.setText(value == null ? "" : displayText.apply(value));
+            label.setBackground(isSelected ? HUD_CYAN : HUD_PANEL_BG_ALT);
+            label.setForeground(isSelected ? SEL_FG : FG);
             return label;
         });
         if (selected != null) {
@@ -343,8 +344,7 @@ public class PlayerTabPanel extends JPanel {
                 new LanguageOption(getText("language.german"), Language.DE),
                 new LanguageOption(getText("language.french"), Language.FR)
         });
-        combo.setBackground(BG_PANEL);
-        combo.setForeground(FG);
+        styleComboBox(combo);
         selectLanguage(combo, selected);
         return combo;
     }
@@ -379,8 +379,6 @@ public class PlayerTabPanel extends JPanel {
     }
 
     private ImageIcon scaledIcon(String resource) {
-        return new ImageIcon(
-                new ImageIcon(Objects.requireNonNull(getClass().getResource(resource)))
-                        .getImage().getScaledInstance(28, 28, Image.SCALE_SMOOTH));
+        return AppTheme.scaledIcon(getClass(), resource, HUD_ICON_SMALL);
     }
 }

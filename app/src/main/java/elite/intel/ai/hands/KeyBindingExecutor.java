@@ -61,6 +61,14 @@ public class KeyBindingExecutor {
             ELITE_TO_KEYPROCESSOR_MAP.put("KEY_LESSTHAN", KeyProcessor.KEY_LESSTHAN);
             // Elite uses "Key_Numpad_Enter"; our field is KEY_NUMENTER → auto-reflection produces "KEY_NUMENTER"
             ELITE_TO_KEYPROCESSOR_MAP.put("KEY_NUMPAD_ENTER", KeyProcessor.KEY_NUMENTER);
+            // French AZERTY accented keys. Elite serialises as e.g. "Key_é" (lowercase Unicode).
+            // toUpperCase() on lookup produces "KEY_É" which the reflection loop cannot auto-map
+            // (field name is ASCII "KEY_EACUTE"), so explicit entries are required.
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_É", KeyProcessor.KEY_EACUTE);   // é → NATIVE_BASE+17
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_È", KeyProcessor.KEY_EGRAVE);   // è → NATIVE_BASE+18
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_À", KeyProcessor.KEY_AGRAVE);   // à → NATIVE_BASE+19
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_Ù", KeyProcessor.KEY_UGRAVE);   // ù → NATIVE_BASE+20
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_Ç", KeyProcessor.KEY_CCEDILLA); // ç → NATIVE_BASE+21
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Failed to initialize key mappings", e);
         }

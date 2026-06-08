@@ -16,4 +16,15 @@ public interface NativeKeyInput {
     default boolean handles(int keyCode) {
         return false;
     }
+
+    /**
+     * Types a single Unicode character correctly for the active keyboard layout.
+     * Returns true if the character was sent; false if the caller should fall back to Robot.
+     * Used by KeyProcessor.enterText() to handle non-QWERTY layouts (e.g. AZERTY) where
+     * Robot.keyPress(VK_5) presses the physical position-5 key without knowing whether
+     * Shift is needed to produce the '5' character.
+     */
+    default boolean typeChar(char c) {
+        return false;
+    }
 }

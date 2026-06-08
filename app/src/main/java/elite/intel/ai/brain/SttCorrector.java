@@ -36,6 +36,8 @@ public class SttCorrector {
             "we", "us", "it", "this", "that", "get", "have",
             "has", "can", "could", "would", "should", "not", "no", "up",
             "here", "there", "some", "much", "many",
+            // large numbers - never game commands; "millions" → "missions" edit-distance collision
+            "million", "millions", "billion", "billions", "trillion", "trillions",
             // annotation noise from map-key inline notes ("NOTE: Sol and Earth...")
             "note", "never", "mean", "always", "only", "true", "false", "also", "use", "about"
     );

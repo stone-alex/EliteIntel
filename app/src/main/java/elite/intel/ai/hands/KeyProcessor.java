@@ -76,6 +76,11 @@ public class KeyProcessor {
     public static final int KEY_UDIAERESIS = NATIVE_BASE + 14; // ü (DE/EU) → scan 0x1A
     public static final int KEY_SSHARP = NATIVE_BASE + 15; // ß (DE)    → scan 0x0C
     public static final int KEY_DEAD_ACUTE = NATIVE_BASE + 16; // ´ (DE)    → scan 0x0D
+    public static final int KEY_EACUTE = NATIVE_BASE + 17; // é (FR AZERTY, number-row position 2)
+    public static final int KEY_EGRAVE = NATIVE_BASE + 18; // è (FR AZERTY, number-row position 7)
+    public static final int KEY_AGRAVE = NATIVE_BASE + 19; // à (FR AZERTY, number-row position 0)
+    public static final int KEY_UGRAVE = NATIVE_BASE + 20; // ù (FR AZERTY, ù key position)
+    public static final int KEY_CCEDILLA = NATIVE_BASE + 21; // ç (FR AZERTY, number-row position 9)
     public static final int KEY_LEFTCONTROL = NATIVE_BASE + 1;
     public static final int KEY_RIGHTCONTROL = NATIVE_BASE + 2;
     public static final int KEY_LEFTSHIFT = NATIVE_BASE + 3;
@@ -270,8 +275,10 @@ public class KeyProcessor {
 
     public void enterText(String text) {
         for (char c : text.toCharArray()) {
-            robot.keyPress(KeyEvent.getExtendedKeyCodeForChar(c));
-            robot.keyRelease(KeyEvent.getExtendedKeyCodeForChar(c));
+            if (!nativeKeyInput.typeChar(c)) {
+                robot.keyPress(KeyEvent.getExtendedKeyCodeForChar(c));
+                robot.keyRelease(KeyEvent.getExtendedKeyCodeForChar(c));
+            }
         }
     }
 }

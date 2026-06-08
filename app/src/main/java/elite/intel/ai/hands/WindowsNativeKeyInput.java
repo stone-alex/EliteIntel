@@ -34,6 +34,7 @@ class WindowsNativeKeyInput implements NativeKeyInput {
     private static final int KEYEVENTF_KEYUP = 0x0002;
     private static final int KEYEVENTF_EXTENDEDKEY = 0x0001;
     private static final int KEYEVENTF_SCANCODE = 0x0008;
+    private static final int KEYEVENTF_UNICODE = 0x0004;
     private static final int MAPVK_VK_TO_VSC = 0;
 
     // PS/2 Set-1 scan codes keyed by AWT VK code or KeyProcessor NATIVE_BASE+N code.
@@ -83,6 +84,11 @@ class WindowsNativeKeyInput implements NativeKeyInput {
         SCAN_MAP.put(NATIVE_BASE + 14, (short) 0x1A);  // KEY_UDIAERESIS    → ü (DE/EU, US [ position)
         SCAN_MAP.put(NATIVE_BASE + 15, (short) 0x0C);  // KEY_SSHARP        → ß (DE,    US - position)
         SCAN_MAP.put(NATIVE_BASE + 16, (short) 0x0D);  // KEY_DEAD_ACUTE    → ´ (DE,    US = position)
+        SCAN_MAP.put(NATIVE_BASE + 17, (short) 0x03); // KEY_EACUTE   → é (FR, PS/2 position 2)
+        SCAN_MAP.put(NATIVE_BASE + 18, (short) 0x08); // KEY_EGRAVE   → è (FR, PS/2 position 7)
+        SCAN_MAP.put(NATIVE_BASE + 19, (short) 0x0B); // KEY_AGRAVE   → à (FR, PS/2 position 0)
+        SCAN_MAP.put(NATIVE_BASE + 20, (short) 0x27); // KEY_UGRAVE   → ù (FR, PS/2 ';' position)
+        SCAN_MAP.put(NATIVE_BASE + 21, (short) 0x0A); // KEY_CCEDILLA → ç (FR, PS/2 position 9)
 
         // --- Control / editing keys ---
         SCAN_MAP.put(KeyEvent.VK_ESCAPE, (short) 0x01);
@@ -277,5 +283,34 @@ class WindowsNativeKeyInput implements NativeKeyInput {
             log.warn("SendInput sent={} for code=0x{}, keyUp={}", sent.intValue(),
                     Integer.toHexString(keyCode), isKeyUp);
         }
+    }
+
+    @Override
+    public boolean typeChar(char c) {
+        WinUser.INPUT[] inputs = (WinUser.INPUT[]) new WinUser.INPUT().toArray(2);
+
+        inputs[0].type = new WinDef.DWORD(WinUser.INPUT.INPUT_KEYBOARD);
+        inputs[0].input.setType(WinUser.KEYBDINPUT.class);
+        inputs[0].input.ki.wVk = new WinDef.WORD(0);
+        inputs[0].input.ki.wScan = new WinDef.WORD(c);
+        inputs[0].input.ki.dwFlags = new WinDef.DWORD(KEYEVENTF_UNICODE);
+        inputs[0].input.ki.time = new WinDef.DWORD(0);
+
+        inputs[1].type = new WinDef.DWORD(WinUser.INPUT.INPUT_KEYBOARD);
+        inputs[1].input.setType(WinUser.KEYBDINPUT.class);
+        inputs[1].input.ki.wVk = new WinDef.WORD(0);
+        inputs[1].input.ki.wScan = new WinDef.WORD(c);
+        inputs[1].input.ki.dwFlags = new WinDef.DWORD(KEYEVENTF_UNICODE | KEYEVENTF_KEYUP);
+        inputs[1].input.ki.time = new WinDef.DWORD(0);
+
+        WinDef.DWORD sent = User32.INSTANCE.SendInput(
+                new WinDef.DWORD(2),
+                inputs,
+                inputs[0].size()
+        );
+        if (sent.intValue() != 2) {
+            log.warn("SendInput (unicode) sent={} for char='{}'", sent.intValue(), c);
+        }
+        return true;
     }
 }

@@ -3,7 +3,9 @@ package elite.intel.ai.hands;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
+import com.sun.jna.Pointer;
 import com.sun.jna.platform.unix.X11;
+import com.sun.jna.ptr.IntByReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,6 +24,21 @@ import static elite.intel.ai.hands.KeyProcessor.NATIVE_BASE;
  */
 class LinuxX11NativeKeyInput implements NativeKeyInput {
     private static final Logger log = LogManager.getLogger(LinuxX11NativeKeyInput.class);
+
+    /**
+     * Minimal JNA wrapper for XGetKeyboardMapping (libX11).
+     * Used to determine the modifier level (plain vs Shift) for a given keysym,
+     * so typeChar() can inject the correct modifier before the key event.
+     */
+    interface X11Keyboard extends Library {
+        X11Keyboard INSTANCE = Native.load("X11", X11Keyboard.class);
+
+        // Returns a pointer to (keycode_count * symsPerKeycode) KeySym values; caller must XFree it.
+        Pointer XGetKeyboardMapping(X11.Display display, byte first_keycode, int keycode_count,
+                                    IntByReference symsPerKeycode_return);
+
+        int XFree(Pointer data);
+    }
 
     /**
      * Minimal JNA interface for the XTest extension in libXtst.
@@ -60,24 +77,34 @@ class LinuxX11NativeKeyInput implements NativeKeyInput {
         KEYSYM_MAP.put(NATIVE_BASE + 14, 0x00FCL);  // KEY_UDIAERESIS   → XK_udiaeresis (ü)
         KEYSYM_MAP.put(NATIVE_BASE + 15, 0x00DFL);  // KEY_SSHARP       → XK_ssharp (ß)
         KEYSYM_MAP.put(NATIVE_BASE + 16, 0xFE51L);  // KEY_DEAD_ACUTE   → XK_dead_acute (´)
+        KEYSYM_MAP.put(NATIVE_BASE + 17, 0x00E9L);  // KEY_EACUTE   → XK_eacute (é)
+        KEYSYM_MAP.put(NATIVE_BASE + 18, 0x00E8L);  // KEY_EGRAVE   → XK_egrave (è)
+        KEYSYM_MAP.put(NATIVE_BASE + 19, 0x00E0L);  // KEY_AGRAVE   → XK_agrave (à)
+        KEYSYM_MAP.put(NATIVE_BASE + 20, 0x00F9L);  // KEY_UGRAVE   → XK_ugrave (ù)
+        KEYSYM_MAP.put(NATIVE_BASE + 21, 0x00E7L);  // KEY_CCEDILLA → XK_ccedilla (ç)
     }
 
     private final X11 x11;
     private final XTst xtst;
+    private final X11Keyboard x11keyboard;
     private final X11.Display display;
     // Cache keysym → hardware keycode (XKeysymToKeycode is not free; returns byte)
     private final Map<Integer, Byte> keycodeCache = new HashMap<>();
     private final boolean available;
+    private byte shiftKeycode;
 
     LinuxX11NativeKeyInput() {
         X11 x11ref = null;
         XTst xtstRef = null;
+        X11Keyboard x11kbRef = null;
         X11.Display disp = null;
         boolean ok = false;
+        byte shiftKc = 0;
 
         try {
             x11ref = X11.INSTANCE;
             xtstRef = XTst.INSTANCE;
+            x11kbRef = X11Keyboard.INSTANCE;
             disp = x11ref.XOpenDisplay(null);
             if (disp == null) {
                 log.warn("XOpenDisplay returned null - likely pure Wayland session. " +
@@ -92,6 +119,7 @@ class LinuxX11NativeKeyInput implements NativeKeyInput {
                     }
                     keycodeCache.put(entry.getKey(), kc);
                 }
+                shiftKc = x11ref.XKeysymToKeycode(disp, new X11.KeySym(0xFFE1L)); // XK_Shift_L
                 ok = true;
                 log.debug("LinuxX11NativeKeyInput initialised, {} keycodes mapped", keycodeCache.size());
             }
@@ -103,8 +131,10 @@ class LinuxX11NativeKeyInput implements NativeKeyInput {
 
         this.x11 = x11ref;
         this.xtst = xtstRef;
+        this.x11keyboard = x11kbRef;
         this.display = disp;
         this.available = ok;
+        this.shiftKeycode = shiftKc;
     }
 
     boolean isAvailable() {
@@ -138,5 +168,58 @@ class LinuxX11NativeKeyInput implements NativeKeyInput {
         }
         xtst.XTestFakeKeyEvent(display, keycode & 0xFF, press ? 1 : 0, new NativeLong(0));
         x11.XFlush(display);
+    }
+
+    @Override
+    public boolean typeChar(char c) {
+        if (!available) return false;
+
+        // X11 keysym: Latin-1 range (0x00–0xFF) maps directly; beyond that use the Unicode escape.
+        long keysym = (c < 0x100) ? (long) c : (0x01000000L | c);
+
+        byte keycode = x11.XKeysymToKeycode(display, new X11.KeySym(keysym));
+        if (keycode == 0) {
+            log.debug("XKeysymToKeycode returned 0 for char '{}' (keysym 0x{}) - falling back to Robot",
+                    c, Long.toHexString(keysym));
+            return false;
+        }
+
+        boolean needsShift = false;
+        IntByReference symsPerKeycode = new IntByReference();
+        Pointer keysymTable = x11keyboard.XGetKeyboardMapping(display, keycode, 1, symsPerKeycode);
+        try {
+            int n = symsPerKeycode.getValue();
+            if (n >= 1) {
+                // Each KeySym is a native long (4 bytes on 32-bit, 8 bytes on 64-bit)
+                long level0 = readNativeLong(keysymTable, 0);
+                if (level0 != keysym && n >= 2) {
+                    long level1 = readNativeLong(keysymTable, 1);
+                    if (level1 == keysym) {
+                        needsShift = true;
+                    } else {
+                        // AltGr or other modifier required — not handled, fall back to Robot
+                        return false;
+                    }
+                }
+            }
+        } finally {
+            x11keyboard.XFree(keysymTable);
+        }
+
+        if (needsShift && shiftKeycode != 0) {
+            xtst.XTestFakeKeyEvent(display, shiftKeycode & 0xFF, 1, new NativeLong(0));
+        }
+        xtst.XTestFakeKeyEvent(display, keycode & 0xFF, 1, new NativeLong(0));
+        xtst.XTestFakeKeyEvent(display, keycode & 0xFF, 0, new NativeLong(0));
+        if (needsShift && shiftKeycode != 0) {
+            xtst.XTestFakeKeyEvent(display, shiftKeycode & 0xFF, 0, new NativeLong(0));
+        }
+        x11.XFlush(display);
+        return true;
+    }
+
+    private static long readNativeLong(Pointer p, int index) {
+        int offset = index * Native.LONG_SIZE;
+        return (Native.LONG_SIZE == 8) ? p.getLong(offset) : (p.getInt(offset) & 0xFFFFFFFFL);
     }
 }

@@ -63,6 +63,7 @@ public class TransmissionReceivedSubscriber {
     }
 
     private boolean isPirateMessage(String message) {
+        if (message == null) return false;
         Set<String> pirateTransmissions = new HashSet<>();
         pirateTransmissions.add("Big haul like that, surprised you made it this far".toLowerCase());
         pirateTransmissions.add("Carrying anything nice?".toLowerCase());

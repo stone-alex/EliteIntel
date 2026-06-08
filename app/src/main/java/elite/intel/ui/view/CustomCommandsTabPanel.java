@@ -55,15 +55,11 @@ public class CustomCommandsTabPanel extends JPanel {
         setBorder(new EmptyBorder(10, 10, 10, 10));
         setBackground(AppTheme.BG);
 
-        JPanel top = new JPanel(new BorderLayout(0, 10));
-        top.setOpaque(false);
-        top.add(headerPanel(), BorderLayout.NORTH);
         JPanel controls = new JPanel(new BorderLayout(8, 0));
         controls.setOpaque(false);
         controls.add(searchPanel(), BorderLayout.CENTER);
         controls.add(actionPanel(), BorderLayout.EAST);
-        top.add(controls, BorderLayout.SOUTH);
-        add(top, BorderLayout.NORTH);
+        add(controls, BorderLayout.NORTH);
 
         tableModel = new ReadOnlyTableModel(columnNames(), 0);
         table = new JTable(tableModel);
@@ -92,20 +88,6 @@ public class CustomCommandsTabPanel extends JPanel {
                     row.phrasesText()
             });
         }
-    }
-
-    private JPanel headerPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setOpaque(false);
-
-        JLabel title = new JLabel(getText("actions.customCommands.title"));
-        title.setFont(title.getFont().deriveFont(Font.BOLD, title.getFont().getSize2D() + 4f));
-        title.setForeground(AppTheme.FG);
-        title.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        panel.add(title);
-        return panel;
     }
 
     private JPanel actionPanel() {

@@ -33,13 +33,22 @@ public class BindingsBackupService {
      * {@code .bak} name.
      */
     public Path createBackup(Path bindsFile) throws IOException {
-        Path directory = bindsFile.getParent();
+        return createBackup(bindsFile, bindsFile.getParent());
+    }
+
+    /**
+     * Copies the original file into {@code targetDirectory} using a timestamped,
+     * collision-safe {@code .bak} name. Use this overload to write game-file backups
+     * to a directory outside the game bindings folder.
+     */
+    public Path createBackup(Path bindsFile, Path targetDirectory) throws IOException {
+        Files.createDirectories(targetDirectory);
         String timestamp = ZonedDateTime.now(clock).format(BACKUP_TIMESTAMP);
-        String baseName = bindsFile.getFileName() + ".elite-intel-backup-" + timestamp;
+        String baseName = bindsFile.getFileName() + "." + timestamp;
 
         for (int attempt = 0; attempt < 100; attempt++) {
             String suffix = attempt == 0 ? "" : "-" + attempt;
-            Path backup = directory.resolve(baseName + suffix + ".bak");
+            Path backup = targetDirectory.resolve(baseName + suffix + ".bak");
             if (backup.getFileName().toString().endsWith(".binds")) {
                 throw new IOException("Backup filename must not end with .binds: " + backup);
             }

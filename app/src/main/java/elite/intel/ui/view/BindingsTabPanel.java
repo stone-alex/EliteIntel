@@ -3,10 +3,13 @@ package elite.intel.ui.view;
 import elite.intel.ai.hands.BindingGroup;
 import elite.intel.ai.hands.BindingGroupClassifier;
 import elite.intel.ai.hands.BindingModifier;
+import elite.intel.ai.hands.BindingsApplyException;
+import elite.intel.ai.hands.BindingsApplyService;
 import elite.intel.ai.hands.BindingSaveResult;
 import elite.intel.ai.hands.BindingSlotType;
 import elite.intel.ai.hands.BindingsLoader;
 import elite.intel.ai.hands.BindingsMonitor;
+import elite.intel.ai.hands.BindingsWorkingCopyRepository;
 import elite.intel.ai.hands.BindingsWriter;
 import elite.intel.ai.hands.KeyBindingsParser;
 import elite.intel.ai.hands.KeyboardBindingEdit;
@@ -46,6 +49,8 @@ public class BindingsTabPanel extends JPanel {
     private final BindingSlotDisplayFormatter slotFormatter = new BindingSlotDisplayFormatter();
     private final BindingsSelectionController selectionController;
     private final BindingsGroupTableFactory tableFactory;
+    private final BindingsWorkingCopyRepository workingCopyRepo = new BindingsWorkingCopyRepository();
+    private final BindingsApplyService applyService = new BindingsApplyService();
     private final List<JButton> headerInfoButtons = new ArrayList<>();
 
     private JTextField profileField;
@@ -59,10 +64,22 @@ public class BindingsTabPanel extends JPanel {
     private JScrollPane usedBindingsScrollPane;
     private JScrollPane missingBindingsScrollPane;
     private JTabbedPane tabs;
+    private static final Color STATUS_SYNCED_COLOR = new Color(0x4CAF50);
+
+    private JLabel syncStatusIcon;
+    private JLabel syncStatusLabel;
+    private JButton applyButton;
+    private JButton revertButton;
+
     private Map<String, KeyBindingsParser.ReadOnlyBindingSlots> currentSlots = Map.of();
+    /** Working copy file currently loaded in the editor — used for stale checks. */
     private File activeBindingsFile;
     private FileTime activeBindingsLastModified;
     private long activeBindingsFileSize = -1;
+    /** The actual game binds file — source for Apply and for the file-path display field. */
+    private File gameBindingsFile;
+    /** The preset file name (e.g. {@code Custom.3.0.binds}) — key for the working copy. */
+    private String activePresetFileName;
     private boolean assignDialogOpen;
 
     public BindingsTabPanel() {
@@ -88,6 +105,54 @@ public class BindingsTabPanel extends JPanel {
         SwingUtilities.invokeLater(this::initData);
     }
 
+    /**
+     * Returns {@code true} if a draft working copy exists that differs from the
+     * current game file. Used by the parent window to decide whether to show a
+     * close confirmation dialog.
+     */
+    public boolean hasUnappliedChanges() {
+        if (activePresetFileName == null || gameBindingsFile == null) {
+            return false;
+        }
+        return !workingCopyRepo.isSyncedWithGame(activePresetFileName, gameBindingsFile.toPath());
+    }
+
+    /**
+     * Shows a modal dialog when the user closes the application with an unapplied
+     * draft. Offers Apply, Keep Draft, or Discard. Blocks until the user responds.
+     * Must be called on the EDT.
+     */
+    public void promptCloseWithDraft() {
+        if (!hasUnappliedChanges()) {
+            return;
+        }
+        Object[] options = {
+                getText("bindings.close.draft.apply"),
+                getText("bindings.close.draft.keep"),
+                getText("bindings.close.draft.discard")
+        };
+        int choice = JOptionPane.showOptionDialog(
+                this,
+                getText("bindings.close.draft.text"),
+                getText("bindings.close.draft.title"),
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                options,
+                options[1]
+        );
+        if (choice == 0) {
+            // Apply
+            performApply();
+        } else if (choice == 2) {
+            // Discard
+            if (activePresetFileName != null) {
+                workingCopyRepo.delete(activePresetFileName);
+            }
+        }
+        // choice == 1 (Keep Draft) or dialog closed: do nothing, draft is already on disk
+    }
+
     private void buildUi() {
         setLayout(new BorderLayout(8, 8));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -96,9 +161,11 @@ public class BindingsTabPanel extends JPanel {
         JPanel details = new JPanel(new GridBagLayout());
         details.setOpaque(false);
         GridBagConstraints gbc = baseGbc();
+        // Compact header: ~30% less vertical space than the app-wide default (42px / 12px insets → 30px / 4px).
+        gbc.insets = new Insets(2, 6, 2, 6);
 
         resetHeaderRow(gbc);
-        addLabel(details, getText("player.bindingsDirectory"), gbc);
+        addHeaderLabel(details, getText("player.bindingsDirectory"), gbc);
         bindingsDirField = readOnlyField();
         bindingsDirField.setToolTipText(getText("player.bindingsDirectory.tooltip"));
         addField(details, bindingsDirField, gbc, 1, 1.0);
@@ -111,14 +178,14 @@ public class BindingsTabPanel extends JPanel {
 
         nextRow(gbc);
         resetHeaderRow(gbc);
-        addLabel(details, getText("bindings.profileName"), gbc);
+        addHeaderLabel(details, getText("bindings.profileName"), gbc);
         profileField = readOnlyValueField();
         addField(details, profileField, gbc, 1, 1.0);
         addInfoButton(details, gbc, "bindings.profileName.info");
 
         nextRow(gbc);
         resetHeaderRow(gbc);
-        addLabel(details, getText("bindings.filePath"), gbc);
+        addHeaderLabel(details, getText("bindings.filePath"), gbc);
         filePathField = readOnlyValueField();
         addField(details, filePathField, gbc, 1, 1.0);
         addInfoButton(details, gbc, "bindings.filePath.info");
@@ -148,6 +215,42 @@ public class BindingsTabPanel extends JPanel {
         center.setBackground(BG);
         center.add(tabs, BorderLayout.CENTER);
         add(center, BorderLayout.CENTER);
+
+        add(buildFooter(), BorderLayout.SOUTH);
+    }
+
+    private JPanel buildFooter() {
+        syncStatusIcon = new JLabel("●");   // ● BLACK CIRCLE
+        syncStatusIcon.setFont(syncStatusIcon.getFont().deriveFont(Font.PLAIN, 10f));
+
+        syncStatusLabel = new JLabel();
+        syncStatusLabel.setFont(syncStatusLabel.getFont().deriveFont(Font.PLAIN));
+
+        JPanel statusArea = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        statusArea.setOpaque(false);
+        statusArea.add(syncStatusIcon);
+        statusArea.add(syncStatusLabel);
+
+        revertButton = makeButtonSubtle(getText("bindings.button.revert"));
+        revertButton.addActionListener(e -> revertFromGame());
+
+        applyButton = makeButton(getText("bindings.button.apply"));
+        applyButton.addActionListener(e -> performApply());
+
+        JPanel footer = new JPanel(new BorderLayout(8, 0));
+        footer.setOpaque(false);
+        footer.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(0x35354A)),
+                BorderFactory.createEmptyBorder(6, 0, 0, 0)));
+
+        JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        buttonBar.setOpaque(false);
+        buttonBar.add(revertButton);
+        buttonBar.add(applyButton);
+
+        footer.add(statusArea, BorderLayout.CENTER);
+        footer.add(buttonBar, BorderLayout.EAST);
+        return footer;
     }
 
     public void initData() {
@@ -155,16 +258,25 @@ public class BindingsTabPanel extends JPanel {
         selectionController.resetTables();
         bindingsDirField.setText(playerSession.getBindingsDir().toString());
         try {
-            File bindingsFile = activeBindingsFile();
-            Map<String, KeyBindingsParser.ReadOnlyBindingSlots> slots = parser.parseReadOnlyBindingSlots(bindingsFile);
-            Map<String, KeyBindingsParser.KeyBinding> parsedBindings = effectiveBindings(slots);
-            currentSlots = slots;
-            activeBindingsFile = bindingsFile;
-            activeBindingsLastModified = Files.getLastModifiedTime(bindingsFile.toPath());
-            activeBindingsFileSize = Files.size(bindingsFile.toPath());
+            File resolvedGameFile = resolveGameBindsFile();
+            String presetFileName = resolvedGameFile.getName();
 
-            profileField.setText(activeProfileName(bindingsFile));
-            filePathField.setText(bindingsFile.getAbsolutePath());
+            Path workingCopyPath = workingCopyRepo.loadOrImportFromGame(
+                    presetFileName, resolvedGameFile.toPath());
+
+            Map<String, KeyBindingsParser.ReadOnlyBindingSlots> slots =
+                    parser.parseReadOnlyBindingSlots(workingCopyPath.toFile());
+            Map<String, KeyBindingsParser.KeyBinding> parsedBindings = effectiveBindings(slots);
+
+            currentSlots = slots;
+            activeBindingsFile = workingCopyPath.toFile();
+            activeBindingsLastModified = Files.getLastModifiedTime(workingCopyPath);
+            activeBindingsFileSize = Files.size(workingCopyPath);
+            gameBindingsFile = resolvedGameFile;
+            activePresetFileName = presetFileName;
+
+            profileField.setText(activeProfileName(resolvedGameFile));
+            filePathField.setText(resolvedGameFile.getAbsolutePath());
 
             List<String> usedBindings = monitor.findFoundGameBindings(parsedBindings).stream()
                     .sorted(String::compareToIgnoreCase)
@@ -196,6 +308,66 @@ public class BindingsTabPanel extends JPanel {
             tabs.setTitleAt(0, getText("bindings.usedBindings", 0));
             tabs.setTitleAt(1, getText("bindings.missingBindings", 0));
         }
+        updateSyncStatus();
+    }
+
+    private void updateSyncStatus() {
+        if (applyButton == null || syncStatusLabel == null || syncStatusIcon == null) {
+            return;
+        }
+        boolean synced = activePresetFileName == null
+                || gameBindingsFile == null
+                || workingCopyRepo.isSyncedWithGame(activePresetFileName, gameBindingsFile.toPath());
+
+        Color statusColor = synced ? STATUS_SYNCED_COLOR : ACCENT;
+        syncStatusIcon.setForeground(statusColor);
+        syncStatusLabel.setText(synced
+                ? getText("bindings.status.synced")
+                : getText("bindings.status.draft"));
+        syncStatusLabel.setForeground(statusColor);
+
+        applyButton.setEnabled(!synced && activePresetFileName != null);
+        revertButton.setEnabled(activePresetFileName != null && workingCopyRepo.exists(activePresetFileName));
+    }
+
+    private void performApply() {
+        if (activePresetFileName == null || gameBindingsFile == null) {
+            return;
+        }
+        try {
+            Path backupPath = applyService.apply(activePresetFileName, gameBindingsFile.toPath());
+            String successMsg = backupPath != null
+                    ? getText("bindings.apply.success", backupPath.getFileName())
+                    : getText("bindings.apply.success.noBackup");
+            JOptionPane.showMessageDialog(
+                    this,
+                    successMsg,
+                    getText("bindings.apply.dialogTitle"),
+                    JOptionPane.INFORMATION_MESSAGE);
+            updateSyncStatus();
+        } catch (BindingsApplyException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    getText("bindings.apply.error", e.getMessage()),
+                    getText("bindings.apply.dialogTitle"),
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void revertFromGame() {
+        if (activePresetFileName == null || gameBindingsFile == null) {
+            return;
+        }
+        int response = JOptionPane.showConfirmDialog(
+                this,
+                getText("bindings.revert.confirm.text"),
+                getText("bindings.revert.confirm.title"),
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+        if (response == JOptionPane.YES_OPTION) {
+            workingCopyRepo.delete(activePresetFileName);
+            initData();
+        }
     }
 
     private void selectBindingsDirectory() {
@@ -213,7 +385,7 @@ public class BindingsTabPanel extends JPanel {
         }
     }
 
-    private File activeBindingsFile() throws Exception {
+    private File resolveGameBindsFile() throws Exception {
         File currentFile = monitor.getCurrentBindsFile();
         return currentFile != null ? currentFile : loader.getLatestBindsFile();
     }
@@ -228,6 +400,15 @@ public class BindingsTabPanel extends JPanel {
         return profileEnd > 0 ? fileName.substring(0, profileEnd) : fileName;
     }
 
+    private void addHeaderLabel(JPanel panel, String text, GridBagConstraints gbc) {
+        gbc.gridx = 0;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        JLabel label = new JLabel(text);
+        label.setPreferredSize(new Dimension(220, HEADER_ROW_HEIGHT));
+        panel.add(label, gbc);
+    }
+
     private void resetHeaderRow(GridBagConstraints gbc) {
         gbc.gridx = 0;
         gbc.gridwidth = 1;
@@ -235,10 +416,12 @@ public class BindingsTabPanel extends JPanel {
         gbc.fill = GridBagConstraints.NONE;
     }
 
+    private static final int HEADER_ROW_HEIGHT = 30;
+
     private JTextField readOnlyField() {
         JTextField field = new JTextField();
         field.setEditable(false);
-        field.setPreferredSize(new Dimension(0, 42));
+        field.setPreferredSize(new Dimension(0, HEADER_ROW_HEIGHT));
         field.setBackground(BG_PANEL);
         field.setForeground(FG);
         return field;
@@ -254,9 +437,9 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private JButton compactDirectoryChooserButton() {
-        JButton button = makeButton("\u22EE");
+        JButton button = makeButton("⋮");
         button.setToolTipText(getText("player.bindingsDirectory.select.tooltip"));
-        Dimension size = new Dimension(42, 42);
+        Dimension size = new Dimension(HEADER_ROW_HEIGHT, HEADER_ROW_HEIGHT);
         button.setPreferredSize(size);
         button.setMinimumSize(size);
         button.setMaximumSize(size);
@@ -264,7 +447,7 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private void addInfoButton(JPanel panel, GridBagConstraints gbc, String messageKey) {
-        JButton button = new JButton("\u24D8");
+        JButton button = new JButton("ⓘ");
         String message = getText(messageKey);
         button.addActionListener(e -> JOptionPane.showMessageDialog(
                 this,
@@ -278,7 +461,7 @@ public class BindingsTabPanel extends JPanel {
         button.setForeground(FG_MUTED);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setFont(button.getFont().deriveFont(Font.PLAIN, button.getFont().getSize2D() + 2f));
-        Dimension size = new Dimension(28, 28);
+        Dimension size = new Dimension(HEADER_ROW_HEIGHT, HEADER_ROW_HEIGHT);
         button.setPreferredSize(size);
         button.setMinimumSize(size);
         button.setMaximumSize(size);
@@ -317,7 +500,7 @@ public class BindingsTabPanel extends JPanel {
         button.setBackground(BG);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setFont(button.getFont().deriveFont(Font.PLAIN, button.getFont().getSize2D() + 2f));
-        Dimension size = new Dimension(28, 28);
+        Dimension size = new Dimension(HEADER_ROW_HEIGHT, HEADER_ROW_HEIGHT);
         button.setPreferredSize(size);
         button.setMinimumSize(size);
         button.setMaximumSize(size);
@@ -325,7 +508,7 @@ public class BindingsTabPanel extends JPanel {
 
     private JPanel keyboardOnlyBanner() {
         keyboardOnlyBanner = new JPanel(new BorderLayout());
-        keyboardOnlyBannerText = new JLabel("\u26A0  " + getText("bindings.keyboardOnlyHint"));
+        keyboardOnlyBannerText = new JLabel("⚠  " + getText("bindings.keyboardOnlyHint"));
         keyboardOnlyBanner.add(keyboardOnlyBannerText, BorderLayout.CENTER);
         styleKeyboardOnlyBanner();
         return keyboardOnlyBanner;
@@ -535,5 +718,7 @@ public class BindingsTabPanel extends JPanel {
         activeBindingsFile = null;
         activeBindingsLastModified = null;
         activeBindingsFileSize = -1;
+        gameBindingsFile = null;
+        activePresetFileName = null;
     }
 }

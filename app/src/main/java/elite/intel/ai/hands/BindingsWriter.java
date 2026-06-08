@@ -30,15 +30,13 @@ public class BindingsWriter {
     private static final byte[] UTF_8_BOM = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
 
     private final KeyboardKeyAvailabilityService availabilityService;
-    private final BindingsBackupService backupService;
 
     public BindingsWriter() {
-        this(new KeyboardKeyAvailabilityService(), new BindingsBackupService());
+        this(new KeyboardKeyAvailabilityService());
     }
 
-    BindingsWriter(KeyboardKeyAvailabilityService availabilityService, BindingsBackupService backupService) {
+    BindingsWriter(KeyboardKeyAvailabilityService availabilityService) {
         this.availabilityService = availabilityService;
-        this.backupService = backupService;
     }
 
     /**
@@ -111,10 +109,6 @@ public class BindingsWriter {
                 return BindingSaveResult.KEY_OCCUPIED;
             }
 
-            if (!createBackup(edit.file())) {
-                return BindingSaveResult.BACKUP_FAILED;
-            }
-
             if (isStale(edit)) {
                 return BindingSaveResult.STALE_FILE;
             }
@@ -129,15 +123,6 @@ public class BindingsWriter {
             return BindingSaveResult.WRITE_FAILED;
         } catch (Exception e) {
             return BindingSaveResult.UNSUPPORTED_XML;
-        }
-    }
-
-    private boolean createBackup(Path file) {
-        try {
-            backupService.createBackup(file);
-            return true;
-        } catch (IOException e) {
-            return false;
         }
     }
 

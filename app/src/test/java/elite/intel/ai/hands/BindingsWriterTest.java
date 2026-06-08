@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneOffset;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Set;
@@ -229,42 +226,6 @@ class BindingsWriterTest {
     }
 
     @Test
-    void backupIsCreatedBeforeWriteAndFilenameDoesNotEndWithBinds() throws Exception {
-        Path file = writeBinds(minimalBinds());
-        String before = Files.readString(file, StandardCharsets.UTF_8);
-
-        BindingSaveResult result = new BindingsWriter(
-                availabilityService,
-                fixedBackupService()
-        ).assignKeyboardKey(edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, "Key_M"));
-
-        List<Path> backups = backups(file);
-        assertEquals(BindingSaveResult.SAVED, result);
-        assertEquals(1, backups.size());
-        assertFalse(backups.get(0).getFileName().toString().endsWith(".binds"));
-        assertEquals(before, Files.readString(backups.get(0), StandardCharsets.UTF_8));
-    }
-
-    @Test
-    void backupFilenameCollisionCreatesSuffixedBackup() throws Exception {
-        Path file = writeBinds(minimalBinds());
-        BindingsBackupService backupService = fixedBackupService();
-        Path firstBackup = backupService.createBackup(file);
-
-        BindingSaveResult result = new BindingsWriter(
-                availabilityService,
-                backupService
-        ).assignKeyboardKey(edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, "Key_M"));
-
-        List<Path> backups = backups(file);
-        assertEquals(BindingSaveResult.SAVED, result);
-        assertEquals(2, backups.size());
-        assertTrue(Files.exists(firstBackup));
-        assertTrue(backups.stream().anyMatch(path -> path.getFileName().toString().endsWith("-1.bak")));
-        assertFalse(backups.stream().anyMatch(path -> path.getFileName().toString().endsWith(".binds")));
-    }
-
-    @Test
     void writerChangesOnlySelectedSlotAndRemovesSupportedModifierForPlainSave() throws Exception {
         String original = """
                 <Root>
@@ -369,19 +330,14 @@ class BindingsWriterTest {
                     <Unrelated value="kept" />
                 </Root>
                 """);
-        String before = Files.readString(file, StandardCharsets.UTF_8);
-
         BindingSaveResult result = new BindingsWriter().assignKeyboardKey(
                 edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, null));
 
         String updated = Files.readString(file, StandardCharsets.UTF_8);
-        List<Path> backups = backups(file);
         assertEquals(BindingSaveResult.SAVED, result);
         assertTrue(updated.contains("<Primary Device=\"{NoDevice}\" Key=\"\" />"));
         assertTrue(updated.contains("<Secondary Device=\"Keyboard\" Key=\"Key_H\" />"));
         assertTrue(updated.contains("<Unrelated value=\"kept\" />"));
-        assertEquals(1, backups.size());
-        assertEquals(before, Files.readString(backups.get(0), StandardCharsets.UTF_8));
     }
 
     @Test
@@ -781,29 +737,6 @@ class BindingsWriterTest {
         assertEquals(0, backups(file).size());
     }
 
-    @Test
-    void staleAfterBackupReturnsStaleFileWithoutWritingReplacement() throws Exception {
-        Path file = writeBinds(minimalBinds());
-        BindingsBackupService mutatingBackup = new BindingsBackupService() {
-            @Override
-            public Path createBackup(Path bindsFile) throws IOException {
-                Path backup = super.createBackup(bindsFile);
-                Files.writeString(bindsFile, minimalBinds() + "\n<!-- changed by game -->", StandardCharsets.UTF_8);
-                return backup;
-            }
-        };
-
-        BindingSaveResult result = new BindingsWriter(
-                availabilityService,
-                mutatingBackup
-        ).assignKeyboardKey(edit(file, "GalaxyMapOpen", BindingSlotType.PRIMARY, "Key_M"));
-
-        String updated = Files.readString(file, StandardCharsets.UTF_8);
-        assertEquals(BindingSaveResult.STALE_FILE, result);
-        assertTrue(updated.contains("changed by game"));
-        assertFalse(updated.contains("Key=\"Key_M\""));
-    }
-
     private KeyboardBindingEdit edit(
             Path file,
             String bindingId,
@@ -840,12 +773,9 @@ class BindingsWriterTest {
     private List<Path> backups(Path bindsFile) throws IOException {
         try (var files = Files.list(bindsFile.getParent())) {
             return files
-                    .filter(path -> path.getFileName().toString().contains(".elite-intel-backup-"))
+                    .filter(path -> path.getFileName().toString().endsWith(".bak"))
                     .toList();
         }
     }
 
-    private BindingsBackupService fixedBackupService() {
-        return new BindingsBackupService(Clock.fixed(Instant.parse("2026-06-02T12:00:00Z"), ZoneOffset.UTC));
-    }
 }

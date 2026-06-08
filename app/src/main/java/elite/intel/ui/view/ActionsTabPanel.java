@@ -38,6 +38,11 @@ public class ActionsTabPanel extends JPanel {
         customCommandsTabPanel.initData();
     }
 
+    /** Forwards close-with-draft prompt to the bindings panel. Must be called on the EDT. */
+    public void promptCloseWithDraft() {
+        bindingsTabPanel.promptCloseWithDraft();
+    }
+
     public void dispose() {
         bindingsTabPanel.dispose();
     }

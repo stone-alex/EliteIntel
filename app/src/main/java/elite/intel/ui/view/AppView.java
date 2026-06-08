@@ -16,6 +16,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -52,7 +54,16 @@ public class AppView extends JFrame implements AppViewInterface {
         EventBusManager.register(this);
 
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/elite-logo.png")));
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (actionsTabPanel != null) {
+                    actionsTabPanel.promptCloseWithDraft();
+                }
+                System.exit(0);
+            }
+        });
         setMinimumSize(new Dimension(600, 500));
         setSize(new Dimension(1200, 900));
         setLocationRelativeTo(null);

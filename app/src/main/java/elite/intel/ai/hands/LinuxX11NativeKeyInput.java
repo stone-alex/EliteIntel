@@ -197,7 +197,7 @@ class LinuxX11NativeKeyInput implements NativeKeyInput {
                     if (level1 == keysym) {
                         needsShift = true;
                     } else {
-                        // AltGr or other modifier required — not handled, fall back to Robot
+                        // AltGr or other modifier required but not handled, fall back to Robot
                         return false;
                     }
                 }

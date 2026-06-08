@@ -3,17 +3,13 @@ package elite.intel.ai.hands;
 import elite.intel.util.AppPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.UUID;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.xml.sax.InputSource;
 
 /**
  * Applies a working copy bindings file to the Elite Dangerous game directory.

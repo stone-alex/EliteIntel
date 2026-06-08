@@ -6,11 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 
 /**
  * Manages per-preset working copies of Elite Dangerous {@code .binds} files.
@@ -80,7 +76,7 @@ public class BindingsWorkingCopyRepository {
             try {
                 Files.copy(workingCopy, bak, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                log.warn("Could not create .bak for '{}' — proceeding: {}", workingCopy.getFileName(), e.getMessage());
+                log.warn("Could not create .bak for '{}'  proceeding: {}", workingCopy.getFileName(), e.getMessage());
             }
         }
 

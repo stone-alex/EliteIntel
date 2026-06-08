@@ -39,7 +39,7 @@ public class AudioSettingsPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(HUD_BG);
 
-        HudSection controlsSection = new HudSection(getText("settings.tab.audio"), new GridBagLayout());
+        HudSection controlsSection = new HudSection(getText("settings.audio.section.levels"), new GridBagLayout());
         JPanel grid = controlsSection.body();
         GridBagConstraints ag = baseGbc();
 
@@ -124,18 +124,20 @@ public class AudioSettingsPanel extends JPanel {
         content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         content.add(controlsSection);
 
-        // -- Mic monitor ------------------------------------------------------
         content.add(Box.createVerticalStrut(8));
+        HudSection monitorSection = new HudSection(getText("settings.audio.section.microphoneMonitor"), new BorderLayout(0, HUD_GAP));
+        JPanel monitorBody = monitorSection.body();
         AudioWaveformPanel waveformPanel = new AudioWaveformPanel();
         waveformPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         waveformPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, AudioWaveformPanel.PANEL_HEIGHT));
-        content.add(waveformPanel);
+        monitorBody.add(waveformPanel, BorderLayout.NORTH);
 
-        content.add(Box.createVerticalStrut(8));
         JButton audioDevicesBtn = makeButton(getText("button.audioDevices"));
         audioDevicesBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
         audioDevicesBtn.addActionListener(e -> new AudioInterfaceDialog(this).setVisible(true));
-        content.add(audioDevicesBtn);
+        JPanel deviceRow = transparentPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        deviceRow.add(audioDevicesBtn);
+        monitorBody.add(deviceRow, BorderLayout.CENTER);
 
         JPanel helpLabels = transparentPanel(null);
         helpLabels.setLayout(new BoxLayout(helpLabels, BoxLayout.PAGE_AXIS));
@@ -144,7 +146,8 @@ public class AudioSettingsPanel extends JPanel {
         JLabel graphLabel = new JLabel(getText("settings.audio.micHelp"));
         graphLabel.setForeground(FG_MUTED);
         helpLabels.add(graphLabel);
-        content.add(helpLabels);
+        monitorBody.add(helpLabels, BorderLayout.SOUTH);
+        content.add(monitorSection);
 
         add(content, BorderLayout.NORTH);
     }

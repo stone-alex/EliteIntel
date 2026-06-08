@@ -32,6 +32,12 @@ public class MarkdownViewPanel extends JPanel {
     private void buildUi() {
         setLayout(new BorderLayout());
         setBackground(AppTheme.HUD_BG);
+        setBorder(BorderFactory.createEmptyBorder(
+                AppTheme.HUD_PADDING,
+                AppTheme.HUD_PADDING,
+                AppTheme.HUD_PADDING,
+                AppTheme.HUD_PADDING
+        ));
 
         editorPane = new JEditorPane();
         editorPane.setContentType("text/html");
@@ -59,8 +65,10 @@ public class MarkdownViewPanel extends JPanel {
         JPanel toolbar = AppTheme.transparentPanel(new FlowLayout(FlowLayout.RIGHT, AppTheme.HUD_GAP, 4));
         toolbar.add(reloadButton);
 
-        add(toolbar, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
+        HudSection documentSection = new HudSection(getText("manual.section.document"), new BorderLayout(AppTheme.HUD_GAP, AppTheme.HUD_GAP));
+        documentSection.body().add(toolbar, BorderLayout.NORTH);
+        documentSection.body().add(scrollPane, BorderLayout.CENTER);
+        add(documentSection, BorderLayout.CENTER);
 
         // applyDarkPalette (called later in AppView) forces JEditorPane to white.
         // Re-apply our dark background after the palette pass completes.

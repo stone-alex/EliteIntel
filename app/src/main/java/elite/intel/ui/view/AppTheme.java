@@ -12,6 +12,7 @@ import java.awt.*;
  * Shared colors, component factories, and layout helpers for the dark UI theme.
  */
 public class AppTheme {
+    private static final String HUD_LOCKED_FOREGROUND = "eliteIntel.hud.lockedForeground";
 
     public static final Color BG = new Color(0x151519);
     public static final Color LOG_BG = new Color(0x171927);
@@ -142,6 +143,7 @@ public class AppTheme {
         JLabel label = new JLabel(text);
         label.setForeground(ACCENT);
         label.setFont(label.getFont().deriveFont(Font.BOLD, HUD_FONT_SECTION));
+        label.putClientProperty(HUD_LOCKED_FOREGROUND, Boolean.TRUE);
         return label;
     }
 
@@ -313,15 +315,17 @@ public class AppTheme {
 
     public static void applyDarkPalette(Component c) {
         if (c == null) return;
+        boolean lockForeground = c instanceof JComponent jc
+                && Boolean.TRUE.equals(jc.getClientProperty(HUD_LOCKED_FOREGROUND));
 
         if (c instanceof TopStatusBar || c instanceof HudPanel || c instanceof StatusBadge) {
             // HUD primitives own their painting and state colours.
         } else if (c instanceof JPanel || c instanceof JTabbedPane || c instanceof JScrollPane) {
             c.setBackground(BG);
-            c.setForeground(FG);
+            if (!lockForeground) c.setForeground(FG);
         } else {
             c.setBackground(c instanceof JTextComponent ? BG_PANEL : BG);
-            c.setForeground(FG);
+            if (!lockForeground) c.setForeground(FG);
         }
 
         if (c instanceof JTextArea) {

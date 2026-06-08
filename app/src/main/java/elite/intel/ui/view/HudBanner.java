@@ -23,6 +23,7 @@ public class HudBanner extends HudPanel {
         JLabel label = new JLabel(text == null ? "" : text);
         label.setForeground(colorFor(state));
         label.setFont(label.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_LABEL));
+        label.putClientProperty("eliteIntel.hud.lockedForeground", Boolean.TRUE);
         add(label, BorderLayout.CENTER);
     }
 
@@ -34,5 +35,11 @@ public class HudBanner extends HudPanel {
             case OFFLINE -> AppTheme.HUD_DANGER;
             case INFO -> AppTheme.HUD_CYAN;
         };
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        Dimension preferred = getPreferredSize();
+        return new Dimension(Integer.MAX_VALUE, preferred.height);
     }
 }

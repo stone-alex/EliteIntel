@@ -51,13 +51,12 @@ public class CustomCommandsTabPanel extends JPanel {
 
     private void buildUi() {
         setLayout(new BorderLayout(8, 8));
-        setBorder(new EmptyBorder(10, 10, 10, 10));
+        setBorder(new EmptyBorder(AppTheme.HUD_PADDING, AppTheme.HUD_PADDING, AppTheme.HUD_PADDING, AppTheme.HUD_PADDING));
         setBackground(AppTheme.HUD_BG);
 
         JPanel controls = AppTheme.transparentPanel(new BorderLayout(AppTheme.HUD_GAP, 0));
         controls.add(searchPanel(), BorderLayout.CENTER);
         controls.add(actionPanel(), BorderLayout.EAST);
-        add(controls, BorderLayout.NORTH);
 
         tableModel = new ReadOnlyTableModel(columnNames(), 0);
         table = new JTable(tableModel);
@@ -73,7 +72,11 @@ public class CustomCommandsTabPanel extends JPanel {
         });
 
         JScrollPane scrollPane = HudTable.scrollPane(table);
-        add(scrollPane, BorderLayout.CENTER);
+
+        HudSection customSection = new HudSection(getText("actions.customCommands.section.macros"), new BorderLayout(AppTheme.HUD_GAP, AppTheme.HUD_GAP));
+        customSection.body().add(controls, BorderLayout.NORTH);
+        customSection.body().add(scrollPane, BorderLayout.CENTER);
+        add(customSection, BorderLayout.CENTER);
     }
 
     public void initData() {

@@ -34,17 +34,9 @@ public class AiTabPanel extends JPanel {
     }
 
     private void buildUi(Font monoFont) {
-        setLayout(new GridBagLayout());
+        setLayout(new BorderLayout(HUD_GAP, HUD_GAP));
         setBackground(HUD_BG);
-        GridBagConstraints gbc = baseGbc();
-
-        // Row 1: Button bar
-        nextRow(gbc);
-        gbc.gridx = 0;
-        gbc.gridwidth = 3;
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
+        setBorder(BorderFactory.createEmptyBorder(HUD_PADDING, HUD_PADDING, HUD_PADDING, HUD_PADDING));
 
         JPanel buttons = transparentPanel(null);
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
@@ -94,15 +86,9 @@ public class AiTabPanel extends JPanel {
         buttons.add(Box.createRigidArea(new Dimension(8, 0)));
         //buttons.add(showDetailedLog);
 
-        add(buttons, gbc);
-
-        // Row 2: Three log panels in split panes
-        nextRow(gbc);
-        gbc.gridx = 0;
-        gbc.gridwidth = 3;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        gbc.fill = GridBagConstraints.BOTH;
+        HudSection controlsSection = new HudSection(getText("ai.section.controls"), new BorderLayout());
+        controlsSection.body().add(buttons, BorderLayout.CENTER);
+        add(controlsSection, BorderLayout.NORTH);
 
         userPanel = new LogPanel(
                 getText("ai.log.user"),
@@ -122,19 +108,33 @@ public class AiTabPanel extends JPanel {
                 new Color(0x161825), new Color(0x849AB4),
                 monoFont, 12, true);
 
-        JSplitPane topSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, userPanel, aiPanel);
+        JSplitPane topSplit = new JSplitPane(
+                JSplitPane.HORIZONTAL_SPLIT,
+                logSection(getText("ai.section.userInput"), userPanel),
+                logSection(getText("ai.section.aiResponse"), aiPanel)
+        );
         topSplit.setResizeWeight(0.38);
-        topSplit.setBackground(BG);
+        topSplit.setBackground(HUD_BG);
         topSplit.setBorder(null);
-        topSplit.setDividerSize(4);
+        topSplit.setDividerSize(HUD_GAP);
 
-        JSplitPane mainSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topSplit, systemPanel);
+        JSplitPane mainSplit = new JSplitPane(
+                JSplitPane.VERTICAL_SPLIT,
+                topSplit,
+                logSection(getText("ai.section.systemMessages"), systemPanel)
+        );
         mainSplit.setResizeWeight(0.65);
-        mainSplit.setBackground(BG);
+        mainSplit.setBackground(HUD_BG);
         mainSplit.setBorder(null);
-        mainSplit.setDividerSize(4);
+        mainSplit.setDividerSize(HUD_GAP);
 
-        add(mainSplit, gbc);
+        add(mainSplit, BorderLayout.CENTER);
+    }
+
+    private HudSection logSection(String title, LogPanel logPanel) {
+        HudSection section = new HudSection(title, new BorderLayout());
+        section.body().add(logPanel, BorderLayout.CENTER);
+        return section;
     }
 
     public void initData(boolean streamingModeOn, boolean servicesRunning) {

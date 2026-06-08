@@ -84,18 +84,17 @@ public class UsageStatsTabPanel extends JPanel {
     }
 
     private void buildUi() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBorder(BorderFactory.createCompoundBorder(
-                AppTheme.hudBorder(),
-                new EmptyBorder(8, 8, 8, 8)
-        ));
-        setOpaque(false);
+        setLayout(new BorderLayout(AppTheme.HUD_GAP, AppTheme.HUD_GAP));
+        setBorder(new EmptyBorder(AppTheme.HUD_PADDING, AppTheme.HUD_PADDING, AppTheme.HUD_PADDING, AppTheme.HUD_PADDING));
+        setBackground(AppTheme.HUD_BG);
         boolean usingLocalLLMs = systemSession.useLocalCommandLlm() && systemSession.useLocalQueryLlm();
-        // Header
-        JPanel header = new JPanel();
+
+        JPanel dashboard = AppTheme.transparentPanel(null);
+        dashboard.setLayout(new BoxLayout(dashboard, BoxLayout.Y_AXIS));
+
+        HudSection telemetrySection = new HudSection(getText("stats.section.llmTelemetry"), new BorderLayout());
+        JPanel header = AppTheme.transparentPanel(null);
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
-        header.setOpaque(false);
-        header.setBorder(new EmptyBorder(8, 0, 0, 0));
 
         providerLabel = new JLabel(getText("stats.llm.na"));
         providerLabel.setFont(providerLabel.getFont().deriveFont(Font.BOLD, 16f));
@@ -107,18 +106,14 @@ public class UsageStatsTabPanel extends JPanel {
         header.add(providerLabel);
         header.add(Box.createHorizontalGlue());
         header.add(sessionTimeLabel);
-        header.setAlignmentX(Component.LEFT_ALIGNMENT);
+        telemetrySection.body().add(header, BorderLayout.CENTER);
 
-        // Chart
         chart = new BarChart(usingLocalLLMs);
+        HudSection tokenSection = new HudSection(getText("stats.section.tokenUsage"), new BorderLayout());
+        tokenSection.body().add(chart, BorderLayout.CENTER);
 
-        // Footer
-        JPanel footer = new JPanel();
+        JPanel footer = AppTheme.transparentPanel(null);
         footer.setLayout(new BoxLayout(footer, BoxLayout.Y_AXIS));
-        footer.setOpaque(false);
-        footer.setBorder(new EmptyBorder(8, 0, 0, 0));
-        footer.setBackground(AppTheme.HUD_PANEL_BG);
-        footer.setPreferredSize(new Dimension(super.getPreferredSize().width, 180));
 
         if (usingLocalLLMs) {
             totalLabel = new JLabel(getText("stats.total.free", 0));
@@ -138,19 +133,27 @@ public class UsageStatsTabPanel extends JPanel {
         savedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         tphLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        footer.add(Box.createVerticalGlue());
         footer.add(totalLabel);
+        footer.add(Box.createVerticalStrut(6));
         if (!usingLocalLLMs) footer.add(savedLabel);
+        if (!usingLocalLLMs) footer.add(Box.createVerticalStrut(6));
         footer.add(tphLabel);
 
-        /// put it all together
-        add(header);
-        add(chart);
+        HudSection summarySection = new HudSection(getText("stats.section.sessionSummary"), new BorderLayout());
+        summarySection.body().add(footer, BorderLayout.CENTER);
+
+        dashboard.add(telemetrySection);
+        dashboard.add(Box.createVerticalStrut(AppTheme.HUD_GAP));
+        dashboard.add(tokenSection);
         if (usingLocalLLMs) {
-            add(new JLabel(getText("stats.localCacheNote")));
+            dashboard.add(Box.createVerticalStrut(AppTheme.HUD_GAP));
+            dashboard.add(new HudBanner(getText("stats.localCacheNote"), StatusBadge.State.INFO));
         }
-        add(Box.createVerticalGlue());
-        add(footer);
+        dashboard.add(Box.createVerticalStrut(AppTheme.HUD_GAP));
+        dashboard.add(summarySection);
+        dashboard.add(Box.createVerticalGlue());
+
+        add(dashboard, BorderLayout.CENTER);
     }
 
     @Subscribe
@@ -222,6 +225,7 @@ public class UsageStatsTabPanel extends JPanel {
                 getText("stats.chart.cacheHitsTotal"),
                 getText("stats.chart.cacheWrittenTotal")
         };
+        private static final String TPS_LABEL = getText("stats.chart.lastSpeed");
         private static final Color[] COLORS = {
                 AppTheme.HUD_CYAN,
                 AppTheme.HUD_OK,
@@ -305,10 +309,10 @@ public class UsageStatsTabPanel extends JPanel {
                     g2.drawString(formatTokens(values[i]), labelW + barAreaW + 8, y + baseline);
                 }
 
-                // TPS bar – independent scale: max observed TPS = full width
+                // TPS bar uses its own observed scale so token volume cannot flatten speed changes.
                 int tpsY = startY + tokenBars * rowH;
                 g2.setColor(AppTheme.FG_MUTED);
-                g2.drawString("Last Speed (t/s)", 0, tpsY + baseline);
+                g2.drawString(TPS_LABEL, 0, tpsY + baseline);
 
                 g2.setColor(AppTheme.HUD_PANEL_BG_ALT);
                 g2.fillRoundRect(labelW, tpsY, barAreaW, barH, 6, 6);

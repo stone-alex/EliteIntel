@@ -5,7 +5,9 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.ui.event.RestartBrainEvent;
 import elite.intel.ui.event.RestartMouthEvent;
+import elite.intel.ui.view.HudBanner;
 import elite.intel.ui.view.HudSection;
+import elite.intel.ui.view.StatusBadge;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,7 +52,7 @@ public class CloudServicesSettingsPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(HUD_BG);
 
-        HudSection fieldsSection = new HudSection(getText("settings.tab.cloudServices"), new GridBagLayout());
+        HudSection fieldsSection = new HudSection(getText("settings.cloud.section.credentials"), new GridBagLayout());
         JPanel fields = fieldsSection.body();
         GridBagConstraints gc = baseGbc();
 
@@ -87,18 +89,17 @@ public class CloudServicesSettingsPanel extends JPanel {
         saveButton.addActionListener(e -> save());
         buttons.add(saveButton);
 
-        JPanel supportedLLMsPanel = transparentPanel(new FlowLayout(FlowLayout.LEFT, HUD_GAP, 0));
-
-        buttons.add(Box.createVerticalGlue());
-        buttons.add(mutedLabel(" " + getText("settings.cloud.supportedLlms")));
-        buttons.add(mutedLabel(" " + getText("settings.cloud.supportedLlms.names")));
-        buttons.add(mutedLabel(" " + getText("settings.cloud.modelAutoSelected")));
-
-
         JPanel content = transparentPanel(null);
         content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
         content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         content.add(fieldsSection);
+        content.add(Box.createVerticalStrut(12));
+        content.add(new HudBanner(
+                getText("settings.cloud.supportedLlms") + " "
+                        + getText("settings.cloud.supportedLlms.names") + " "
+                        + getText("settings.cloud.modelAutoSelected"),
+                StatusBadge.State.INFO
+        ));
         content.add(Box.createVerticalStrut(12));
         content.add(buttons);
 
@@ -107,12 +108,6 @@ public class CloudServicesSettingsPanel extends JPanel {
 
         bindLock(llmLockedCheck, llmApiKeyField);
         bindLock(ttsLockedCheck, ttsApiKeyField);
-    }
-
-    private JLabel mutedLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setForeground(FG_MUTED);
-        return label;
     }
 
     public void initData() {

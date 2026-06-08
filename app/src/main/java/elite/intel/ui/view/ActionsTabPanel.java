@@ -21,6 +21,12 @@ public class ActionsTabPanel extends JPanel {
     private void buildUi() {
         setLayout(new BorderLayout());
         setBackground(AppTheme.HUD_BG);
+        setBorder(BorderFactory.createEmptyBorder(
+                AppTheme.HUD_PADDING,
+                AppTheme.HUD_PADDING,
+                AppTheme.HUD_PADDING,
+                AppTheme.HUD_PADDING
+        ));
 
         JTabbedPane tabs = new JTabbedPane();
         tabs.setTabPlacement(JTabbedPane.TOP);
@@ -29,7 +35,9 @@ public class ActionsTabPanel extends JPanel {
         tabs.addTab(getText("actions.tab.commands"), commandCatalogTablePanel);
         tabs.addTab(getText("actions.tab.customCommands"), customCommandsTabPanel);
 
-        add(tabs, BorderLayout.CENTER);
+        HudSection section = new HudSection(getText("actions.section.commandSystems"), new BorderLayout());
+        section.body().add(tabs, BorderLayout.CENTER);
+        add(section, BorderLayout.CENTER);
     }
 
     public void initData() {

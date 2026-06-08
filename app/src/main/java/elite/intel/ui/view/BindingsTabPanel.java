@@ -57,14 +57,13 @@ public class BindingsTabPanel extends JPanel {
     private JTextField filePathField;
     private JTextField bindingsDirField;
     private JPanel keyboardOnlyBanner;
-    private JLabel keyboardOnlyBannerText;
     private BindingSaveResultPresenter saveResultPresenter;
     private JPanel usedBindingsPanel;
     private JPanel missingBindingsPanel;
     private JScrollPane usedBindingsScrollPane;
     private JScrollPane missingBindingsScrollPane;
     private JTabbedPane tabs;
-    private static final Color STATUS_SYNCED_COLOR = new Color(0x4CAF50);
+    private static final Color STATUS_SYNCED_COLOR = HUD_OK;
 
     private JLabel syncStatusIcon;
     private JLabel syncStatusLabel;
@@ -196,7 +195,9 @@ public class BindingsTabPanel extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         details.add(keyboardOnlyBanner(), gbc);
 
-        add(details, BorderLayout.NORTH);
+        HudSection profileSection = new HudSection(getText("bindings.section.profile"), new BorderLayout());
+        profileSection.body().add(details, BorderLayout.CENTER);
+        add(profileSection, BorderLayout.NORTH);
 
         usedBindingsPanel = groupedTablesPanel();
         missingBindingsPanel = groupedTablesPanel();
@@ -210,9 +211,9 @@ public class BindingsTabPanel extends JPanel {
         tabs.addTab(getText("bindings.missingBindings"), nestedTabContent(missingBindingsScrollPane));
         tabs.addChangeListener(e -> selectionController.clearSelection());
 
-        JPanel center = transparentPanel(new BorderLayout(0, HUD_GAP));
-        center.add(tabs, BorderLayout.CENTER);
-        add(center, BorderLayout.CENTER);
+        HudSection diagnosticsSection = new HudSection(getText("bindings.section.diagnostics"), new BorderLayout(0, HUD_GAP));
+        diagnosticsSection.body().add(tabs, BorderLayout.CENTER);
+        add(diagnosticsSection, BorderLayout.CENTER);
 
         add(buildFooter(), BorderLayout.SOUTH);
     }
@@ -470,7 +471,6 @@ public class BindingsTabPanel extends JPanel {
         styleReadOnlyValueField(profileField);
         styleReadOnlyValueField(filePathField);
         headerInfoButtons.forEach(this::styleHeaderInfoButton);
-        styleKeyboardOnlyBanner();
     }
 
     private void styleReadOnlyValueField(JTextField field) {
@@ -500,23 +500,8 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private JPanel keyboardOnlyBanner() {
-        keyboardOnlyBanner = new JPanel(new BorderLayout());
-        keyboardOnlyBannerText = new JLabel("⚠  " + getText("bindings.keyboardOnlyHint"));
-        keyboardOnlyBanner.add(keyboardOnlyBannerText, BorderLayout.CENTER);
-        styleKeyboardOnlyBanner();
+        keyboardOnlyBanner = new HudBanner("⚠  " + getText("bindings.keyboardOnlyHint"), StatusBadge.State.STANDBY);
         return keyboardOnlyBanner;
-    }
-
-    private void styleKeyboardOnlyBanner() {
-        if (keyboardOnlyBanner == null) {
-            return;
-        }
-        keyboardOnlyBanner.setOpaque(true);
-        keyboardOnlyBanner.setBackground(new Color(0x2A2418));
-        keyboardOnlyBanner.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
-        keyboardOnlyBannerText.setForeground(ACCENT);
-        keyboardOnlyBannerText.setHorizontalAlignment(SwingConstants.CENTER);
-        keyboardOnlyBannerText.setFont(keyboardOnlyBannerText.getFont().deriveFont(Font.BOLD));
     }
 
     private JPanel groupedTablesPanel() {

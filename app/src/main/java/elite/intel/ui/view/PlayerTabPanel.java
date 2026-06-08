@@ -14,7 +14,6 @@ import elite.intel.db.managers.ShipSettingsManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.shiploadout.LoadoutConverter;
 import elite.intel.i18n.Language;
-import elite.intel.gameapi.journal.events.dto.shiploadout.LoadoutConverter;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
@@ -25,13 +24,11 @@ import elite.intel.ui.view.settings.ShipSettingsPopup;
 import elite.intel.util.StringUtls;
 
 import javax.swing.*;
-import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.function.Function;
 
 import static org.apache.commons.lang3.StringUtils.trimToNull;
@@ -60,25 +57,30 @@ public class PlayerTabPanel extends JPanel {
     }
 
     private void buildUi() {
-        setLayout(new GridBagLayout());
+        setLayout(new BorderLayout());
         setBackground(HUD_BG);
+        setBorder(BorderFactory.createEmptyBorder(HUD_PADDING, HUD_PADDING, HUD_PADDING, HUD_PADDING));
+
+        JPanel content = transparentPanel(null);
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+
+        HudSection profileSection = new HudSection(getText("player.section.commanderProfile"), new GridBagLayout());
+        JPanel profile = profileSection.body();
         GridBagConstraints gbc = baseGbc();
 
-        // Row 0: Commander Name
-        addLabel(this, getText("player.commanderName"), gbc);
+        addLabel(profile, getText("player.commanderName"), gbc);
         playerAltNameField = makeTextField();
         playerAltNameField.setToolTipText(getText("player.commanderName.tooltip"));
         playerAltNameField.setPreferredSize(new Dimension(200, 42));
-        addField(this, playerAltNameField, gbc, 1, 1.0);
+        addField(profile, playerAltNameField, gbc, 1, 1.0);
 
-        // Row 1: Journal Directory
         nextRow(gbc);
-        addLabel(this, getText("player.journalDirectory"), gbc);
+        addLabel(profile, getText("player.journalDirectory"), gbc);
         journalDirField = makeTextField();
         journalDirField.setEditable(false);
         journalDirField.setPreferredSize(new Dimension(200, 42));
         journalDirField.setToolTipText(getText("player.journalDirectory.tooltip"));
-        addField(this, journalDirField, gbc, 1, 0.8);
+        addField(profile, journalDirField, gbc, 1, 0.8);
         JButton selectJournalDirButton = makeButton(getText("button.select"));
         selectJournalDirButton.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
@@ -92,12 +94,29 @@ public class PlayerTabPanel extends JPanel {
                 journalDirField.setText(path);
             }
         });
-        addField(this, selectJournalDirButton, gbc, 2, 0.2);
+        addField(profile, selectJournalDirButton, gbc, 2, 0.2);
 
-
-        // Row 3: Command Language
         nextRow(gbc);
-        addLabel(this, getText("player.commandLanguage"), gbc);
+        gbc.gridx = 0;
+        gbc.gridwidth = 3;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.WEST;
+        JPanel profileButtons = transparentPanel(new FlowLayout(FlowLayout.LEFT, HUD_GAP, 0));
+        JButton saveButton = makeButton(getText("button.save"));
+        saveButton.addActionListener(e -> savePlayerConfig());
+        profileButtons.add(saveButton);
+
+        JButton automationButton = makeButtonSubtle("");
+        automationButton.setIcon(scaledIcon("/images/settings.png"));
+        automationButton.addActionListener(e -> GlobalSettingsPopup.create(this).setVisible(true));
+        profileButtons.add(automationButton);
+        profile.add(profileButtons, gbc);
+
+        HudSection inputSection = new HudSection(getText("player.section.inputSettings"), new GridBagLayout());
+        JPanel input = inputSection.body();
+        GridBagConstraints inputGbc = baseGbc();
+        addLabel(input, getText("player.commandLanguage"), inputGbc);
         languageCombo = makeLanguageCombo(systemSession.getLanguage());
         languageCombo.setToolTipText(getText("player.commandLanguage.tooltip"));
         languageCombo.addActionListener(e -> {
@@ -110,56 +129,31 @@ public class PlayerTabPanel extends JPanel {
             SwingUtilities.invokeLater(() -> EventBusManager.publish(new MissionCriticalAnnouncementEvent(
                     StringUtls.localizedSpeech("speech.languageChanged", StringUtls.localizedSpeechLanguageName(language)))));
         });
-        addField(this, languageCombo, gbc, 1, 1.0);
+        addField(input, languageCombo, inputGbc, 1, 1.0);
 
-        // Row 4: Save button
-        nextRow(gbc);
-        gbc.gridx = 0;
-        gbc.gridwidth = 3;
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.WEST;
-        JPanel btns = transparentPanel(new FlowLayout(FlowLayout.LEFT, HUD_GAP, 0));
-        btns.setOpaque(false);
-        JButton saveButton = makeButton(getText("button.save"));
-        saveButton.addActionListener(e -> savePlayerConfig());
-        btns.add(saveButton);
-
-        JButton automationButton = makeButtonSubtle("");
-        automationButton.setIcon(scaledIcon("/images/settings.png"));
-        automationButton.addActionListener(e -> GlobalSettingsPopup.create(this).setVisible(true));
-        btns.add(automationButton);
-
+        nextRow(inputGbc);
+        inputGbc.gridx = 0;
+        inputGbc.gridwidth = 2;
+        inputGbc.weightx = 1;
+        inputGbc.fill = GridBagConstraints.HORIZONTAL;
         conversationModeCheckBox = makeCheckBox(getText("player.conversationMode"), false);
         conversationModeCheckBox.addActionListener(e -> systemSession.setConversationalMode(conversationModeCheckBox.isSelected()));
-        btns.add(conversationModeCheckBox);
+        input.add(conversationModeCheckBox, inputGbc);
 
-        add(btns, gbc);
+        content.add(profileSection);
+        content.add(Box.createVerticalStrut(HUD_GAP));
+        content.add(inputSection);
+        content.add(Box.createVerticalStrut(HUD_GAP));
 
-        // Row 4: Fleet Management header
-        nextRow(gbc);
-        gbc.gridx = 0;
-        gbc.gridwidth = 3;
-        gbc.weightx = 1;
-        gbc.weighty = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(16, 6, 4, 6);
-        JLabel fleetLabel = new JLabel(getText("player.fleetManagement"));
-        fleetLabel.setFont(fleetLabel.getFont().deriveFont(Font.BOLD, 13f));
-        fleetLabel.setForeground(ACCENT);
-        fleetLabel.setBorder(new MatteBorder(0, 0, 1, 0, BUTTON_BG));
-        add(fleetLabel, gbc);
-
-        // Row 5: Fleet grid (scrollable, takes remaining space)
-        nextRow(gbc);
-        gbc.insets = new Insets(0, 6, 6, 6);
-        gbc.weighty = 1;
-        gbc.fill = GridBagConstraints.BOTH;
+        HudSection fleetSection = new HudSection(getText("player.section.fleetVoice"), new BorderLayout());
         fleetScrollPane = hudScrollPane(new JPanel());
         fleetScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        fleetScrollPane.setBackground(BG);
-        fleetScrollPane.getViewport().setBackground(BG);
-        add(fleetScrollPane, gbc);
+        fleetScrollPane.setBackground(HUD_PANEL_BG);
+        fleetScrollPane.getViewport().setBackground(HUD_PANEL_BG);
+        fleetSection.body().add(fleetScrollPane, BorderLayout.CENTER);
+
+        add(content, BorderLayout.NORTH);
+        add(fleetSection, BorderLayout.CENTER);
     }
 
     public void initData() {

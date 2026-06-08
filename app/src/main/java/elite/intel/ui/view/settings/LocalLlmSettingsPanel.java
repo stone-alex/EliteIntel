@@ -40,7 +40,7 @@ public class LocalLlmSettingsPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(HUD_BG);
 
-        HudSection fieldsSection = new HudSection(getText("settings.tab.localLlm"), new GridBagLayout());
+        HudSection fieldsSection = new HudSection(getText("settings.localLlm.section.models"), new GridBagLayout());
         JPanel fields = fieldsSection.body();
         GridBagConstraints gc = baseGbc();
 
@@ -74,7 +74,8 @@ public class LocalLlmSettingsPanel extends JPanel {
         ollamaRadio.addActionListener(e -> onProviderSelected(LocalLlmProvider.OLLAMA));
         lmStudioRadio.addActionListener(e -> onProviderSelected(LocalLlmProvider.LMSTUDIO));
 
-        JPanel providerPanel = transparentPanel(new FlowLayout(FlowLayout.LEFT, HUD_GAP, 0));
+        HudSection providerSection = new HudSection(getText("settings.localLlm.section.provider"), new FlowLayout(FlowLayout.LEFT, HUD_GAP, 0));
+        JPanel providerPanel = providerSection.body();
         providerPanel.add(new JLabel(getText("settings.localLlm.host")));
         providerPanel.add(ollamaRadio);
         providerPanel.add(lmStudioRadio);
@@ -97,8 +98,8 @@ public class LocalLlmSettingsPanel extends JPanel {
         content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         content.add(fieldsSection);
         content.add(Box.createVerticalStrut(12));
-        content.add(providerPanel);
-        content.add(Box.createVerticalStrut(4));
+        content.add(providerSection);
+        content.add(Box.createVerticalStrut(12));
         content.add(buttons);
 
         add(content, BorderLayout.NORTH);

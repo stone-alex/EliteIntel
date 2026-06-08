@@ -12,7 +12,6 @@ import elite.intel.util.Updater;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Objects;
 
 import static elite.intel.ui.view.AppTheme.makeButtonSubtle;
 import static elite.intel.ui.view.AppTheme.styleTabbedPane;
@@ -40,8 +39,14 @@ public class SettingsTabPanel extends JPanel {
     }
 
     private void buildUi() {
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(AppTheme.HUD_GAP, AppTheme.HUD_GAP));
         setBackground(AppTheme.HUD_BG);
+        setBorder(BorderFactory.createEmptyBorder(
+                AppTheme.HUD_PADDING,
+                AppTheme.HUD_PADDING,
+                AppTheme.HUD_PADDING,
+                AppTheme.HUD_PADDING
+        ));
 
         JTabbedPane tabs = new JTabbedPane();
         tabs.setTabPlacement(JTabbedPane.TOP);
@@ -73,7 +78,9 @@ public class SettingsTabPanel extends JPanel {
         JPanel footer = AppTheme.transparentPanel(new FlowLayout(FlowLayout.RIGHT, AppTheme.HUD_GAP, 4));
         footer.add(updateAppButton);
 
-        add(tabs, BorderLayout.CENTER);
+        HudSection section = new HudSection(getText("settings.section.systemConfiguration"), new BorderLayout());
+        section.body().add(tabs, BorderLayout.CENTER);
+        add(section, BorderLayout.CENTER);
         add(footer, BorderLayout.SOUTH);
     }
 

@@ -38,10 +38,8 @@ public class CommandCatalogTablePanel extends JPanel {
 
     private void buildUi() {
         setLayout(new BorderLayout(8, 8));
-        setBorder(new EmptyBorder(10, 10, 10, 10));
+        setBorder(new EmptyBorder(AppTheme.HUD_PADDING, AppTheme.HUD_PADDING, AppTheme.HUD_PADDING, AppTheme.HUD_PADDING));
         setBackground(AppTheme.HUD_BG);
-
-        add(searchPanel(), BorderLayout.NORTH);
 
         tableModel = new ReadOnlyTableModel(columnNames(), 0);
         table = new JTable(tableModel);
@@ -49,7 +47,11 @@ public class CommandCatalogTablePanel extends JPanel {
         table.addMouseListener(new CommandDetailsMouseListener());
 
         JScrollPane scrollPane = HudTable.scrollPane(table);
-        add(scrollPane, BorderLayout.CENTER);
+
+        HudSection catalogSection = new HudSection(getText("actions.commands.section.catalog"), new BorderLayout(AppTheme.HUD_GAP, AppTheme.HUD_GAP));
+        catalogSection.body().add(searchPanel(), BorderLayout.NORTH);
+        catalogSection.body().add(scrollPane, BorderLayout.CENTER);
+        add(catalogSection, BorderLayout.CENTER);
     }
 
     public void initData() {

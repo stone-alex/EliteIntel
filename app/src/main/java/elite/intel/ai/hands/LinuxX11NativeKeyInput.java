@@ -170,6 +170,7 @@ class LinuxX11NativeKeyInput implements NativeKeyInput {
         x11.XFlush(display);
     }
 
+
     @Override
     public boolean typeChar(char c) {
         if (!available) return false;

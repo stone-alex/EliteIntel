@@ -175,7 +175,7 @@ public class UkrainianAiActionAliases implements AiActionAliasProvider {
         map.put("оголошення радарних контактів {state:true/false}", SET_RADAR_CONTACT_ANNOUNCEMENT.getAction());
         map.put("оголошення відкриттів {state:true/false}", DISCOVERY_ON_OFF.getAction());
         map.put("оголошення маршруту {state:true/false}", ROUTE_ON_OFF.getAction());
-        map.put("вимкни всі оголошення", DISABLE_ALL_ANNOUNCEMENTS.getAction());
+        map.put("перемкнути всі оголошення {state:true/false}, всі оголошення {state:true/false}", TOGGLE_ALL_ANNOUNCEMENTS.getAction());
         map.put("очисти нагадування", CLEAR_REMINDERS.getAction());
         map.put("встанови нагадування {key:X}", SET_REMINDER.getAction());
         map.put("нагадай мені через {minutes:X} хвилин {key:Y}, таймер на {minutes:X} хвилин {key:Y}, нагадування через {minutes:X} хвилин {key:Y}", SET_TIMED_REMINDER.getAction());

@@ -1,10 +1,14 @@
 package elite.intel.ai.hands;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class KeyProcessor {
+    private static final Logger log = LogManager.getLogger(KeyProcessor.class);
 
     /**
      * Synthetic code base for left/right modifier keys that require platform-native
@@ -190,10 +194,12 @@ public class KeyProcessor {
 
     public void pressKey(int keyCode) {
         if (isNative(keyCode)) {
+            log.debug("[proc] pressKey 0x{} → native (SendInput)", Integer.toHexString(keyCode));
             nativeKeyInput.keyDown(keyCode);
             robot.delay(jitter());
             nativeKeyInput.keyUp(keyCode);
         } else {
+            log.debug("[proc] pressKey 0x{} → Robot.keyPress", Integer.toHexString(keyCode));
             robot.keyPress(keyCode);
             robot.keyRelease(keyCode);
         }
@@ -201,10 +207,12 @@ public class KeyProcessor {
 
     public void pressAndHoldKey(int keyCode, int holdTime) {
         if (isNative(keyCode)) {
+            log.debug("[proc] pressAndHoldKey 0x{} {}ms → native", Integer.toHexString(keyCode), holdTime);
             nativeKeyInput.keyDown(keyCode);
             robot.delay(holdTime);
             nativeKeyInput.keyUp(keyCode);
         } else {
+            log.debug("[proc] pressAndHoldKey 0x{} {}ms → Robot", Integer.toHexString(keyCode), holdTime);
             robot.keyPress(keyCode);
             robot.delay(holdTime);
             robot.keyRelease(keyCode);
@@ -213,6 +221,7 @@ public class KeyProcessor {
 
     public void holdKey(int keyCode) {
         if (isNative(keyCode)) {
+            log.debug("[proc] holdKey 0x{} → native keyDown", Integer.toHexString(keyCode));
             nativeKeyInput.keyDown(keyCode);
             if (keyCode >= NATIVE_BASE) {
                 // Modifier keys need a settling delay so the game's DirectInput poller sees
@@ -220,14 +229,17 @@ public class KeyProcessor {
                 robot.delay(jitter());
             }
         } else {
+            log.debug("[proc] holdKey 0x{} → Robot.keyPress", Integer.toHexString(keyCode));
             robot.keyPress(keyCode);
         }
     }
 
     public void releaseKey(int keyCode) {
         if (isNative(keyCode)) {
+            log.debug("[proc] releaseKey 0x{} → native keyUp", Integer.toHexString(keyCode));
             nativeKeyInput.keyUp(keyCode);
         } else {
+            log.debug("[proc] releaseKey 0x{} → Robot.keyRelease", Integer.toHexString(keyCode));
             robot.keyRelease(keyCode);
         }
     }

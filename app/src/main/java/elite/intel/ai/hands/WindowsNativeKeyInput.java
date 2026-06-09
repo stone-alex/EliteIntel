@@ -1,8 +1,10 @@
 package elite.intel.ai.hands;
 
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
-import com.sun.jna.platform.win32.WinUser;
+import com.sun.jna.Memory;
+import com.sun.jna.platform.win32.*;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.win32.StdCallLibrary;
+import com.sun.jna.win32.W32APIOptions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -198,6 +200,154 @@ class WindowsNativeKeyInput implements NativeKeyInput {
         SCAN_MAP.put(KeyEvent.VK_NUMPAD9, (short) 0x49);
     }
 
+    // Diagnostics run from the constructor (not the static block) so a crash here
+    // is caught by NativeKeyInputFactory and triggers RobotFallback instead of
+    // killing the whole class with ExceptionInInitializerError.
+    WindowsNativeKeyInput() {
+        logStartupDiagnostics();
+    }
+
+    // -------------------------------------------------------------------------
+    // Startup diagnostics
+    // -------------------------------------------------------------------------
+
+    private static void logStartupDiagnostics() {
+        log.info("=== WindowsNativeKeyInput startup diagnostics ===");
+        log.info("[diag] OS      : {} {} ({})",
+                System.getProperty("os.name"),
+                System.getProperty("os.version"),
+                System.getProperty("os.arch"));
+        log.info("[diag] Java    : {} ({})",
+                System.getProperty("java.version"),
+                System.getProperty("java.vendor"));
+        log.info("[diag] User    : {}", System.getProperty("user.name"));
+        log.info("[diag] PID     : {}", ProcessHandle.current().pid());
+        log.info("[diag] SCAN_MAP: {} entries, NEEDS_EXTENDED: {} entries",
+                SCAN_MAP.size(), NEEDS_EXTENDED.size());
+
+        try {
+            checkJnaConnectivity();
+        } catch (Throwable t) {
+            log.error("[diag] checkJnaConnectivity failed", t);
+        }
+        try {
+            checkProcessElevation();
+        } catch (Throwable t) {
+            log.error("[diag] checkProcessElevation failed", t);
+        }
+        try {
+            checkBlockingInput();
+        } catch (Throwable t) {
+            log.error("[diag] checkBlockingInput failed", t);
+        }
+
+        log.info("[diag] *** UIPI reminder: if Elite Dangerous is launched as Administrator ***");
+        log.info("[diag] *** (UAC shield on the launcher icon), Windows will silently drop   ***");
+        log.info("[diag] *** ALL SendInput calls from this standard-user process.            ***");
+        log.info("[diag] *** Fix: ED launcher → right-click → Properties → Compatibility    ***");
+        log.info("[diag] *** tab → un-check 'Run this program as an administrator'.          ***");
+        log.info("=================================================");
+    }
+
+    private static void checkJnaConnectivity() {
+        try {
+            int screenW = User32.INSTANCE.GetSystemMetrics(0); // SM_CXSCREEN
+            int screenH = User32.INSTANCE.GetSystemMetrics(1); // SM_CYSCREEN
+            log.info("[diag] JNA/User32 OK — screen {}x{}", screenW, screenH);
+        } catch (Exception | UnsatisfiedLinkError e) {
+            log.error("[diag] JNA/User32 FAILED: {} — SendInput will not work!", e.getMessage());
+        }
+    }
+
+    /**
+     * Custom JNA interface for the two Advapi32 calls we need.
+     * Uses raw Pointer for GetTokenInformation so JNA never tries to reflect on a
+     * Structure subclass — that reflection breaks under Java 25's module system.
+     */
+    private interface Advapi32Ptr extends StdCallLibrary {
+        Advapi32Ptr INSTANCE = com.sun.jna.Native.load("advapi32", Advapi32Ptr.class,
+                W32APIOptions.DEFAULT_OPTIONS);
+
+        boolean OpenProcessToken(WinNT.HANDLE ProcessHandle, int DesiredAccess,
+                                 WinNT.HANDLEByReference TokenHandle);
+
+        boolean GetTokenInformation(WinNT.HANDLE tokenHandle, int tokenInformationClass,
+                                    com.sun.jna.Pointer tokenInformation,
+                                    int tokenInformationLength, IntByReference returnLength);
+    }
+
+    private static void checkProcessElevation() {
+        try {
+            WinNT.HANDLEByReference hTokenRef = new WinNT.HANDLEByReference();
+            if (!Advapi32Ptr.INSTANCE.OpenProcessToken(
+                    Kernel32.INSTANCE.GetCurrentProcess(),
+                    WinNT.TOKEN_QUERY,
+                    hTokenRef)) {
+                log.warn("[diag] OpenProcessToken failed: err=0x{}",
+                        Integer.toHexString(Kernel32.INSTANCE.GetLastError()));
+                return;
+            }
+            try {
+                // TOKEN_ELEVATION (class 20) is a single DWORD — 4 bytes
+                Memory pElev = new Memory(4);
+                IntByReference pSize = new IntByReference(4);
+                if (Advapi32Ptr.INSTANCE.GetTokenInformation(
+                        hTokenRef.getValue(), 20, pElev, 4, pSize)) {
+                    int elevated = pElev.getInt(0);
+                    log.info("[diag] This process elevation: {} (TokenIsElevated={})",
+                            elevated != 0 ? "ELEVATED/ADMIN" : "standard-user", elevated);
+                    if (elevated == 0) {
+                        log.warn("[diag] Running as standard user. If the game runs elevated, " +
+                                "SendInput will be silently blocked (UIPI error 5).");
+                    }
+                } else {
+                    log.warn("[diag] GetTokenInformation(TokenElevation) failed: err=0x{}",
+                            Integer.toHexString(Kernel32.INSTANCE.GetLastError()));
+                }
+            } finally {
+                Kernel32.INSTANCE.CloseHandle(hTokenRef.getValue());
+            }
+        } catch (Throwable e) {
+            log.warn("[diag] Elevation check error: {} {}", e.getClass().getSimpleName(), e.getMessage());
+        }
+    }
+
+    /**
+     * Sends a benign test event (key-down + key-up for scan 0x00, unused scan code)
+     * to verify SendInput reaches the OS at all. A return of 0 here with error 5 means
+     * UIPI is already blocking us, even before the game is in focus.
+     */
+    private static void checkBlockingInput() {
+        try {
+            WinUser.INPUT input = new WinUser.INPUT();
+            input.type = new WinDef.DWORD(WinUser.INPUT.INPUT_KEYBOARD);
+            input.input.setType(WinUser.KEYBDINPUT.class);
+            input.input.ki.wVk = new WinDef.WORD(0);
+            input.input.ki.wScan = new WinDef.WORD(0xFF); // unused scan — no real key
+            input.input.ki.dwFlags = new WinDef.DWORD(KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP);
+            input.input.ki.time = new WinDef.DWORD(0);
+
+            WinDef.DWORD sent = User32.INSTANCE.SendInput(
+                    new WinDef.DWORD(1),
+                    (WinUser.INPUT[]) input.toArray(1),
+                    input.size());
+
+            int err = Kernel32.INSTANCE.GetLastError();
+            if (sent.intValue() == 1) {
+                log.info("[diag] SendInput smoke-test: OK (1 event accepted)");
+            } else {
+                log.error("[diag] SendInput smoke-test FAILED: sent={}, GetLastError=0x{} ({})",
+                        sent.intValue(), Integer.toHexString(err), describeWin32Error(err));
+            }
+        } catch (Throwable e) {
+            log.error("[diag] SendInput smoke-test exception: {} {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // NativeKeyInput implementation
+    // -------------------------------------------------------------------------
+
     @Override
     public boolean handles(int keyCode) {
         return SCAN_MAP.containsKey(keyCode);
@@ -215,62 +365,65 @@ class WindowsNativeKeyInput implements NativeKeyInput {
 
     private void sendKeyEvent(int keyCode, boolean isKeyUp) {
         short scan;
+        String resolvedVia;
+
         if (keyCode >= NATIVE_BASE) {
             Short s = SCAN_MAP.get(keyCode);
             if (s == null) {
-                log.warn("No Windows scan code mapping for key code 0x{}", Integer.toHexString(keyCode));
+                log.warn("[key] No Windows scan code mapping for NATIVE code 0x{}", Integer.toHexString(keyCode));
                 return;
             }
             scan = s;
+            resolvedVia = "SCAN_MAP(native)";
         } else {
-            // MapVirtualKey is only safe when the Java VK code equals the Windows VK code.
-            // Java and Windows agree on letters (0x41–0x5A, QWERTZ layout-awareness) and
-            // the navigation cluster (0x21–0x28: PageUp/Dn, End, Home, Left, Up, Right, Down).
-            //
-            // For punctuation Java VK codes are ASCII-based and collide with unrelated
-            // Windows VK codes at the same numeric value:
-            //   VK_COMMA=0x2C → Windows VK_SNAPSHOT (PrintScreen!)
-            //   VK_OPEN_BRACKET=0x5B → Windows VK_LWIN (Windows key!)
-            //   VK_BACK_SLASH=0x5C → Windows VK_RWIN, VK_BACK_QUOTE=0x60 → VK_NUMPAD0, etc.
-            // Use SCAN_MAP directly for those. The hardcoded scan codes are always correct.
-            //
-            // Nav cluster is included because VK_QUOTE and VK_RIGHT share value 0x27 in
-            // Java's API (an AWT quirk), causing SCAN_MAP[0x27] to hold the quote scan code
-            // (0x28) rather than the right-arrow scan code (0x4D). MapVirtualKey resolves
-            // this correctly since Windows VK_RIGHT = 0x27 unambiguously.
             boolean isLetter = keyCode >= KeyEvent.VK_A && keyCode <= KeyEvent.VK_Z;
             boolean isNavCluster = keyCode >= KeyEvent.VK_PAGE_UP && keyCode <= KeyEvent.VK_DOWN;
             if (isLetter || isNavCluster) {
                 int vsc = User32.INSTANCE.MapVirtualKeyEx(keyCode, MAPVK_VK_TO_VSC, null);
                 if (vsc != 0) {
                     scan = (short) vsc;
+                    resolvedVia = isLetter ? "MapVirtualKeyEx(letter)" : "MapVirtualKeyEx(nav)";
                 } else {
+                    log.warn("[key] MapVirtualKeyEx returned 0 for VK=0x{} ({}), falling back to SCAN_MAP",
+                            Integer.toHexString(keyCode), keyName(keyCode));
                     Short s = SCAN_MAP.get(keyCode);
                     if (s == null) {
-                        log.warn("No Windows scan code mapping for key code 0x{}", Integer.toHexString(keyCode));
+                        log.warn("[key] No scan code mapping for VK=0x{} ({})", Integer.toHexString(keyCode), keyName(keyCode));
                         return;
                     }
                     scan = s;
+                    resolvedVia = "SCAN_MAP(MapVK-fallback)";
                 }
             } else {
                 Short s = SCAN_MAP.get(keyCode);
                 if (s == null) {
-                    log.warn("No Windows scan code mapping for key code 0x{}", Integer.toHexString(keyCode));
+                    log.warn("[key] No Windows scan code mapping for VK=0x{} ({})", Integer.toHexString(keyCode), keyName(keyCode));
                     return;
                 }
                 scan = s;
+                resolvedVia = "SCAN_MAP(direct)";
             }
         }
+
+        boolean needsExtended = NEEDS_EXTENDED.contains(keyCode);
+        int flags = KEYEVENTF_SCANCODE;
+        if (needsExtended) flags |= KEYEVENTF_EXTENDEDKEY;
+        if (isKeyUp) flags |= KEYEVENTF_KEYUP;
+
+        log.debug("[key] SendInput keyCode=0x{} ({}) scan=0x{} flags=0x{} ({}) via={} keyUp={}",
+                Integer.toHexString(keyCode),
+                keyName(keyCode),
+                Integer.toHexString(scan & 0xFFFF),
+                Integer.toHexString(flags),
+                describeFlags(flags),
+                resolvedVia,
+                isKeyUp);
 
         WinUser.INPUT input = new WinUser.INPUT();
         input.type = new WinDef.DWORD(WinUser.INPUT.INPUT_KEYBOARD);
         input.input.setType(WinUser.KEYBDINPUT.class);
         input.input.ki.wVk = new WinDef.WORD(0);
         input.input.ki.wScan = new WinDef.WORD(scan);
-
-        int flags = KEYEVENTF_SCANCODE;
-        if (NEEDS_EXTENDED.contains(keyCode)) flags |= KEYEVENTF_EXTENDEDKEY;
-        if (isKeyUp) flags |= KEYEVENTF_KEYUP;
         input.input.ki.dwFlags = new WinDef.DWORD(flags);
         input.input.ki.time = new WinDef.DWORD(0);
 
@@ -279,9 +432,22 @@ class WindowsNativeKeyInput implements NativeKeyInput {
                 (WinUser.INPUT[]) input.toArray(1),
                 input.size()
         );
-        if (sent.intValue() != 1) {
-            log.warn("SendInput sent={} for code=0x{}, keyUp={}", sent.intValue(),
-                    Integer.toHexString(keyCode), isKeyUp);
+
+        int result = sent.intValue();
+        if (result == 1) {
+            log.debug("[key] SendInput OK — keyCode=0x{} ({}) scan=0x{} keyUp={}",
+                    Integer.toHexString(keyCode), keyName(keyCode),
+                    Integer.toHexString(scan & 0xFFFF), isKeyUp);
+        } else {
+            int err = Kernel32.INSTANCE.GetLastError();
+            log.error("[key] SendInput FAILED — sent={} GetLastError=0x{} ({}) keyCode=0x{} ({}) scan=0x{} flags=0x{}",
+                    result,
+                    Integer.toHexString(err),
+                    describeWin32Error(err),
+                    Integer.toHexString(keyCode),
+                    keyName(keyCode),
+                    Integer.toHexString(scan & 0xFFFF),
+                    Integer.toHexString(flags));
         }
     }
 
@@ -303,14 +469,56 @@ class WindowsNativeKeyInput implements NativeKeyInput {
         inputs[1].input.ki.dwFlags = new WinDef.DWORD(KEYEVENTF_UNICODE | KEYEVENTF_KEYUP);
         inputs[1].input.ki.time = new WinDef.DWORD(0);
 
+        log.debug("[key] typeChar '{}' (U+{}) via KEYEVENTF_UNICODE", c, Integer.toHexString(c));
+
         WinDef.DWORD sent = User32.INSTANCE.SendInput(
                 new WinDef.DWORD(2),
                 inputs,
                 inputs[0].size()
         );
-        if (sent.intValue() != 2) {
-            log.warn("SendInput (unicode) sent={} for char='{}'", sent.intValue(), c);
+        int result = sent.intValue();
+        if (result != 2) {
+            int err = Kernel32.INSTANCE.GetLastError();
+            log.error("[key] SendInput (unicode) FAILED — sent={} GetLastError=0x{} ({}) char='{}' U+{}",
+                    result,
+                    Integer.toHexString(err),
+                    describeWin32Error(err),
+                    c,
+                    Integer.toHexString(c));
         }
         return true;
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    private static String describeWin32Error(int err) {
+        return switch (err) {
+            case 0 -> "ERROR_SUCCESS (no error)";
+            case 5 -> "ERROR_ACCESS_DENIED — UIPI blocked: target window runs at higher integrity than this process!";
+            case 6 -> "ERROR_INVALID_HANDLE";
+            case 87 -> "ERROR_INVALID_PARAMETER";
+            case 1400 -> "ERROR_INVALID_WINDOW_HANDLE";
+            case 1 -> "ERROR_INVALID_FUNCTION — SendInput blocked (e.g. UIPI or secure desktop)";
+            default -> "unknown (0x" + Integer.toHexString(err) + ")";
+        };
+    }
+
+    private static String describeFlags(int flags) {
+        StringBuilder sb = new StringBuilder();
+        if ((flags & KEYEVENTF_SCANCODE) != 0) sb.append("SCANCODE|");
+        if ((flags & KEYEVENTF_EXTENDEDKEY) != 0) sb.append("EXTENDED|");
+        if ((flags & KEYEVENTF_KEYUP) != 0) sb.append("KEYUP|");
+        if ((flags & KEYEVENTF_UNICODE) != 0) sb.append("UNICODE|");
+        if (sb.isEmpty()) sb.append("none");
+        else sb.setLength(sb.length() - 1);
+        return sb.toString();
+    }
+
+    private static String keyName(int keyCode) {
+        if (keyCode >= NATIVE_BASE) return "NATIVE+" + (keyCode - NATIVE_BASE);
+        String name = KeyEvent.getKeyText(keyCode);
+        return (name == null || name.isBlank()) ? "?" : name;
     }
 }

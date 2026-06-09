@@ -18,7 +18,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.time.Instant;
 import java.util.Comparator;
 
 /**
@@ -103,22 +102,6 @@ public class JournalParser implements Runnable, ManagedService {
 
     private void startReading() throws IOException, InterruptedException {
         log.info("Starting Journal Parser");
-        log.debug("Journal directory: {} (exists={}, readable={})",
-                journalDir.toAbsolutePath(), Files.exists(journalDir), Files.isReadable(journalDir));
-
-        if (log.isDebugEnabled()) {
-            try {
-                long count = Files.list(journalDir)
-                        .filter(p -> p.getFileName().toString().endsWith(".log"))
-                        .sorted(Comparator.comparingLong(p -> p.toFile().lastModified()))
-                        .peek(p -> log.debug("  journal candidate: {} modified={}",
-                                p.getFileName(), Instant.ofEpochMilli(p.toFile().lastModified())))
-                        .count();
-                log.debug("Total journal candidates in directory: {}", count);
-            } catch (IOException e) {
-                log.debug("Cannot list journal directory for diagnostics: {}", e.getMessage());
-            }
-        }
 
         try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
             journalDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_CREATE);
@@ -141,14 +124,6 @@ public class JournalParser implements Runnable, ManagedService {
             if (!isRunning) return;
             long lastPosition = 0;
             log.info("Monitoring {}", currentFile);
-            try {
-                log.debug("Initial journal: path={} size={} modified={}",
-                        currentFile.toAbsolutePath(),
-                        Files.size(currentFile),
-                        Instant.ofEpochMilli(currentFile.toFile().lastModified()));
-            } catch (IOException e) {
-                log.debug("Initial journal: {} (could not stat file: {})", currentFile.toAbsolutePath(), e.getMessage());
-            }
 
             while (isRunning) {
                 Thread.sleep(200);
@@ -174,21 +149,13 @@ public class JournalParser implements Runnable, ManagedService {
                 WatchKey key = watchService.poll();
                 if (key != null) {
                     for (WatchEvent<?> watchEvent : key.pollEvents()) {
-                        @SuppressWarnings("unchecked")
-                        Path evtPath = ((WatchEvent<Path>) watchEvent).context();
-                        log.debug("WatchService event: kind={} file={}", watchEvent.kind().name(), evtPath);
-                        if (watchEvent.kind() == StandardWatchEventKinds.ENTRY_CREATE
-                                && evtPath.toString().endsWith(".log")) {
-                            lastPosition = 0;
-                            currentFile = journalDir.resolve(evtPath);
-                            log.info("Switched to new journal file: {}", currentFile.getFileName());
-                            try {
-                                log.debug("New journal: path={} size={} modified={}",
-                                        currentFile.toAbsolutePath(),
-                                        Files.size(currentFile),
-                                        Instant.ofEpochMilli(currentFile.toFile().lastModified()));
-                            } catch (IOException e) {
-                                log.debug("New journal: {} (could not stat: {})", currentFile.toAbsolutePath(), e.getMessage());
+                        if (watchEvent.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+                            @SuppressWarnings("unchecked")
+                            Path created = ((WatchEvent<Path>) watchEvent).context();
+                            if (created.toString().endsWith(".log")) {
+                                lastPosition = 0;
+                                currentFile = journalDir.resolve(created);
+                                log.info("Switched to new journal file: {}", currentFile.getFileName());
                             }
                         }
                     }
@@ -241,9 +208,6 @@ public class JournalParser implements Runnable, ManagedService {
                                 JsonObject eventJson = element.getAsJsonObject();
                                 if (eventJson.has("event")) {
                                     String eventType = eventJson.get("event").getAsString();
-                                    String evtTimestamp = eventJson.has("timestamp")
-                                            ? eventJson.get("timestamp").getAsString() : "<none>";
-                                    log.debug("Journal line: type={} timestamp={}", eventType, evtTimestamp);
                                     BaseEvent event = EventRegistry.createEvent(eventType, eventJson);
                                     if (event != null && !event.isExpired()) {
                                         EventBusManager.publish(event);
@@ -251,7 +215,7 @@ public class JournalParser implements Runnable, ManagedService {
                                         EventBusManager.publish(new AppLogDebugEvent("\tProcessing Event: " + eventType));
                                         log.info("Processing Journal Event: {} {}", eventType, event.toJsonObject());
                                     } else if (event != null && event.isExpired()) {
-                                        log.warn("Skipping event (isExpired): type={} timestamp={}", eventType, evtTimestamp);
+                                        log.warn("Skipping event: {}, reason {}", eventType, "Event expired");
                                     }
                                 }
                             } catch (Exception e) {

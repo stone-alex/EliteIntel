@@ -8,6 +8,8 @@ import elite.intel.session.PlayerSession;
 
 import java.util.Set;
 
+import static elite.intel.util.StringUtls.capitalizeWords;
+
 @SuppressWarnings("unused")
 public class ProspectorSubscriber {
 
@@ -22,7 +24,7 @@ public class ProspectorSubscriber {
                 if (material == null) continue;
                 if (material.getName() == null || material.getName().isEmpty()) continue;
 
-                String prospectedMaterial = material.getName().toLowerCase();
+                String prospectedMaterial = capitalizeWords(material.getName());
                 Set<String> miningTargets = playerSession.getMiningTargets();
 
                 if (miningTargets.contains(prospectedMaterial)) {

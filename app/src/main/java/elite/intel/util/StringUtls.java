@@ -88,13 +88,21 @@ public class StringUtls {
         return MultiLingualTextProvider.getText(language, greetingKey, spokenName);
     }
 
+
+    //TODO: remove payer name from method signature once UI changes are in
     public static String shipIntroduction(String playerName, String shipName) {
         Language language = effectiveTtsLanguage();
         String spokenName = spokenNameOrCommander(playerName, language);
         String safeShipName = shipName == null || shipName.isBlank()
                 ? MultiLingualTextProvider.getText(language, "speech.shipFallback")
                 : shipName;
-        return MultiLingualTextProvider.getText(language, "speech.shipIntroduction", spokenName, safeShipName);
+        return MultiLingualTextProvider.getText(
+                language,
+                "speech.shipIntroduction",
+                spokenName,
+                safeShipName,
+                Ranks.getPlayerHonorific()
+        );
     }
 
     public static String localizedSpeech(String key, Object... args) {

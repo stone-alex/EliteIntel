@@ -23,13 +23,17 @@ class NativeKeyInputFactory {
     static NativeKeyInput create(Robot robot) {
         String os = System.getProperty("os.name", "").toLowerCase();
 
+        log.info("[factory] OS='{}' Java='{}' user='{}'",
+                os, System.getProperty("java.version"), System.getProperty("user.name"));
+
         if (os.contains("win")) {
             try {
                 WindowsNativeKeyInput impl = new WindowsNativeKeyInput();
-                log.info("Using Windows native key input (SendInput)");
+                log.info("[factory] Using WindowsNativeKeyInput (SendInput via user32.dll)");
                 return impl;
-            } catch (Exception | UnsatisfiedLinkError e) {
-                log.warn("WindowsNativeKeyInput unavailable: {}. Falling back to Robot.", e.getMessage());
+            } catch (Throwable e) {
+                log.warn("[factory] WindowsNativeKeyInput unavailable: {} {}. Falling back to Robot.",
+                        e.getClass().getSimpleName(), e.getMessage(), e);
             }
         } else if (os.contains("linux") || os.contains("nix") || os.contains("nux")) {
             try {

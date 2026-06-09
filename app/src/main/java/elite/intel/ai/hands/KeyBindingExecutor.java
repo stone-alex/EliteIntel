@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
+import java.util.Comparator;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,6 +72,12 @@ public class KeyBindingExecutor {
             ELITE_TO_KEYPROCESSOR_MAP.put("KEY_À", KeyProcessor.KEY_AGRAVE);   // à → NATIVE_BASE+19
             ELITE_TO_KEYPROCESSOR_MAP.put("KEY_Ù", KeyProcessor.KEY_UGRAVE);   // ù → NATIVE_BASE+20
             ELITE_TO_KEYPROCESSOR_MAP.put("KEY_Ç", KeyProcessor.KEY_CCEDILLA); // ç → NATIVE_BASE+21
+            // Dump the full map so we can verify key names at startup
+            log.debug("[key-map] ELITE_TO_KEYPROCESSOR_MAP: {} entries", ELITE_TO_KEYPROCESSOR_MAP.size());
+            ELITE_TO_KEYPROCESSOR_MAP.entrySet().stream()
+                    .sorted(Comparator.comparing(Map.Entry::getKey))
+                    .forEach(e -> log.debug("[key-map]   '{}' → 0x{}", e.getKey(), Integer.toHexString(e.getValue())));
+
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Failed to initialize key mappings", e);
         }
@@ -123,16 +130,22 @@ public class KeyBindingExecutor {
      */
     public void executeTap(KeyBindingsParser.KeyBinding binding) {
         try {
+            log.debug("[exec] executeTap key='{}' modifiers={}", binding.key, java.util.Arrays.toString(binding.modifiers));
             Integer mainKeyCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.key.toUpperCase());
             if (mainKeyCode == null) {
-                log.error("No KeyProcessor mapping for key: {}", binding.key.toUpperCase());
+                log.error("[exec] UNKNOWN KEY '{}' (uppercase='{}') — not in ELITE_TO_KEYPROCESSOR_MAP",
+                        binding.key, binding.key.toUpperCase());
+                log.error("[exec] Known keys: {}",
+                        ELITE_TO_KEYPROCESSOR_MAP.keySet().stream().sorted().toList());
                 return;
             }
+            log.debug("[exec] key '{}' → keyCode=0x{}", binding.key.toUpperCase(), Integer.toHexString(mainKeyCode));
             int[] modifierCodes = new int[binding.modifiers.length];
             for (int i = 0; i < binding.modifiers.length; i++) {
                 Integer modCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.modifiers[i].toUpperCase());
                 if (modCode == null) {
-                    log.error("No KeyProcessor mapping for modifier: {}", binding.modifiers[i]);
+                    log.error("[exec] UNKNOWN MODIFIER '{}' (uppercase='{}') — not in ELITE_TO_KEYPROCESSOR_MAP",
+                            binding.modifiers[i], binding.modifiers[i].toUpperCase());
                     return;
                 }
                 modifierCodes[i] = modCode;
@@ -153,18 +166,26 @@ public class KeyBindingExecutor {
 
     public void executeBindingWithHold(KeyBindingsParser.KeyBinding binding, int holdTimeMs) {
         try {
+            log.debug("[exec] executeBindingWithHold key='{}' modifiers={} hold={}ms",
+                    binding.key, java.util.Arrays.toString(binding.modifiers), holdTimeMs);
             Integer mainKeyCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.key.toUpperCase());
             if (mainKeyCode == null) {
-                log.error("No KeyProcessor mapping for key: {}", binding.key.toUpperCase());
+                log.error("[exec] UNKNOWN KEY '{}' (uppercase='{}') — not in ELITE_TO_KEYPROCESSOR_MAP",
+                        binding.key, binding.key.toUpperCase());
+                log.error("[exec] Known keys: {}",
+                        ELITE_TO_KEYPROCESSOR_MAP.keySet().stream().sorted().toList());
                 return;
             }
+            log.debug("[exec] key '{}' → keyCode=0x{}", binding.key.toUpperCase(), Integer.toHexString(mainKeyCode));
             int[] modifierCodes = new int[binding.modifiers.length];
             for (int i = 0; i < binding.modifiers.length; i++) {
                 Integer modCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.modifiers[i].toUpperCase());
                 if (modCode == null) {
-                    log.error("No KeyProcessor mapping for modifier: {}", binding.modifiers[i]);
+                    log.error("[exec] UNKNOWN MODIFIER '{}' (uppercase='{}') — not in ELITE_TO_KEYPROCESSOR_MAP",
+                            binding.modifiers[i], binding.modifiers[i].toUpperCase());
                     return;
                 }
+                log.debug("[exec] modifier '{}' → keyCode=0x{}", binding.modifiers[i].toUpperCase(), Integer.toHexString(modCode));
                 modifierCodes[i] = modCode;
             }
 

@@ -44,7 +44,7 @@ public class TransmissionReceivedSubscriber {
 
             if (isRadioOn == null || !isRadioOn) return;
 
-            if (!event.getMessageLocalised().toLowerCase().contains("entered channel")) {
+            if (event.getMessageLocalised() != null && !event.getMessageLocalised().toLowerCase().contains("entered channel")) {
                 boolean isStation = event.getMessage().toLowerCase().contains("station");
 
                 if (event.getFrom().toLowerCase().contains("cruise")) return;

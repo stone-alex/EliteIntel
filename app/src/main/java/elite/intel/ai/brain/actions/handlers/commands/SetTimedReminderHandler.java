@@ -7,6 +7,8 @@ import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.TimedReminderManager;
 import elite.intel.gameapi.EventBusManager;
 
+import java.util.Objects;
+
 public class SetTimedReminderHandler implements CommandHandler {
 
     @Override
@@ -14,8 +16,8 @@ public class SetTimedReminderHandler implements CommandHandler {
         JsonElement keyEl = params.get("key");
         JsonElement minutesEl = params.get("minutes");
 
-        if (keyEl == null || minutesEl == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("reminder text and duration required"));
+        if (isValidReminder(keyEl, minutesEl)) {
+            EventBusManager.publish(new AiVoxResponseEvent("reminder text and duration required. reminder is not set"));
             return;
         }
 
@@ -36,5 +38,9 @@ public class SetTimedReminderHandler implements CommandHandler {
         TimedReminderManager.getInstance().schedule(text, minutes);
         EventBusManager.publish(new MissionCriticalAnnouncementEvent(
                 "Reminder set for " + minutes + " minute" + (minutes == 1 ? "" : "s")));
+    }
+
+    private static boolean isValidReminder(JsonElement keyEl, JsonElement minutesEl) {
+        return keyEl == null || minutesEl == null || Objects.equals(keyEl.getAsString(), "none") || keyEl.getAsString().trim().isEmpty() || Objects.equals(keyEl.getAsString(), "");
     }
 }

@@ -94,6 +94,7 @@ public class AppController implements Runnable {
     public void toggleStreamingMode(ToggleWakeWordEvent event) {
         appendToLog("Voice input mode toggle");
         systemSession.stopStartListening(event.isOn());
+        EventBusManager.publish(new SleepWakeStateChangedEvent(event.isOn()));
         EventBusManager.publish(new AiVoxResponseEvent(event.isOn() ? ignoreModeOnMessage() : ignoreModeOffMessage()));
     }
 

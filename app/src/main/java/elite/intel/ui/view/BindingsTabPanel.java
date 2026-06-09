@@ -16,7 +16,9 @@ import elite.intel.ai.hands.KeyboardBindingEdit;
 import elite.intel.ai.hands.KeyboardKeyAvailabilityService;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
+import elite.intel.ui.event.BindingsSummaryChangedEvent;
 import elite.intel.ui.event.BindingsUpdatedEvent;
+import elite.intel.ui.event.KeymapSyncStateChangedEvent;
 import com.google.common.eventbus.Subscribe;
 
 import javax.swing.*;
@@ -310,7 +312,9 @@ public class BindingsTabPanel extends JPanel {
                     getText("bindings.column.primary"),
                     getText("bindings.column.secondary"));
             tabs.setTitleAt(1, getText("bindings.missingBindings", missingBindings.size()));
+            EventBusManager.publish(new BindingsSummaryChangedEvent(missingBindings.size(), usedBindings.size()));
         } catch (Exception e) {
+            EventBusManager.publish(new BindingsSummaryChangedEvent(0, 0));
             clearLoadedBindingsSnapshot();
             profileField.setText(getText("bindings.notAvailable"));
             filePathField.setText(getText("bindings.notAvailable"));
@@ -337,6 +341,8 @@ public class BindingsTabPanel extends JPanel {
 
         applyButton.setEnabled(!synced && activePresetFileName != null);
         revertButton.setEnabled(activePresetFileName != null && workingCopyRepo.exists(activePresetFileName));
+
+        EventBusManager.publish(new KeymapSyncStateChangedEvent(synced));
     }
 
     private void performApply() {

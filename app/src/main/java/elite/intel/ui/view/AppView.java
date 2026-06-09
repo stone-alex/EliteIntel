@@ -148,9 +148,7 @@ public class AppView extends JFrame implements AppViewInterface {
     @Subscribe
     public void onServiceStatusEvent(ServicesStateEvent event) {
         servicesRunning = event.isRunning();
-        if (topStatusBar != null) {
-            SwingUtilities.invokeLater(() -> topStatusBar.setServicesRunning(servicesRunning));
-        }
+        // TopStatusBar handles ServicesStateEvent directly via its own subscription.
     }
 
     @Subscribe
@@ -166,6 +164,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
     private void rebuildUi() {
         // Rebuilt panels/controllers register with EventBus; dispose old instances first to avoid duplicate subscribers.
+        if (topStatusBar != null) topStatusBar.dispose();
         if (aiTabController != null) aiTabController.dispose();
         if (aiTabPanel != null) aiTabPanel.dispose();
         if (actionsTabPanel != null) actionsTabPanel.dispose();

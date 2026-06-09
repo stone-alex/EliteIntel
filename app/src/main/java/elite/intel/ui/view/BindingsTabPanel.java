@@ -63,10 +63,7 @@ public class BindingsTabPanel extends JPanel {
     private JScrollPane usedBindingsScrollPane;
     private JScrollPane missingBindingsScrollPane;
     private JTabbedPane tabs;
-    private static final Color STATUS_SYNCED_COLOR = HUD_OK;
-
-    private JLabel syncStatusIcon;
-    private JLabel syncStatusLabel;
+    private StatusBadge syncStatusBadge;
     private JButton applyButton;
     private JButton revertButton;
 
@@ -153,96 +150,114 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private void buildUi() {
-        setLayout(new BorderLayout(8, 8));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setLayout(new BorderLayout(2, SCREEN_TOP_GAP));
+        setBorder(hudSubtabContentBorder());
         setBackground(HUD_BG);
 
-        JPanel details = transparentPanel(new GridBagLayout());
-        GridBagConstraints gbc = baseGbc();
-        // Compact header: ~30% less vertical space than the app-wide default (42px / 12px insets → 30px / 4px).
-        gbc.insets = new Insets(2, 6, 2, 6);
-
-        resetHeaderRow(gbc);
-        addHeaderLabel(details, getText("player.bindingsDirectory"), gbc);
-        bindingsDirField = readOnlyField();
-        bindingsDirField.setToolTipText(getText("player.bindingsDirectory.tooltip"));
-        addField(details, bindingsDirField, gbc, 1, 1.0);
-        JButton selectBindingsDirButton = compactDirectoryChooserButton();
-        selectBindingsDirButton.addActionListener(e -> selectBindingsDirectory());
-        gbc.gridx = 2;
-        gbc.weightx = 0;
-        gbc.fill = GridBagConstraints.NONE;
-        details.add(selectBindingsDirButton, gbc);
-
-        nextRow(gbc);
-        resetHeaderRow(gbc);
-        addHeaderLabel(details, getText("bindings.profileName"), gbc);
-        profileField = readOnlyValueField();
-        addField(details, profileField, gbc, 1, 1.0);
-        addInfoButton(details, gbc, "bindings.profileName.info");
-
-        nextRow(gbc);
-        resetHeaderRow(gbc);
-        addHeaderLabel(details, getText("bindings.filePath"), gbc);
-        filePathField = readOnlyValueField();
-        addField(details, filePathField, gbc, 1, 1.0);
-        addInfoButton(details, gbc, "bindings.filePath.info");
-
-        nextRow(gbc);
-        gbc.gridx = 0;
-        gbc.gridwidth = 3;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        details.add(keyboardOnlyBanner(), gbc);
-
-        HudSection profileSection = new HudSection(getText("bindings.section.profile"), new BorderLayout());
-        profileSection.body().add(details, BorderLayout.CENTER);
-        add(profileSection, BorderLayout.NORTH);
+        JPanel details = compactProfilePanel();
+        add(bindingProfileCard(details), BorderLayout.NORTH);
 
         usedBindingsPanel = groupedTablesPanel();
         missingBindingsPanel = groupedTablesPanel();
         usedBindingsScrollPane = groupedTablesScrollPane(usedBindingsPanel);
         missingBindingsScrollPane = groupedTablesScrollPane(missingBindingsPanel);
 
-        tabs = new JTabbedPane();
-        AppTheme.styleTabbedPane(tabs);
-        tabs.setFont(tabs.getFont().deriveFont(Font.BOLD, tabs.getFont().getSize2D() + 1f));
+        tabs = AppTheme.makeCompactTabs();
         tabs.addTab(getText("bindings.usedBindings"), nestedTabContent(usedBindingsScrollPane));
         tabs.addTab(getText("bindings.missingBindings"), nestedTabContent(missingBindingsScrollPane));
         tabs.addChangeListener(e -> selectionController.clearSelection());
 
-        HudSection diagnosticsSection = new HudSection(getText("bindings.section.diagnostics"), new BorderLayout(0, HUD_GAP));
-        diagnosticsSection.body().add(tabs, BorderLayout.CENTER);
-        add(diagnosticsSection, BorderLayout.CENTER);
+        add(tabs, BorderLayout.CENTER);
 
         add(buildFooter(), BorderLayout.SOUTH);
     }
 
+    private JPanel compactProfilePanel() {
+        JPanel profileCardBody = transparentPanel(new BorderLayout(0, 0));
+        JPanel details = transparentPanel(new GridBagLayout());
+        details.setBorder(BorderFactory.createEmptyBorder(2, 0, 6, 0));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.insets = new Insets(2, 0, 6, 7);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        addProfileLabel(details, getText("player.bindingsDirectory"), gbc, 0, 128);
+        bindingsDirField = readOnlyField();
+        bindingsDirField.setToolTipText(getText("player.bindingsDirectory.tooltip"));
+        addProfileField(details, bindingsDirField, gbc, 1, 6, 1.0);
+
+        JButton selectBindingsDirButton = compactDirectoryChooserButton();
+        selectBindingsDirButton.addActionListener(e -> selectBindingsDirectory());
+        gbc.gridx = 7;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        details.add(selectBindingsDirButton, gbc);
+
+        gbc.gridy = 1;
+        addProfileLabel(details, getText("bindings.profileName"), gbc, 0, 80);
+        profileField = readOnlyMetadataField();
+        addProfileField(details, profileField, gbc, 1, 1, 0.28);
+        addInfoButton(details, gbc, 2, "bindings.profileName.info");
+
+        addProfileSpacer(details, gbc, 3, 24);
+        addProfileLabel(details, getText("bindings.filePath"), gbc, 4, 58);
+        filePathField = readOnlyMetadataField();
+        addProfileField(details, filePathField, gbc, 5, 2, 0.72);
+        addInfoButton(details, gbc, 7, "bindings.filePath.info");
+
+        profileCardBody.add(details, BorderLayout.CENTER);
+        return profileCardBody;
+    }
+
+    private JComponent bindingProfileCard(JPanel body) {
+        HudSection card = new HudSection(
+                getText("bindings.section.profile"),
+                new BorderLayout(),
+                HudPanel.Variant.FRAMED,
+                6,
+                HUD_ORANGE_SOFT);
+        card.body().add(body, BorderLayout.CENTER);
+        card.setFooter(keyboardOnlyWarningStrip(), HUD_WARN_BG);
+
+        JPanel wrapper = transparentPanel(new BorderLayout());
+        wrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        wrapper.add(card, BorderLayout.CENTER);
+        return wrapper;
+    }
+
     private JPanel buildFooter() {
-        syncStatusIcon = new JLabel("●");   // ● BLACK CIRCLE
-        syncStatusIcon.setFont(syncStatusIcon.getFont().deriveFont(Font.PLAIN, 10f));
+        syncStatusBadge = new StatusBadge("", StatusBadge.State.INFO);
 
-        syncStatusLabel = new JLabel();
-        syncStatusLabel.setFont(syncStatusLabel.getFont().deriveFont(Font.PLAIN));
+        JPanel statusArea = transparentPanel(new GridBagLayout());
+        GridBagConstraints statusGbc = new GridBagConstraints();
+        statusGbc.anchor = GridBagConstraints.WEST;
+        statusGbc.weightx = 1.0;
+        statusGbc.weighty = 1.0;
+        statusGbc.fill = GridBagConstraints.NONE;
+        statusArea.add(syncStatusBadge, statusGbc);
 
-        JPanel statusArea = transparentPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-        statusArea.add(syncStatusIcon);
-        statusArea.add(syncStatusLabel);
-
-        revertButton = makeButtonSubtle(getText("bindings.button.revert"));
+        revertButton = makeButtonSubtle(getText("bindings.button.revert.short"));
+        revertButton.setToolTipText(getText("bindings.button.revert.tooltip"));
         revertButton.addActionListener(e -> revertFromGame());
 
-        applyButton = makeButton(getText("bindings.button.apply"));
+        applyButton = makeButton(getText("bindings.button.apply.short"));
+        applyButton.setToolTipText(getText("bindings.button.apply.tooltip"));
         applyButton.addActionListener(e -> performApply());
 
-        JPanel footer = transparentPanel(new BorderLayout(HUD_GAP, 0));
-        footer.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, HUD_BORDER_DIM),
-                BorderFactory.createEmptyBorder(6, 0, 0, 0)));
+        JPanel footer = new JPanel(new BorderLayout(HUD_GAP, 0));
+        footer.setOpaque(true);
+        footer.setBackground(HUD_BG);
+        footer.setBorder(hudFooterSeparatorBorder());
 
-        JPanel buttonBar = transparentPanel(new FlowLayout(FlowLayout.RIGHT, HUD_GAP, 0));
-        buttonBar.add(revertButton);
-        buttonBar.add(applyButton);
+        JPanel buttonBar = transparentPanel(new GridBagLayout());
+        GridBagConstraints btnGbc = new GridBagConstraints();
+        btnGbc.anchor = GridBagConstraints.CENTER;
+        btnGbc.weighty = 1.0;
+        btnGbc.insets = new Insets(0, HUD_GAP, 0, 0);
+        buttonBar.add(revertButton, btnGbc);
+        btnGbc.gridx = 1;
+        buttonBar.add(applyButton, btnGbc);
 
         footer.add(statusArea, BorderLayout.CENTER);
         footer.add(buttonBar, BorderLayout.EAST);
@@ -250,7 +265,7 @@ public class BindingsTabPanel extends JPanel {
     }
 
     public void initData() {
-        clearOuterScrollPaneBorders();
+        applyOuterScrollPaneDataPlaneBorders();
         selectionController.resetTables();
         bindingsDirField.setText(playerSession.getBindingsDir().toString());
         try {
@@ -308,19 +323,17 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private void updateSyncStatus() {
-        if (applyButton == null || syncStatusLabel == null || syncStatusIcon == null) {
+        if (applyButton == null || syncStatusBadge == null) {
             return;
         }
         boolean synced = activePresetFileName == null
                 || gameBindingsFile == null
                 || workingCopyRepo.isSyncedWithGame(activePresetFileName, gameBindingsFile.toPath());
 
-        Color statusColor = synced ? STATUS_SYNCED_COLOR : ACCENT;
-        syncStatusIcon.setForeground(statusColor);
-        syncStatusLabel.setText(synced
-                ? getText("bindings.status.synced")
-                : getText("bindings.status.draft"));
-        syncStatusLabel.setForeground(statusColor);
+        syncStatusBadge.setStatus(
+                synced ? getText("bindings.status.synced.badge") : getText("bindings.status.draft.badge"),
+                synced ? StatusBadge.State.OK : StatusBadge.State.STANDBY);
+        syncStatusBadge.setToolTipText(synced ? getText("bindings.status.synced") : getText("bindings.status.draft"));
 
         applyButton.setEnabled(!synced && activePresetFileName != null);
         revertButton.setEnabled(activePresetFileName != null && workingCopyRepo.exists(activePresetFileName));
@@ -396,12 +409,52 @@ public class BindingsTabPanel extends JPanel {
         return profileEnd > 0 ? fileName.substring(0, profileEnd) : fileName;
     }
 
+    private void addProfileLabel(JPanel panel, String text, GridBagConstraints gbc, int column, int width) {
+        gbc.gridx = column;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(2, 0, 6, 7);
+        JLabel label = new JLabel(text);
+        label.setForeground(FG_MUTED);
+        label.setFont(label.getFont().deriveFont(Font.PLAIN, 11f));
+        label.setPreferredSize(new Dimension(width, HEADER_ROW_HEIGHT));
+        panel.add(label, gbc);
+    }
+
+    private void addProfileField(
+            JPanel panel,
+            JComponent component,
+            GridBagConstraints gbc,
+            int column,
+            int gridWidth,
+            double weightX
+    ) {
+        gbc.gridx = column;
+        gbc.gridwidth = gridWidth;
+        gbc.weightx = weightX;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(2, 0, 6, 7);
+        component.setPreferredSize(new Dimension(0, component.getPreferredSize().height));
+        panel.add(component, gbc);
+    }
+
+    private void addProfileSpacer(JPanel panel, GridBagConstraints gbc, int column, int width) {
+        gbc.gridx = column;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        panel.add(Box.createHorizontalStrut(width), gbc);
+    }
+
     private void addHeaderLabel(JPanel panel, String text, GridBagConstraints gbc) {
         gbc.gridx = 0;
         gbc.weightx = 0;
         gbc.fill = GridBagConstraints.NONE;
         JLabel label = new JLabel(text);
-        label.setPreferredSize(new Dimension(220, HEADER_ROW_HEIGHT));
+        label.setForeground(FG_MUTED);
+        label.setPreferredSize(new Dimension(180, HEADER_ROW_HEIGHT));
         panel.add(label, gbc);
     }
 
@@ -412,21 +465,19 @@ public class BindingsTabPanel extends JPanel {
         gbc.fill = GridBagConstraints.NONE;
     }
 
-    private static final int HEADER_ROW_HEIGHT = 30;
+    private static final int HEADER_ROW_HEIGHT = 24;
 
     private JTextField readOnlyField() {
         JTextField field = makeTextField();
         field.setEditable(false);
+        field.setFont(field.getFont().deriveFont(Font.PLAIN, 12f));
         field.setPreferredSize(new Dimension(0, HEADER_ROW_HEIGHT));
         return field;
     }
 
-    private JTextField readOnlyValueField() {
-        JTextField field = readOnlyField();
-        field.setOpaque(false);
-        field.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
-        field.setForeground(FG_MUTED);
-        field.setCaretColor(FG_MUTED);
+    private JTextField readOnlyMetadataField() {
+        JTextField field = makeMetadataField();
+        field.setPreferredSize(new Dimension(0, HEADER_ROW_HEIGHT));
         return field;
     }
 
@@ -441,7 +492,11 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private void addInfoButton(JPanel panel, GridBagConstraints gbc, String messageKey) {
-        JButton button = new JButton("ⓘ");
+        addInfoButton(panel, gbc, 2, messageKey);
+    }
+
+    private void addInfoButton(JPanel panel, GridBagConstraints gbc, int column, String messageKey) {
+        JButton button = new JButton("\u24D8");
         String message = getText(messageKey);
         button.addActionListener(e -> JOptionPane.showMessageDialog(
                 this,
@@ -461,9 +516,11 @@ public class BindingsTabPanel extends JPanel {
         button.setMaximumSize(size);
         headerInfoButtons.add(button);
 
-        gbc.gridx = 2;
+        gbc.gridx = column;
+        gbc.gridwidth = 1;
         gbc.weightx = 0;
         gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(2, 0, 6, 7);
         panel.add(button, gbc);
     }
 
@@ -477,8 +534,11 @@ public class BindingsTabPanel extends JPanel {
         if (field == null) {
             return;
         }
+        if (field instanceof HudMetadataField) {
+            return;
+        }
         field.setOpaque(false);
-        field.setBackground(BG);
+        field.setBackground(HUD_PANEL_BG);
         field.setForeground(FG_MUTED);
         field.setCaretColor(FG_MUTED);
         field.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
@@ -490,7 +550,7 @@ public class BindingsTabPanel extends JPanel {
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder());
         button.setForeground(FG_MUTED);
-        button.setBackground(HUD_BG);
+        button.setBackground(HUD_PANEL_BG);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setFont(button.getFont().deriveFont(Font.PLAIN, button.getFont().getSize2D() + 2f));
         Dimension size = new Dimension(HEADER_ROW_HEIGHT, HEADER_ROW_HEIGHT);
@@ -499,37 +559,54 @@ public class BindingsTabPanel extends JPanel {
         button.setMaximumSize(size);
     }
 
-    private JPanel keyboardOnlyBanner() {
-        keyboardOnlyBanner = new HudBanner("⚠  " + getText("bindings.keyboardOnlyHint"), StatusBadge.State.STANDBY);
+    private JPanel keyboardOnlyWarningStrip() {
+        JPanel strip = new JPanel(new GridBagLayout());
+        strip.setOpaque(false);
+        strip.setBackground(HUD_WARN_BG);
+        strip.setBorder(BorderFactory.createEmptyBorder(4, 6, 4, 6));
+
+        JLabel message = new JLabel("\u26A0  " + getText("bindings.keyboardOnlyHint"), SwingConstants.CENTER);
+        message.setForeground(HUD_WARN);
+        message.setFont(message.getFont().deriveFont(Font.BOLD, 11f));
+        message.putClientProperty("eliteIntel.hud.lockedForeground", Boolean.TRUE);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        strip.add(message, gbc);
+
+        keyboardOnlyBanner = strip;
         return keyboardOnlyBanner;
     }
 
     private JPanel groupedTablesPanel() {
         JPanel panel = transparentPanel(null);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(new EmptyBorder(8, 8, 8, 8));
+        panel.setBorder(new EmptyBorder(2, 0, 2, 0));
         return panel;
     }
 
     private JScrollPane groupedTablesScrollPane(JPanel panel) {
         JScrollPane scrollPane = hudScrollPane(panel);
-        scrollPane.getViewport().setBackground(HUD_BG);
+        scrollPane.getViewport().setBackground(HUD_PANEL_BG);
         scrollPane.getVerticalScrollBar().setUnitIncrement(BindingsGroupTableFactory.TABLE_ROW_HEIGHT * SCROLL_UNIT_ROWS);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.setBorder(hudDataPlaneBorder());
         return scrollPane;
     }
 
-    private void clearOuterScrollPaneBorders() {
-        // AppTheme styles all scroll panes after buildUi; keep the Bindings content panes visually borderless.
+    private void applyOuterScrollPaneDataPlaneBorders() {
+        // AppTheme restyles scroll panes after buildUi; restore the Bindings data-plane frame after palette passes.
         if (usedBindingsScrollPane != null)
-            usedBindingsScrollPane.setBorder(BorderFactory.createEmptyBorder());
+            usedBindingsScrollPane.setBorder(hudDataPlaneBorder());
         if (missingBindingsScrollPane != null)
-            missingBindingsScrollPane.setBorder(BorderFactory.createEmptyBorder());
+            missingBindingsScrollPane.setBorder(hudDataPlaneBorder());
     }
 
     private JPanel nestedTabContent(JComponent content) {
         JPanel panel = transparentPanel(new BorderLayout());
-        panel.setBorder(new EmptyBorder(6, 0, 0, 0));
+        panel.setBorder(new EmptyBorder(0, 0, 0, 0));
         panel.add(content, BorderLayout.CENTER);
         return panel;
     }
@@ -596,7 +673,7 @@ public class BindingsTabPanel extends JPanel {
 
             targetPanel.add(sectionHeader(group));
             targetPanel.add(tableFactory.groupTable(rows, outerScrollPaneFor(targetPanel), columnNames));
-            targetPanel.add(Box.createVerticalStrut(12));
+            targetPanel.add(Box.createVerticalStrut(5));
         }
         targetPanel.add(Box.createVerticalGlue());
         targetPanel.revalidate();
@@ -604,11 +681,9 @@ public class BindingsTabPanel extends JPanel {
     }
 
     private JLabel sectionHeader(BindingGroup group) {
-        JLabel label = new JLabel(getText(group.getLabelKey()));
-        label.setForeground(ACCENT);
-        label.setFont(label.getFont().deriveFont(Font.BOLD, label.getFont().getSize2D() + 2f));
+        JLabel label = hudGroupLabel(getText(group.getLabelKey()).toUpperCase());
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
-        label.setBorder(new EmptyBorder(14, 0, 6, 0));
+        label.setBorder(new EmptyBorder(6, 0, 2, 0));
         return label;
     }
 

@@ -59,7 +59,7 @@ public class PlayerTabPanel extends JPanel {
     private void buildUi() {
         setLayout(new BorderLayout());
         setBackground(HUD_BG);
-        setBorder(BorderFactory.createEmptyBorder(HUD_PADDING, HUD_PADDING, HUD_PADDING, HUD_PADDING));
+        setBorder(hudScreenBorder());
 
         JPanel content = transparentPanel(null);
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));

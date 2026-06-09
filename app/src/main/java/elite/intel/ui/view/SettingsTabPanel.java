@@ -14,7 +14,6 @@ import javax.swing.*;
 import java.awt.*;
 
 import static elite.intel.ui.view.AppTheme.makeButtonSubtle;
-import static elite.intel.ui.view.AppTheme.styleTabbedPane;
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 public class SettingsTabPanel extends JPanel {
@@ -41,16 +40,10 @@ public class SettingsTabPanel extends JPanel {
     private void buildUi() {
         setLayout(new BorderLayout(AppTheme.HUD_GAP, AppTheme.HUD_GAP));
         setBackground(AppTheme.HUD_BG);
-        setBorder(BorderFactory.createEmptyBorder(
-                AppTheme.HUD_PADDING,
-                AppTheme.HUD_PADDING,
-                AppTheme.HUD_PADDING,
-                AppTheme.HUD_PADDING
-        ));
+        setBorder(AppTheme.hudScreenBorder());
 
-        JTabbedPane tabs = new JTabbedPane();
+        JTabbedPane tabs = AppTheme.makeStandardTabs();
         tabs.setTabPlacement(JTabbedPane.TOP);
-        styleTabbedPane(tabs);
         tabs.addTab(getText("settings.tab.localLlm"), scaledIcon("/images/local-llm.png"), localLlmPanel);
         tabs.addTab(getText("settings.tab.audio"), scaledIcon("/images/audio.png"), audioPanel);
         tabs.addTab(getText("settings.tab.cloudServices"), scaledIcon("/images/cloud.png"), cloudPanel);

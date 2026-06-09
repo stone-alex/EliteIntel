@@ -8,7 +8,16 @@ import java.awt.*;
  */
 public class HudPanel extends JPanel {
 
+    /**
+     * Controls how strongly a HUD surface is framed in nested screen compositions.
+     */
+    public enum Variant {
+        FRAMED,
+        FLAT
+    }
+
     private final Color accentColor;
+    private final Variant variant;
 
     /**
      * Creates a HUD panel with the standard accent colour.
@@ -26,10 +35,22 @@ public class HudPanel extends JPanel {
      * @param accentColor colour used for the top accent edge
      */
     public HudPanel(LayoutManager layout, Color accentColor) {
+        this(layout, accentColor, Variant.FRAMED);
+    }
+
+    /**
+     * Creates a HUD panel with explicit accent colour and visual weight.
+     *
+     * @param layout layout manager used by the panel content
+     * @param accentColor colour used for the top accent edge on framed panels
+     * @param variant visual framing strength for the surface
+     */
+    public HudPanel(LayoutManager layout, Color accentColor, Variant variant) {
         super(layout);
         this.accentColor = accentColor == null ? AppTheme.ACCENT : accentColor;
+        this.variant = variant == null ? Variant.FRAMED : variant;
         setOpaque(false);
-        setBorder(AppTheme.hudBorder());
+        setBorder(this.variant == Variant.FLAT ? AppTheme.hudFlatBorder() : AppTheme.hudBorder());
     }
 
     @Override
@@ -42,6 +63,10 @@ public class HudPanel extends JPanel {
             g2.setColor(AppTheme.HUD_PANEL_BG);
             g2.fillRoundRect(0, 0, Math.max(0, w - 1), Math.max(0, h - 1),
                     AppTheme.HUD_PANEL_ARC, AppTheme.HUD_PANEL_ARC);
+
+            if (variant == Variant.FLAT) {
+                return;
+            }
 
             g2.setColor(AppTheme.HUD_BORDER_DIM);
             g2.drawRoundRect(0, 0, Math.max(0, w - 1), Math.max(0, h - 1),

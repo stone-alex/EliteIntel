@@ -18,9 +18,14 @@ public class TopStatusBar extends HudPanel {
      * @param servicesRunning initial services state
      */
     public TopStatusBar(String appName, String version, boolean servicesRunning) {
-        super(new BorderLayout(AppTheme.HUD_GAP, 0), AppTheme.HUD_CYAN);
+        super(new BorderLayout(AppTheme.HUD_GAP, 0), AppTheme.HUD_CYAN, Variant.FLAT);
         setPreferredSize(new Dimension(0, AppTheme.HUD_TOP_BAR_HEIGHT));
         setMinimumSize(new Dimension(0, AppTheme.HUD_TOP_BAR_HEIGHT));
+        setBackground(AppTheme.HUD_SHELL_BACKGROUND);
+        setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, AppTheme.HUD_BORDER_DIM),
+                BorderFactory.createEmptyBorder(4, 8, 4, 8)
+        ));
 
         add(buildBrand(appName, version), BorderLayout.WEST);
 
@@ -46,24 +51,18 @@ public class TopStatusBar extends HudPanel {
         );
     }
 
-    private JPanel buildBrand(String appName, String version) {
-        JPanel brand = new JPanel();
-        brand.setOpaque(false);
-        brand.setLayout(new BoxLayout(brand, BoxLayout.Y_AXIS));
-
-        JLabel title = new JLabel(appName == null ? "" : appName.toUpperCase());
-        title.setForeground(AppTheme.FG);
-        title.setFont(title.getFont().deriveFont(Font.BOLD, 15f));
-        title.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel meta = new JLabel("BUILD " + (version == null || version.isBlank() ? "UNKNOWN" : version));
-        meta.setForeground(AppTheme.HUD_CYAN);
-        meta.setFont(meta.getFont().deriveFont(Font.PLAIN, 11f));
-        meta.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        brand.add(title);
-        brand.add(Box.createVerticalStrut(2));
-        brand.add(meta);
+    private JComponent buildBrand(String appName, String version) {
+        String safeName = appName == null ? "" : appName.toUpperCase();
+        String safeVersion = version == null || version.isBlank() ? "UNKNOWN" : version;
+        JLabel brand = new JLabel(safeName + "  " + safeVersion);
+        brand.setForeground(AppTheme.FG);
+        brand.setFont(brand.getFont().deriveFont(Font.BOLD, 13f));
         return brand;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        g.setColor(AppTheme.HUD_SHELL_BACKGROUND);
+        g.fillRect(0, 0, getWidth(), getHeight());
     }
 }

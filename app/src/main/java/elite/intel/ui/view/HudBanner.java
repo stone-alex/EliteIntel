@@ -15,14 +15,14 @@ public class HudBanner extends HudPanel {
      * @param state semantic state colour
      */
     public HudBanner(String text, StatusBadge.State state) {
-        super(new BorderLayout(), colorFor(state));
+        super(new BorderLayout(), colorFor(state), Variant.FLAT);
         setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(colorFor(state), AppTheme.HUD_BORDER_THICKNESS, true),
-                BorderFactory.createEmptyBorder(6, 10, 6, 10)
+                BorderFactory.createMatteBorder(0, 2, 0, 0, colorFor(state)),
+                BorderFactory.createEmptyBorder(3, 8, 3, 8)
         ));
         JLabel label = new JLabel(text == null ? "" : text);
         label.setForeground(colorFor(state));
-        label.setFont(label.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_LABEL));
+        label.setFont(label.getFont().deriveFont(Font.BOLD, 11f));
         label.putClientProperty("eliteIntel.hud.lockedForeground", Boolean.TRUE);
         add(label, BorderLayout.CENTER);
     }

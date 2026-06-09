@@ -32,12 +32,7 @@ public class MarkdownViewPanel extends JPanel {
     private void buildUi() {
         setLayout(new BorderLayout());
         setBackground(AppTheme.HUD_BG);
-        setBorder(BorderFactory.createEmptyBorder(
-                AppTheme.HUD_PADDING,
-                AppTheme.HUD_PADDING,
-                AppTheme.HUD_PADDING,
-                AppTheme.HUD_PADDING
-        ));
+        setBorder(AppTheme.hudScreenBorder());
 
         editorPane = new JEditorPane();
         editorPane.setContentType("text/html");
@@ -289,17 +284,17 @@ public class MarkdownViewPanel extends JPanel {
 
     private String wrapHtml(String body) {
         // Colors from AppTheme palette
-        // BG_PANEL #1F2032, FG #E6E6E6, ACCENT #FF8C00, BUTTON_BG #03529F,
+        // BG_PANEL #1F2032, FG #E6E6E6, ACCENT #FF7100, BUTTON_BG #03529F,
         // BG #141622, CONSOLE_FG #E0FFEF, FG_MUTED #B0B0B0
         return """
                 <html>
                 <head>
                 <style type="text/css">
                 body   { background-color: #1F2032; color: #E6E6E6; margin: 20px; font-size: 18pt; }
-                h1     { color: #FF8C00; font-size: 30pt; }
-                h2     { color: #FF8C00; font-size: 26pt; }
-                h3     { color: #FF8C00; font-size: 22pt; }
-                h4     { color: #FF8C00; font-size: 20pt; }
+                h1     { color: #FF7100; font-size: 30pt; }
+                h2     { color: #FF7100; font-size: 26pt; }
+                h3     { color: #FF7100; font-size: 22pt; }
+                h4     { color: #FF7100; font-size: 20pt; }
                 a      { color: #4E9AF1; }
                 b      { color: #FFFFFF; }
                 code   { font-family: monospace; color: #E0FFEF; background-color: #141622; }

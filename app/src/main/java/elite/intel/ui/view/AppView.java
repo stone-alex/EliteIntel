@@ -77,12 +77,16 @@ public class AppView extends JFrame implements AppViewInterface {
         setTitle(getText("app.title", systemSession.readVersionFromResources()));
 
         JPanel root = new JPanel(new BorderLayout());
-        root.setBorder(new EmptyBorder(10, 10, 10, 10));
-        root.setBackground(AppTheme.HUD_BG);
+        root.setBorder(new EmptyBorder(
+                AppTheme.SHELL_GAP / 2,
+                AppTheme.SHELL_GAP / 2,
+                AppTheme.SHELL_GAP / 2,
+                AppTheme.SHELL_GAP / 2
+        ));
+        root.setBackground(AppTheme.HUD_SHELL_BACKGROUND);
         setContentPane(root);
 
-        JTabbedPane tabs = new JTabbedPane();
-        AppTheme.styleTabbedPane(tabs);
+        JTabbedPane tabs = AppTheme.makeMainNavTabs();
 
         ImageIcon aiIcon = scaledIcon(ICON_AI);
         ImageIcon playerIcon = scaledIcon(ICON_PLAYER);
@@ -108,20 +112,29 @@ public class AppView extends JFrame implements AppViewInterface {
         tabs.addTab(getText("tab.manual"), manualIcon, userManualPanel);
         //tabs.addTab("Credits", creditsIcon, creditsPanel);
 
-        root.add(tabs, BorderLayout.CENTER);
-        AppTheme.applyDarkPalette(getContentPane());
         topStatusBar = new TopStatusBar(
                 getText("app.name"),
                 systemSession.readVersionFromResources(),
                 servicesRunning
         );
-        root.add(topStatusBar, BorderLayout.NORTH);
+        root.add(buildTopShell(topStatusBar), BorderLayout.NORTH);
+        root.add(tabs, BorderLayout.CENTER);
+        AppTheme.applyDarkPalette(getContentPane());
 
         aiTabController = new AiTabController(aiTabPanel);
     }
 
+    private JComponent buildTopShell(TopStatusBar statusBar) {
+        JPanel shell = new JPanel(new BorderLayout());
+        shell.setOpaque(true);
+        shell.setBackground(AppTheme.HUD_SHELL_BACKGROUND);
+        shell.add(statusBar, BorderLayout.CENTER);
+        shell.add(Box.createVerticalStrut(AppTheme.SHELL_GAP), BorderLayout.SOUTH);
+        return shell;
+    }
+
     private ImageIcon scaledIcon(String resource) {
-        return AppTheme.scaledIcon(getClass(), resource, AppTheme.HUD_ICON_MAIN);
+        return AppTheme.scaledIcon(getClass(), resource, AppTheme.HUD_ICON_NAV);
     }
 
     @Override
@@ -202,9 +215,9 @@ public class AppView extends JFrame implements AppViewInterface {
     private void installDarkDefaults() {
         UIManager.put("Panel.background", AppTheme.BG);
         UIManager.put("OptionPane.background", AppTheme.BG);
-        UIManager.put("TabbedPane.background", AppTheme.BG);
+        UIManager.put("TabbedPane.background", AppTheme.HUD_CONTENT_BACKGROUND);
         UIManager.put("TabbedPane.foreground", AppTheme.FG);
-        UIManager.put("TabbedPane.contentAreaColor", AppTheme.BG);
+        UIManager.put("TabbedPane.contentAreaColor", AppTheme.HUD_CONTENT_BACKGROUND);
         UIManager.put("Label.foreground", AppTheme.FG);
         UIManager.put("CheckBox.foreground", AppTheme.FG);
         UIManager.put("RadioButton.foreground", AppTheme.BUTTON_BG);

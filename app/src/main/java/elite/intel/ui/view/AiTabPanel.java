@@ -36,7 +36,7 @@ public class AiTabPanel extends JPanel {
     private void buildUi(Font monoFont) {
         setLayout(new BorderLayout(HUD_GAP, HUD_GAP));
         setBackground(HUD_BG);
-        setBorder(BorderFactory.createEmptyBorder(HUD_PADDING, HUD_PADDING, HUD_PADDING, HUD_PADDING));
+        setBorder(hudScreenBorder());
 
         JPanel buttons = transparentPanel(null);
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));

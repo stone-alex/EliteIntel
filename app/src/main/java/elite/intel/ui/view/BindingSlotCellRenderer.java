@@ -4,9 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 
 import static elite.intel.ui.view.AppTheme.FG;
-import static elite.intel.ui.view.AppTheme.FG_MUTED;
+import static elite.intel.ui.view.AppTheme.HUD_DISABLED;
 import static elite.intel.ui.view.AppTheme.HUD_HOVER;
 import static elite.intel.ui.view.AppTheme.HUD_PANEL_BG;
+import static elite.intel.ui.view.AppTheme.HUD_ROW_ALT;
 
 /**
  * Table renderer for binding rows.
@@ -16,6 +17,7 @@ import static elite.intel.ui.view.AppTheme.HUD_PANEL_BG;
  */
 class BindingSlotCellRenderer extends HudTable.CellRenderer {
     BindingSlotCellRenderer() {
+        super(2);
         setOpaque(true);
     }
 
@@ -33,8 +35,9 @@ class BindingSlotCellRenderer extends HudTable.CellRenderer {
                 .getText("bindings.status.notDefined")
                 .equals(value);
         if (!isSelected) {
-            label.setBackground(isHovered(table, row) ? HUD_HOVER : HUD_PANEL_BG);
-            label.setForeground(notDefined ? FG_MUTED : FG);
+            Color rowBg = row % 2 == 0 ? HUD_PANEL_BG : HUD_ROW_ALT;
+            label.setBackground(isHovered(table, row) ? HUD_HOVER : rowBg);
+            label.setForeground(notDefined ? HUD_DISABLED : FG);
         }
         return label;
     }

@@ -20,8 +20,29 @@ public final class HudTable {
      * @param table table to style
      */
     public static void style(JTable table) {
+        style(table, AppTheme.HUD_TABLE_ROW_HEIGHT, AppTheme.HUD_TABLE_HEADER_HEIGHT, 13f, 5, 4);
+    }
+
+    /**
+     * Applies compact HUD table styling for dense cockpit data panels.
+     *
+     * @param table table to style
+     */
+    public static void styleCompact(JTable table) {
+        style(table, AppTheme.HUD_TABLE_ROW_HEIGHT_COMPACT, AppTheme.HUD_TABLE_HEADER_HEIGHT_COMPACT, 12f, 3, 2);
+    }
+
+    private static void style(
+            JTable table,
+            int rowHeight,
+            int headerHeight,
+            float fontSize,
+            int headerVerticalPadding,
+            int cellVerticalPadding
+    ) {
         table.setFillsViewportHeight(true);
-        table.setRowHeight(AppTheme.HUD_TABLE_ROW_HEIGHT);
+        table.setRowHeight(rowHeight);
+        table.setFont(table.getFont().deriveFont(Font.PLAIN, fontSize));
         table.setBackground(AppTheme.HUD_PANEL_BG);
         table.setForeground(AppTheme.FG);
         table.setGridColor(AppTheme.HUD_BORDER_DIM);
@@ -30,14 +51,15 @@ public final class HudTable {
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(true);
         table.setIntercellSpacing(new Dimension(0, 1));
-        table.setDefaultRenderer(Object.class, new CellRenderer());
+        table.setDefaultRenderer(Object.class, new CellRenderer(cellVerticalPadding));
 
         JTableHeader header = table.getTableHeader();
         header.setBackground(AppTheme.HUD_BG);
         header.setForeground(AppTheme.FG);
+        header.setFont(header.getFont().deriveFont(Font.BOLD, Math.max(10f, fontSize - 1f)));
         header.setReorderingAllowed(false);
-        header.setPreferredSize(new Dimension(header.getPreferredSize().width, AppTheme.HUD_TABLE_HEADER_HEIGHT));
-        header.setDefaultRenderer(new HeaderRenderer());
+        header.setPreferredSize(new Dimension(header.getPreferredSize().width, headerHeight));
+        header.setDefaultRenderer(new HeaderRenderer(headerVerticalPadding));
     }
 
     /**
@@ -55,7 +77,14 @@ public final class HudTable {
      * Standard HUD table header renderer.
      */
     public static class HeaderRenderer extends DefaultTableCellRenderer {
+        private final int verticalPadding;
+
         public HeaderRenderer() {
+            this(5);
+        }
+
+        public HeaderRenderer(int verticalPadding) {
+            this.verticalPadding = verticalPadding;
             setOpaque(true);
         }
 
@@ -70,9 +99,9 @@ public final class HudTable {
         ) {
             JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             label.setBackground(AppTheme.HUD_BG);
-            label.setForeground(AppTheme.HUD_CYAN);
-            label.setFont(label.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_LABEL));
-            label.setBorder(new EmptyBorder(5, 8, 5, 8));
+            label.setForeground(AppTheme.HUD_CYAN_SOFT);
+            label.setFont(label.getFont().deriveFont(Font.BOLD, label.getFont().getSize2D()));
+            label.setBorder(new EmptyBorder(verticalPadding, 8, verticalPadding, 8));
             label.setHorizontalAlignment(SwingConstants.LEFT);
             return label;
         }
@@ -82,7 +111,14 @@ public final class HudTable {
      * Standard alternating-row HUD table cell renderer.
      */
     public static class CellRenderer extends DefaultTableCellRenderer {
+        private final int verticalPadding;
+
         public CellRenderer() {
+            this(4);
+        }
+
+        public CellRenderer(int verticalPadding) {
+            this.verticalPadding = verticalPadding;
             setOpaque(true);
         }
 
@@ -100,7 +136,7 @@ public final class HudTable {
                 label.setBackground(row % 2 == 0 ? AppTheme.HUD_PANEL_BG : AppTheme.HUD_ROW_ALT);
                 label.setForeground(AppTheme.FG);
             }
-            label.setBorder(new EmptyBorder(4, 8, 4, 8));
+            label.setBorder(new EmptyBorder(verticalPadding, 8, verticalPadding, 8));
             label.setHorizontalAlignment(SwingConstants.LEFT);
             return label;
         }

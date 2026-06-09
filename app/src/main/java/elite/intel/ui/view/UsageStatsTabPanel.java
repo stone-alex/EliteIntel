@@ -8,7 +8,6 @@ import elite.intel.ui.event.RestartBrainEvent;
 import elite.intel.ui.event.ServicesStateEvent;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.time.Duration;
 import java.time.Instant;
@@ -85,7 +84,7 @@ public class UsageStatsTabPanel extends JPanel {
 
     private void buildUi() {
         setLayout(new BorderLayout(AppTheme.HUD_GAP, AppTheme.HUD_GAP));
-        setBorder(new EmptyBorder(AppTheme.HUD_PADDING, AppTheme.HUD_PADDING, AppTheme.HUD_PADDING, AppTheme.HUD_PADDING));
+        setBorder(AppTheme.hudScreenBorder());
         setBackground(AppTheme.HUD_BG);
         boolean usingLocalLLMs = systemSession.useLocalCommandLlm() && systemSession.useLocalQueryLlm();
 

@@ -4,7 +4,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 
@@ -13,6 +13,8 @@ import java.awt.*;
  */
 public class AppTheme {
     private static final String HUD_LOCKED_FOREGROUND = "eliteIntel.hud.lockedForeground";
+    static final String HUD_TABLE_STYLE_LOCKED = "eliteIntel.hud.tableStyleLocked";
+    public static final String HUD_CARD_BORDER_COLOR = "eliteIntel.hud.cardBorderColor";
 
     public static final Color BG = new Color(0x151519);
     public static final Color LOG_BG = new Color(0x171927);
@@ -21,7 +23,7 @@ public class AppTheme {
     public static final Color BUTTON_FG = new Color(0xFFFFFF);
     public static final Color BUTTON_BG = new Color(0x03529F);
     public static final Color FG_MUTED = new Color(0xB0B0B0);
-    public static final Color ACCENT = new Color(0xFF8C00);
+    public static final Color ACCENT = new Color(0xFF7100);
     public static final Color ACCENT_CYAN = new Color(0x33D7E8);
     public static final Color CONSOLE_FG = new Color(0xE0FFEF);
     public static final Color SEL_BG = new Color(0xE0FFEF);
@@ -33,34 +35,56 @@ public class AppTheme {
     // -- HUD design tokens -----------------------------------------------------
 
     public static final Color HUD_BG = new Color(0x090D12);
+    public static final Color HUD_SHELL_BACKGROUND = HUD_BG;
+    public static final Color HUD_CONTENT_BACKGROUND = HUD_BG;
     public static final Color HUD_PANEL_BG = new Color(0x101721);
     public static final Color HUD_PANEL_BG_ALT = new Color(0x151E2B);
     public static final Color HUD_BORDER = new Color(0x2D5C66);
     public static final Color HUD_BORDER_DIM = new Color(0x24313A);
+    public static final Color HUD_ORANGE_SOFT = new Color(0xB85A14);
+    public static final Color HUD_ORANGE_FILL = new Color(0x3A1E0A);
+    public static final Color HUD_ORANGE_FILL_HOVER = new Color(0x532A0D);
     public static final Color HUD_CYAN = new Color(0x33D7E8);
+    public static final Color HUD_CYAN_SOFT = new Color(0x49AFC7);
     public static final Color HUD_OK = new Color(0x4FC56B);
-    public static final Color HUD_WARN = new Color(0xFFB347);
+    public static final Color HUD_WARN = new Color(0xFFB000);
+    public static final Color HUD_WARN_BG = new Color(0x2A2114);
     public static final Color HUD_DANGER = new Color(0xD94F4F);
     public static final Color HUD_DISABLED = new Color(0x65717A);
     public static final Color HUD_ROW_ALT = new Color(0x0E1420);
     public static final Color HUD_HOVER = new Color(0x182838);
 
     public static final int HUD_GAP = 8;
+    public static final int SHELL_GAP = 10;
+    public static final int SCREEN_TOP_GAP = 12;
     public static final int HUD_PADDING = 10;
     public static final int HUD_PADDING_SMALL = 6;
+    public static final int SUBTAB_CONTENT_GAP = HUD_GAP;
     public static final int HUD_BORDER_THICKNESS = 1;
     public static final int HUD_PANEL_ARC = 12;
-    public static final int HUD_TOP_BAR_HEIGHT = 58;
-    public static final int HUD_BADGE_HEIGHT = 24;
+    public static final int HUD_TOP_BAR_HEIGHT = 34;
+    public static final int HUD_BADGE_HEIGHT = 20;
     public static final int HUD_FIELD_HEIGHT = 34;
     public static final int HUD_BUTTON_HEIGHT = 34;
+    public static final int HUD_BUTTON_HEIGHT_COMPACT = 28;
     public static final int HUD_TABLE_ROW_HEIGHT = 34;
     public static final int HUD_TABLE_HEADER_HEIGHT = 30;
+    public static final int HUD_TABLE_ROW_HEIGHT_COMPACT = 26;
+    public static final int HUD_TABLE_HEADER_HEIGHT_COMPACT = 22;
     public static final int HUD_ICON_MAIN = 42;
+    public static final int HUD_ICON_NAV = 24;
     public static final int HUD_ICON_SMALL = 28;
-    public static final float HUD_FONT_SECTION = 12f;
-    public static final float HUD_FONT_LABEL = 13f;
-    public static final float HUD_FONT_BADGE = 11f;
+    public static final int HUD_FORM_ROW_HEIGHT_COMPACT = 22;
+    public static final float HUD_FONT_XS      = 11f;
+    public static final float HUD_FONT_SM      = 12f;
+    public static final float HUD_FONT_MD      = 14f;
+    public static final float HUD_FONT_LG      = 16f;
+    /** @deprecated Use {@link #HUD_FONT_SM}. */
+    @Deprecated public static final float HUD_FONT_SECTION = HUD_FONT_SM;
+    /** @deprecated Use {@link #HUD_FONT_MD}. */
+    @Deprecated public static final float HUD_FONT_LABEL   = 13f;
+    /** @deprecated Use {@link #HUD_FONT_XS}. */
+    @Deprecated public static final float HUD_FONT_BADGE   = HUD_FONT_XS;
 
     // -- Button factories ------------------------------------------------------
 
@@ -91,6 +115,13 @@ public class AppTheme {
      */
     public static JTextField makeTextField() {
         return new HudTextField();
+    }
+
+    /**
+     * Creates a compact read-only HUD field for metadata values.
+     */
+    public static JTextField makeMetadataField() {
+        return new HudMetadataField();
     }
 
     /**
@@ -137,11 +168,83 @@ public class AppTheme {
     }
 
     /**
+     * Creates a quiet border for nested HUD surfaces that should not add another visible frame.
+     */
+    public static Border hudFlatBorder() {
+        return new EmptyBorder(HUD_PADDING_SMALL, HUD_PADDING_SMALL, HUD_PADDING_SMALL, HUD_PADDING_SMALL);
+    }
+
+    /**
+     * Creates the compact outer spacing used between the main navigation and screen content.
+     */
+    public static Border hudScreenBorder() {
+        return new EmptyBorder(SCREEN_TOP_GAP, SHELL_GAP, SHELL_GAP, SHELL_GAP);
+    }
+
+    /**
+     * Creates the compact spacing between a screen sub-tab row and its first content surface.
+     */
+    public static Border hudSubtabContentBorder() {
+        return new EmptyBorder(SUBTAB_CONTENT_GAP, 0, 0, 0);
+    }
+
+    /**
+     * Creates a restrained structural border for compact HUD cards and major modules.
+     */
+    public static Border hudMajorPanelBorder() {
+        return BorderFactory.createCompoundBorder(
+                new LineBorder(HUD_BORDER_DIM, HUD_BORDER_THICKNESS, true),
+                new EmptyBorder(4, 6, 5, 6)
+        );
+    }
+
+    /**
+     * Creates a subtle frame for dense table/data-plane surfaces.
+     */
+    public static Border hudDataPlaneBorder() {
+        return BorderFactory.createCompoundBorder(
+                new LineBorder(HUD_BORDER_DIM, HUD_BORDER_THICKNESS, true),
+                new EmptyBorder(1, 1, 1, 1)
+        );
+    }
+
+    /**
+     * Creates a left/right/bottom border for a data table that sits directly below a
+     * {@link HudSearchField.Variant#TABLE_FILTER_CONNECTED} filter bar.
+     * The top edge is omitted because the filter bar provides the shared top border line.
+     */
+    public static Border hudConnectedScrollPaneBorder() {
+        return BorderFactory.createMatteBorder(0, 1, 1, 1, HUD_BORDER);
+    }
+
+    /**
+     * Creates a compact separator for bottom command/status strips.
+     */
+    public static Border hudFooterSeparatorBorder() {
+        return BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 0, 0, 0, HUD_BORDER),
+                new EmptyBorder(12, 0, 6, 0)
+        );
+    }
+
+    /**
      * Creates a compact label for HUD section titles without changing the global UI font.
      */
     public static JLabel hudSectionLabel(String text) {
         JLabel label = new JLabel(text);
         label.setForeground(ACCENT);
+        label.setFont(label.getFont().deriveFont(Font.BOLD, HUD_FONT_SECTION));
+        label.putClientProperty(HUD_LOCKED_FOREGROUND, Boolean.TRUE);
+        return label;
+    }
+
+    /**
+     * Creates a muted cyan group-separator label for list sections within a data panel.
+     * Use for group/category titles inside scrollable lists, not for screen-level section titles.
+     */
+    public static JLabel hudGroupLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setForeground(HUD_CYAN);
         label.setFont(label.getFont().deriveFont(Font.BOLD, HUD_FONT_SECTION));
         label.putClientProperty(HUD_LOCKED_FOREGROUND, Boolean.TRUE);
         return label;
@@ -177,12 +280,49 @@ public class AppTheme {
      * Applies the standard HUD treatment to text components without replacing the component instance.
      */
     public static void styleTextComponent(JTextComponent tc) {
+        if (tc instanceof JComponent jc
+                && Boolean.TRUE.equals(jc.getClientProperty(HudSearchField.HUD_SEARCH_INNER_FIELD))) {
+            styleSearchInnerField(tc);
+            return;
+        }
+        if (tc instanceof HudMetadataField) {
+            styleMetadataField(tc);
+            return;
+        }
         tc.setBackground(HUD_PANEL_BG_ALT);
         tc.setForeground(FG);
         tc.setCaretColor(HUD_CYAN);
         tc.setSelectionColor(HUD_CYAN);
         tc.setSelectedTextColor(SEL_FG);
         tc.setBorder(hudFieldBorder());
+    }
+
+    /**
+     * Applies borderless text styling for fields embedded inside composite HUD controls.
+     * Uses {@link #HUD_FONT_SM} so search/filter inputs read as secondary controls, not headings.
+     */
+    public static void styleSearchInnerField(JTextComponent tc) {
+        tc.setOpaque(false);
+        tc.setBackground(HUD_PANEL_BG_ALT);
+        tc.setForeground(FG);
+        tc.setCaretColor(HUD_CYAN);
+        tc.setSelectionColor(HUD_CYAN);
+        tc.setSelectedTextColor(SEL_FG);
+        tc.setBorder(BorderFactory.createEmptyBorder());
+        tc.setFont(tc.getFont().deriveFont(HUD_FONT_SM));
+    }
+
+    /**
+     * Applies the compact borderless HUD treatment for read-only metadata fields.
+     */
+    public static void styleMetadataField(JTextComponent tc) {
+        tc.setOpaque(true);
+        tc.setBackground(HUD_PANEL_BG_ALT);
+        tc.setForeground(FG);
+        tc.setCaretColor(FG_MUTED);
+        tc.setSelectionColor(HUD_CYAN);
+        tc.setSelectedTextColor(SEL_FG);
+        tc.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
     }
 
     /**
@@ -211,7 +351,76 @@ public class AppTheme {
         scrollPane.setBackground(HUD_BG);
         scrollPane.getViewport().setBackground(HUD_PANEL_BG);
         scrollPane.setBorder(new LineBorder(HUD_BORDER_DIM, HUD_BORDER_THICKNESS, true));
+        styleScrollBar(scrollPane.getVerticalScrollBar());
+        styleScrollBar(scrollPane.getHorizontalScrollBar());
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+    }
+
+    private static void styleScrollBar(JScrollBar scrollBar) {
+        scrollBar.setPreferredSize(new Dimension(9, 9));
+        scrollBar.setBackground(HUD_BG);
+        scrollBar.setUnitIncrement(16);
+        scrollBar.setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                thumbColor = HUD_BORDER;
+                thumbDarkShadowColor = HUD_BORDER_DIM;
+                thumbHighlightColor = HUD_CYAN;
+                trackColor = HUD_PANEL_BG;
+                trackHighlightColor = HUD_PANEL_BG_ALT;
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return zeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return zeroButton();
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                if (thumbBounds.isEmpty() || !scrollbar.isEnabled()) return;
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(HUD_BORDER);
+                    g2.fillRoundRect(thumbBounds.x + 1, thumbBounds.y + 1,
+                            Math.max(1, thumbBounds.width - 2),
+                            Math.max(1, thumbBounds.height - 2), 8, 8);
+                    g2.setColor(HUD_CYAN);
+                    if (scrollbar.getOrientation() == Adjustable.VERTICAL) {
+                        g2.drawLine(thumbBounds.x + thumbBounds.width - 2,
+                                thumbBounds.y + 4,
+                                thumbBounds.x + thumbBounds.width - 2,
+                                thumbBounds.y + thumbBounds.height - 5);
+                    } else {
+                        g2.drawLine(thumbBounds.x + 4,
+                                thumbBounds.y + thumbBounds.height - 2,
+                                thumbBounds.x + thumbBounds.width - 5,
+                                thumbBounds.y + thumbBounds.height - 2);
+                    }
+                } finally {
+                    g2.dispose();
+                }
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                g.setColor(HUD_BG);
+                g.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
+            }
+
+            private JButton zeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                return button;
+            }
+        });
     }
 
     /**
@@ -250,65 +459,48 @@ public class AppTheme {
 
     // -- Tabbed pane -----------------------------------------------------------
 
+    /** @deprecated Use {@link #makeStandardTabs()} or {@code new HudTabbedPane(HudTabbedPane.Level.STANDARD)}. */
+    @Deprecated
     public static void styleTabbedPane(JTabbedPane tp) {
-        tp.setOpaque(true);
-        tp.setBackground(BG);
-        tp.setForeground(FG);
-        tp.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        tp.setUI(new BasicTabbedPaneUI() {
-            @Override
-            protected void installDefaults() {
-                super.installDefaults();
-                contentBorderInsets = new Insets(1, 1, 1, 1);
-                tabInsets = new Insets(8, 14, 8, 14);
-                selectedTabPadInsets = new Insets(1, 1, 1, 1);
-                focus = HUD_CYAN;
-            }
+        HudTabbedPane.applyStyle(tp, HudTabbedPane.Level.STANDARD);
+    }
 
-            @Override
-            protected void paintTabArea(Graphics g, int tabPlacement, int selectedIndex) {
-                g.setColor(HUD_BG);
-                g.fillRect(0, 0, tabPane.getWidth(),
-                        calculateTabAreaHeight(tabPlacement, runCount, maxTabHeight)
-                );
-                super.paintTabArea(g, tabPlacement, selectedIndex);
-            }
+    /** @deprecated Use {@link #makeSectionTabs()} or {@code new HudTabbedPane(HudTabbedPane.Level.SECTION)}. */
+    @Deprecated
+    public static void styleFlatTabbedPane(JTabbedPane tp) {
+        HudTabbedPane.applyStyle(tp, HudTabbedPane.Level.SECTION);
+    }
 
-            @Override
-            protected void paintTabBackground(Graphics g, int tabPlacement, int tabIndex,
-                                              int x, int y, int w, int h, boolean isSelected) {
-                g.setColor(isSelected ? HUD_PANEL_BG_ALT : HUD_BG);
-                g.fillRect(x, y, w, h);
-            }
+    /** @deprecated Use {@link #makeSectionTabs()} or {@code new HudTabbedPane(HudTabbedPane.Level.SECTION)}. */
+    @Deprecated
+    public static void styleCompactFlatTabbedPane(JTabbedPane tp) {
+        HudTabbedPane.applyStyle(tp, HudTabbedPane.Level.SECTION);
+    }
 
-            @Override
-            protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex,
-                                          int x, int y, int w, int h, boolean isSelected) {
-                if (isSelected) {
-                    g.setColor(isSelected ? ACCENT : HUD_BORDER);
-                    g.fillRect(x, y + h - 3, w, 3);
-                }
-            }
+    /** @deprecated Use {@link #makeMainNavTabs()} or {@code new HudTabbedPane(HudTabbedPane.Level.MAIN_NAV)}. */
+    @Deprecated
+    public static void styleMainNavigationTabbedPane(JTabbedPane tp) {
+        HudTabbedPane.applyStyle(tp, HudTabbedPane.Level.MAIN_NAV);
+    }
 
-            @Override
-            protected void paintContentBorder(Graphics g, int tabPlacement, int selectedIndex) {
-                Insets in = tabPane.getInsets();
-                int top = calculateTabAreaHeight(tabPlacement, runCount, maxTabHeight);
-                int x = in.left;
-                int y = in.top + top;
-                int w = tabPane.getWidth() - in.left - in.right;
-                int h = tabPane.getHeight() - y - in.bottom;
-                g.setColor(HUD_BORDER_DIM);
-                g.drawRect(x, y, Math.max(0, w - 1), Math.max(0, h - 1));
-            }
+    /** Creates a HUD-styled application-level navigation tabbed pane. */
+    public static JTabbedPane makeMainNavTabs() {
+        return new HudTabbedPane(HudTabbedPane.Level.MAIN_NAV);
+    }
 
-            @Override
-            protected void paintFocusIndicator(Graphics g, int tabPlacement, Rectangle[] rects,
-                                               int tabIndex, Rectangle iconRect,
-                                               Rectangle textRect, boolean isSelected) {
-                // no dotted focus ring
-            }
-        });
+    /** Creates a HUD-styled sub-navigation tabbed pane for screen sections. */
+    public static JTabbedPane makeSectionTabs() {
+        return new HudTabbedPane(HudTabbedPane.Level.SECTION);
+    }
+
+    /** Creates a HUD-styled compact bold tabbed pane for data panels. */
+    public static JTabbedPane makeCompactTabs() {
+        return new HudTabbedPane(HudTabbedPane.Level.COMPACT);
+    }
+
+    /** Creates a HUD-styled settings-style tabbed pane with a visible content frame. */
+    public static JTabbedPane makeStandardTabs() {
+        return new HudTabbedPane(HudTabbedPane.Level.STANDARD);
     }
 
     // -- Dark palette ----------------------------------------------------------
@@ -321,7 +513,7 @@ public class AppTheme {
         if (c instanceof TopStatusBar || c instanceof HudPanel || c instanceof StatusBadge) {
             // HUD primitives own their painting and state colours.
         } else if (c instanceof JPanel || c instanceof JTabbedPane || c instanceof JScrollPane) {
-            c.setBackground(BG);
+            c.setBackground(HUD_CONTENT_BACKGROUND);
             if (!lockForeground) c.setForeground(FG);
         } else {
             c.setBackground(c instanceof JTextComponent ? BG_PANEL : BG);
@@ -337,7 +529,10 @@ public class AppTheme {
             styleTextComponent(tc);
         }
 
-        if (c instanceof HudButton || c instanceof HudToggleButton) {
+        boolean searchClearButton = c instanceof JComponent jc
+                && Boolean.TRUE.equals(jc.getClientProperty(HudSearchField.HUD_SEARCH_CLEAR_BUTTON));
+
+        if (c instanceof HudButton || c instanceof HudToggleButton || searchClearButton) {
             // HUD buttons own their border and paint state.
         } else if (c instanceof JButton b) {
             styleButton(b);
@@ -351,7 +546,8 @@ public class AppTheme {
             styleComboBox(comboBox);
         }
 
-        if (c instanceof JTable table) {
+        if (c instanceof JTable table
+                && !Boolean.TRUE.equals(table.getClientProperty(HUD_TABLE_STYLE_LOCKED))) {
             styleTable(table);
         }
 
@@ -360,7 +556,7 @@ public class AppTheme {
         }
 
         if (c instanceof JTabbedPane tp) {
-            tp.setBackground(BG);
+            tp.setBackground(HUD_CONTENT_BACKGROUND);
             tp.setForeground(FG);
             tp.setOpaque(true);
         }

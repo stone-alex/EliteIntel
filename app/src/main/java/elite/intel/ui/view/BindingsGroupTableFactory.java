@@ -16,10 +16,10 @@ import java.util.function.BiConsumer;
 import static elite.intel.ui.view.AppTheme.*;
 
 class BindingsGroupTableFactory {
-    static final int TABLE_ROW_HEIGHT = AppTheme.HUD_TABLE_ROW_HEIGHT;
+    static final int TABLE_ROW_HEIGHT = AppTheme.HUD_TABLE_ROW_HEIGHT_COMPACT;
     static final String HOVER_ROW_PROPERTY = "elite.intel.bindings.hoverRow";
-    private static final Border TABLE_SECTION_BORDER = BorderFactory.createMatteBorder(1, 0, 0, 0, ACCENT);
-    private static final Border TABLE_HEADER_BORDER = BorderFactory.createMatteBorder(0, 0, 1, 0, HUD_BORDER);
+    private static final Border TABLE_SECTION_BORDER = BorderFactory.createEmptyBorder(1, 0, 0, 0);
+    private static final Border TABLE_HEADER_BORDER = BorderFactory.createMatteBorder(0, 0, 1, 0, HUD_BORDER_DIM);
 
     private final BindingsSelectionController selectionController;
     private final BiConsumer<String, BindingSlotType> slotClickHandler;
@@ -63,7 +63,7 @@ class BindingsGroupTableFactory {
         forwardMouseWheelToOuterScrollPane(scrollPane, outerScrollPane);
         forwardMouseWheelToOuterScrollPane(scrollPane.getViewport(), outerScrollPane);
 
-        int height = table.getRowHeight() * rows.size() + table.getTableHeader().getPreferredSize().height + 6;
+        int height = table.getRowHeight() * rows.size() + table.getTableHeader().getPreferredSize().height + 3;
         scrollPane.setPreferredSize(new Dimension(0, height));
         scrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, height));
         return scrollPane;
@@ -152,7 +152,7 @@ class BindingsGroupTableFactory {
 
     private void styleGroupTable(JTable table) {
         table.setFillsViewportHeight(false);
-        HudTable.style(table);
+        HudTable.styleCompact(table);
         table.setRowHeight(TABLE_ROW_HEIGHT);
         table.setAutoCreateRowSorter(false);
         table.setShowGrid(false);
@@ -160,6 +160,7 @@ class BindingsGroupTableFactory {
         table.setShowHorizontalLines(false);
         table.setIntercellSpacing(new Dimension(0, 0));
         table.getTableHeader().setBorder(TABLE_HEADER_BORDER);
+        table.getTableHeader().setBackground(HUD_PANEL_BG);
         table.getTableHeader().setDefaultRenderer(new GroupTableHeaderRenderer());
         table.setDefaultRenderer(Object.class, new BindingSlotCellRenderer());
     }
@@ -201,6 +202,7 @@ class BindingsGroupTableFactory {
 
     private static class GroupTableHeaderRenderer extends HudTable.HeaderRenderer {
         private GroupTableHeaderRenderer() {
+            super(3);
             setBorder(TABLE_HEADER_BORDER);
         }
 

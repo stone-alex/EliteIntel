@@ -5,7 +5,6 @@ import elite.intel.ai.brain.actions.catalog.CommandCatalogEntry;
 import elite.intel.ai.brain.actions.catalog.CommandCatalogEntryType;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -34,9 +33,15 @@ public class CommandCatalogTablePanel extends JPanel {
         initData();
     }
 
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        SwingUtilities.invokeLater(() -> styleTable(table));
+    }
+
     private void buildUi() {
-        setLayout(new BorderLayout(8, 8));
-        setBorder(new EmptyBorder(AppTheme.HUD_PADDING, AppTheme.HUD_PADDING, AppTheme.HUD_PADDING, AppTheme.HUD_PADDING));
+        setLayout(new BorderLayout(AppTheme.HUD_GAP, 0));
+        setBorder(AppTheme.hudSubtabContentBorder());
         setBackground(AppTheme.HUD_BG);
 
         tableModel = new ReadOnlyTableModel(columnNames(), 0);
@@ -45,11 +50,10 @@ public class CommandCatalogTablePanel extends JPanel {
         table.addMouseListener(new CommandDetailsMouseListener());
 
         JScrollPane scrollPane = HudTable.scrollPane(table);
+        scrollPane.setBorder(AppTheme.hudConnectedScrollPaneBorder());
 
-        HudSection catalogSection = new HudSection(getText("actions.commands.section.catalog"), new BorderLayout(AppTheme.HUD_GAP, AppTheme.HUD_GAP));
-        catalogSection.body().add(searchPanel(), BorderLayout.NORTH);
-        catalogSection.body().add(scrollPane, BorderLayout.CENTER);
-        add(catalogSection, BorderLayout.CENTER);
+        add(searchPanel(), BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     public void initData() {
@@ -64,20 +68,17 @@ public class CommandCatalogTablePanel extends JPanel {
     }
 
     private JPanel searchPanel() {
-        JPanel panel = AppTheme.transparentPanel(new BorderLayout(AppTheme.HUD_GAP, 0));
+        HudConnectedToolbar toolbar = new HudConnectedToolbar();
 
-        JLabel label = new JLabel(getText("actions.commands.search.label"));
-        label.setForeground(AppTheme.FG);
-        panel.add(label, BorderLayout.WEST);
-
-        HudSearchField hudSearchField = new HudSearchField(
+        HudSearchField searchPanel = new HudSearchField(
                 getText("actions.commands.search.placeholder"),
-                getText("actions.commands.search.clearTooltip"));
-        searchField = hudSearchField.textField();
+                getText("actions.commands.search.clearTooltip"),
+                HudSearchField.Variant.TABLE_FILTER);
+        searchField = searchPanel.textField();
         searchField.getDocument().addDocumentListener(new SearchDocumentListener());
-        panel.add(hudSearchField, BorderLayout.CENTER);
+        toolbar.add(searchPanel, BorderLayout.CENTER);
 
-        return panel;
+        return toolbar;
     }
 
     private String[] columnNames() {
@@ -140,9 +141,10 @@ public class CommandCatalogTablePanel extends JPanel {
 
     private void styleTable(JTable table) {
         HudTable.style(table);
-        table.setRowHeight(48);
+        table.setRowHeight(44);
         table.setAutoCreateRowSorter(true);
         table.setDefaultRenderer(Object.class, new CellRenderer());
+        table.putClientProperty(AppTheme.HUD_TABLE_STYLE_LOCKED, Boolean.TRUE);
 
         table.getColumnModel().getColumn(0).setPreferredWidth(220);
         table.getColumnModel().getColumn(1).setPreferredWidth(160);
@@ -160,6 +162,8 @@ public class CommandCatalogTablePanel extends JPanel {
     }
 
     private static final class CellRenderer extends HudTable.CellRenderer {
+        private final HudCommandNameCellRenderer commandNameRenderer = new HudCommandNameCellRenderer();
+
         @Override
         public Component getTableCellRendererComponent(
                 JTable table,
@@ -169,34 +173,19 @@ public class CommandCatalogTablePanel extends JPanel {
                 int row,
                 int column
         ) {
-            JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             if (value instanceof CommandNameCell commandNameCell) {
-                label.setText(commandNameCell.toHtml());
+                return commandNameRenderer.getTableCellRendererComponent(
+                        table, commandNameCell, isSelected, hasFocus, row, column);
             }
-            return label;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
-    private record CommandNameCell(String name, String id) {
-        private String toHtml() {
-            return "<html><div>"
-                    + escapeHtml(name)
-                    + "<br><span style='font-size:10px;color:#8f96a3;'>"
-                    + escapeHtml(id)
-                    + "</span></div></html>";
-        }
-
+    private record CommandNameCell(String name, String id) implements HudCommandNameCellRenderer.Value {
         @Override
         public String toString() {
             return name + " " + id;
         }
-    }
-
-    private static String escapeHtml(String value) {
-        return value
-                .replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;");
     }
 
 

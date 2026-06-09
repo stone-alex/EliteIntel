@@ -36,8 +36,8 @@ public class StatusBadge extends JLabel {
         setOpaque(false);
         setForeground(this.state.color);
         setFont(getFont().deriveFont(Font.BOLD, 11f));
-        setBorder(new EmptyBorder(3, 10, 3, 10));
-        setMinimumSize(new Dimension(58, AppTheme.HUD_BADGE_HEIGHT));
+        setBorder(new EmptyBorder(2, 10, 2, 10));
+        setMinimumSize(new Dimension(68, AppTheme.HUD_BADGE_HEIGHT));
         updatePreferredSize();
     }
 
@@ -59,7 +59,7 @@ public class StatusBadge extends JLabel {
     private void updatePreferredSize() {
         Insets insets = getInsets();
         int textWidth = getFontMetrics(getFont()).stringWidth(getText());
-        int width = Math.max(78, textWidth + insets.left + insets.right + 8);
+        int width = Math.max(76, textWidth + insets.left + insets.right + 8);
         setPreferredSize(new Dimension(width, AppTheme.HUD_BADGE_HEIGHT));
     }
 

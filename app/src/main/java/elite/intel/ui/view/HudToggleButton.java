@@ -31,14 +31,14 @@ public class HudToggleButton extends JToggleButton {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             ButtonModel model = getModel();
             Color border = isSelected() ? AppTheme.ACCENT : AppTheme.HUD_BORDER;
-            Color fill = isSelected() ? new Color(0x55340C) : AppTheme.HUD_PANEL_BG_ALT;
+            Color fill = isSelected() ? AppTheme.HUD_ORANGE_FILL : AppTheme.HUD_PANEL_BG_ALT;
             if (!isEnabled()) {
                 border = AppTheme.HUD_DISABLED;
                 fill = AppTheme.HUD_PANEL_BG;
             } else if (model.isPressed()) {
                 fill = fill.darker();
             } else if (model.isRollover()) {
-                fill = isSelected() ? new Color(0x70440F) : AppTheme.HUD_HOVER;
+                fill = isSelected() ? AppTheme.HUD_ORANGE_FILL_HOVER : AppTheme.HUD_HOVER;
             }
             g2.setColor(fill);
             g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);

@@ -9,7 +9,10 @@ import elite.intel.ui.i18n.MultiLingualTextProvider;
 import javax.annotation.Nullable;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 public class StringUtls {
 
@@ -105,6 +108,7 @@ public class StringUtls {
             case UK -> "language.ukrainian";
             case DE -> "language.german";
             case FR -> "language.french";
+            case SP -> "language.spanish";
         };
         return MultiLingualTextProvider.getText(effectiveTtsLanguage(), key);
     }

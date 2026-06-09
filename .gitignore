@@ -12,12 +12,8 @@
 ./logs
 ./.idea
 ./build
-./.gradle
+.gradle/
 ./distribution/elite_intel.jar
-.gradle/*
-.gradle/*/*
-./.gradle/file-system.probe
-./.gradle/buildOutputCleanup/
 ./locations
 ./*.md
 /distribution/elite_intel_updater.jar

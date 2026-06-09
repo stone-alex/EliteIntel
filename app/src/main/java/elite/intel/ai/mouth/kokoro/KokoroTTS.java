@@ -378,7 +378,7 @@ public class KokoroTTS implements MouthInterface {
     private static String kokoroLangCode(Language language) {
         return switch (language) {
             case FR -> "fr-fr";
-            case SP -> "es-es";
+            //case ES -> "es-es";
             default -> "en-us";
         };
     }

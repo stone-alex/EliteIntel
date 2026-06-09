@@ -179,6 +179,7 @@ public class UkrainianAiActionAliases implements AiActionAliasProvider {
         map.put("очисти нагадування", CLEAR_REMINDERS.getAction());
         map.put("встанови нагадування {key:X}", SET_REMINDER.getAction());
         map.put("нагадай мені через {minutes:X} хвилин {key:Y}, таймер на {minutes:X} хвилин {key:Y}, нагадування через {minutes:X} хвилин {key:Y}", SET_TIMED_REMINDER.getAction());
+        map.put("досліджуй систему, скануй систему, відскануй систему", HONK_THE_SYSTEM.getAction());
 
         // UI panels
         map.put("активуй, натисни активувати", ACTIVATE.getAction());

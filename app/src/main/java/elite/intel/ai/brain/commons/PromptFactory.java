@@ -400,7 +400,7 @@ public class PromptFactory implements AiPromptFactory {
             case UK -> "Ukrainian";
             case DE -> "German";
             case FR -> "French";
-            case SP -> "Spanish";
+            case ES -> "Spanish";
         };
     }
 

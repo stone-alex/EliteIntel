@@ -63,7 +63,7 @@ public final class MultiLingualTextProvider {
             case DE -> Locale.GERMAN;
             case FR -> Locale.FRENCH;
             case EN -> Locale.ENGLISH;
-            case SP -> Locale.forLanguageTag("es");
+            case ES -> Locale.forLanguageTag("es");
         };
     }
 }

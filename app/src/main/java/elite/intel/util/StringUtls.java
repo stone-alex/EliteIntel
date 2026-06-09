@@ -116,7 +116,7 @@ public class StringUtls {
             case UK -> "language.ukrainian";
             case DE -> "language.german";
             case FR -> "language.french";
-            case SP -> "language.spanish";
+            case ES -> "language.spanish";
         };
         return MultiLingualTextProvider.getText(effectiveTtsLanguage(), key);
     }

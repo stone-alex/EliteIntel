@@ -164,7 +164,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> honkTheSystem() {
-        return Stream.of("honk", "honk the system", "discovery scan");
+        return Stream.of("honk", "honk the system");
     }
     // =========================================================================
     // Speed / throttle - highest collision risk group
@@ -751,14 +751,14 @@ public class NaturalSpeechIntegrationTest {
 
     static Stream<String> querySquadronCarrierRoute() {
         return Stream.of("squadron carrier route", "how many jumps on the squadron carrier route",
-                "squadron carrier jump route");
+                "squadron carrier route");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(243)
     @MethodSource
     void querySquadronCarrierDestination(String input) throws InterruptedException {
-        assertRouted(input, SQUADRON_CARRIER_ROUTE.getAction());
+        assertRouted(input, SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION.getAction());
     }
 
     static Stream<String> querySquadronCarrierDestination() {

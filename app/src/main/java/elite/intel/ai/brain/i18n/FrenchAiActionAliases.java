@@ -148,7 +148,7 @@ public class FrenchAiActionAliases implements AiActionAliasProvider {
 
         // squadron carrier
         map.put("route escadron carrier, navigation escadron carrier, route de saut escadron carrier, combien de sauts sur la route escadron carrier, sauts restants escadron carrier", SQUADRON_CARRIER_ROUTE_ANALYSIS.getAction());
-        map.put("où va l'escadron carrier, ou va l'escadron carrier, cap escadron carrier, destination finale escadron carrier, destination escadron carrier", SQUADRON_CARRIER_ROUTE.getAction());
+        map.put("où va l'escadron carrier, ou va l'escadron carrier, cap escadron carrier, destination finale escadron carrier, destination escadron carrier", SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION.getAction());
         map.put("tritium escadron carrier, carburant escadron carrier, réserve tritium escadron, reserve tritium escadron, niveau tritium escadron carrier, statut tritium escadron carrier", SQUADRON_CARRIER_TRITIUM_SUPPLY.getAction());
         map.put("statut escadron carrier, finances escadron carrier, solde escadron carrier, aperçu escadron carrier, apercu escadron carrier, fonds escadron carrier, combien de temps peut fonctionner l'escadron carrier, statut carburant escadron carrier", SQUADRON_CARRIER_STATUS.getAction());
         map.put("ETA escadron carrier, eta escadron carrier, quand arrive l'escadron carrier, combien de temps avant l'escadron carrier, arrivée escadron carrier, arrivee escadron carrier, heure d'arrivée escadron carrier, heure d'arrivee escadron carrier", SQUADRON_CARRIER_ETA.getAction());

@@ -28,6 +28,11 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("sleep, go to sleep, ignore me, do not monitor", SLEEP.getAction());
         map.put("interrupt", INTERRUPT_TTS.getAction());
 
+        // Declared early so these win before power-management "balance power" and carrier-route entries can interfere
+        map.put("find nearest fleet carrier, nearest fleet carrier, find nearest carrier", FIND_NEAREST_FLEET_CARRIER.getAction());
+        map.put("carrier status, how long can we operate carrier, how far can carrier jump, carrier jump range with current tritium, carrier jump range", FLEET_CARRIER_STATUS.getAction());
+        map.put("squadron carrier status, how long can we operate squadron carrier", SQUADRON_CARRIER_STATUS.getAction());
+
         // navigation
         map.put("cancel trade route, stop trade route, clear trade route, abort trade route", CANCEL_TRADE_ROUTE.getAction());
         map.put("navigate to coordinates {lat:X, lon:Y}", NAVIGATE_TO_TARGET.getAction());
@@ -115,7 +120,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
             map.put("power to weapons, max weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
             // vehicle deployment
             map.put("disembark", DISEMBARK.getAction());
-            map.put("equalize power, balance power, reset power, distribute power equally", RESET_POWER.getAction());
+            map.put("equalize power, reset power, distribute power equally", RESET_POWER.getAction());
         }
 
         if (status.isInSrv() || isDryRun) {
@@ -137,14 +142,21 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("find commodity, find nearest commodity, buy commodity, where to buy, find market{key:X, max_distance:Y, state:true/false}", FIND_COMMODITY.getAction());
         map.put("find nearest fleet carrier, nearest carrier", FIND_NEAREST_FLEET_CARRIER.getAction());
 
-        // fleet carrier
+        // fleet carrier — bare "carrier" without "squadron" always means fleet/my carrier
         map.put("set carrier fuel reserve, carrier tritium reserve {key:X}", SET_CARRIER_FUEL_RESERVE.getAction());
         map.put("calculate fleet carrier route, plan carrier route, carrier jump route", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
         map.put("enter carrier destination, set carrier destination, carrier destination", ENTER_FLEET_CARRIER_DESTINATION.getAction());
+        map.put("fleet carriers in system, carriers in system, how many carriers, fleet carriers here, any carriers nearby", QUERY_CARRIERS.getAction());
+        map.put("carrier route, carrier navigation, how many jumps on carrier route, jumps remaining on carrier, carrier route jump count, jumps left on carrier, carrier trip, carrier journey, carrier travel plan", FLEET_CARRIER_ROUTE_ANALYSIS.getAction());
+        map.put("where is carrier going, carrier next jump, where is carrier headed, carrier heading, carrier endpoint, carrier final destination", FLEET_CARRIER_ROUTE.getAction());
+        map.put("carrier tritium, carrier fuel, how much tritium, tritium supply, tritium level, carrier fuel level, tritium reserve", FLEET_CARRIER_TRITIUM_SUPPLY.getAction());
+        map.put("carrier status, carrier finances, carrier overview, fleet carrier status, fleet carrier fuel status, how far can carrier jump, carrier jump range, carrier jump range with current tritium", FLEET_CARRIER_STATUS.getAction());
+        map.put("carrier ETA, when does carrier arrive, how long until carrier, carrier arrival time, carrier arrival, carrier jump time, carrier next jump time", FLEET_CARRIER_ETA.getAction());
+        map.put("distance to carrier, where is our carrier, how far is carrier, range to carrier, carrier proximity, how far away is carrier", DISTANCE_TO_CARRIER.getAction());
 
-        // squadron carrier
+        // squadron carrier — must explicitly say "squadron carrier"
         map.put("squadron carrier route, squadron carrier navigation, squadron carrier jump route, how many jumps on squadron carrier route, jumps remaining on squadron carrier", SQUADRON_CARRIER_ROUTE_ANALYSIS.getAction());
-        map.put("where is squadron carrier going, squadron carrier heading, squadron carrier endpoint, squadron carrier final destination", SQUADRON_CARRIER_ROUTE.getAction());
+        map.put("where is squadron carrier going, squadron carrier heading, squadron carrier endpoint, squadron carrier final destination", SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION.getAction());
         map.put("squadron carrier tritium, squadron carrier fuel, squadron tritium supply, squadron carrier fuel level, squadron carrier tritium status", SQUADRON_CARRIER_TRITIUM_SUPPLY.getAction());
         map.put("squadron carrier status, squadron carrier finances, squadron carrier balance, squadron carrier overview, squadron carrier funds, how long can we operate squadron carrier, squadron carrier fuel status", SQUADRON_CARRIER_STATUS.getAction());
         map.put("squadron carrier ETA, when does squadron carrier arrive, how long until squadron carrier, squadron carrier arrival time, squadron carrier arrival", SQUADRON_CARRIER_ETA.getAction());
@@ -168,7 +180,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("discovery announcements {state:true/false}", DISCOVERY_ON_OFF.getAction());
         map.put("route announcements {state:true/false}", ROUTE_ON_OFF.getAction());
         map.put("toggle all announcements {state:true/false}", TOGGLE_ALL_ANNOUNCEMENTS.getAction());
-        map.put("honk, honk the system, discovery scan", HONK_THE_SYSTEM.getAction());
+        map.put("honk, honk the system", HONK_THE_SYSTEM.getAction());
         map.put("clear reminders", CLEAR_REMINDERS.getAction());
         map.put("set reminder {key:X}", SET_REMINDER.getAction());
         map.put("remind me in {minutes:X} minutes to {key:Y}, set a {minutes:X} minute timer {key:Y}, set timer for {minutes:X} minutes {key:Y}, timed reminder {minutes:X} minutes {key:Y}", SET_TIMED_REMINDER.getAction());
@@ -207,8 +219,8 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("find brain trees {key:X, max_distance:Y}", FIND_BRAIN_TREES.getAction());
         map.put("find mining site, find mining location, find mining hotspot, find where to mine, find asteroid field {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("find tritium mining site, find tritium field {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
-        map.put("navigate to next bio sample, go to next sample, navigate to next organic, codex entry, navigate to codex entry, navigate to codex", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("open fss, full scan, full spectrum scan, FSS, full spectrum scan", OPEN_FSS.getAction());
+        map.put("navigate to codex entry, navigate to next bio sample, navigate to bio sample, go to next bio sample, go to next sample, navigate to next organic, go to codex entry", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
+        map.put("open fss, full scan, full spectrum scan, discovery scan, FSS", OPEN_FSS.getAction());
         map.put("find nearest vista genomics, find genomics, vista genomics", FIND_VISTA_GENOMICS.getAction());
         map.put("delete codex entry, delete this codex, delete this entry, delete this organic", DELETE_CODEX_ENTRY.getAction());
         map.put("calculate neutron star route {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
@@ -224,13 +236,6 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("signals in system, what signals are in this system, what's in this system, what's detected in system, what signals here, what signals do you see, what signals do you detect, what signals can you see, FSS signals, mining hot spots, resource extraction sites, what signals, conflict zones, emissions, unidentified signals, system signals, detected signals, anomalous signals", QUERY_STELLAR_SIGNALS.getAction());
         map.put("geo signals, geological signals, volcanic signals, geological activity, volcanic activity, geology in system", QUERY_GEO_SIGNALS.getAction());
 
-        map.put("fleet carriers in system, carriers in system, how many carriers, fleet carriers here, any carriers nearby", QUERY_CARRIERS.getAction());
-        map.put("carrier route, carrier navigation, carrier jump route, carrier trip, carrier journey, carrier travel plan, how many jumps on carrier route, jumps remaining on carrier, carrier route jump count, jumps left on carrier", FLEET_CARRIER_ROUTE_ANALYSIS.getAction());
-        map.put("carrier route, where is carrier going, carrier next jump, where is carrier headed, carrier heading, carrier endpoint, carrier final destination", FLEET_CARRIER_ROUTE.getAction());
-        map.put("carrier tritium, carrier fuel, how much tritium, tritium supply, tritium level, carrier fuel level, tritium reserve, carrier tritium status", FLEET_CARRIER_TRITIUM_SUPPLY.getAction());
-        map.put("carrier status, carrier finances, carrier balance, carrier overview, carrier funds, how long can we operate carrier, carrier fuel status, fleet carrier fuel status, how far can carrier jump, carrier jump range with current tritium, carrier tritium range", FLEET_CARRIER_STATUS.getAction());
-        map.put("carrier ETA, when does carrier arrive, how long until carrier, carrier arrival time, carrier arrival, when does carrier jump, carrier jump time", FLEET_CARRIER_ETA.getAction());
-        map.put("distance to carrier, where is our carrier, how far is carrier, where is our carrier, range to carrier, carrier proximity, how far away is carrier", DISTANCE_TO_CARRIER.getAction());
         map.put("system security, faction control, who controls, power struggle, security level, who owns this system, dominant faction, controlling power", SYSTEM_SECURITY_ANALYSIS.getAction());
         map.put("trade profile, trade settings, trading parameters, trade configuration, trading criteria", TRADE_PROFILE_ANALYSIS.getAction());
         map.put("distance to stellar object, how far to body, distance to planet {key:X}, range to planet, how far to moon, how far to station, range to body. NOTE: Sol and Earth always mean the bubble/civilization - never use this action for Sol or Earth", DISTANCE_TO_BODY.getAction());

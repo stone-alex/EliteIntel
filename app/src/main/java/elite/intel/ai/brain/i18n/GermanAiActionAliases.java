@@ -154,7 +154,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
 
         // squadron carrier
         map.put("squadron carrier route, squadron carrier navigation, squadron carrier sprungroute, wie viele sprünge auf der squadron carrier route, verbleibende squadron carrier sprünge", SQUADRON_CARRIER_ROUTE_ANALYSIS.getAction());
-        map.put("wohin fliegt der squadron carrier, wohin ist der squadron carrier unterwegs, squadron carrier ziel, endziel des squadron carriers", SQUADRON_CARRIER_ROUTE.getAction());
+        map.put("wohin fliegt der squadron carrier, wohin ist der squadron carrier unterwegs, squadron carrier ziel, endziel des squadron carriers", SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION.getAction());
         map.put("squadron carrier tritium, squadron carrier treibstoff, squadron tritium vorrat, squadron carrier treibstoffstand, squadron carrier tritium status", SQUADRON_CARRIER_TRITIUM_SUPPLY.getAction());
         map.put("squadron carrier status, squadron carrier finanzen, squadron carrier balance, squadron carrier übersicht, squadron carrier kontostand, wie lange kann der squadron carrier betrieben werden, squadron carrier treibstoffstatus", SQUADRON_CARRIER_STATUS.getAction());
         map.put("squadron carrier eta, wann kommt der squadron carrier an, wie lange bis squadron carrier ankunft, squadron carrier ankunft, squadron carrier ankunftszeit", SQUADRON_CARRIER_ETA.getAction());

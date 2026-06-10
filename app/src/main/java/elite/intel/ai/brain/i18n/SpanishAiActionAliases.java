@@ -148,7 +148,7 @@ public class SpanishAiActionAliases implements AiActionAliasProvider {
 
         // squadron carrier
         map.put("ruta del carrier del escuadrón, navegación del carrier del escuadrón, ruta de salto del carrier del escuadrón, cuántos saltos en la ruta del carrier del escuadrón, saltos restantes del carrier del escuadrón", SQUADRON_CARRIER_ROUTE_ANALYSIS.getAction());
-        map.put("a dónde va el carrier del escuadrón, rumbo del carrier del escuadrón, destino final del carrier del escuadrón", SQUADRON_CARRIER_ROUTE.getAction());
+        map.put("a dónde va el carrier del escuadrón, rumbo del carrier del escuadrón, destino final del carrier del escuadrón", SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION.getAction());
         map.put("tritio del carrier del escuadrón, combustible del carrier del escuadrón, reserva de tritio del escuadrón, nivel de combustible del carrier del escuadrón, estado de tritio del carrier del escuadrón", SQUADRON_CARRIER_TRITIUM_SUPPLY.getAction());
         map.put("estado del carrier del escuadrón, finanzas del carrier del escuadrón, balance del carrier del escuadrón, resumen del carrier del escuadrón, fondos del carrier del escuadrón, cuánto tiempo podemos operar el carrier del escuadrón, estado de combustible del carrier del escuadrón", SQUADRON_CARRIER_STATUS.getAction());
         map.put("eta del carrier del escuadrón, cuándo llega el carrier del escuadrón, cuánto falta para el carrier del escuadrón, hora de llegada del carrier del escuadrón, llegada del carrier del escuadrón", SQUADRON_CARRIER_ETA.getAction());

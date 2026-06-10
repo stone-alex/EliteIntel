@@ -332,7 +332,6 @@ public class InputNormalizer {
         m.put("reset power", "equalize power");
         m.put("equalize", "equalize power");
         m.put("equalize power", "equalize power");
-        m.put("balance", "equalize power");
         m.put("reset systems", "equalize power");
         m.put("even out power", "equalize power");
 
@@ -502,7 +501,11 @@ public class InputNormalizer {
 
     private static void loadCarrierAndTrade(LinkedHashMap<String, String> m) {
         // Carrier status / fuel / ETA / destination
-        m.put("carrier balance", "carrier stats");
+        // More-specific "squadron carrier" entries MUST precede bare "carrier" entries
+        m.put("squadron carrier balance", "squadron carrier status");
+        m.put("squadron carrier funds", "squadron carrier status");
+        m.put("carrier balance", "carrier status");
+        m.put("carrier funds", "carrier status");
         m.put("when does carrier arrive", "carrier ETA");
         m.put("carrier arrival time", "carrier ETA");
         m.put("carrier arrival", "carrier ETA");

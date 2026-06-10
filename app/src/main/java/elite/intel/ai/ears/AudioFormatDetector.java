@@ -10,72 +10,131 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.TargetDataLine;
+import java.util.Arrays;
 import java.util.Optional;
 
 
-/**
- * The AudioFormatDetector class is responsible for detecting supported audio formats for mono 16-bit
- * input by evaluating various predefined sample rates. It determines the optimal configuration for
- * audio processing, including sample rate and buffer size, by querying the system's audio capabilities.
- */
 public class AudioFormatDetector {
 
     private static final Logger log = LogManager.getLogger(AudioFormatDetector.class);
-    private static final int CHANNELS = 1; // Mono
-    private static final int[] POSSIBLE_RATES = {48000, 44100, 96000, 192000}; // Preferred rates in order
-    private static final double BUFFER_DURATION_SECONDS = 0.1; // 100ms buffer
-    private static final int BYTES_PER_SAMPLE = 2; // 16-bit = 2 bytes
+
+    private static final int[] POSSIBLE_RATES = {48000, 44100, 96000, 192000};
+
+    // Tried in order of preference per rate. {sampleSizeBits, channels}
+    // 16-bit mono is ideal (no conversion). Others are transcoded to 16-bit mono after capture.
+    private static final int[][] CANDIDATE_FORMATS = {
+            {16, 1},  // ideal: no conversion needed
+            {24, 2},  // e.g. Kraken Chat: natively 24-bit stereo only
+            {16, 2},  // stereo headphone: downmix to mono
+            {24, 1},  // 24-bit mono
+    };
+
+    private static final double BUFFER_DURATION_SECONDS = 0.1;
 
     public static Format detectSupportedFormat() {
         AudioFormatDetector detector = new AudioFormatDetector();
         try {
-            return detector.detectSupportedFormatInternal().orElseThrow(() -> new AudioFormatException("No supported audio format found for mono 16-bit input."));
+            return detector.detectSupportedFormatInternal()
+                    .orElseThrow(() -> new AudioFormatException("No supported audio format found."));
         } catch (AudioFormatException e) {
             throw new RuntimeException(e);
         }
     }
 
-    /**
-     * Detects a supported audio format for mono 16-bit input by checking available sample rates.
-     *
-     * @return Optional containing AudioSettingsTuple with sample rate and buffer size, or empty if none found
-     * @throws AudioFormatException if an error occurs during detection (e.g., system issues)
-     */
     public Optional<Format> detectSupportedFormatInternal() throws AudioFormatException {
         for (int rate : POSSIBLE_RATES) {
-            try {
-                AudioFormat format = new AudioFormat(rate, 16, CHANNELS, true, false);
-                DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-                if (AudioSystem.isLineSupported(info)) {
-                    int bufferSize = calculateBufferSize(rate);
-                    if (bufferSize <= 0) {
-                        log.warn("Invalid buffer size calculated for rate {}: {}", rate, bufferSize);
-                        continue; // Skip invalid rates
+            for (int[] fmt : CANDIDATE_FORMATS) {
+                int bits = fmt[0];
+                int channels = fmt[1];
+                try {
+                    AudioFormat audioFormat = new AudioFormat(rate, bits, channels, true, false);
+                    DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
+                    if (AudioSystem.isLineSupported(info)) {
+                        int bufferSize = calculateBufferSize(audioFormat);
+                        if (bufferSize <= 0) {
+                            log.warn("Invalid buffer size for {} Hz {}-bit {} ch: {}", rate, bits, channels, bufferSize);
+                            continue;
+                        }
+                        log.info("Detected supported capture format: {} Hz, {}-bit, {} ch, buffer {} bytes",
+                                rate, bits, channels, bufferSize);
+                        return Optional.of(new Format(rate, bufferSize, audioFormat));
                     }
-                    log.info("Detected supported sample rate: {} Hz, buffer size: {} bytes", rate, bufferSize);
-                    return Optional.of(new Format(rate, bufferSize));
+                } catch (Exception e) {
+                    log.error("Error checking support for {} Hz {}-bit {} ch: {}", rate, bits, channels, e.getMessage(), e);
+                    throw new AudioFormatException("Failed to detect audio format due to system error: " + e.getMessage());
                 }
-            } catch (Exception e) {
-                log.error("Error checking support for sample rate {}: {}", rate, e.getMessage(), e);
-                throw new AudioFormatException("Failed to detect audio format due to system error: " + e.getMessage());
             }
         }
-        log.warn("No supported audio format found for mono 16-bit input.");
+        log.warn("No supported audio format found for any probed format combination.");
         EventBusManager.publish(new AiVoxResponseEvent("No supported audio format found for mono 16-bit input."));
         return Optional.empty();
     }
 
-    private int calculateBufferSize(int rate) {
-        return (int) (rate * BUFFER_DURATION_SECONDS * BYTES_PER_SAMPLE * CHANNELS);
+    /**
+     * Converts captured PCM bytes to 16-bit signed little-endian mono.
+     * Only {@code inputLen} bytes of {@code input} are read.
+     * If the source is already 16-bit mono, returns {@code input} unchanged (no allocation)
+     * when {@code inputLen == input.length}, or a trimmed copy otherwise.
+     */
+    public static byte[] toPCM16Mono(byte[] input, int inputLen, AudioFormat captureFormat) {
+        int bitsPerSample = captureFormat.getSampleSizeInBits();
+        int channels = captureFormat.getChannels();
+        if (bitsPerSample == 16 && channels == 1) {
+            return inputLen == input.length ? input : Arrays.copyOf(input, inputLen);
+        }
+
+        boolean bigEndian = captureFormat.isBigEndian();
+        int bytesPerSample = bitsPerSample / 8;
+        int frameSize = captureFormat.getFrameSize(); // bytesPerSample * channels
+        int frames = inputLen / frameSize;
+        byte[] output = new byte[frames * 2];
+        int shift = bitsPerSample - 16;
+
+        for (int i = 0; i < frames; i++) {
+            long sum = 0;
+            for (int c = 0; c < channels; c++) {
+                int base = i * frameSize + c * bytesPerSample;
+                sum += readSignedSample(input, base, bytesPerSample, bigEndian);
+            }
+            short mono16 = (short) ((sum / channels) >> shift);
+            output[i * 2] = (byte) (mono16 & 0xFF);
+            output[i * 2 + 1] = (byte) ((mono16 >> 8) & 0xFF);
+        }
+        return output;
     }
 
-    public record Format(int sampleRate, int bufferSize) {
+    public static byte[] toPCM16Mono(byte[] input, AudioFormat captureFormat) {
+        return toPCM16Mono(input, input.length, captureFormat);
+    }
+
+    // Reads a signed PCM sample of bytesPerSample bytes, preserving sign via MSB-first read.
+    private static long readSignedSample(byte[] data, int offset, int bytesPerSample, boolean bigEndian) {
+        long val;
+        if (bigEndian) {
+            val = data[offset]; // sign-extend MSB into long
+            for (int b = 1; b < bytesPerSample; b++) val = (val << 8) | (data[offset + b] & 0xFF);
+        } else {
+            val = data[offset + bytesPerSample - 1]; // MSB is last byte in LE — sign-extend into long
+            for (int b = bytesPerSample - 2; b >= 0; b--) val = (val << 8) | (data[offset + b] & 0xFF);
+        }
+        return val;
+    }
+
+    private int calculateBufferSize(AudioFormat format) {
+        return (int) (format.getSampleRate() * BUFFER_DURATION_SECONDS * format.getFrameSize());
+    }
+
+    public record Format(int sampleRate, int bufferSize, AudioFormat captureFormat) {
         public int getSampleRate() {
             return sampleRate;
         }
 
         public int getBufferSize() {
             return bufferSize;
+        }
+
+        public AudioFormat getCaptureFormat() {
+            return captureFormat;
         }
     }
 }

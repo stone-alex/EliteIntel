@@ -113,7 +113,7 @@ public class AppController implements Runnable {
             new Thread(() -> {
                 try {
                     AudioFormatDetector.Format format = AudioFormatDetector.detectSupportedFormat();
-                    AudioCalibrator.calibrateRMS(format.getSampleRate(), format.getBufferSize());
+                    AudioCalibrator.calibrateRMS(format);
                     SwingUtilities.invokeLater(() -> {
                         ears.start();
                         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Audio calibration complete"));

@@ -213,6 +213,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("delete codex entry, delete this codex, delete this entry, delete this organic", DELETE_CODEX_ENTRY.getAction());
         map.put("calculate neutron star route {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
         map.put("next neutron star jump, plot route to next neutron star waypoint, next neutron star", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
+        map.put("clear neutron route", CLEAR_NEUTRON_ROUTE.getAction());
 
         map.put("check key bindings, missing key bindings, unbound keys, keyboard bindings, keybind check, missing bindings", KEY_BINDINGS_ANALYSIS.getAction());
         map.put("bio signals done within the star system, organics scanned in star system, how many bio samples in star system, bio signals in system, bio samples in star system, biological signals in star system, organics in system, which planets have bio signals, which planets still need bio scans, which planets need organic scans, which planets still need scanning, bio scan needed on which planets, planets with unscanned bio signals, bio scan progress", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());

@@ -90,6 +90,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
             map.put("wähle feuergruppe {key:X}, feuergruppe {key:X}, wechsle zu feuergruppe {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
             map.put("berechnen sie die neutronensternroute {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
             map.put("nächster neutronensternsprung, route zum nächsten neutronenstern-Wegpunkt zeichnen, nächster Neutronenstern", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
+            map.put("Neutronensternroute löschen / löschen", CLEAR_NEUTRON_ROUTE.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {

@@ -91,6 +91,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
             map.put("выбери огневую группу {key:X}, огневая группа {key:X}, переключись на огневую группу {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
             map.put("рассчитать нейтронной маршрут {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
             map.put("следующий прыжок нейтронной звезды, прокладка маршрута до следующей точки нейтронной звезды, следующая нейтронная звезда", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
+            map.put("очистить/удалить маршрут нейтронной звезды", CLEAR_NEUTRON_ROUTE.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {

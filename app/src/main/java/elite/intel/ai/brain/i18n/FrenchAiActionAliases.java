@@ -87,6 +87,7 @@ public class FrenchAiActionAliases implements AiActionAliasProvider {
             map.put("sélectionne le groupe de tir {key:X}, selectionne le groupe de tir {key:X}, groupe de tir {key:X}, bascule vers le groupe de tir {key:X}, basculez vers le groupe de tir {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
             map.put("calculer la route des étoiles à neutrons {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
             map.put("prochain saut d'étoile à neutrons, tracer l'itinéraire vers le prochain point de cheminement de l'étoile à neutrons, prochaine étoile à neutrons", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
+            map.put("effacer/supprimer la route des étoiles à neutrons", CLEAR_NEUTRON_ROUTE.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {

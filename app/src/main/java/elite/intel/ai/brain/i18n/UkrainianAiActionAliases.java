@@ -91,6 +91,7 @@ public class UkrainianAiActionAliases implements AiActionAliasProvider {
             map.put("вибери вогневу групу {key:X}, вогнева група {key:X}, перемкнись на вогневу групу {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
             map.put("розрахувати нейтронний маршрут {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
             map.put("наступний стрибок нейтронної зірки, прокласти маршрут до наступної маршрутної точки нейтронної зірки, наступна нейтронна зірка", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
+            map.put("очистити/видалити маршрут нейтронної зірки", CLEAR_NEUTRON_ROUTE.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {

@@ -87,6 +87,7 @@ public class SpanishAiActionAliases implements AiActionAliasProvider {
             map.put("fighter fuego a discreción, fuego a voluntad, atacar a voluntad", FIGHTER_OPEN_ORDERS.getAction());
             map.put("seleccionar grupo de fuego {key:X}, grupo de fuego {key:X}, cambiar al grupo de fuego {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
             map.put("próximo salto de estrella de neutrones, trazar la ruta al siguiente punto de ruta de la estrella de neutrones, siguiente estrella de neutrones", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
+            map.put("borrar/eliminar ruta de estrella de neutrones", CLEAR_NEUTRON_ROUTE.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {

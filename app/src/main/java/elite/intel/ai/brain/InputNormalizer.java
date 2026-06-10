@@ -323,18 +323,9 @@ public class InputNormalizer {
         m.put("close scanner", "exit close panel");
         m.put("close the scanner", "exit close panel");
 
-        // System scan
-        m.put("honk", "scan the system");
-        m.put("full scan", "scan the system");
-        m.put("fss scan", "scan the system");
-        m.put("open fss and scan", "scan the system");
+        // panels
         m.put("open central panel", "open or display commander panel");
         m.put("open role panel", "open or display commander panel");
-        m.put("system scan", "scan the system");
-        m.put("scan system", "scan the system");
-        m.put("run a scan", "scan the system");
-        m.put("perform system scan", "scan the system");
-        m.put("discovery scan", "scan the system");
 
         // Equalize / balance / reset power
         m.put("balance power", "equalize power");

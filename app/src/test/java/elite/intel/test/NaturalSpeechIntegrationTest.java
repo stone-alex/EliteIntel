@@ -686,6 +686,40 @@ public class NaturalSpeechIntegrationTest {
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(86)
+    @MethodSource
+    void calculateNeutronRoute(String input) throws InterruptedException {
+        assertRouted(input, CALCULATE_NEUTRON_STAR_ROUTE.getAction());
+    }
+
+    static Stream<String> calculateNeutronRoute() {
+        return Stream.of("calculate neutron route with efficiency 20", "calculate neutron route");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(87)
+    @MethodSource
+    void plotNextNeutronLeg(String input) throws InterruptedException {
+        assertRouted(input, PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
+    }
+
+    static Stream<String> plotNextNeutronLeg() {
+        return Stream.of("next neutron star jump", "plot route to next neutron star waypoint", "next neutron star");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(88)
+    @MethodSource
+    void clearNeutronStarRoute(String input) throws InterruptedException {
+        assertRouted(input, CLEAR_NEUTRON_ROUTE.getAction());
+    }
+
+    static Stream<String> clearNeutronStarRoute() {
+        return Stream.of("clear neutron route");
+    }
+
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(240)
     @MethodSource
     void querySquadronCarrierStatus(String input) throws InterruptedException {

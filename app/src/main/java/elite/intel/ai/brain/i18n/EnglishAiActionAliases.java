@@ -208,7 +208,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("find mining site, find mining location, find mining hotspot, find where to mine, find asteroid field {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("find tritium mining site, find tritium field {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         map.put("navigate to next bio sample, go to next sample, navigate to next organic, codex entry, navigate to codex entry, navigate to codex", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("scan the system, open fss, full scan, full spectrum scan, system scan, discovery scan, FSS, full spectrum scan, scan system", OPEN_FSS.getAction());
+        map.put("open fss, full scan, full spectrum scan, FSS, full spectrum scan", OPEN_FSS.getAction());
         map.put("find nearest vista genomics, find genomics, vista genomics", FIND_VISTA_GENOMICS.getAction());
         map.put("delete codex entry, delete this codex, delete this entry, delete this organic", DELETE_CODEX_ENTRY.getAction());
         map.put("calculate neutron star route {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());

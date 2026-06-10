@@ -23,9 +23,8 @@ public class HonkTheSystemHandler implements CommandHandler {
     public void handle(String action, JsonObject params, String responseText) {
         ShipSettingsDao.ShipSettings shipSettings = shipSettingsManager.getSettings(playerSession.getShipLoadout().getShipId());
 
-        boolean isHudInCombatMode = !status.isAnalysisMode();
         /// Change to analysis mode
-        if (isHudInCombatMode) {
+        if (!status.isAnalysisMode()) {
             GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_ACTIVATE_ANALYSIS_MODE.getGameBinding())));
         }
 
@@ -41,7 +40,7 @@ public class HonkTheSystemHandler implements CommandHandler {
         }
 
         /// change back to combat mode - if the user was in combat mode
-        if (isHudInCombatMode) {
+        if (!status.isAnalysisMode()) {
             GameControllerBus.publish(GameInputSequenceEvent.single(GameInputStep.bindingTap(BINDING_ACTIVATE_COMBAT_MODE.getGameBinding())));
         }
     }

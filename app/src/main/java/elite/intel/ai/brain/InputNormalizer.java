@@ -324,7 +324,6 @@ public class InputNormalizer {
         m.put("close the scanner", "exit close panel");
 
         // System scan
-        m.put("honk", "scan the system");
         m.put("full scan", "scan the system");
         m.put("fss scan", "scan the system");
         m.put("open fss and scan", "scan the system");

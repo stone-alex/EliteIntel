@@ -43,7 +43,7 @@ public class NaturalSpeechIntegrationTest {
      * 250 you are pushing it.
      * 150 bro I want your hardware.
      */
-    private static final int LLM_WAIT_MS = 2500;
+    private static final int LLM_WAIT_MS = 5000;
 
     private HandlerCapture capture;
 

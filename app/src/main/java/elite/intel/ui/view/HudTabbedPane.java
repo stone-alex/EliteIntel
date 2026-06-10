@@ -45,7 +45,8 @@ public class HudTabbedPane extends JTabbedPane {
         tp.setOpaque(true);
         tp.setBackground(mainNavigation ? AppTheme.HUD_SHELL_BACKGROUND : AppTheme.HUD_CONTENT_BACKGROUND);
         tp.setForeground(AppTheme.FG);
-        tp.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        // MAIN_NAV uses WRAP so that calculateTabWidth can distribute width evenly in a single run.
+        tp.setTabLayoutPolicy(mainNavigation ? JTabbedPane.WRAP_TAB_LAYOUT : JTabbedPane.SCROLL_TAB_LAYOUT);
 
         if (mainNavigation) {
             tp.setFont(tp.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_LG));
@@ -75,7 +76,9 @@ public class HudTabbedPane extends JTabbedPane {
             super.installDefaults();
             contentBorderInsets = flatContent ? new Insets(0, 0, 0, 0) : new Insets(1, 1, 1, 1);
             if (mainNavigation) {
-                tabInsets = new Insets(9, 14, 9, 14);
+                // Zero out the LAF default top inset so the tab strip sits flush against whatever is above it.
+                tabAreaInsets = new Insets(0, 0, 0, 0);
+                tabInsets = new Insets(12, 14, 12, 14);
             } else if (compact) {
                 tabInsets = new Insets(3, 9, 3, 9);
             } else {
@@ -130,6 +133,34 @@ public class HudTabbedPane extends JTabbedPane {
             super.layoutLabel(tabPlacement, metrics, tabIndex,
                     title != null ? title.toUpperCase() : title,
                     icon, tabRect, iconRect, textRect, isSelected);
+
+            if (!mainNavigation) return;
+
+            // Re-center the icon+label group vertically in the usable area above the 3px orange underline.
+            boolean hasIcon = icon != null && iconRect.width > 0;
+            boolean hasText = title != null && !title.isEmpty() && textRect.width > 0;
+            int groupTop, groupBottom;
+            if (hasIcon && hasText) {
+                groupTop = Math.min(iconRect.y, textRect.y);
+                groupBottom = Math.max(iconRect.y + iconRect.height, textRect.y + textRect.height);
+            } else if (hasIcon) {
+                groupTop = iconRect.y;
+                groupBottom = iconRect.y + iconRect.height;
+            } else if (hasText) {
+                groupTop = textRect.y;
+                groupBottom = textRect.y + textRect.height;
+            } else {
+                return;
+            }
+
+            // Usable area excludes the 3px underline painted at the tab bottom.
+            int usableCenterY = (tabRect.y + tabRect.y + tabRect.height - 3) / 2;
+            int groupCenterY = (groupTop + groupBottom) / 2;
+            int delta = usableCenterY - groupCenterY;
+            if (delta != 0) {
+                iconRect.y += delta;
+                textRect.y += delta;
+            }
         }
 
         @Override
@@ -147,11 +178,21 @@ public class HudTabbedPane extends JTabbedPane {
 
         @Override
         protected int calculateTabWidth(int tabPlacement, int tabIndex, FontMetrics metrics) {
+            if (mainNavigation) {
+                int count = Math.max(1, tabPane.getTabCount());
+                Insets pi = tabPane.getInsets();
+                int available = tabPane.getWidth() - pi.left - pi.right;
+                if (available > 0) {
+                    int slot = available / count;
+                    // Last tab absorbs any pixel remainder from integer division.
+                    return (tabIndex == count - 1) ? available - slot * (count - 1) : slot;
+                }
+            }
             int base = super.calculateTabWidth(tabPlacement, tabIndex, metrics);
             String title = tabPane.getTitleAt(tabIndex);
             if (title != null && !title.isEmpty()) {
-                base += SwingUtilities.computeStringWidth(metrics, title.toUpperCase())
-                        - SwingUtilities.computeStringWidth(metrics, title);
+                base += metrics.stringWidth(title.toUpperCase())
+                        - metrics.stringWidth(title);
             }
             return base;
         }

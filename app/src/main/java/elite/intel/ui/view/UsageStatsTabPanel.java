@@ -3,34 +3,23 @@ package elite.intel.ui.view;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
-import elite.intel.ui.event.LlmUsageEvent;
+import elite.intel.ui.event.LlmSessionStatsChangedEvent;
 import elite.intel.ui.event.RestartBrainEvent;
 import elite.intel.ui.event.ServicesStateEvent;
+import elite.intel.ui.telemetry.LlmSessionStatsSnapshot;
+import elite.intel.ui.telemetry.LlmSessionStatsTracker;
 
 import javax.swing.*;
 import java.awt.*;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 public class UsageStatsTabPanel extends JPanel {
 
-    private Instant sessionStart = Instant.now();
-    // Only ever read/written on the EDT
-    private final Set<String> seenModels = new LinkedHashSet<>();
-
-    private volatile int lastPrompt = 0;
-    private volatile int lastCompletion = 0;
-    private volatile double lastTps = 0.0;
-    private final AtomicInteger totalPrompt = new AtomicInteger();
-    private final AtomicInteger totalCompletion = new AtomicInteger();
-    private final AtomicInteger totalCachedHits = new AtomicInteger();
-    private final AtomicInteger totalCacheWritten = new AtomicInteger();
     private final SystemSession systemSession = SystemSession.getInstance();
+    private final LlmSessionStatsTracker statsTracker = LlmSessionStatsTracker.getInstance();
 
     private JLabel providerLabel;
     private JLabel sessionTimeLabel;
@@ -56,6 +45,7 @@ public class UsageStatsTabPanel extends JPanel {
 
     @Subscribe
     public void onServicesState(ServicesStateEvent event) {
+        // Tracker handles state reset; panel rebuilds UI because usingLocalLLMs may change.
         if (event.isRunning()) {
             SwingUtilities.invokeLater(this::reset);
         }
@@ -66,16 +56,12 @@ public class UsageStatsTabPanel extends JPanel {
         SwingUtilities.invokeLater(this::reset);
     }
 
+    @Subscribe
+    public void onStatsChanged(LlmSessionStatsChangedEvent event) {
+        SwingUtilities.invokeLater(() -> refreshFromSnapshot(event.snapshot()));
+    }
+
     private void reset() {
-        lastPrompt = 0;
-        lastCompletion = 0;
-        lastTps = 0.0;
-        totalPrompt.set(0);
-        totalCompletion.set(0);
-        totalCachedHits.set(0);
-        totalCacheWritten.set(0);
-        seenModels.clear();
-        sessionStart = Instant.now();
         removeAll();
         buildUi();
         revalidate();
@@ -155,37 +141,15 @@ public class UsageStatsTabPanel extends JPanel {
         add(dashboard, BorderLayout.CENTER);
     }
 
-    @Subscribe
-    public void onLlmUsage(LlmUsageEvent event) {
-        lastPrompt = event.promptTokens();
-        lastCompletion = event.completionTokens();
-        lastTps = event.tps();
-        totalPrompt.addAndGet(event.promptTokens());
-        totalCompletion.addAndGet(event.completionTokens());
-        totalCachedHits.addAndGet(event.cachedTokens());
-        totalCacheWritten.addAndGet(event.cacheWrittenTokens());
-        SwingUtilities.invokeLater(() -> {
-            seenModels.add(event.provider() + "  [" + event.model() + "]");
-            refresh();
-        });
-    }
-
-    private void tickClock() {
-        Duration d = Duration.between(sessionStart, Instant.now());
-        sessionTimeLabel.setText(getText("stats.sessionTime", String.format("%02d:%02d:%02d",
-                d.toHours(), d.toMinutesPart(), d.toSecondsPart())));
-        refreshTph();
-    }
-
-    private void refresh() {
-        if (!seenModels.isEmpty()) {
-            providerLabel.setText(getText("stats.llm", String.join(" / ", seenModels)));
+    private void refreshFromSnapshot(LlmSessionStatsSnapshot snap) {
+        if (snap.hasData()) {
+            providerLabel.setText(getText("stats.llm", snap.modelDisplay()));
         }
-        int hits = totalCachedHits.get();
-        int written = totalCacheWritten.get();
-        int total = totalPrompt.get() + totalCompletion.get();
+        int hits = snap.totalCachedHits();
+        int written = snap.totalCacheWritten();
+        int total = snap.totalPromptTokens() + snap.totalCompletionTokens();
 
-        chart.update(lastPrompt, lastCompletion, hits, written, lastTps);
+        chart.update(snap.lastPromptTokens(), snap.lastCompletionTokens(), hits, written, snap.lastTps());
         if (systemSession.useLocalCommandLlm() && systemSession.useLocalQueryLlm()) {
             totalLabel.setText(getText("stats.total.free.upper", total));
         } else {
@@ -194,16 +158,21 @@ public class UsageStatsTabPanel extends JPanel {
         savedLabel.setText(hits > 0
                 ? getText("stats.cacheSavedReduced", hits)
                 : getText("stats.cacheSaved", 0));
-        refreshTph();
+        refreshTph(snap);
     }
 
-    private void refreshTph() {
+    private void tickClock() {
+        LlmSessionStatsSnapshot snap = statsTracker.getSnapshot();
+        Duration d = Duration.between(snap.sessionStart(), Instant.now());
+        sessionTimeLabel.setText(getText("stats.sessionTime", String.format("%02d:%02d:%02d",
+                d.toHours(), d.toMinutesPart(), d.toSecondsPart())));
+        refreshTph(snap);
+    }
+
+    private void refreshTph(LlmSessionStatsSnapshot snap) {
         // promptTokens = API input_tokens (excludes cache reads), so add all three buckets
-        int prompt = totalPrompt.get();
-        int completion = totalCompletion.get();
-        int hits = totalCachedHits.get();
-        int total = prompt + completion + hits;
-        long elapsedSeconds = Duration.between(sessionStart, Instant.now()).toSeconds();
+        int total = snap.totalPromptTokens() + snap.totalCompletionTokens() + snap.totalCachedHits();
+        long elapsedSeconds = Duration.between(snap.sessionStart(), Instant.now()).toSeconds();
         if (elapsedSeconds < 600) {
             tphLabel.setText(getText("stats.tokensPerHour.collecting"));
         } else if (total > 0) {

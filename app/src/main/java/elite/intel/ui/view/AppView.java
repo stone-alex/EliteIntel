@@ -129,7 +129,6 @@ public class AppView extends JFrame implements AppViewInterface {
         shell.setOpaque(true);
         shell.setBackground(AppTheme.HUD_SHELL_BACKGROUND);
         shell.add(statusBar, BorderLayout.CENTER);
-        shell.add(Box.createVerticalStrut(AppTheme.SHELL_GAP), BorderLayout.SOUTH);
         return shell;
     }
 

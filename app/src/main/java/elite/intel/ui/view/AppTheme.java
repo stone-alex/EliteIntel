@@ -191,6 +191,15 @@ public class AppTheme {
     }
 
     /**
+     * Creates a denser outer spacing for high-density screens that need more room for content.
+     * Use instead of {@link #hudScreenBorder()} when the screen is content-heavy and the standard
+     * screen gap feels too spacious.
+     */
+    public static Border hudDenseScreenBorder() {
+        return new EmptyBorder(HUD_GAP, HUD_PADDING_SMALL, HUD_PADDING_SMALL, HUD_PADDING_SMALL);
+    }
+
+    /**
      * Creates the compact spacing between a screen sub-tab row and its first content surface.
      */
     public static Border hudSubtabContentBorder() {

@@ -3,10 +3,15 @@ package elite.intel.ui.view;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.ui.event.*;
+import elite.intel.ui.telemetry.LlmSessionStatsSnapshot;
+import elite.intel.ui.telemetry.LlmSessionStatsTracker;
 import elite.intel.util.SleepNoThrow;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,12 +30,27 @@ public class AiTabPanel extends JPanel {
     private HudLogArea aiPanel;
     private HudLogArea systemPanel;
 
+    // SYSTEM SUMMARY telemetry blocks
+    private HudTelemetryBlock modelBlock;
+    private HudTelemetryBlock sessionTimeBlock;
+    private HudTelemetryBlock tokensBlock;
+    private HudTelemetryBlock tphBlock;
+    private HudTelemetryBlock cacheBlock;
+    private HudTelemetryBlock speedBlock;
+
+    @SuppressWarnings("unused")
+    private final Timer summaryClockTimer;
+
     public AiTabPanel(Font monoFont) {
+        LlmSessionStatsTracker.getInstance(); // ensure tracker is registered before events flow
         EventBusManager.register(this);
         buildUi();
+        summaryClockTimer = new Timer(1_000, e -> tickSummaryClock());
+        summaryClockTimer.start();
     }
 
     public void dispose() {
+        summaryClockTimer.stop();
         EventBusManager.unregister(this);
     }
 
@@ -39,7 +59,7 @@ public class AiTabPanel extends JPanel {
     private void buildUi() {
         setLayout(new BorderLayout(HUD_GAP, HUD_GAP));
         setBackground(HUD_BG);
-        setBorder(hudScreenBorder());
+        setBorder(hudDenseScreenBorder());
 
         // --- Controls wired up, placed in right sidebar SHORTCUTS ---
         startStopServicesButton = makeToggleButton(getText("button.startServices"));
@@ -114,6 +134,23 @@ public class AiTabPanel extends JPanel {
 
         // --- Bottom summary strip ---
         HudSection summarySection = HudSection.compactCard(getText("ai.section.systemSummary"), new BorderLayout());
+
+        modelBlock       = new HudTelemetryBlock(getText("ai.summary.llmModel"),      tryLoadIcon("/images/microchip-ai.png"));
+        sessionTimeBlock = new HudTelemetryBlock(getText("ai.summary.sessionTime"),   tryLoadIcon("/images/clock-five.png"));
+        tokensBlock      = new HudTelemetryBlock(getText("ai.summary.tokensUsed"),    tryLoadIcon("/images/coins.png"));
+        tphBlock         = new HudTelemetryBlock(getText("ai.summary.tokensPerHour"), tryLoadIcon("/images/tachometer-fast.png"));
+        cacheBlock       = new HudTelemetryBlock(getText("ai.summary.cacheSaved"),    tryLoadIcon("/images/file-recycle.png"));
+        speedBlock       = new HudTelemetryBlock(getText("ai.summary.lastSpeed"),     tryLoadIcon("/images/bolt.png"));
+
+        HudTelemetryStrip strip = new HudTelemetryStrip();
+        strip.addBlock(modelBlock);
+        strip.addBlock(sessionTimeBlock);
+        strip.addBlock(tokensBlock);
+        strip.addBlock(tphBlock);
+        strip.addBlock(cacheBlock);
+        strip.addBlock(speedBlock);
+
+        summarySection.body().add(strip, BorderLayout.CENTER);
         add(summarySection, BorderLayout.SOUTH);
     }
 
@@ -176,6 +213,11 @@ public class AiTabPanel extends JPanel {
         });
     }
 
+    @Subscribe
+    public void onStatsChanged(LlmSessionStatsChangedEvent event) {
+        SwingUtilities.invokeLater(() -> refreshSummary(event.snapshot()));
+    }
+
     private void applyServiceState(boolean running) {
         isServiceRunning.set(running);
         startStopServicesButton.setText(running ? getText("button.stopServices") : getText("button.startServices"));
@@ -184,6 +226,54 @@ public class AiTabPanel extends JPanel {
         startStopServicesButton.setEnabled(true);
         recalibrateAudioButton.setEnabled(running);
         toggleWakeWordOnOff.setEnabled(running);
+    }
+
+    /** Updates summary telemetry blocks from the latest stats snapshot. */
+    private void refreshSummary(LlmSessionStatsSnapshot snap) {
+        modelBlock.setValue(snap.lastModel());
+
+        int totalTokens = snap.totalPromptTokens() + snap.totalCompletionTokens() + snap.totalCachedHits();
+        tokensBlock.setValue(totalTokens > 0 ? fmtTokens(totalTokens) : null);
+
+        int hits = snap.totalCachedHits();
+        // Always show numeric value for cache (0 is informative, not "no data")
+        cacheBlock.setValue(fmtTokens(hits));
+
+        double tps = snap.lastTps();
+        speedBlock.setValue(tps > 0 ? String.format("%.1f t/s", tps) : null);
+
+        updateTph(snap);
+    }
+
+    /** Ticks the session-time and tokens-per-hour blocks every second. */
+    private void tickSummaryClock() {
+        LlmSessionStatsSnapshot snap = LlmSessionStatsTracker.getInstance().getSnapshot();
+        Duration d = Duration.between(snap.sessionStart(), java.time.Instant.now());
+        sessionTimeBlock.setValue(String.format("%02d:%02d:%02d",
+                d.toHours(), d.toMinutesPart(), d.toSecondsPart()));
+        updateTph(snap);
+    }
+
+    private void updateTph(LlmSessionStatsSnapshot snap) {
+        // promptTokens = API input_tokens (excludes cache reads), so add all three buckets
+        long elapsedSeconds = Duration.between(snap.sessionStart(), java.time.Instant.now()).toSeconds();
+        if (elapsedSeconds < 600) {
+            tphBlock.setValue(null); // collecting data
+            return;
+        }
+        int total = snap.totalPromptTokens() + snap.totalCompletionTokens() + snap.totalCachedHits();
+        if (total > 0) {
+            long tph = Math.round(total / (elapsedSeconds / 3600.0));
+            tphBlock.setValue(fmtTokens(tph) + "/hr");
+        } else {
+            tphBlock.setValue(null);
+        }
+    }
+
+    private static String fmtTokens(long v) {
+        if (v >= 1_000_000) return String.format("%.1fM", v / 1_000_000.0);
+        if (v >= 1_000) return String.format("%.1fK", v / 1_000.0);
+        return String.valueOf(v);
     }
 
     @Subscribe
@@ -198,5 +288,38 @@ public class AiTabPanel extends JPanel {
             aiPanel.clear();
             systemPanel.clear();
         });
+    }
+
+    /**
+     * Loads a telemetry PNG via ImageIO into a decoded BufferedImage, then scales
+     * to {@link HudTelemetryBlock#ICON_SIZE} with high-quality Graphics2D hints if the
+     * source size differs. Returns {@code null} on failure so the block falls back to
+     * its diamond marker. Result is constructed once and cached by the caller.
+     */
+    private static ImageIcon tryLoadIcon(String resource) {
+        try {
+            var url = AiTabPanel.class.getResource(resource);
+            if (url == null) return null;
+            BufferedImage src = ImageIO.read(url);
+            if (src == null) return null;
+            int target = HudTelemetryBlock.ICON_SIZE;
+            if (src.getWidth() == target && src.getHeight() == target) {
+                return new ImageIcon(src);
+            }
+            // High-quality one-time scale; not needed for current 32×32 PNGs but kept as a safety net.
+            BufferedImage scaled = new BufferedImage(target, target, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = scaled.createGraphics();
+            try {
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                g2.setRenderingHint(RenderingHints.KEY_RENDERING,     RenderingHints.VALUE_RENDER_QUALITY);
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,  RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.drawImage(src, 0, 0, target, target, null);
+            } finally {
+                g2.dispose();
+            }
+            return new ImageIcon(scaled);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

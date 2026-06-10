@@ -33,24 +33,19 @@ public class AiTabPanel extends JPanel {
         EventBusManager.unregister(this);
     }
 
+    private static final int SIDEBAR_WIDTH = 220;
+
     private void buildUi(Font monoFont) {
         setLayout(new BorderLayout(HUD_GAP, HUD_GAP));
         setBackground(HUD_BG);
         setBorder(hudScreenBorder());
 
-        JPanel buttons = transparentPanel(null);
-        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-
+        // --- Controls wired up, placed in right sidebar SHORTCUTS ---
         startStopServicesButton = makeToggleButton(getText("button.startServices"));
         startStopServicesButton.addActionListener(e -> {
             EventBusManager.publish(new ToggleServicesEvent(!isServiceRunning.get()));
             startStopServicesButton.setEnabled(false);
         });
-
-        JCheckBox showDetailedLog = makeCheckBox(getText("ai.detailedLog"), false);
-        showDetailedLog.addActionListener(
-                e -> EventBusManager.publish(new ToggleDetailedLogEvent(showDetailedLog.isSelected())));
-        showDetailedLog.setForeground(ACCENT);
 
         toggleWakeWordOnOff = makeCheckBox(getText("ai.sleepWake"), false);
         toggleWakeWordOnOff.addActionListener(
@@ -76,20 +71,7 @@ public class AiTabPanel extends JPanel {
         recalibrateAudioButton.setEnabled(false);
         recalibrateAudioButton.addActionListener(e -> EventBusManager.publish(new RecalibrateAudioEvent()));
 
-        buttons.add(startStopServicesButton);
-        buttons.add(Box.createRigidArea(new Dimension(8, 0)));
-        buttons.add(recalibrateAudioButton);
-        buttons.add(Box.createHorizontalGlue());
-        buttons.add(toggleWakeWordOnOff);
-        buttons.add(Box.createRigidArea(new Dimension(8, 0)));
-        buttons.add(toggleObsOverlay);
-        buttons.add(Box.createRigidArea(new Dimension(8, 0)));
-        //buttons.add(showDetailedLog);
-
-        HudSection controlsSection = new HudSection(getText("ai.section.controls"), new BorderLayout());
-        controlsSection.body().add(buttons, BorderLayout.CENTER);
-        add(controlsSection, BorderLayout.NORTH);
-
+        // --- Log panels ---
         userPanel = new LogPanel(
                 getText("ai.log.user"),
                 new Color(0x252035), new Color(0xD4985A),
@@ -108,6 +90,7 @@ public class AiTabPanel extends JPanel {
                 new Color(0x161825), new Color(0x849AB4),
                 monoFont, 12, true);
 
+        // --- Main log area (user/ai top, system below) ---
         JSplitPane topSplit = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT,
                 logSection(getText("ai.section.userInput"), userPanel),
@@ -128,7 +111,54 @@ public class AiTabPanel extends JPanel {
         mainSplit.setBorder(null);
         mainSplit.setDividerSize(HUD_GAP);
 
-        add(mainSplit, BorderLayout.CENTER);
+        // --- Right sidebar ---
+        JPanel sidebar = transparentPanel(new BorderLayout(0, HUD_GAP));
+        sidebar.setPreferredSize(new Dimension(SIDEBAR_WIDTH, 0));
+
+        HudSection quickStatusSection = HudSection.compactCard(getText("ai.section.quickStatus"), new BorderLayout());
+
+        HudSection shortcutsSection = new HudSection(getText("ai.section.shortcuts"), new BorderLayout());
+        shortcutsSection.body().add(buildShortcutsPanel(toggleObsOverlay), BorderLayout.NORTH);
+
+        sidebar.add(quickStatusSection, BorderLayout.NORTH);
+        sidebar.add(shortcutsSection, BorderLayout.CENTER);
+
+        // --- Center: main logs + sidebar ---
+        JPanel centerPanel = transparentPanel(new BorderLayout(HUD_GAP, 0));
+        centerPanel.add(mainSplit, BorderLayout.CENTER);
+        centerPanel.add(sidebar, BorderLayout.EAST);
+        add(centerPanel, BorderLayout.CENTER);
+
+        // --- Bottom summary strip ---
+        HudSection summarySection = HudSection.compactCard(getText("ai.section.systemSummary"), new BorderLayout());
+        add(summarySection, BorderLayout.SOUTH);
+    }
+
+    /** Builds the vertical list of control buttons and checkboxes for the SHORTCUTS sidebar section. */
+    private JPanel buildShortcutsPanel(JCheckBox toggleObsOverlay) {
+        JPanel panel = transparentPanel(null);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        startStopServicesButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        startStopServicesButton.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+                startStopServicesButton.getPreferredSize().height));
+
+        recalibrateAudioButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        recalibrateAudioButton.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+                recalibrateAudioButton.getPreferredSize().height));
+
+        toggleWakeWordOnOff.setAlignmentX(Component.LEFT_ALIGNMENT);
+        toggleObsOverlay.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        panel.add(startStopServicesButton);
+        panel.add(Box.createRigidArea(new Dimension(0, HUD_GAP)));
+        panel.add(recalibrateAudioButton);
+        panel.add(Box.createRigidArea(new Dimension(0, HUD_GAP)));
+        panel.add(toggleWakeWordOnOff);
+        panel.add(Box.createRigidArea(new Dimension(0, 4)));
+        panel.add(toggleObsOverlay);
+
+        return panel;
     }
 
     private HudSection logSection(String title, LogPanel logPanel) {

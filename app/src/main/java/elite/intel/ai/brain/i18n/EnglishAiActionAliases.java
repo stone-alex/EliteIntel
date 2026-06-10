@@ -208,9 +208,11 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("find mining site, find mining location, find mining hotspot, find where to mine, find asteroid field {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("find tritium mining site, find tritium field {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         map.put("navigate to next bio sample, go to next sample, navigate to next organic, codex entry, navigate to codex entry, navigate to codex", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("scan the system, open fss, full scan, full spectrum scan, system scan, discovery scan, FSS, full spectrum scan, scan system", OPEN_FSS_AND_SCAN.getAction());
+        map.put("scan the system, open fss, full scan, full spectrum scan, system scan, discovery scan, FSS, full spectrum scan, scan system", OPEN_FSS.getAction());
         map.put("find nearest vista genomics, find genomics, vista genomics", FIND_VISTA_GENOMICS.getAction());
         map.put("delete codex entry, delete this codex, delete this entry, delete this organic", DELETE_CODEX_ENTRY.getAction());
+        map.put("calculate neutron star route {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
+        map.put("next neutron star jump, plot route to next neutron star waypoint, next neutron star", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
 
         map.put("check key bindings, missing key bindings, unbound keys, keyboard bindings, keybind check, missing bindings", KEY_BINDINGS_ANALYSIS.getAction());
         map.put("bio signals done within the star system, organics scanned in star system, how many bio samples in star system, bio signals in system, bio samples in star system, biological signals in star system, organics in system, which planets have bio signals, which planets still need bio scans, which planets need organic scans, which planets still need scanning, bio scan needed on which planets, planets with unscanned bio signals, bio scan progress", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());

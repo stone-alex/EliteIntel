@@ -86,6 +86,7 @@ public class SpanishAiActionAliases implements AiActionAliasProvider {
             map.put("ordenar al fighter volver a la nave, fighter acoplar, recuperar fighter", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("fighter fuego a discreción, fuego a voluntad, atacar a voluntad", FIGHTER_OPEN_ORDERS.getAction());
             map.put("seleccionar grupo de fuego {key:X}, grupo de fuego {key:X}, cambiar al grupo de fuego {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
+            map.put("próximo salto de estrella de neutrones, trazar la ruta al siguiente punto de ruta de la estrella de neutrones, siguiente estrella de neutrones", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {
@@ -209,7 +210,7 @@ public class SpanishAiActionAliases implements AiActionAliasProvider {
         map.put("buscar sitio de minería, buscar ubicación de minería, buscar hotspot de minería, dónde minar, buscar campo de asteroides {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("buscar sitio de minería de tritio, buscar campo de tritio {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         map.put("navegar a la siguiente muestra biológica, ir a la siguiente muestra, navegar al siguiente orgánico, entrada del codex, navegar a la entrada del codex, navegar al codex", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("escanear el sistema, abrir fss, escaneo completo, escaneo de espectro completo, escaneo del sistema, escaneo de descubrimiento, fss, escanear sistema", OPEN_FSS_AND_SCAN.getAction());
+        map.put("escanear el sistema, abrir fss, escaneo completo, escaneo de espectro completo, escaneo del sistema, escaneo de descubrimiento, fss, escanear sistema", OPEN_FSS.getAction());
         map.put("buscar vista genomics más cercano, buscar genomics, vista genomics", FIND_VISTA_GENOMICS.getAction());
         map.put("eliminar entrada del codex, eliminar este codex, eliminar esta entrada, eliminar este orgánico", DELETE_CODEX_ENTRY.getAction());
 

@@ -89,6 +89,8 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
             map.put("истребитель вернись на корабль, истребитель стыковка, отозвать истребитель", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("истребитель свободный огонь, огонь по усмотрению, атаковать по усмотрению, атакуй самостоятельно", FIGHTER_OPEN_ORDERS.getAction());
             map.put("выбери огневую группу {key:X}, огневая группа {key:X}, переключись на огневую группу {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
+            map.put("рассчитать нейтронной маршрут {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
+            map.put("следующий прыжок нейтронной звезды, прокладка маршрута до следующей точки нейтронной звезды, следующая нейтронная звезда", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {
@@ -216,7 +218,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
         map.put("найди место добычи, найди точку добычи, горячая точка добычи, хотспот, mining hotspot, где майнить, найди астероидное поле {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("найди место добычи трития, найди тритиевое поле {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         map.put("навигация к следующему биосэмплу, к следующему образцу, к следующей органике, к следующей записи кодекса", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("просканируй систему, открой FSS, полноспектральное сканирование, FSS, скан открытия, полный скан, хонк, скан системы, full spectrum scan", OPEN_FSS_AND_SCAN.getAction());
+        map.put("просканируй систему, открой FSS, полноспектральное сканирование, FSS, скан открытия, полный скан, хонк, скан системы, full spectrum scan", OPEN_FSS.getAction());
         map.put("найди ближайшую vista genomics, найди геномику", FIND_VISTA_GENOMICS.getAction());
         map.put("удали запись кодекса, удали этот кодекс, удали эту запись, удали эту органику", DELETE_CODEX_ENTRY.getAction());
 

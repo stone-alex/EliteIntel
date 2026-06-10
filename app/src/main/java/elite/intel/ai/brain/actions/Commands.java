@@ -94,7 +94,9 @@ public enum Commands {
     NAVIGATE_TO_SQUADRON_CARRIER                        ("navigate_to_squadron_carrier", null,  NavigateToMySquadronCarrier.class),
     SET_OPTIMAL_SPEED                                   ("set_optimal_speed", null,  SetOptimalSpeedHandler.class),
     TAKE_ME_HOME                                        ("navigate_to_home_system", null,  NavigateToHomeHandler.class),
-    OPEN_FSS_AND_SCAN                                   ("open_fss_scan_system", null,  DisplayFssAndScanHandler.class),
+    OPEN_FSS                                            ("open_fss_scan_system", null,  DisplayFssAndScanHandler.class),
+    CALCULATE_NEUTRON_STAR_ROUTE                        ("calculate_neutron_star_route", null,  CalculateNeutronStarRouteHandler.class),
+    PLOT_ROUTE_TO_NEXT_NEUTRON_STAR                     ("plot_route_next_neutron_star_waypoint", null,PlotRouteToNextNeutronStarHandler.class),
 
     GET_HEADING_TO_LZ                                   ("navigate_to_landing_zone", null,  NavigateToLandingZone.class),
     DEPLOY_SRV                                          ("deploy_vehicle_srv", null,  DeploySrvHandler.class),

@@ -88,6 +88,8 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
             map.put("jäger zurück zum schiff, fighter andocken, jäger zurückrufen", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("jäger feuer frei, fighter feuer frei, nach eigenem ermessen angreifen", FIGHTER_OPEN_ORDERS.getAction());
             map.put("wähle feuergruppe {key:X}, feuergruppe {key:X}, wechsle zu feuergruppe {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
+            map.put("berechnen sie die neutronensternroute {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
+            map.put("nächster neutronensternsprung, route zum nächsten neutronenstern-Wegpunkt zeichnen, nächster Neutronenstern", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {
@@ -214,7 +216,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
         map.put("mining site finden, mining ort finden, hotspot finden, wo abbauen, asteroidenfeld finden {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("tritium mining site finden, tritium feld finden, tritium hotspot finden {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         map.put("zum nächsten bio sample navigieren, zur nächsten probe, zum nächsten organismus, codex eintrag, zum codex eintrag navigieren", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("system scannen, fss öffnen, vollständiger scan, honk, discovery scan, full spectrum scan, systemscan", OPEN_FSS_AND_SCAN.getAction());
+        map.put("system scannen, fss öffnen, vollständiger scan, honk, discovery scan, full spectrum scan, systemscan", OPEN_FSS.getAction());
         map.put("nächste vista genomics finden, vista genomics finden, genomics finden", FIND_VISTA_GENOMICS.getAction());
         map.put("codex eintrag löschen, diesen codex löschen, diesen eintrag löschen, diesen organismus löschen", DELETE_CODEX_ENTRY.getAction());
 

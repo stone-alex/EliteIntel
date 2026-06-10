@@ -89,6 +89,8 @@ public class UkrainianAiActionAliases implements AiActionAliasProvider {
             map.put("винищувач повернись на корабель, винищувач стикування, відкликати винищувач", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("винищувач вільний вогонь, вогонь за готовністю, атакувати на власний розсуд", FIGHTER_OPEN_ORDERS.getAction());
             map.put("вибери вогневу групу {key:X}, вогнева група {key:X}, перемкнись на вогневу групу {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
+            map.put("розрахувати нейтронний маршрут {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
+            map.put("наступний стрибок нейтронної зірки, прокласти маршрут до наступної маршрутної точки нейтронної зірки, наступна нейтронна зірка", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {
@@ -216,7 +218,7 @@ public class UkrainianAiActionAliases implements AiActionAliasProvider {
         map.put("знайди місце видобутку, знайди точку видобутку, знайди hotspot, де майнити, знайди астероїдне поле {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("знайди місце видобутку тритію, знайди тритієве поле {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         map.put("навігація до наступного біозразка, до наступного зразка, до наступної органіки, запис кодексу, навігація до кодексу", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("проскануй систему, відкрий fss, повний скан, honk, скан системи, full spectrum scan", OPEN_FSS_AND_SCAN.getAction());
+        map.put("проскануй систему, відкрий fss, повний скан, honk, скан системи, full spectrum scan", OPEN_FSS.getAction());
         map.put("знайди найближчу vista genomics, знайди геноміку", FIND_VISTA_GENOMICS.getAction());
         map.put("видали запис кодексу, видали цей кодекс, видали цей запис, видали цю органіку", DELETE_CODEX_ENTRY.getAction());
 

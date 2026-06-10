@@ -599,7 +599,7 @@ public class NaturalSpeechIntegrationTest {
     @Order(70)
     @MethodSource
     void openFss(String input) throws InterruptedException {
-        assertRouted(input, OPEN_FSS_AND_SCAN.getAction());
+        assertRouted(input, OPEN_FSS.getAction());
     }
 
     static Stream<String> openFss() {

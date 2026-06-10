@@ -70,6 +70,7 @@ public class KeyBindingExecutor {
             ELITE_TO_KEYPROCESSOR_MAP.put("KEY_À", KeyProcessor.KEY_AGRAVE);   // à → NATIVE_BASE+19
             ELITE_TO_KEYPROCESSOR_MAP.put("KEY_Ù", KeyProcessor.KEY_UGRAVE);   // ù → NATIVE_BASE+20
             ELITE_TO_KEYPROCESSOR_MAP.put("KEY_Ç", KeyProcessor.KEY_CCEDILLA); // ç → NATIVE_BASE+21
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_Ñ", KeyProcessor.KEY_NTILDE);   // ñ → NATIVE_BASE+22
             // Dump the full map so we can verify key names at startup
             log.debug("[key-map] ELITE_TO_KEYPROCESSOR_MAP: {} entries", ELITE_TO_KEYPROCESSOR_MAP.size());
             ELITE_TO_KEYPROCESSOR_MAP.entrySet().stream()

@@ -7,6 +7,7 @@ import elite.intel.util.SleepNoThrow;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalTime;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
@@ -20,13 +21,13 @@ public class AiTabPanel extends JPanel {
     private JButton recalibrateAudioButton;
     private final AtomicBoolean isServiceRunning = new AtomicBoolean(false);
 
-    private LogPanel userPanel;
-    private LogPanel aiPanel;
-    private LogPanel systemPanel;
+    private HudLogArea userPanel;
+    private HudLogArea aiPanel;
+    private HudLogArea systemPanel;
 
     public AiTabPanel(Font monoFont) {
         EventBusManager.register(this);
-        buildUi(monoFont);
+        buildUi();
     }
 
     public void dispose() {
@@ -35,7 +36,7 @@ public class AiTabPanel extends JPanel {
 
     private static final int SIDEBAR_WIDTH = 220;
 
-    private void buildUi(Font monoFont) {
+    private void buildUi() {
         setLayout(new BorderLayout(HUD_GAP, HUD_GAP));
         setBackground(HUD_BG);
         setBorder(hudScreenBorder());
@@ -72,44 +73,26 @@ public class AiTabPanel extends JPanel {
         recalibrateAudioButton.addActionListener(e -> EventBusManager.publish(new RecalibrateAudioEvent()));
 
         // --- Log panels ---
-        userPanel = new LogPanel(
-                getText("ai.log.user"),
-                new Color(0x252035), new Color(0xD4985A),
-                new Color(0x1A1628), new Color(0xD4B087),
-                monoFont, 30, false);
+        userPanel = new HudLogArea(30, HudLogArea.Style.USER_INPUT);
 
-        aiPanel = new LogPanel(
-                getText("ai.log.ai"),
-                new Color(0x1A2520), ACCENT,
-                new Color(0x141E18), new Color(0xA8D4B8),
-                monoFont, 25, false);
+        aiPanel = new HudLogArea(25, HudLogArea.Style.AI_RESPONSE);
 
-        systemPanel = new LogPanel(
-                getText("ai.log.system"),
-                new Color(0x1A1E30), new Color(0x5A8AAA),
-                new Color(0x161825), new Color(0x849AB4),
-                monoFont, 12, true);
+        systemPanel = new HudLogArea(12, HudLogArea.Style.SYSTEM_LOG);
 
         // --- Main log area (user/ai top, system below) ---
-        JSplitPane topSplit = new JSplitPane(
+        HudSplitPane topSplit = new HudSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT,
                 logSection(getText("ai.section.userInput"), userPanel),
                 logSection(getText("ai.section.aiResponse"), aiPanel)
         );
         topSplit.setResizeWeight(0.38);
-        topSplit.setBackground(HUD_BG);
-        topSplit.setBorder(null);
-        topSplit.setDividerSize(HUD_GAP);
 
-        JSplitPane mainSplit = new JSplitPane(
+        HudSplitPane mainSplit = new HudSplitPane(
                 JSplitPane.VERTICAL_SPLIT,
                 topSplit,
                 logSection(getText("ai.section.systemMessages"), systemPanel)
         );
         mainSplit.setResizeWeight(0.65);
-        mainSplit.setBackground(HUD_BG);
-        mainSplit.setBorder(null);
-        mainSplit.setDividerSize(HUD_GAP);
 
         // --- Right sidebar ---
         JPanel sidebar = transparentPanel(new BorderLayout(0, HUD_GAP));
@@ -161,9 +144,9 @@ public class AiTabPanel extends JPanel {
         return panel;
     }
 
-    private HudSection logSection(String title, LogPanel logPanel) {
+    private HudSection logSection(String title, JComponent content) {
         HudSection section = new HudSection(title, new BorderLayout());
-        section.body().add(logPanel, BorderLayout.CENTER);
+        section.body().add(content, BorderLayout.CENTER);
         return section;
     }
 
@@ -180,8 +163,9 @@ public class AiTabPanel extends JPanel {
         SwingUtilities.invokeLater(() -> aiPanel.addMessage(text));
     }
 
-    public void addSystemMessage(String text) {
-        SwingUtilities.invokeLater(() -> systemPanel.addMessage(text));
+    /** Renders a structured SYSTEM_LOG entry; timestamp is formatted as {@code HH:mm:ss}. */
+    public void addSystemMessage(LocalTime timestamp, String text) {
+        SwingUtilities.invokeLater(() -> systemPanel.addSystemLogEntry(timestamp, text));
     }
 
     @Subscribe

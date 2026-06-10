@@ -21,9 +21,6 @@ import elite.intel.ws.WebSocketBroadcaster;
 
 import javax.swing.*;
 import javax.swing.Timer;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -179,10 +176,7 @@ public class AppController implements Runnable {
     }
 
     private void appendToLog(String data) {
-        String formattedTime = Instant.now()
-                .atZone(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("HH:mm:ss.SSSS"));
-        EventBusManager.publish(new AppLogEvent(formattedTime + ": " + data));
+        EventBusManager.publish(new AppLogEvent(data));
     }
 
     @Override

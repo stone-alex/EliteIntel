@@ -54,6 +54,15 @@ public class AppTheme {
     public static final Color HUD_ROW_ALT = new Color(0x0E1420);
     public static final Color HUD_HOVER = new Color(0x182838);
 
+    /** Muted amber/warm-orange body text for USER_INPUT log readouts. */
+    public static final Color HUD_USER_INPUT_TEXT = new Color(0xBB7A32);
+    /** Soft blue-grey body text for AI_RESPONSE log readouts. */
+    public static final Color HUD_AI_RESPONSE_TEXT = new Color(0x72A2B4);
+    /** Dim neutral grey body text for SYSTEM_LOG readout messages. */
+    public static final Color HUD_SYSTEM_LOG_TEXT = new Color(0x5A6368);
+    /** Subdued grey-blue for HH:mm:ss timestamp prefixes in SYSTEM_LOG entries. */
+    public static final Color HUD_SYSTEM_LOG_TIMESTAMP = new Color(0x4A6270);
+
     public static final int HUD_GAP = 8;
     public static final int SHELL_GAP = 10;
     public static final int SCREEN_TOP_GAP = 12;

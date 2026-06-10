@@ -9,8 +9,12 @@ import java.awt.geom.RoundRectangle2D;
  */
 public class HudSection extends HudPanel {
 
+    /** Shared horizontal inset for header text and decorative dots — mirrors title left ↔ dots right. */
+    private static final int HEADER_H_INSET = 8;
+
     private final JPanel body;
     private final Variant sectionVariant;
+    private final JLabel headerLabel;
     private JComponent footer;
     private Color footerBackground = AppTheme.HUD_PANEL_BG_ALT;
 
@@ -66,9 +70,9 @@ public class HudSection extends HudPanel {
         putClientProperty(AppTheme.HUD_CARD_BORDER_COLOR,
                 borderColor == null ? AppTheme.HUD_ORANGE_SOFT : borderColor);
 
-        JLabel headerLabel = AppTheme.hudSectionLabel(title == null ? "" : title.toUpperCase());
+        headerLabel = AppTheme.hudSectionLabel(title == null ? "" : title.toUpperCase());
         JPanel header = AppTheme.transparentPanel(new BorderLayout());
-        header.setBorder(BorderFactory.createEmptyBorder(3, 6, 4, 6));
+        header.setBorder(BorderFactory.createEmptyBorder(3, HEADER_H_INSET, 4, HEADER_H_INSET));
         header.add(headerLabel, BorderLayout.WEST);
         add(header, BorderLayout.NORTH);
 
@@ -160,6 +164,7 @@ public class HudSection extends HudPanel {
                 g2.fillRect(1, 1, Math.max(0, w - 2), Math.max(0, bounds.height));
                 g2.setColor(AppTheme.HUD_BORDER_DIM);
                 g2.drawLine(1, bounds.y + bounds.height, Math.max(1, w - 2), bounds.y + bounds.height);
+                drawHeaderDots(g2, w, bounds);
             }
 
             if (footer != null) {
@@ -183,5 +188,34 @@ public class HudSection extends HudPanel {
     public Dimension getMaximumSize() {
         Dimension preferred = getPreferredSize();
         return new Dimension(Integer.MAX_VALUE, preferred.height);
+    }
+
+    /**
+     * Paints the decorative three-dot accent on the right side of the header strip.
+     * Suppressed automatically when the section is too narrow or dots would overlap the title.
+     */
+    private void drawHeaderDots(Graphics2D g2, int panelWidth, Rectangle headerBounds) {
+        final int dotD    = 3;
+        final int dotGap  = 5;
+        final int groupW  = 3 * dotD + 2 * dotGap; // 19 px total
+        // mirrors actual title left edge: section border inset + shared header horizontal inset
+        final int rightPad = getInsets().left + HEADER_H_INSET;
+        final int safetyGap = 12;
+
+        if (panelWidth < 320) return;
+
+        int startX = panelWidth - rightPad - groupW;
+
+        // Hide if dots would collide with the title text.
+        int titleRight = headerLabel.getX() + headerLabel.getWidth() + safetyGap;
+        if (startX < titleRight) return;
+
+        int centerY = headerBounds.y + headerBounds.height / 2;
+        int dotY    = centerY - dotD / 2;
+
+        g2.setColor(headerLabel.getForeground());
+        for (int i = 0; i < 3; i++) {
+            g2.fillOval(startX + i * (dotD + dotGap), dotY, dotD, dotD);
+        }
     }
 }

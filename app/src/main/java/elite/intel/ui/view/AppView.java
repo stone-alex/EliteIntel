@@ -14,8 +14,12 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class AppView extends JFrame implements AppViewInterface {
 
@@ -86,6 +90,19 @@ public class AppView extends JFrame implements AppViewInterface {
         new AiTabController(aiTabPanel);
 
         initData();
+
+        // why did we close?
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                log.info("WINDOW_CLOSING received — source: {}", e.getSource());
+                // log the call stack
+                log.info("Close stack: {}",
+                        Arrays.stream(Thread.currentThread().getStackTrace())
+                                .map(StackTraceElement::toString)
+                                .collect(Collectors.joining("\n  ")));
+            }
+        });
     }
 
     private ImageIcon scaledIcon(String resource) {
@@ -172,4 +189,6 @@ public class AppView extends JFrame implements AppViewInterface {
         UIManager.put("TextArea.inactiveForeground", AppTheme.FG_MUTED);
         UIManager.put("EditorPane.inactiveForeground", AppTheme.FG_MUTED);
     }
+
+
 }

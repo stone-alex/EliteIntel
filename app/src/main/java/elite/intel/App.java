@@ -11,12 +11,16 @@ import elite.intel.ui.controller.AppController;
 import elite.intel.ui.view.AppView;
 import elite.intel.util.Cypher;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import javax.swing.*;
 
 
 public class App {
+
+    private static final Logger log = LogManager.getLogger(App.class);
 
     public static void main(String[] args) {
 
@@ -51,6 +55,9 @@ public class App {
             AppView view = new AppView();
             new AppController();
             view.getUiComponent().setVisible(true);
+        });
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            log.error("Uncaught exception on thread {}", thread.getName(), throwable);
         });
     }
 }

@@ -1,8 +1,9 @@
-package elite.intel.test;
+package elite.intel.junit.prompt;
 
 import elite.intel.ai.brain.commons.HandlerDispatchedEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
+import elite.intel.i18n.Language;
 import elite.intel.session.SystemSession;
 import elite.intel.ws.WebSocketBroadcaster;
 import org.junit.jupiter.api.*;
@@ -34,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Tag("local-integration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class NaturalSpeechIntegrationTest {
+public class NaturalSpeechIntegrationTestEN {
 
     /**
      * Pause between each test phrase. Increase if your LLM is slow.
@@ -49,7 +50,9 @@ public class NaturalSpeechIntegrationTest {
 
     @BeforeAll
     void bootstrap() throws InterruptedException {
-        SystemSession.getInstance().setConversationalMode(false);
+        SystemSession systemSession = SystemSession.getInstance();
+        systemSession.setConversationalMode(false);
+        systemSession.setLanguage(Language.EN);
         HeadlessBootstrap.start();
         WebSocketBroadcaster.getInstance().start();
         capture = new HandlerCapture();

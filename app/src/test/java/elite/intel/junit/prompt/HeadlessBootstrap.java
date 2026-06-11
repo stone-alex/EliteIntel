@@ -1,4 +1,4 @@
-package elite.intel.test;
+package elite.intel.junit.prompt;
 
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AiCommandInterface;

@@ -1,4 +1,4 @@
-package elite.intel.test;
+package elite.intel.junit.prompt;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.brain.commons.HandlerDispatchedEvent;

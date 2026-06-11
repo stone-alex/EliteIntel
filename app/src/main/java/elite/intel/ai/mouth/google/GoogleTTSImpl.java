@@ -66,12 +66,10 @@ public class GoogleTTSImpl implements MouthInterface {
 
     @Override
     public synchronized void start() {
-        EventBusManager.register(this);
         if (ttsProcessingThread != null && ttsProcessingThread.isAlive()) {
             log.warn("VoiceGenerator is already running");
             return;
         }
-
 
         try {
             String apiKey = systemSession.getTtsApiKey();
@@ -89,6 +87,7 @@ public class GoogleTTSImpl implements MouthInterface {
         }
 
         running = true;
+        EventBusManager.register(this);
         ttsProcessingThread = new Thread(this::processTTSQueue, "TTSThread");
         ttsProcessingThread.start();
 
@@ -105,7 +104,7 @@ public class GoogleTTSImpl implements MouthInterface {
 
     @Override
     public synchronized void stop() {
-        EventBusManager.unregister(this);
+        if (running) EventBusManager.unregister(this);
         if (ttsProcessingThread == null || !ttsProcessingThread.isAlive()) {
             log.warn("VoiceGenerator is not running");
             return;

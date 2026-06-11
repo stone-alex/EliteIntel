@@ -24,8 +24,8 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
     public void addAliases(Map<String, String> map, Status status, boolean isDryRun) {
         // always available
         map.put("проснись, слушай, слушай меня, активируйся", WAKEUP.getAction());
-        map.put("спи, усни, иди спать, перейди в спящий режим, включи спящий режим, игнорируй меня, не слушай, не отслеживай", SLEEP.getAction());
-        map.put("перебей, прерви, останови речь, прекрати говорить", INTERRUPT_TTS.getAction());
+        map.put("спи, усни, иди спать, перейди в спящий режим, включи спящий режим, игнорируй меня, не слушай, не отслеживай, не слушай", SLEEP.getAction());
+        map.put("перебей, прерви, останови речь, прекрати говорить, прервать, отставить, заткнись", INTERRUPT_TTS.getAction());
 
         // navigation
         map.put("отмени торговый маршрут, останови торговый маршрут, очисти торговый маршрут, прерви торговый маршрут, сбрось торговый маршрут", CANCEL_TRADE_ROUTE.getAction());
@@ -101,7 +101,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
 
         if (status.isInMainShip() || status.isInSrv() || isDryRun) {
             // flight / ship systems
-            map.put("переключись в боевой режим, включи боевой режим", ACTIVATE_COMBAT_MODE.getAction());
+            map.put("переключись в боевой режим, включи боевой режим, боевой", ACTIVATE_COMBAT_MODE.getAction());
             map.put("переключись в режим анализа, включи режим анализа", ACTIVATE_ANALYSIS_MODE.getAction());
             map.put("грузовой люк, грузозаборник, открой грузовой люк, закрой грузовой люк, выпусти грузозаборник, убери грузозаборник, cargo scoop", TOGGLE_CARGO_SCOOP.getAction());
             map.put("ночное видение, включи ночное видение, выключи ночное видение {state:true/false}", NIGHT_VISION_ON_OFF.getAction());

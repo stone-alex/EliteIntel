@@ -12,7 +12,9 @@ import java.awt.*;
  * Shared colors, component factories, and layout helpers for the dark UI theme.
  */
 public class AppTheme {
-    private static final String HUD_LOCKED_FOREGROUND = "eliteIntel.hud.lockedForeground";
+    /** Client-property key: set to {@link Boolean#TRUE} on a {@link javax.swing.JComponent} to prevent
+     *  {@link #applyDarkPalette} from overriding its foreground colour. */
+    public static final String HUD_LOCKED_FOREGROUND = "eliteIntel.hud.lockedForeground";
     static final String HUD_TABLE_STYLE_LOCKED = "eliteIntel.hud.tableStyleLocked";
     public static final String HUD_CARD_BORDER_COLOR = "eliteIntel.hud.cardBorderColor";
 

@@ -30,10 +30,11 @@ public class HudBanner extends HudPanel {
     private static Color colorFor(StatusBadge.State state) {
         if (state == null) return AppTheme.HUD_CYAN;
         return switch (state) {
-            case OK -> AppTheme.HUD_OK;
+            case OK      -> AppTheme.HUD_OK;
             case STANDBY -> AppTheme.HUD_WARN;
             case OFFLINE -> AppTheme.HUD_DANGER;
-            case INFO -> AppTheme.HUD_CYAN;
+            case INFO    -> AppTheme.HUD_CYAN;
+            case IDLE    -> AppTheme.HUD_DISABLED;
         };
     }
 

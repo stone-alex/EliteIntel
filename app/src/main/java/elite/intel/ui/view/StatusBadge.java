@@ -13,7 +13,9 @@ public class StatusBadge extends JLabel {
         OK(AppTheme.HUD_OK),
         STANDBY(AppTheme.HUD_WARN),
         OFFLINE(AppTheme.HUD_DANGER),
-        INFO(AppTheme.HUD_CYAN);
+        INFO(AppTheme.HUD_CYAN),
+        /** Muted/inactive: service is off or sleeping — no action required. */
+        IDLE(AppTheme.HUD_DISABLED);
 
         private final Color color;
 

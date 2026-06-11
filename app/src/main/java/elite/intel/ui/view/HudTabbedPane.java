@@ -3,6 +3,9 @@ package elite.intel.ui.view;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 /**
  * HUD-styled tabbed pane for cockpit-dashboard navigation and data-panel switching.
@@ -61,9 +64,16 @@ public class HudTabbedPane extends JTabbedPane {
 
     private static class HudTabbedPaneUi extends BasicTabbedPaneUI {
 
+        private static final int TINT_ACTIVE   = 0;
+        private static final int TINT_INACTIVE = 1;
+        private static final int TINT_DISABLED = 2;
+
         private final boolean flatContent;
         private final boolean compact;
         private final boolean mainNavigation;
+
+        /** Cache: original Icon → [active tint, inactive tint, disabled tint]. Keyed by identity. */
+        private final Map<Icon, Icon[]> tintCache = new IdentityHashMap<>();
 
         HudTabbedPaneUi(boolean flatContent, boolean compact, boolean mainNavigation) {
             this.flatContent = flatContent;
@@ -103,9 +113,60 @@ public class HudTabbedPane extends JTabbedPane {
         @Override
         protected void paintTabBackground(Graphics g, int tabPlacement, int tabIndex,
                                           int x, int y, int w, int h, boolean isSelected) {
-            Color background = mainNavigation || compact ? AppTheme.HUD_SHELL_BACKGROUND : AppTheme.HUD_CONTENT_BACKGROUND;
+            if (mainNavigation) {
+                if (isSelected) {
+                    g.setColor(AppTheme.HUD_ORANGE_FILL);
+                    g.fillRect(x, y, w, h);
+                }
+                // unselected: no fill — paintTabArea already painted HUD_SHELL_BACKGROUND
+                return;
+            }
+            Color background = compact ? AppTheme.HUD_SHELL_BACKGROUND : AppTheme.HUD_CONTENT_BACKGROUND;
             g.setColor(compact ? background : isSelected ? AppTheme.HUD_PANEL_BG_ALT : background);
             g.fillRect(x, y, w, h);
+        }
+
+        @Override
+        protected void paintIcon(Graphics g, int tabPlacement, int tabIndex,
+                                 Icon icon, Rectangle iconRect, boolean isSelected) {
+            if (!mainNavigation || !(icon instanceof ImageIcon imageIcon)) {
+                super.paintIcon(g, tabPlacement, tabIndex, icon, iconRect, isSelected);
+                return;
+            }
+            Color tintColor;
+            if (!tabPane.isEnabled() || !tabPane.isEnabledAt(tabIndex)) {
+                tintColor = AppTheme.HUD_DISABLED;
+            } else {
+                tintColor = isSelected ? AppTheme.ACCENT : AppTheme.HUD_ORANGE_SOFT;
+            }
+            int slot = tintColor == AppTheme.ACCENT ? TINT_ACTIVE
+                     : tintColor == AppTheme.HUD_ORANGE_SOFT ? TINT_INACTIVE
+                     : TINT_DISABLED;
+            int w = iconRect.width  > 0 ? iconRect.width  : AppTheme.HUD_ICON_NAV;
+            int h = iconRect.height > 0 ? iconRect.height : AppTheme.HUD_ICON_NAV;
+            Icon tinted = cachedTint(imageIcon, w, h, slot, tintColor);
+            tinted.paintIcon(tabPane, g, iconRect.x, iconRect.y);
+        }
+
+        private Icon cachedTint(ImageIcon original, int w, int h, int slot, Color color) {
+            Icon[] slots = tintCache.computeIfAbsent(original, k -> new Icon[3]);
+            if (slots[slot] == null) {
+                slots[slot] = new ImageIcon(tintGlyph(original.getImage(), w, h, color));
+            }
+            return slots[slot];
+        }
+
+        private static Image tintGlyph(Image src, int w, int h, Color color) {
+            BufferedImage buf = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = buf.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.drawImage(src, 0, 0, w, h, null);
+            g2.setComposite(AlphaComposite.SrcIn);
+            g2.setColor(color);
+            g2.fillRect(0, 0, w, h);
+            g2.dispose();
+            return buf;
         }
 
         @Override
@@ -115,15 +176,6 @@ public class HudTabbedPane extends JTabbedPane {
             // Orange underline
             g.setColor(AppTheme.ACCENT);
             g.fillRect(x, y + h - 3, w, 3);
-            // Subtle side ticks centred vertically — main nav only
-            if (mainNavigation) {
-                int tickLen = h * 2 / 3;
-                int tickTop = y + (h - tickLen) / 2;
-                int tickBottom = tickTop + tickLen - 1;
-                g.setColor(AppTheme.HUD_BORDER_DIM);
-                g.drawLine(x, tickTop, x, tickBottom);
-                g.drawLine(x + w - 1, tickTop, x + w - 1, tickBottom);
-            }
         }
 
         @Override

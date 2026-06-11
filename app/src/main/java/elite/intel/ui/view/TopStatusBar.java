@@ -10,6 +10,7 @@ import elite.intel.ui.event.CommanderChangedEvent;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
@@ -92,18 +93,18 @@ public class TopStatusBar extends HudPanel {
     private JPanel buildRightGroup() {
         JPanel row = opaqueRow();
 
-        // Commander (orange)
-        row.add(keyLabel(getText("hud.cmdr"), AppTheme.ACCENT));
+        // Commander — label muted caps, value accent
+        row.add(keyLabel(getText("hud.cmdr")));
         row.add(hgap());
-        cmdrValue = valueLabel(initCommanderName(), AppTheme.ACCENT);
+        cmdrValue = valueLabel(initCommanderName());
         row.add(cmdrValue);
 
         row.add(Box.createHorizontalStrut(20));
 
-        // Ship (cyan)
-        row.add(keyLabel(getText("hud.ship"), AppTheme.HUD_CYAN));
+        // Ship — label muted caps, value white caps
+        row.add(keyLabel(getText("hud.ship")));
         row.add(hgap());
-        shipValue = valueLabel(initShipName(), AppTheme.HUD_CYAN);
+        shipValue = valueLabel(initShipName());
         row.add(shipValue);
 
         return row;
@@ -140,17 +141,17 @@ public class TopStatusBar extends HudPanel {
         return row;
     }
 
-    private static JLabel keyLabel(String text, Color color) {
-        JLabel l = new JLabel(text + ":");
-        l.setForeground(color);
+    private static JLabel keyLabel(String text) {
+        JLabel l = new JLabel(text == null ? "" : text.toUpperCase(Locale.ROOT));
+        l.setForeground(AppTheme.FG_MUTED);
         l.setFont(l.getFont().deriveFont(Font.PLAIN, AppTheme.HUD_FONT_XS));
         l.setAlignmentY(Component.CENTER_ALIGNMENT);
         return l;
     }
 
-    private static JLabel valueLabel(String text, Color color) {
-        JLabel l = new JLabel(text == null ? "—" : text);
-        l.setForeground(color);
+    private static JLabel valueLabel(String text) {
+        JLabel l = new JLabel(text == null ? "—" : text.toUpperCase(Locale.ROOT));
+        l.setForeground(AppTheme.FG);
         l.setFont(l.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_SM));
         l.setAlignmentY(Component.CENTER_ALIGNMENT);
         return l;
@@ -161,7 +162,7 @@ public class TopStatusBar extends HudPanel {
     }
 
     private static String resolvedOrDash(String value) {
-        return (value != null && !value.isBlank()) ? value : "—";
+        return (value != null && !value.isBlank()) ? value.toUpperCase(Locale.ROOT) : "—";
     }
 
     @Override

@@ -105,8 +105,13 @@ public class HudTabbedPane extends JTabbedPane {
             g.fillRect(0, 0, tabPane.getWidth(), tabAreaHeight);
             super.paintTabArea(g, tabPlacement, selectedIndex);
             if (mainNavigation) {
-                g.setColor(AppTheme.HUD_BORDER_DIM);
-                g.drawLine(0, tabAreaHeight - 1, tabPane.getWidth() - 1, tabAreaHeight - 1);
+                int width = tabPane.getWidth();
+                // top rail — muted warm, 2px
+                g.setColor(AppTheme.HUD_ORANGE_SOFT);
+                g.fillRect(0, 0, width, 2);
+                // bottom rail — bright accent, 3px; flush to tab-area bottom
+                g.setColor(AppTheme.ACCENT);
+                g.fillRect(0, tabAreaHeight - 3, width, 3);
             }
         }
 
@@ -115,8 +120,12 @@ public class HudTabbedPane extends JTabbedPane {
                                           int x, int y, int w, int h, boolean isSelected) {
             if (mainNavigation) {
                 if (isSelected) {
-                    g.setColor(AppTheme.HUD_ORANGE_FILL);
-                    g.fillRect(x, y, w, h);
+                    int gap = 8;
+                    int bottomRail = 3;
+                    int fillH = h - gap * 2 - bottomRail;
+                    if (fillH < 1) fillH = 1;
+                    g.setColor(AppTheme.ACCENT);
+                    g.fillRect(x, y + gap, w, fillH);
                 }
                 // unselected: no fill — paintTabArea already painted HUD_SHELL_BACKGROUND
                 return;
@@ -137,9 +146,9 @@ public class HudTabbedPane extends JTabbedPane {
             if (!tabPane.isEnabled() || !tabPane.isEnabledAt(tabIndex)) {
                 tintColor = AppTheme.HUD_DISABLED;
             } else {
-                tintColor = isSelected ? AppTheme.ACCENT : AppTheme.HUD_ORANGE_SOFT;
+                tintColor = isSelected ? AppTheme.SEL_FG : AppTheme.HUD_ORANGE_SOFT;
             }
-            int slot = tintColor == AppTheme.ACCENT ? TINT_ACTIVE
+            int slot = tintColor == AppTheme.SEL_FG ? TINT_ACTIVE
                      : tintColor == AppTheme.HUD_ORANGE_SOFT ? TINT_INACTIVE
                      : TINT_DISABLED;
             int w = iconRect.width  > 0 ? iconRect.width  : AppTheme.HUD_ICON_NAV;
@@ -173,6 +182,7 @@ public class HudTabbedPane extends JTabbedPane {
         protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex,
                                       int x, int y, int w, int h, boolean isSelected) {
             if (!isSelected) return;
+            if (mainNavigation) return; // selection = fill (inversion), no underline needed
             // Orange underline
             g.setColor(AppTheme.ACCENT);
             g.fillRect(x, y + h - 3, w, 3);
@@ -222,6 +232,8 @@ public class HudTabbedPane extends JTabbedPane {
             String upper = title != null ? title.toUpperCase() : "";
             if (!tabPane.isEnabled() || !tabPane.isEnabledAt(tabIndex)) {
                 g.setColor(AppTheme.HUD_DISABLED);
+            } else if (mainNavigation) {
+                g.setColor(isSelected ? AppTheme.SEL_FG : AppTheme.FG_MUTED);
             } else {
                 g.setColor(isSelected ? AppTheme.ACCENT : AppTheme.FG_MUTED);
             }

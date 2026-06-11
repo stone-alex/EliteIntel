@@ -1,7 +1,9 @@
 package elite.intel.ui.view;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.brain.actions.customcommand.CustomCommandRegistry;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
 import elite.intel.ui.telemetry.LlmSessionStatsSnapshot;
 import elite.intel.ui.telemetry.LlmSessionStatsTracker;
@@ -30,6 +32,16 @@ public class AiTabPanel extends JPanel {
     private HudLogArea aiPanel;
     private HudLogArea systemPanel;
 
+    // QUICK STATUS badges
+    private StatusBadge sttBadge;
+    private StatusBadge llmBadge;
+    private StatusBadge ttsBadge;
+    private StatusBadge bindingsBadge;
+    private StatusBadge commandsBadge;
+    private StatusBadge keymapBadge;
+    private boolean sleeping;
+    private String lastLlmProvider;
+
     // SYSTEM SUMMARY telemetry blocks
     private HudTelemetryBlock modelBlock;
     private HudTelemetryBlock sessionTimeBlock;
@@ -43,6 +55,7 @@ public class AiTabPanel extends JPanel {
 
     public AiTabPanel(Font monoFont) {
         LlmSessionStatsTracker.getInstance(); // ensure tracker is registered before events flow
+        sleeping = SystemSession.getInstance().isSleepingModeOn();
         EventBusManager.register(this);
         buildUi();
         summaryClockTimer = new Timer(1_000, e -> tickSummaryClock());
@@ -119,6 +132,7 @@ public class AiTabPanel extends JPanel {
         sidebar.setPreferredSize(new Dimension(SIDEBAR_WIDTH, 0));
 
         HudSection quickStatusSection = HudSection.compactCard(getText("ai.section.quickStatus"), new BorderLayout());
+        quickStatusSection.body().add(buildQuickStatusPanel(), BorderLayout.NORTH);
 
         HudSection shortcutsSection = new HudSection(getText("ai.section.shortcuts"), new BorderLayout());
         shortcutsSection.body().add(buildShortcutsPanel(toggleObsOverlay), BorderLayout.NORTH);
@@ -226,6 +240,9 @@ public class AiTabPanel extends JPanel {
         startStopServicesButton.setEnabled(true);
         recalibrateAudioButton.setEnabled(running);
         toggleWakeWordOnOff.setEnabled(running);
+        refreshSttBadge();
+        refreshLlmBadge();
+        refreshTtsBadge();
     }
 
     /** Updates summary telemetry blocks from the latest stats snapshot. */
@@ -274,6 +291,152 @@ public class AiTabPanel extends JPanel {
         if (v >= 1_000_000) return String.format("%.1fM", v / 1_000_000.0);
         if (v >= 1_000) return String.format("%.1fK", v / 1_000.0);
         return String.valueOf(v);
+    }
+
+    @Subscribe
+    public void onSleepWakeStateChanged(SleepWakeStateChangedEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            sleeping = event.sleeping();
+            refreshSttBadge();
+        });
+    }
+
+    @Subscribe
+    public void onLlmUsage(LlmUsageEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            lastLlmProvider = event.provider();
+            refreshLlmBadge();
+        });
+    }
+
+    @Subscribe
+    public void onTtsProviderChanged(TTSProviderChangedEvent event) {
+        SwingUtilities.invokeLater(this::refreshTtsBadge);
+    }
+
+    // ── QUICK STATUS badge build and refresh ──────────────────────────────────
+
+    /**
+     * Builds the QUICK STATUS panel with live STT / LLM / TTS status rows.
+     * Badges are initialised from current state and updated via event-driven refresh methods.
+     */
+    private JPanel buildQuickStatusPanel() {
+        boolean running = isServiceRunning.get();
+
+        String sttText = !running ? getText("hud.state.standby")
+                : sleeping     ? getText("hud.state.sleeping")
+                               : getText("hud.state.listening");
+        StatusBadge.State sttState = (running && !sleeping) ? StatusBadge.State.OK : StatusBadge.State.STANDBY;
+        sttBadge = new StatusBadge(sttText, sttState);
+
+        llmBadge = new StatusBadge(
+                running ? getText("hud.state.active") : getText("hud.state.standby"),
+                running ? StatusBadge.State.OK : StatusBadge.State.STANDBY);
+
+        String ttsText;
+        StatusBadge.State ttsState;
+        if (!running) {
+            ttsText = getText("hud.state.standby");
+            ttsState = StatusBadge.State.STANDBY;
+        } else {
+            boolean local = SystemSession.getInstance().useLocalTTS();
+            ttsText = local ? getText("hud.tts.local") : getText("hud.tts.cloud");
+            ttsState = StatusBadge.State.OK;
+        }
+        ttsBadge = new StatusBadge(ttsText, ttsState);
+
+        int initCmdCount = CustomCommandRegistry.getInstance().getCustomCommands().size();
+        bindingsBadge = new StatusBadge("—", StatusBadge.State.STANDBY);
+        commandsBadge = new StatusBadge(getText("hud.commands.summary", initCmdCount), StatusBadge.State.INFO);
+        keymapBadge   = new StatusBadge("—", StatusBadge.State.STANDBY);
+
+        JPanel panel = transparentPanel(null);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(quickStatusRow(getText("hud.stt"), sttBadge));
+        panel.add(Box.createRigidArea(new Dimension(0, 3)));
+        panel.add(quickStatusRow(getText("hud.llm"), llmBadge));
+        panel.add(Box.createRigidArea(new Dimension(0, 3)));
+        panel.add(quickStatusRow(getText("hud.tts"), ttsBadge));
+        panel.add(Box.createRigidArea(new Dimension(0, 3)));
+        panel.add(quickStatusRow(getText("hud.bindings"), bindingsBadge));
+        panel.add(Box.createRigidArea(new Dimension(0, 3)));
+        panel.add(quickStatusRow(getText("hud.commands"), commandsBadge));
+        panel.add(Box.createRigidArea(new Dimension(0, 3)));
+        panel.add(quickStatusRow(getText("hud.keymap"), keymapBadge));
+        return panel;
+    }
+
+    /** Single key-label + badge row for the QUICK STATUS panel. */
+    private static JPanel quickStatusRow(String key, StatusBadge badge) {
+        JPanel row = transparentPanel(new BorderLayout(4, 0));
+        row.setAlignmentX(Component.LEFT_ALIGNMENT);
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, HUD_BADGE_HEIGHT + 4));
+        JLabel label = new JLabel(key.toUpperCase() + ":");
+        label.setForeground(FG_MUTED);
+        label.setFont(label.getFont().deriveFont(Font.PLAIN, HUD_FONT_XS));
+        row.add(label, BorderLayout.WEST);
+        row.add(badge, BorderLayout.EAST);
+        return row;
+    }
+
+    private void refreshSttBadge() {
+        boolean running = isServiceRunning.get();
+        if (!running) {
+            sttBadge.setStatus(getText("hud.state.standby"), StatusBadge.State.STANDBY);
+        } else if (sleeping) {
+            sttBadge.setStatus(getText("hud.state.sleeping"), StatusBadge.State.STANDBY);
+        } else {
+            sttBadge.setStatus(getText("hud.state.listening"), StatusBadge.State.OK);
+        }
+    }
+
+    private void refreshLlmBadge() {
+        boolean running = isServiceRunning.get();
+        if (!running) {
+            llmBadge.setStatus(getText("hud.state.standby"), StatusBadge.State.STANDBY);
+        } else if (lastLlmProvider != null && !lastLlmProvider.isBlank()) {
+            llmBadge.setStatus(lastLlmProvider, StatusBadge.State.OK);
+        } else {
+            llmBadge.setStatus(getText("hud.state.active"), StatusBadge.State.OK);
+        }
+    }
+
+    private void refreshTtsBadge() {
+        boolean running = isServiceRunning.get();
+        if (!running) {
+            ttsBadge.setStatus(getText("hud.state.standby"), StatusBadge.State.STANDBY);
+        } else {
+            boolean local = SystemSession.getInstance().useLocalTTS();
+            ttsBadge.setStatus(
+                    local ? getText("hud.tts.local") : getText("hud.tts.cloud"),
+                    StatusBadge.State.OK);
+        }
+    }
+
+    @Subscribe
+    public void onBindingsSummaryChanged(BindingsSummaryChangedEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            if (event.missing() > 0) {
+                bindingsBadge.setStatus(getText("hud.bindings.badge.warn", event.missing()), StatusBadge.State.STANDBY);
+            } else {
+                bindingsBadge.setStatus(getText("hud.bindings.badge.ok"), StatusBadge.State.OK);
+            }
+        });
+    }
+
+    @Subscribe
+    public void onCustomCommandsSummaryChanged(CustomCommandsSummaryChangedEvent event) {
+        SwingUtilities.invokeLater(() ->
+                commandsBadge.setStatus(getText("hud.commands.summary", event.count()), StatusBadge.State.INFO));
+    }
+
+    @Subscribe
+    public void onKeymapSyncStateChanged(KeymapSyncStateChangedEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            StatusBadge.State state = event.inSync() ? StatusBadge.State.OK : StatusBadge.State.STANDBY;
+            String text = event.inSync() ? getText("hud.keymap.inSync") : getText("hud.keymap.modified");
+            keymapBadge.setStatus(text, state);
+        });
     }
 
     @Subscribe

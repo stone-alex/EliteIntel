@@ -71,7 +71,7 @@ public class AppTheme {
     public static final int SUBTAB_CONTENT_GAP = HUD_GAP;
     public static final int HUD_BORDER_THICKNESS = 1;
     public static final int HUD_PANEL_ARC = 12;
-    public static final int HUD_TOP_BAR_HEIGHT = 34;
+    public static final int HUD_TOP_BAR_HEIGHT = 44;
     public static final int HUD_BADGE_HEIGHT = 20;
     public static final int HUD_FIELD_HEIGHT = 34;
     public static final int HUD_BUTTON_HEIGHT = 34;
@@ -588,7 +588,8 @@ public class AppTheme {
             ep.setForeground(Color.BLACK);
         }
 
-        if (c instanceof Container cont) {
+        // TopStatusBar owns all colours of its children — do not recurse into it.
+        if (c instanceof Container cont && !(c instanceof TopStatusBar)) {
             for (Component child : cont.getComponents()) {
                 applyDarkPalette(child);
             }

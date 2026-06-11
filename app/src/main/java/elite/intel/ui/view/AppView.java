@@ -114,8 +114,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         topStatusBar = new TopStatusBar(
                 getText("app.name"),
-                systemSession.readVersionFromResources(),
-                servicesRunning
+                systemSession.readVersionFromResources()
         );
         root.add(buildTopShell(topStatusBar), BorderLayout.NORTH);
         root.add(tabs, BorderLayout.CENTER);

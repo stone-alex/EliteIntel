@@ -4,6 +4,7 @@ import elite.intel.ai.brain.actions.Commands;
 import elite.intel.ai.brain.actions.Queries;
 import elite.intel.ai.brain.i18n.PromptLanguageRules;
 
+import static elite.intel.ai.brain.actions.Commands.INTERRUPT_TTS;
 import static elite.intel.ai.brain.actions.Queries.*;
 
 public class RussianPromptRules implements PromptLanguageRules {
@@ -31,29 +32,39 @@ public class RussianPromptRules implements PromptLanguageRules {
     @Override
     public String disambiguationHints() {
         StringBuilder sb = new StringBuilder();
-        sb.append("- classify queries about location like 'как долго длится день здесь' to action → ");
+
+        sb.append("- classify commands like прервать, заткнись to interrupt action → ");
+        sb.append(INTERRUPT_TTS.getAction());
+        sb.append("\n");
+
+        sb.append("- classify queries about location like как долго длится день здесь to action → ");
         sb.append(CURRENT_LOCATION.getAction());
         sb.append("\n");
 
-        sb.append("- classify bio signals: 'Какие планеты / ещё нуждаются в биологическом или органическом сканировании? / позволяют приземлится / имеют био сигналы итд. → ");
+        sb.append("- classify bio signals: Какие планеты / ещё нуждаются в биологическом или органическом сканировании? / позволяют приземлится / имеют био сигналы итд. → ");
         sb.append(Queries.BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
         sb.append("\n");
 
-        sb.append("- classify queries about bio sample distance: 'расстояние до последнего биообразца', 'какие органические объекты ещё нужно сканировать' итд. → ");
+        sb.append("- classify queries about bio sample distance: расстояние до последнего биообразца, какие органические объекты ещё нужно сканировать итд. → ");
         sb.append(Queries.DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         sb.append("\n");
 
-        sb.append("- classify commands to fire on target such as : 'открыть огонь', 'атака', 'атакуй' итд. → ");
+        sb.append("- classify commands to fire on target such as : открыть огонь, атака, атакуй итд. → ");
         sb.append(Commands.FIGHTER_OPEN_ORDERS.getAction());
         sb.append("\n");
 
-        sb.append("- classify command 'режим анализа' → ");
+        sb.append("- classify command режим анализа → ");
         sb.append(Commands.ACTIVATE_ANALYSIS_MODE.getAction());
         sb.append("\n");
 
-        sb.append("- classify 'курс авианосца эскадрильи' → ");
+        sb.append("- classify command боевой режим → ");
+        sb.append(Commands.ACTIVATE_COMBAT_MODE.getAction());
+        sb.append("\n");
+        //переключись в боевой режим
+
+        sb.append("- classify курс авианосца эскадрильи → ");
         sb.append(SQUADRON_CARRIER_ROUTE_ANALYSIS.getAction());
-        sb.append(" with 'пункт назначения авианосца эскадрильи' → ");
+        sb.append(" with пункт назначения авианосца эскадрильи → ");
         sb.append(SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION.getAction());
         sb.append("\n");
 

@@ -1016,7 +1016,7 @@ public class NaturalSpeechIntegrationTestEN {
     @Order(209)
     @MethodSource
     void queryExobiologySamples(String input) throws InterruptedException {
-        assertRouted(input, EXOBIOLOGY_SAMPLES.getAction());
+        assertRouted(input, EXOBIOLOGY_SAMPLES_ON_THIS_PLANET.getAction());
     }
 
     static Stream<String> queryExobiologySamples() {

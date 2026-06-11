@@ -931,12 +931,11 @@ public class NaturalSpeechIntegrationTestRU {
     @Order(209)
     @MethodSource
     void queryExobiologySamples(String input) throws InterruptedException {
-        assertRouted(input, EXOBIOLOGY_SAMPLES.getAction());
+        assertRouted(input, EXOBIOLOGY_SAMPLES_ON_THIS_PLANET.getAction());
     }
 
     static Stream<String> queryExobiologySamples() {
-        return Stream.of("Какие биосканирования мы завершили?", "Какие органические объекты ещё нужно сканировать?",
-                "Какая органика или биология есть на этой планете");
+        return Stream.of("Какие биосканирования мы завершили на этой планете?", "Какие органические объекты ещё нужно сканировать на этой планете?", "Какая органика или биология есть на этой планете");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

@@ -17,6 +17,9 @@ public class FrenchInputNormalizerRules implements InputNormalizerProvider {
     public LinkedHashMap<String, String> buildSynonymMap() {
         LinkedHashMap<String, String> m = new LinkedHashMap<>();
         // Add French synonym rules here as they are identified during testing.
+        m.put("réveille-toi", "ecoute");
+        m.put("allons-y", "saute en hyperespace");
+        m.put("prochain waypoint", "saute en hyperespace");
         return m;
     }
 }

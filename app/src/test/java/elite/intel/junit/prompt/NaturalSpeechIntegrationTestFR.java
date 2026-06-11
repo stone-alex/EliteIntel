@@ -2,6 +2,7 @@ package elite.intel.junit.prompt;
 
 import elite.intel.ai.brain.commons.HandlerDispatchedEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.i18n.Language;
 import elite.intel.session.SystemSession;
@@ -54,7 +55,7 @@ public class NaturalSpeechIntegrationTestFR {
         WebSocketBroadcaster.getInstance().start();
         capture = new HandlerCapture();
         Thread.sleep(2000);
-        EventBusManager.publish(new UserInputEvent("command_verify_connection"));
+        EventBusManager.publish(new SensorDataEvent("command_verify_connection", "Acknowledge connection"));
         Thread.sleep(4000);
     }
 

@@ -1,4 +1,4 @@
-package elite.intel.ai.mouth;
+package elite.intel.ai.mouth.google;
 
 /**
  * Interface for providing voice configurations and selection logic for TTS providers.

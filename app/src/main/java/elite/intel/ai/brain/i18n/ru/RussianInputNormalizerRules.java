@@ -26,16 +26,24 @@ public class RussianInputNormalizerRules implements InputNormalizerProvider {
         LinkedHashMap<String, String> m = new LinkedHashMap<>();
         loadHudModes(m);
         loadHyperspace(m);
+        colloquialTerms(m);
         loadPhonetics(m);
         return m;
+    }
+
+    /// Slang, synonyms
+    private void colloquialTerms(LinkedHashMap<String, String> m) {
+        m.put("открыть дверь грузового отсека", "грузовой люк");
+        m.put("применить деполи", "выбросить помехи");
+        m.put("выстрелить помехами", "выбросить помехи");
+        m.put("четверть тяги", "малый ход");
+        m.put("дроп", "выйти из суперкруиза");
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // HUD modes
     // ─────────────────────────────────────────────────────────────────────────
-
     private void loadHudModes(LinkedHashMap<String, String> m) {
-        // These are safe: the phrases are long enough not to be substrings of other common words.
         m.put("боевой режим", "переключись в боевой режим");
         m.put("режим анализа", "переключись в режим анализа");
         m.put("режим исследователя", "переключись в режим анализа");
@@ -50,7 +58,6 @@ public class RussianInputNormalizerRules implements InputNormalizerProvider {
     // (e.g. "прыжок" vs "прыжков" are different forms), but the most common
     // short jump synonym "уходим" is not covered by the aliases, so map it here.
     // ─────────────────────────────────────────────────────────────────────────
-
     private void loadHyperspace(LinkedHashMap<String, String> m) {
         m.put("уходим", "прыжок в гиперпространство");
         m.put("давай прыгнем", "прыжок в гиперпространство");
@@ -61,7 +68,6 @@ public class RussianInputNormalizerRules implements InputNormalizerProvider {
     // Phonetic corrections
     // Add STT mishears specific to the Russian voice model here.
     // ─────────────────────────────────────────────────────────────────────────
-
     private void loadPhonetics(LinkedHashMap<String, String> m) {
         // Populate as Russian STT acoustic confusions are discovered during testing.
     }

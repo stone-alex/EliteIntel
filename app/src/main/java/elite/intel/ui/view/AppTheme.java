@@ -24,7 +24,7 @@ public class AppTheme {
     public static final Color FG = new Color(0xE6E6E6);
     public static final Color BUTTON_FG = new Color(0xFFFFFF);
     public static final Color BUTTON_BG = new Color(0x03529F);
-    public static final Color FG_MUTED = new Color(0xB0B0B0);
+    public static final Color FG_MUTED = new Color(0x9A6A3C);
     public static final Color ACCENT = new Color(0xFF7100);
     public static final Color ACCENT_CYAN = new Color(0x33D7E8);
     public static final Color CONSOLE_FG = new Color(0xE0FFEF);
@@ -52,7 +52,7 @@ public class AppTheme {
     public static final Color HUD_WARN = new Color(0xFFB000);
     public static final Color HUD_WARN_BG = new Color(0x2A2114);
     public static final Color HUD_DANGER = new Color(0xD94F4F);
-    public static final Color HUD_DISABLED = new Color(0x65717A);
+    public static final Color HUD_DISABLED = new Color(0x6E4A28);
     public static final Color HUD_ROW_ALT = new Color(0x0E1420);
     public static final Color HUD_HOVER = new Color(0x182838);
 
@@ -72,7 +72,7 @@ public class AppTheme {
     public static final int HUD_PADDING_SMALL = 6;
     public static final int SUBTAB_CONTENT_GAP = HUD_GAP;
     public static final int HUD_BORDER_THICKNESS = 1;
-    public static final int HUD_PANEL_ARC = 12;
+    public static final int HUD_PANEL_ARC = 0;
     public static final int HUD_TOP_BAR_HEIGHT = 44;
     public static final int HUD_BADGE_HEIGHT = 20;
     public static final int HUD_FIELD_HEIGHT = 34;

@@ -99,7 +99,7 @@ public final class HudTable {
         ) {
             JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             label.setBackground(AppTheme.HUD_BG);
-            label.setForeground(AppTheme.HUD_CYAN_SOFT);
+            label.setForeground(AppTheme.FG_MUTED);
             label.setFont(label.getFont().deriveFont(Font.BOLD, label.getFont().getSize2D()));
             label.setBorder(new EmptyBorder(verticalPadding, 8, verticalPadding, 8));
             label.setHorizontalAlignment(SwingConstants.LEFT);

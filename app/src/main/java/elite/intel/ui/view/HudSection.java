@@ -164,7 +164,7 @@ public class HudSection extends HudPanel {
                 g2.fillRect(1, 1, Math.max(0, w - 2), Math.max(0, bounds.height));
                 g2.setColor(AppTheme.HUD_BORDER_DIM);
                 g2.drawLine(1, bounds.y + bounds.height, Math.max(1, w - 2), bounds.y + bounds.height);
-                drawHeaderDots(g2, w, bounds);
+
             }
 
             if (footer != null) {

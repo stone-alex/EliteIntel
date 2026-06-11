@@ -11,7 +11,6 @@ public class HudButton extends JButton {
     private static final Color PRIMARY_FILL          = new Color(0xB04000);
     private static final Color PRIMARY_FILL_HOVER    = new Color(0xCC4D00);
     private static final Color PRIMARY_FILL_PRESSED  = new Color(0xFF6000);
-    private static final Color PRIMARY_FILL_DISABLED = new Color(0x3A1E0A);
 
     private final boolean primary;
 
@@ -27,11 +26,17 @@ public class HudButton extends JButton {
         setOpaque(false);
         setContentAreaFilled(false);
         setFocusPainted(false);
-        setForeground(primary ? AppTheme.BUTTON_FG : AppTheme.FG);
+        setForeground(primary ? AppTheme.BUTTON_FG : AppTheme.ACCENT);
         setFont(getFont().deriveFont(Font.BOLD, 12f));
         setBorder(BorderFactory.createEmptyBorder(4, 14, 4, 14));
         setPreferredSize(new Dimension(Math.max(90, getPreferredSize().width), AppTheme.HUD_BUTTON_HEIGHT));
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        // Prevent applyDarkPalette from overriding the state-driven foreground colour.
+        putClientProperty(AppTheme.HUD_LOCKED_FOREGROUND, Boolean.TRUE);
+        // Invert text to dark on the bright ACCENT pressed fill for secondary buttons.
+        if (!primary) {
+            getModel().addChangeListener(e -> setForeground(getModel().isPressed() ? AppTheme.SEL_FG : AppTheme.ACCENT));
+        }
     }
 
     @Override
@@ -42,7 +47,13 @@ public class HudButton extends JButton {
             int h = getHeight();
             ButtonModel model = getModel();
 
-            if (primary) {
+            if (!isEnabled()) {
+                // Unified disabled appearance for primary and secondary: warm fill + dim cold border.
+                g2.setColor(AppTheme.HUD_TABLE_ROW);
+                g2.fillRect(0, 0, w - 1, h - 1);
+                g2.setColor(AppTheme.HUD_BORDER_DIM);
+                g2.drawRect(0, 0, w - 1, h - 1);
+            } else if (primary) {
                 paintPrimary(g2, w, h, model);
             } else {
                 paintSecondary(g2, w, h, model);
@@ -54,13 +65,6 @@ public class HudButton extends JButton {
     }
 
     private void paintPrimary(Graphics2D g2, int w, int h, ButtonModel model) {
-        if (!isEnabled()) {
-            g2.setColor(PRIMARY_FILL_DISABLED);
-            g2.fillRect(0, 0, w - 1, h - 1);
-            g2.setColor(AppTheme.ACCENT);
-            g2.drawRect(0, 0, w - 1, h - 1);
-            return;
-        }
         Color fill = model.isPressed() ? PRIMARY_FILL_PRESSED
                    : model.isRollover() ? PRIMARY_FILL_HOVER
                    : PRIMARY_FILL;
@@ -75,11 +79,10 @@ public class HudButton extends JButton {
     }
 
     private void paintSecondary(Graphics2D g2, int w, int h, ButtonModel model) {
-        Color fill = !isEnabled() ? AppTheme.HUD_PANEL_BG
-                   : model.isPressed() ? AppTheme.HUD_PANEL_BG_ALT.darker()
-                   : model.isRollover() ? AppTheme.HUD_HOVER
-                   : AppTheme.HUD_PANEL_BG;
-        Color border = !isEnabled() ? AppTheme.HUD_BORDER_DIM : AppTheme.HUD_BORDER;
+        Color fill = model.isPressed() ? AppTheme.ACCENT
+                   : model.isRollover() ? AppTheme.HUD_TABLE_ROW_HOVER
+                   : AppTheme.HUD_TABLE_ROW;
+        Color border = AppTheme.HUD_ORANGE_SOFT;
         g2.setColor(fill);
         g2.fillRect(0, 0, w - 1, h - 1);
         g2.setColor(border);

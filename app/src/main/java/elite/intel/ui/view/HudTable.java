@@ -43,10 +43,10 @@ public final class HudTable {
         table.setFillsViewportHeight(true);
         table.setRowHeight(rowHeight);
         table.setFont(table.getFont().deriveFont(Font.PLAIN, fontSize));
-        table.setBackground(AppTheme.HUD_PANEL_BG);
+        table.setBackground(AppTheme.HUD_TABLE_BG);
         table.setForeground(AppTheme.FG);
         table.setGridColor(AppTheme.HUD_BORDER_DIM);
-        table.setSelectionBackground(AppTheme.HUD_CYAN);
+        table.setSelectionBackground(AppTheme.ACCENT);
         table.setSelectionForeground(AppTheme.SEL_FG);
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(true);
@@ -60,6 +60,13 @@ public final class HudTable {
         header.setReorderingAllowed(false);
         header.setPreferredSize(new Dimension(header.getPreferredSize().width, headerHeight));
         header.setDefaultRenderer(new HeaderRenderer(headerVerticalPadding));
+        // Belt-and-suspenders: FlatLaf also reads the client property per-component.
+        header.putClientProperty("FlatLaf.style", String.format(
+                "hoverBackground: #%06X; hoverForeground: #%06X; pressedBackground: #%06X; pressedForeground: #%06X",
+                AppTheme.HUD_BG.getRGB() & 0xFFFFFF,
+                AppTheme.FG_MUTED.getRGB() & 0xFFFFFF,
+                AppTheme.HUD_BG.getRGB() & 0xFFFFFF,
+                AppTheme.FG_MUTED.getRGB() & 0xFFFFFF));
     }
 
     /**
@@ -69,7 +76,7 @@ public final class HudTable {
      */
     public static JScrollPane scrollPane(JTable table) {
         JScrollPane scrollPane = new HudScrollPane(table);
-        scrollPane.getViewport().setBackground(AppTheme.HUD_PANEL_BG);
+        scrollPane.getViewport().setBackground(AppTheme.HUD_TABLE_BG);
         return scrollPane;
     }
 
@@ -133,8 +140,8 @@ public final class HudTable {
         ) {
             JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             if (!isSelected) {
-                label.setBackground(row % 2 == 0 ? AppTheme.HUD_PANEL_BG : AppTheme.HUD_ROW_ALT);
-                label.setForeground(AppTheme.FG);
+                label.setBackground(row % 2 == 0 ? AppTheme.HUD_TABLE_BG : AppTheme.HUD_ROW_ALT);
+                label.setForeground(AppTheme.ACCENT);
             }
             label.setBorder(new EmptyBorder(verticalPadding, 8, verticalPadding, 8));
             label.setHorizontalAlignment(SwingConstants.LEFT);

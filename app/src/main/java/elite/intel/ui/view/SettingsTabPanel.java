@@ -1,19 +1,12 @@
 package elite.intel.ui.view;
 
-import com.google.common.eventbus.Subscribe;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.ui.event.AppLogEvent;
-import elite.intel.ui.event.SystemShutDownEvent;
-import elite.intel.ui.event.UpdateAvailableEvent;
 import elite.intel.ui.view.settings.AudioSettingsPanel;
 import elite.intel.ui.view.settings.CloudServicesSettingsPanel;
 import elite.intel.ui.view.settings.LocalLlmSettingsPanel;
-import elite.intel.util.Updater;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static elite.intel.ui.view.AppTheme.makeButtonSubtle;
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
 public class SettingsTabPanel extends JPanel {
@@ -22,10 +15,9 @@ public class SettingsTabPanel extends JPanel {
     private final AudioSettingsPanel audioPanel = new AudioSettingsPanel();
     private final CloudServicesSettingsPanel cloudPanel = new CloudServicesSettingsPanel();
 
-    private JButton updateAppButton;
+    private HudUpdateButton updateAppButton;
 
     public SettingsTabPanel() {
-        EventBusManager.register(this);
         buildUi();
         cloudPanel.setOnCloudLlmUsed(() -> localLlmPanel.deactivateLocalLlm());
         cloudPanel.setOnCloudTtsUsed(() -> audioPanel.activateCloudTts());
@@ -34,7 +26,7 @@ public class SettingsTabPanel extends JPanel {
     }
 
     public void dispose() {
-        EventBusManager.unregister(this);
+        if (updateAppButton != null) updateAppButton.dispose();
     }
 
     private void buildUi() {
@@ -48,25 +40,7 @@ public class SettingsTabPanel extends JPanel {
         tabs.addTab(getText("settings.tab.audio"), scaledIcon("/images/audio.png"), audioPanel);
         tabs.addTab(getText("settings.tab.cloudServices"), scaledIcon("/images/cloud.png"), cloudPanel);
 
-        updateAppButton = makeButtonSubtle(getText("settings.update.upToDate"));
-        updateAppButton.setEnabled(false);
-        updateAppButton.setIcon(scaledIcon("/images/update.png"));
-        updateAppButton.addActionListener(e -> {
-            updateAppButton.setEnabled(false);
-            updateAppButton.setText(getText("settings.update.updating"));
-            Updater.performUpdateAsync().thenAccept(launched -> {
-                if (launched) {
-                    EventBusManager.publish(new SystemShutDownEvent());
-                } else {
-                    SwingUtilities.invokeLater(() -> {
-                        updateAppButton.setEnabled(true);
-                        updateAppButton.setText(getText("settings.update.available"));
-                    });
-                    EventBusManager.publish(new AppLogEvent(
-                            "Could not launch updater - is elite_intel_updater.jar present?"));
-                }
-            });
-        });
+        updateAppButton = new HudUpdateButton();
 
         JPanel footer = AppTheme.transparentPanel(new FlowLayout(FlowLayout.RIGHT, AppTheme.HUD_GAP, 4));
         footer.add(updateAppButton);
@@ -81,14 +55,6 @@ public class SettingsTabPanel extends JPanel {
         localLlmPanel.initData();
         audioPanel.initData();
         cloudPanel.initData();
-    }
-
-    @Subscribe
-    public void onUpdateAvailableEvent(UpdateAvailableEvent event) {
-        SwingUtilities.invokeLater(() -> {
-            updateAppButton.setEnabled(true);
-            updateAppButton.setText(getText("settings.update.available"));
-        });
     }
 
     private ImageIcon scaledIcon(String resource) {

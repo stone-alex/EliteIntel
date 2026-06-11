@@ -220,6 +220,8 @@ public class AppView extends JFrame implements AppViewInterface {
         UIManager.put("RadioButton.foreground", AppTheme.BUTTON_BG);
         UIManager.put("Button.foreground", AppTheme.BUTTON_FG);
         UIManager.put("Button.background", AppTheme.BUTTON_BG);
+        UIManager.put("Button.disabledText",       AppTheme.HUD_DISABLED);
+        UIManager.put("Button.disabledForeground", AppTheme.HUD_DISABLED);
         UIManager.put("ScrollPane.background", AppTheme.BG);
         UIManager.put("Viewport.background", AppTheme.BG);
         UIManager.put("TextField.background", AppTheme.BG_PANEL);
@@ -236,7 +238,7 @@ public class AppView extends JFrame implements AppViewInterface {
         UIManager.put("EditorPane.inactiveForeground", AppTheme.FG_MUTED);
         UIManager.put("Table.background", AppTheme.HUD_PANEL_BG);
         UIManager.put("Table.foreground", AppTheme.FG);
-        UIManager.put("Table.selectionBackground", AppTheme.HUD_CYAN);
+        UIManager.put("Table.selectionBackground", AppTheme.ACCENT);
         UIManager.put("Table.selectionForeground", AppTheme.SEL_FG);
         UIManager.put("ComboBox.background", AppTheme.HUD_PANEL_BG_ALT);
         UIManager.put("ComboBox.foreground", AppTheme.FG);

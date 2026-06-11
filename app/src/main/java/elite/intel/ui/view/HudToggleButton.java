@@ -22,6 +22,11 @@ public class HudToggleButton extends JToggleButton {
         setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
         setPreferredSize(new Dimension(Math.max(112, getPreferredSize().width), AppTheme.HUD_BUTTON_HEIGHT));
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        // Prevent applyDarkPalette from overriding the state-driven foreground colour.
+        putClientProperty(AppTheme.HUD_LOCKED_FOREGROUND, Boolean.TRUE);
+        // Keep text readable against bright ACCENT fill when selected.
+        addItemListener(e -> setForeground(isSelected() ? AppTheme.SEL_FG : AppTheme.FG));
+        setForeground(isSelected() ? AppTheme.SEL_FG : AppTheme.FG);
     }
 
     @Override
@@ -31,19 +36,19 @@ public class HudToggleButton extends JToggleButton {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             ButtonModel model = getModel();
             Color border = isSelected() ? AppTheme.ACCENT : AppTheme.HUD_BORDER;
-            Color fill = isSelected() ? AppTheme.HUD_ORANGE_FILL : AppTheme.HUD_PANEL_BG_ALT;
+            Color fill = isSelected() ? AppTheme.ACCENT : AppTheme.HUD_PANEL_BG_ALT;
             if (!isEnabled()) {
                 border = AppTheme.HUD_DISABLED;
                 fill = AppTheme.HUD_PANEL_BG;
             } else if (model.isPressed()) {
                 fill = fill.darker();
             } else if (model.isRollover()) {
-                fill = isSelected() ? AppTheme.HUD_ORANGE_FILL_HOVER : AppTheme.HUD_HOVER;
+                fill = isSelected() ? AppTheme.ACCENT.darker() : AppTheme.HUD_HOVER;
             }
             g2.setColor(fill);
-            g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
+            g2.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
             g2.setColor(border);
-            g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
+            g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
         } finally {
             g2.dispose();
         }

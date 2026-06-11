@@ -53,7 +53,10 @@ public class AppTheme {
     public static final Color HUD_WARN_BG = new Color(0x2A2114);
     public static final Color HUD_DANGER = new Color(0xD94F4F);
     public static final Color HUD_DISABLED = new Color(0x6E4A28);
-    public static final Color HUD_ROW_ALT = new Color(0x0E1420);
+    public static final Color HUD_ROW_ALT = new Color(0x0F1622);
+    public static final Color HUD_TABLE_BG = new Color(0x0B1018);
+    public static final Color HUD_TABLE_ROW = new Color(0x1A1206);
+    public static final Color HUD_TABLE_ROW_HOVER = new Color(0x2A1B08);
     public static final Color HUD_HOVER = new Color(0x182838);
 
     /** Muted amber/warm-orange body text for USER_INPUT log readouts. */
@@ -223,7 +226,7 @@ public class AppTheme {
      */
     public static Border hudDataPlaneBorder() {
         return BorderFactory.createCompoundBorder(
-                new LineBorder(HUD_BORDER_DIM, HUD_BORDER_THICKNESS, true),
+                new LineBorder(HUD_BORDER_DIM, HUD_BORDER_THICKNESS, false),
                 new EmptyBorder(1, 1, 1, 1)
         );
     }
@@ -264,7 +267,7 @@ public class AppTheme {
      */
     public static JLabel hudGroupLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setForeground(HUD_CYAN);
+        label.setForeground(FG);
         label.setFont(label.getFont().deriveFont(Font.BOLD, HUD_FONT_SECTION));
         label.putClientProperty(HUD_LOCKED_FOREGROUND, Boolean.TRUE);
         return label;
@@ -275,7 +278,7 @@ public class AppTheme {
      */
     public static Border hudFieldBorder() {
         return BorderFactory.createCompoundBorder(
-                new LineBorder(HUD_BORDER, HUD_BORDER_THICKNESS, true),
+                new LineBorder(HUD_BORDER, HUD_BORDER_THICKNESS, false),
                 new EmptyBorder(5, 8, 5, 8)
         );
     }
@@ -383,9 +386,9 @@ public class AppTheme {
         scrollBar.setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
-                thumbColor = HUD_BORDER;
+                thumbColor = HUD_DISABLED;
                 thumbDarkShadowColor = HUD_BORDER_DIM;
-                thumbHighlightColor = HUD_CYAN;
+                thumbHighlightColor = HUD_DISABLED;
                 trackColor = HUD_PANEL_BG;
                 trackHighlightColor = HUD_PANEL_BG_ALT;
             }
@@ -405,23 +408,10 @@ public class AppTheme {
                 if (thumbBounds.isEmpty() || !scrollbar.isEnabled()) return;
                 Graphics2D g2 = (Graphics2D) g.create();
                 try {
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2.setColor(HUD_BORDER);
-                    g2.fillRoundRect(thumbBounds.x + 1, thumbBounds.y + 1,
+                    g2.setColor(HUD_DISABLED);
+                    g2.fillRect(thumbBounds.x + 1, thumbBounds.y + 1,
                             Math.max(1, thumbBounds.width - 2),
-                            Math.max(1, thumbBounds.height - 2), 8, 8);
-                    g2.setColor(HUD_CYAN);
-                    if (scrollbar.getOrientation() == Adjustable.VERTICAL) {
-                        g2.drawLine(thumbBounds.x + thumbBounds.width - 2,
-                                thumbBounds.y + 4,
-                                thumbBounds.x + thumbBounds.width - 2,
-                                thumbBounds.y + thumbBounds.height - 5);
-                    } else {
-                        g2.drawLine(thumbBounds.x + 4,
-                                thumbBounds.y + thumbBounds.height - 2,
-                                thumbBounds.x + thumbBounds.width - 5,
-                                thumbBounds.y + thumbBounds.height - 2);
-                    }
+                            Math.max(1, thumbBounds.height - 2));
                 } finally {
                     g2.dispose();
                 }

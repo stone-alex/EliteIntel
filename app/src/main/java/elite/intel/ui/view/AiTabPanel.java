@@ -3,6 +3,8 @@ package elite.intel.ui.view;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.brain.actions.customcommand.CustomCommandRegistry;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.journal.events.LoadGameEvent;
+import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
 import elite.intel.ui.telemetry.LlmSessionStatsSnapshot;
@@ -22,10 +24,16 @@ import static elite.intel.ui.view.AppTheme.*;
 
 public class AiTabPanel extends JPanel {
 
-    JCheckBox toggleWakeWordOnOff;
+    private JButton wakeWordButton;
+    private JButton obsOverlayButton;
+    private boolean obsOverlayVisible;
+    private final OBSOverlayWindow[] obsOverlay = {null};
 
-    private JToggleButton startStopServicesButton;
+    private JButton startStopServicesButton;
     private JButton recalibrateAudioButton;
+    private JButton audioDevicesButton;
+    private HudUpdateButton updateAppButton;
+    private HudCommanderBlock commanderBlock;
     private final AtomicBoolean isServiceRunning = new AtomicBoolean(false);
 
     private HudLogArea userPanel;
@@ -52,8 +60,10 @@ public class AiTabPanel extends JPanel {
 
     @SuppressWarnings("unused")
     private final Timer summaryClockTimer;
+    private final Font monoFont;
 
     public AiTabPanel(Font monoFont) {
+        this.monoFont = monoFont;
         LlmSessionStatsTracker.getInstance(); // ensure tracker is registered before events flow
         sleeping = SystemSession.getInstance().isSleepingModeOn();
         EventBusManager.register(this);
@@ -65,6 +75,7 @@ public class AiTabPanel extends JPanel {
     public void dispose() {
         summaryClockTimer.stop();
         EventBusManager.unregister(this);
+        if (updateAppButton != null) updateAppButton.dispose();
     }
 
     private static final int SIDEBAR_WIDTH = 220;
@@ -75,35 +86,39 @@ public class AiTabPanel extends JPanel {
         setBorder(hudDenseScreenBorder());
 
         // --- Controls wired up, placed in right sidebar SHORTCUTS ---
-        startStopServicesButton = makeToggleButton(getText("button.startServices"));
+        startStopServicesButton = makeButtonSubtle(getText("button.startServices"));
         startStopServicesButton.addActionListener(e -> {
             EventBusManager.publish(new ToggleServicesEvent(!isServiceRunning.get()));
             startStopServicesButton.setEnabled(false);
         });
 
-        toggleWakeWordOnOff = makeCheckBox(getText("ai.sleepWake"), false);
-        toggleWakeWordOnOff.addActionListener(
-                e -> EventBusManager.publish(new ToggleWakeWordEvent(toggleWakeWordOnOff.isSelected())));
-        toggleWakeWordOnOff.setEnabled(false);
-        toggleWakeWordOnOff.setForeground(ACCENT);
+        wakeWordButton = makeButtonSubtle(wakeWordText());
+        wakeWordButton.addActionListener(e ->
+                EventBusManager.publish(new ToggleWakeWordEvent(!sleeping)));
+        wakeWordButton.setEnabled(false);
 
-        final OBSOverlayWindow[] obsOverlay = {null};
-        JCheckBox toggleObsOverlay = makeCheckBox(getText("ai.obsOverlay"), false);
-        toggleObsOverlay.setForeground(ACCENT);
-        toggleObsOverlay.setToolTipText(getText("ai.obsOverlay.tooltip"));
-        toggleObsOverlay.addActionListener(e -> SwingUtilities.invokeLater(() -> {
-            if (toggleObsOverlay.isSelected()) {
+        obsOverlayButton = makeButtonSubtle(obsOverlayText());
+        obsOverlayButton.setToolTipText(getText("ai.obsOverlay.tooltip"));
+        obsOverlayButton.addActionListener(e -> SwingUtilities.invokeLater(() -> {
+            obsOverlayVisible = !obsOverlayVisible;
+            if (obsOverlayVisible) {
                 if (obsOverlay[0] == null) obsOverlay[0] = new OBSOverlayWindow();
                 obsOverlay[0].setVisible(true);
             } else if (obsOverlay[0] != null) {
                 obsOverlay[0].setVisible(false);
             }
+            obsOverlayButton.setText(obsOverlayText());
         }));
 
-        recalibrateAudioButton = makeButton(getText("button.calibrateAudio"));
-        recalibrateAudioButton.setForeground(DISABLED_FG);
+        recalibrateAudioButton = makeButtonSubtle(getText("button.calibrateAudio"));
         recalibrateAudioButton.setEnabled(false);
         recalibrateAudioButton.addActionListener(e -> EventBusManager.publish(new RecalibrateAudioEvent()));
+
+        audioDevicesButton = makeButtonSubtle(getText("button.audioDevices"));
+        audioDevicesButton.addActionListener(e ->
+                new AudioInterfaceDialog(AiTabPanel.this).setVisible(true));
+
+        updateAppButton = new HudUpdateButton(false);
 
         // --- Log panels ---
         userPanel = new HudLogArea(30, HudLogArea.Style.USER_INPUT);
@@ -135,7 +150,9 @@ public class AiTabPanel extends JPanel {
         quickStatusSection.body().add(buildQuickStatusPanel(), BorderLayout.NORTH);
 
         HudSection shortcutsSection = new HudSection(getText("ai.section.shortcuts"), new BorderLayout());
-        shortcutsSection.body().add(buildShortcutsPanel(toggleObsOverlay), BorderLayout.NORTH);
+        shortcutsSection.body().add(buildShortcutsPanel(), BorderLayout.CENTER);
+        commanderBlock.setCredits(PlayerSession.getInstance().getPersonalCredits());
+        commanderBlock.tickClock();
 
         sidebar.add(quickStatusSection, BorderLayout.NORTH);
         sidebar.add(shortcutsSection, BorderLayout.CENTER);
@@ -168,31 +185,48 @@ public class AiTabPanel extends JPanel {
         add(summarySection, BorderLayout.SOUTH);
     }
 
-    /** Builds the vertical list of control buttons and checkboxes for the SHORTCUTS sidebar section. */
-    private JPanel buildShortcutsPanel(JCheckBox toggleObsOverlay) {
-        JPanel panel = transparentPanel(null);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    /**
+     * Builds the three-zone SHORTCUTS panel: top runtime buttons, centered commander block,
+     * bottom configuration buttons.
+     */
+    private JPanel buildShortcutsPanel() {
+        JPanel root = transparentPanel(new BorderLayout(0, HUD_GAP));
 
-        startStopServicesButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        startStopServicesButton.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-                startStopServicesButton.getPreferredSize().height));
+        JPanel top = transparentPanel(null);
+        top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
+        JPanel bottom = transparentPanel(null);
+        bottom.setLayout(new BoxLayout(bottom, BoxLayout.Y_AXIS));
 
-        recalibrateAudioButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        recalibrateAudioButton.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-                recalibrateAudioButton.getPreferredSize().height));
+        for (JButton b : new JButton[]{startStopServicesButton, wakeWordButton,
+                obsOverlayButton, audioDevicesButton, recalibrateAudioButton,
+                updateAppButton}) {
+            b.setAlignmentX(Component.LEFT_ALIGNMENT);
+            b.setMaximumSize(new Dimension(Integer.MAX_VALUE, AppTheme.HUD_BUTTON_HEIGHT));
+        }
 
-        toggleWakeWordOnOff.setAlignmentX(Component.LEFT_ALIGNMENT);
-        toggleObsOverlay.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // top: runtime controls
+        top.add(startStopServicesButton);
+        top.add(Box.createRigidArea(new Dimension(0, HUD_GAP)));
+        top.add(wakeWordButton);
+        top.add(Box.createRigidArea(new Dimension(0, HUD_GAP)));
+        top.add(obsOverlayButton);
 
-        panel.add(startStopServicesButton);
-        panel.add(Box.createRigidArea(new Dimension(0, HUD_GAP)));
-        panel.add(recalibrateAudioButton);
-        panel.add(Box.createRigidArea(new Dimension(0, HUD_GAP)));
-        panel.add(toggleWakeWordOnOff);
-        panel.add(Box.createRigidArea(new Dimension(0, 4)));
-        panel.add(toggleObsOverlay);
+        // bottom: audio + update
+        bottom.add(audioDevicesButton);
+        bottom.add(Box.createRigidArea(new Dimension(0, HUD_GAP)));
+        bottom.add(recalibrateAudioButton);
+        bottom.add(Box.createRigidArea(new Dimension(0, HUD_GAP)));
+        bottom.add(updateAppButton);
 
-        return panel;
+        // center: commander identity block, centred in available space
+        commanderBlock = new HudCommanderBlock(monoFont);
+        JPanel centerWrap = transparentPanel(new GridBagLayout());
+        centerWrap.add(commanderBlock, new GridBagConstraints());
+
+        root.add(top, BorderLayout.NORTH);
+        root.add(centerWrap, BorderLayout.CENTER);
+        root.add(bottom, BorderLayout.SOUTH);
+        return root;
     }
 
     private HudSection logSection(String title, JComponent content) {
@@ -201,8 +235,9 @@ public class AiTabPanel extends JPanel {
         return section;
     }
 
-    public void initData(boolean streamingModeOn, boolean servicesRunning) {
-        toggleWakeWordOnOff.setSelected(streamingModeOn);
+    public void initData(boolean sleepingModeOn, boolean servicesRunning) {
+        this.sleeping = sleepingModeOn;
+        wakeWordButton.setText(wakeWordText());
         applyServiceState(servicesRunning);
     }
 
@@ -235,11 +270,9 @@ public class AiTabPanel extends JPanel {
     private void applyServiceState(boolean running) {
         isServiceRunning.set(running);
         startStopServicesButton.setText(running ? getText("button.stopServices") : getText("button.startServices"));
-        startStopServicesButton.setForeground(BUTTON_FG);
-        startStopServicesButton.setBackground(BUTTON_BG);
         startStopServicesButton.setEnabled(true);
         recalibrateAudioButton.setEnabled(running);
-        toggleWakeWordOnOff.setEnabled(running);
+        wakeWordButton.setEnabled(running);
         refreshSttBadge();
         refreshLlmBadge();
         refreshTtsBadge();
@@ -262,13 +295,14 @@ public class AiTabPanel extends JPanel {
         updateTph(snap);
     }
 
-    /** Ticks the session-time and tokens-per-hour blocks every second. */
+    /** Ticks the session-time, tokens-per-hour, and commander clock blocks every second. */
     private void tickSummaryClock() {
         LlmSessionStatsSnapshot snap = LlmSessionStatsTracker.getInstance().getSnapshot();
         Duration d = Duration.between(snap.sessionStart(), java.time.Instant.now());
         sessionTimeBlock.setValue(String.format("%02d:%02d:%02d",
                 d.toHours(), d.toMinutesPart(), d.toSecondsPart()));
         updateTph(snap);
+        if (commanderBlock != null) commanderBlock.tickClock();
     }
 
     private void updateTph(LlmSessionStatsSnapshot snap) {
@@ -297,6 +331,7 @@ public class AiTabPanel extends JPanel {
     public void onSleepWakeStateChanged(SleepWakeStateChangedEvent event) {
         SwingUtilities.invokeLater(() -> {
             sleeping = event.sleeping();
+            wakeWordButton.setText(wakeWordText());
             refreshSttBadge();
         });
     }
@@ -427,9 +462,13 @@ public class AiTabPanel extends JPanel {
         });
     }
 
-    @Subscribe
-    public void onVoiceInputModeToggle(VoiceInputModeToggleEvent event) {
-        SwingUtilities.invokeLater(() -> toggleWakeWordOnOff.setSelected(event.isStreaming()));
+    private String wakeWordText() {
+        // sleeping → offer to wake up; listening → offer to sleep
+        return getText(sleeping ? "ai.action.wake" : "ai.action.sleep");
+    }
+
+    private String obsOverlayText() {
+        return getText(obsOverlayVisible ? "ai.action.hideObs" : "ai.action.showObs");
     }
 
     @Subscribe
@@ -439,6 +478,11 @@ public class AiTabPanel extends JPanel {
             aiPanel.clear();
             systemPanel.clear();
         });
+    }
+
+    @Subscribe
+    public void onLoadGame(LoadGameEvent event) {
+        SwingUtilities.invokeLater(() -> commanderBlock.setCredits(event.getCredits()));
     }
 
     /**

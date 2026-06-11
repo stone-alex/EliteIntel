@@ -248,7 +248,7 @@ final class CustomCommandImportDialog extends JDialog {
             CustomCommandExportImportService.ImportCandidate c = candidates.get(row);
 
             if (!isSelected) {
-                label.setBackground(row % 2 == 0 ? AppTheme.HUD_PANEL_BG : AppTheme.HUD_ROW_ALT);
+                label.setBackground(row % 2 == 0 ? AppTheme.HUD_TABLE_BG : AppTheme.HUD_ROW_ALT);
                 if (!c.isValid()) {
                     label.setForeground(AppTheme.HUD_DANGER);
                 } else if (c.hasConflict()) {

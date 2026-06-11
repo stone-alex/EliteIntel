@@ -3,11 +3,10 @@ package elite.intel.ui.view;
 import javax.swing.*;
 import java.awt.*;
 
-import static elite.intel.ui.view.AppTheme.FG;
+import static elite.intel.ui.view.AppTheme.ACCENT;
 import static elite.intel.ui.view.AppTheme.HUD_DISABLED;
-import static elite.intel.ui.view.AppTheme.HUD_HOVER;
-import static elite.intel.ui.view.AppTheme.HUD_PANEL_BG;
-import static elite.intel.ui.view.AppTheme.HUD_ROW_ALT;
+import static elite.intel.ui.view.AppTheme.HUD_TABLE_ROW;
+import static elite.intel.ui.view.AppTheme.HUD_TABLE_ROW_HOVER;
 
 /**
  * Table renderer for binding rows.
@@ -31,19 +30,16 @@ class BindingSlotCellRenderer extends HudTable.CellRenderer {
             int column
     ) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        label.setHorizontalAlignment(column == 0 ? SwingConstants.LEFT : SwingConstants.RIGHT);
         boolean notDefined = elite.intel.ui.i18n.MultiLingualTextProvider
                 .getText("bindings.status.notDefined")
                 .equals(value);
         if (!isSelected) {
-            Color rowBg = row % 2 == 0 ? HUD_PANEL_BG : HUD_ROW_ALT;
-            label.setBackground(isHovered(table, row) ? HUD_HOVER : rowBg);
-            label.setForeground(notDefined ? HUD_DISABLED : FG);
+            Object hoveredObj = table.getClientProperty(BindingsGroupTableFactory.HOVER_ROW_PROPERTY);
+            boolean hovered = hoveredObj instanceof Integer h && h == row;
+            label.setBackground(hovered ? HUD_TABLE_ROW_HOVER : HUD_TABLE_ROW);
+            label.setForeground(notDefined ? HUD_DISABLED : ACCENT);
         }
         return label;
-    }
-
-    private boolean isHovered(JTable table, int row) {
-        Object value = table.getClientProperty(BindingsGroupTableFactory.HOVER_ROW_PROPERTY);
-        return value instanceof Integer hoveredRow && hoveredRow == row;
     }
 }

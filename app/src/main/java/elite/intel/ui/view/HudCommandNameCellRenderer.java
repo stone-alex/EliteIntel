@@ -45,7 +45,7 @@ final class HudCommandNameCellRenderer extends HudTable.CellRenderer {
 
         JLabel id = new JLabel(nullToBlank(commandValue.id()));
         id.setAlignmentX(Component.LEFT_ALIGNMENT);
-        id.setForeground(isSelected ? AppTheme.SEL_FG : AppTheme.HUD_CYAN_SOFT);
+        id.setForeground(isSelected ? AppTheme.SEL_FG : AppTheme.FG_MUTED);
         id.setFont(fallback.getFont().deriveFont(Font.PLAIN, Math.max(10f, fallback.getFont().getSize2D() - 3f)));
 
         cell.add(Box.createVerticalGlue());

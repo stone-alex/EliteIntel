@@ -596,18 +596,23 @@ public class BindingsTabPanel extends JPanel {
 
     private JScrollPane groupedTablesScrollPane(JPanel panel) {
         JScrollPane scrollPane = hudScrollPane(panel);
-        scrollPane.getViewport().setBackground(HUD_PANEL_BG);
+        scrollPane.getViewport().setBackground(HUD_BG);
         scrollPane.getVerticalScrollBar().setUnitIncrement(BindingsGroupTableFactory.TABLE_ROW_HEIGHT * SCROLL_UNIT_ROWS);
         scrollPane.setBorder(hudDataPlaneBorder());
         return scrollPane;
     }
 
     private void applyOuterScrollPaneDataPlaneBorders() {
-        // AppTheme restyles scroll panes after buildUi; restore the Bindings data-plane frame after palette passes.
-        if (usedBindingsScrollPane != null)
+        // AppTheme restyles scroll panes after buildUi; restore the Bindings data-plane frame
+        // (border AND viewport bg) after palette passes — styleScrollPane resets viewport to HUD_PANEL_BG.
+        if (usedBindingsScrollPane != null) {
             usedBindingsScrollPane.setBorder(hudDataPlaneBorder());
-        if (missingBindingsScrollPane != null)
+            usedBindingsScrollPane.getViewport().setBackground(HUD_BG);
+        }
+        if (missingBindingsScrollPane != null) {
             missingBindingsScrollPane.setBorder(hudDataPlaneBorder());
+            missingBindingsScrollPane.getViewport().setBackground(HUD_BG);
+        }
     }
 
     private JPanel nestedTabContent(JComponent content) {
@@ -679,17 +684,17 @@ public class BindingsTabPanel extends JPanel {
 
             targetPanel.add(sectionHeader(group));
             targetPanel.add(tableFactory.groupTable(rows, outerScrollPaneFor(targetPanel), columnNames));
-            targetPanel.add(Box.createVerticalStrut(5));
+            targetPanel.add(Box.createVerticalStrut(6));
         }
         targetPanel.add(Box.createVerticalGlue());
         targetPanel.revalidate();
         targetPanel.repaint();
     }
 
-    private JLabel sectionHeader(BindingGroup group) {
+    private JComponent sectionHeader(BindingGroup group) {
         JLabel label = hudGroupLabel(getText(group.getLabelKey()).toUpperCase());
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
-        label.setBorder(new EmptyBorder(6, 0, 2, 0));
+        label.setBorder(new EmptyBorder(10, 8, 10, 0));
         return label;
     }
 

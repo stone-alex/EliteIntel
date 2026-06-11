@@ -134,7 +134,7 @@ public class KokoroTTS implements MouthInterface {
 
     @Override
     public void stop() {
-        EventBusManager.unregister(this);
+        if (running) EventBusManager.unregister(this);
         running = false;
         synthesisQueue.clear();
         playbackQueue.clear();

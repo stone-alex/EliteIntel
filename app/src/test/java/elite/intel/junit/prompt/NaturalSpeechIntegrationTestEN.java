@@ -2,6 +2,7 @@ package elite.intel.junit.prompt;
 
 import elite.intel.ai.brain.commons.HandlerDispatchedEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.i18n.Language;
 import elite.intel.session.SystemSession;
@@ -60,7 +61,7 @@ public class NaturalSpeechIntegrationTestEN {
         Thread.sleep(2000);
         /// this allows LLM to cache the prompt header / same request runs on app
         /// startup.
-        EventBusManager.publish(new UserInputEvent("command_verify_connection"));
+        EventBusManager.publish(new SensorDataEvent("ping - connection check", "Acknowledge connection"));
         Thread.sleep(4000);
     }
 
@@ -1015,7 +1016,7 @@ public class NaturalSpeechIntegrationTestEN {
     @Order(209)
     @MethodSource
     void queryExobiologySamples(String input) throws InterruptedException {
-        assertRouted(input, EXOBIOLOGY_SAMPLES.getAction());
+        assertRouted(input, EXOBIOLOGY_SAMPLES_ON_THIS_PLANET.getAction());
     }
 
     static Stream<String> queryExobiologySamples() {

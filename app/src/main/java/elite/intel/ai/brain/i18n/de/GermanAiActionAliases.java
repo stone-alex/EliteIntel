@@ -224,7 +224,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
 
         map.put("key bindings prüfen, fehlende tastenbelegung, unbelegte tasten, tastaturbelegung, bindings prüfen, fehlende bindings", KEY_BINDINGS_ANALYSIS.getAction());
         map.put("bio signale im system erledigt, organik im system gescannt, wie viele bio samples im system, bio signale im system, welche planeten haben biosignale, welche planeten müssen noch gescannt werden, bio scan fortschritt", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
-        map.put("exobiologie proben, biologische proben, organische proben am ort, welche organismen, was bleibt zu scannen, verbleibende organismen, exobiologie fortschritt, was wurde hier gescannt, organik auf diesem planeten", EXOBIOLOGY_SAMPLES.getAction());
+        map.put("exobiologie proben, biologische proben, organische proben am ort, welche organismen, was bleibt zu scannen, verbleibende organismen, exobiologie fortschritt, was wurde hier gescannt, organik auf diesem planeten", EXOBIOLOGY_SAMPLES_ON_THIS_PLANET.getAction());
         map.put("entfernung zur letzten bio probe, wie weit zur probe, entfernung zum letzten organismus, reichweite zur bio probe, zur bio probe navigieren", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         map.put("biom analysieren, biom analyse, welches biom {key:X}, planetenbiom, atmosphärenanalyse, welches leben ist hier, biom typ", PLANET_BIOME_ANALYSIS.getAction());
         map.put("stellare objekte, planeten im system, landbare planeten, ist planet oder mond landbar, körper im system, welche planeten, wie viele planeten, systemkörper, ringe, eisringe", QUERY_STELLAR_OBJETS.getAction());

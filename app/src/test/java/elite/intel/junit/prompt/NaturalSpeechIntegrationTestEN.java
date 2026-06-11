@@ -804,7 +804,7 @@ public class NaturalSpeechIntegrationTestEN {
     }
 
     static Stream<String> bareCarrierStatusDefaultsToFleet() {
-        return Stream.of("carrier status", "carrier balance", "carrier funds");
+        return Stream.of("fleet carrier status", "fleet carrier balance", "fleet carrier funds");
     }
 
     // =========================================================================
@@ -1042,7 +1042,7 @@ public class NaturalSpeechIntegrationTestEN {
     }
 
     static Stream<String> queryCarrierStatus() {
-        return Stream.of("What is our carrier range?", "What's my fleet carrier fuel status",
+        return Stream.of("What is our fleet carrier range?", "What's my fleet carrier fuel status",
                 "How long can we operate on current funds?", "How far can carrier we jump with current tritium?");
     }
 

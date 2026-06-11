@@ -1,4 +1,6 @@
-package elite.intel.ai.brain.i18n;
+package elite.intel.ai.brain.i18n.ru;
+
+import elite.intel.ai.brain.i18n.InputNormalizerProvider;
 
 import java.util.LinkedHashMap;
 
@@ -12,7 +14,7 @@ import java.util.LinkedHashMap;
  * you are certain no common word contains them as a substring.
  * <p>
  * When in doubt, add the synonym as a comma-separated variant in
- * {@link RussianAiActionAliases} instead — the Reducer handles that correctly.
+ * {@link RussianAiActionAliases} instead  the Reducer handles that correctly.
  * <p>
  * <strong>Phonetic corrections</strong> belong here too, once the Russian STT
  * engine (Whisper, etc.) is characterised and common mishears are known.

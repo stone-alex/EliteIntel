@@ -1,6 +1,10 @@
 package elite.intel.junit.prompt;
 
-import elite.intel.ai.brain.i18n.*;
+import elite.intel.ai.brain.i18n.AiActionAliasProvider;
+import elite.intel.ai.brain.i18n.de.GermanAiActionAliases;
+import elite.intel.ai.brain.i18n.en.EnglishAiActionAliases;
+import elite.intel.ai.brain.i18n.ru.RussianAiActionAliases;
+import elite.intel.ai.brain.i18n.uk.UkrainianAiActionAliases;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

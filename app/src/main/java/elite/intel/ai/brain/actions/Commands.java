@@ -58,7 +58,7 @@ public enum Commands {
     MINING_ON_OFF                                       ("toggle_mining_announcements", null, MiningOnOffHandler.class),
     ROUTE_ON_OFF                                        ("toggle_route_announcements", null, RouteAnnouncementsOnOffHandler.class),
     TOGGLE_ALL_ANNOUNCEMENTS                            ("toggle_all_announcements", null, ToggleAllAnnouncementsHandler.class),
-    HONK_THE_SYSTEM                                     ("onk_the_system", null, HonkTheSystemHandler.class),
+    HONK_THE_SYSTEM                                     ("honk", null, HonkTheSystemHandler.class),
 
     INCREASE_SPEED_BY                                   ("increase_speed", BINDING_INCREASE_SPEED.getGameBinding(),  SpeedPlusControlHandler.class),
     DECREASE_SPEED_BY                                   ("decrease_speed", BINDING_DECREASE_SPEED.getGameBinding(),  SpeedMinusControlHandler.class),

@@ -1,5 +1,6 @@
-package elite.intel.ai.brain.i18n;
+package elite.intel.ai.brain.i18n.de;
 
+import elite.intel.ai.brain.i18n.AiActionAliasProvider;
 import elite.intel.session.Status;
 
 import java.util.Map;

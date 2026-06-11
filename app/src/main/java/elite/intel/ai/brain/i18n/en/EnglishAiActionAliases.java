@@ -1,5 +1,6 @@
-package elite.intel.ai.brain.i18n;
+package elite.intel.ai.brain.i18n.en;
 
+import elite.intel.ai.brain.i18n.AiActionAliasProvider;
 import elite.intel.session.Status;
 
 import java.util.Map;
@@ -142,7 +143,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("find commodity, find nearest commodity, buy commodity, where to buy, find market{key:X, max_distance:Y, state:true/false}", FIND_COMMODITY.getAction());
         map.put("find nearest fleet carrier, nearest carrier", FIND_NEAREST_FLEET_CARRIER.getAction());
 
-        // fleet carrier — bare "carrier" without "squadron" always means fleet/my carrier
+        // fleet carrier  bare "carrier" without "squadron" always means fleet/my carrier
         map.put("set carrier fuel reserve, carrier tritium reserve {key:X}", SET_CARRIER_FUEL_RESERVE.getAction());
         map.put("calculate fleet carrier route, plan carrier route, carrier jump route", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
         map.put("enter carrier destination, set carrier destination, carrier destination", ENTER_FLEET_CARRIER_DESTINATION.getAction());
@@ -154,7 +155,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("carrier ETA, when does carrier arrive, how long until carrier, carrier arrival time, carrier arrival, carrier jump time, carrier next jump time", FLEET_CARRIER_ETA.getAction());
         map.put("distance to carrier, where is our carrier, how far is carrier, range to carrier, carrier proximity, how far away is carrier", DISTANCE_TO_CARRIER.getAction());
 
-        // squadron carrier — must explicitly say "squadron carrier"
+        // squadron carrier  must explicitly say "squadron carrier"
         map.put("squadron carrier route, squadron carrier navigation, squadron carrier jump route, how many jumps on squadron carrier route, jumps remaining on squadron carrier", SQUADRON_CARRIER_ROUTE_ANALYSIS.getAction());
         map.put("where is squadron carrier going, squadron carrier heading, squadron carrier endpoint, squadron carrier final destination", SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION.getAction());
         map.put("squadron carrier tritium, squadron carrier fuel, squadron tritium supply, squadron carrier fuel level, squadron carrier tritium status", SQUADRON_CARRIER_TRITIUM_SUPPLY.getAction());

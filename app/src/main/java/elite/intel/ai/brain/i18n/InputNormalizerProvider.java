@@ -1,12 +1,14 @@
 package elite.intel.ai.brain.i18n;
 
+import elite.intel.ai.brain.i18n.en.EnglishInputNormalizerRules;
+
 import java.util.LinkedHashMap;
 
 /**
  * Per-language synonym substitution rules for {@link elite.intel.ai.brain.InputNormalizer}.
  * <p>
  * One implementation per language lives in this package. A localizer only needs to
- * edit their own file — no shared state, no merge conflicts.
+ * edit their own file  no shared state, no merge conflicts.
  * <p>
  * <strong>Ordering contract:</strong> entries in the returned map are applied in
  * insertion order. More-specific (longer) phrases MUST be added before any shorter
@@ -33,7 +35,7 @@ public interface InputNormalizerProvider {
      * after synonym substitution. Return {@code null} to skip stripping.
      * <p>
      * Use Unicode-aware boundary assertions ({@code (?<![\\p{L}])} / {@code (?![\\p{L}])})
-     * for non-Latin scripts — Java's {@code \b} is ASCII-only.
+     * for non-Latin scripts  Java's {@code \b} is ASCII-only.
      */
     default String noiseWordPattern() {
         return null;

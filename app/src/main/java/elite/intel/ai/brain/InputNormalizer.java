@@ -9,7 +9,7 @@ import java.util.Map;
  * session language, then stripping any language-specific noise words.
  * <p>
  * Language rules live in per-language files under
- * {@code elite.intel.ai.brain.i18n} — one file per language, no shared state.
+ * {@code elite.intel.ai.brain.i18n}  one file per language, no shared state.
  * Add or edit synonyms in the appropriate {@code *InputNormalizerRules} class.
  */
 public class InputNormalizer {

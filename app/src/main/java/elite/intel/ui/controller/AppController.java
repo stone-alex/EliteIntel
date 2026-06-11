@@ -216,7 +216,7 @@ public class AppController implements Runnable {
 
         Timer connectionCheckTimer = new Timer(2000, e -> {
             EventBusManager.publish(new AiVoxResponseEvent(StringUtls.localizedSpeech("speech.connectingToLlm")));
-            EventBusManager.publish(new UserInputEvent(CONNECTION_CHECK_COMMAND));
+            EventBusManager.publish(new SensorDataEvent(CONNECTION_CHECK_COMMAND, "Acknowledge connection, let use know we are on line and ready to go."));
         });
         connectionCheckTimer.setRepeats(false);
         connectionCheckTimer.start();

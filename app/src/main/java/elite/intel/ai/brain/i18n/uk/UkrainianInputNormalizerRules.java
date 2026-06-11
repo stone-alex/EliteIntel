@@ -1,4 +1,7 @@
-package elite.intel.ai.brain.i18n;
+package elite.intel.ai.brain.i18n.uk;
+
+import elite.intel.ai.brain.i18n.InputNormalizerProvider;
+import elite.intel.ai.brain.i18n.ru.RussianInputNormalizerRules;
 
 import java.util.LinkedHashMap;
 

@@ -66,7 +66,9 @@ public class KokoroTTS implements MouthInterface {
                                  @Nullable CompletableFuture<Void> completionFuture) {
     }
 
-    /** Synthesized PCM paired with an optional completion future from the originating request. */
+    /**
+     * Synthesized PCM paired with an optional completion future from the originating request.
+     */
     private record PlaybackTask(byte[] pcm, @Nullable CompletableFuture<Void> completionFuture) {
     }
 
@@ -195,7 +197,7 @@ public class KokoroTTS implements MouthInterface {
         log.info("KokoroTTS interrupted and queues cleared");
 
         if (synthesisThread == null || !synthesisThread.isAlive() ||
-            playbackThread == null || !playbackThread.isAlive()) {
+                playbackThread == null || !playbackThread.isAlive()) {
             log.warn("KokoroTTS worker died - restarting");
             start();
         }
@@ -222,7 +224,9 @@ public class KokoroTTS implements MouthInterface {
         String[] allSentences = sanitizedText.split("(?<=[.,!?])\\s+(?=\\S)");
         // Collect non-blank sentences so the completion future goes to the actual last one
         List<String> sentences = new ArrayList<>();
-        for (String s : allSentences) { if (!s.isBlank()) sentences.add(s); }
+        for (String s : allSentences) {
+            if (!s.isBlank()) sentences.add(s);
+        }
         CompletableFuture<Void> completionFuture = event.getCompletionFuture();
         for (int i = 0; i < sentences.size(); i++) {
             boolean isLast = (i == sentences.size() - 1);
@@ -375,10 +379,18 @@ public class KokoroTTS implements MouthInterface {
 
     // -- Engine construction ---------------------------------------------------
 
+    /**
+     * NOTE: Kokoro will speak other languages but with accent.
+     * Hindi hi
+     * Italian it
+     * Japanese ja
+     * Portuguese (Brazilian) pt-br
+     * Chinese (Mandarin) zh
+     */
     private static String kokoroLangCode(Language language) {
         return switch (language) {
-            case FR -> "fr-fr";
-            //case ES -> "es-es";
+            case FR -> "fr";
+            case ES -> "es";
             default -> "en-us";
         };
     }
@@ -388,7 +400,7 @@ public class KokoroTTS implements MouthInterface {
         if (!Files.exists(modelDir)) {
             throw new IllegalStateException(
                     "Kokoro model missing at: " + modelDir +
-                    " - run the installer to download TTS models.");
+                            " - run the installer to download TTS models.");
         }
 
         OfflineTtsKokoroModelConfig kokoro = OfflineTtsKokoroModelConfig.builder()

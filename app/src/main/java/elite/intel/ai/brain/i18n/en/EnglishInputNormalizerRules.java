@@ -1,24 +1,80 @@
-package elite.intel.ai.brain.i18n;
+package elite.intel.ai.brain.i18n.en;
+
+import elite.intel.ai.brain.i18n.InputNormalizerProvider;
 
 import java.util.LinkedHashMap;
 
 /**
- * English synonym substitution rules for the InputNormalizer.
- * <p>
- * The map is split into domain-specific load methods. Ordering within the
- * final map is significant — more specific (longer) phrases must be registered
- * before any single-word entry that is a substring of those phrases.
- * <p>
- * Two inter-method ordering constraints must be respected:
- * <ol>
- *   <li>{@code loadHudModes()} before {@code loadShipSystems()} —
- *       "activate combat mode" must precede the single-word "activate".</li>
- *   <li>{@code loadCombatAndVehicles()} before {@code loadShipSystems()} —
- *       "raise"/"stow" → "retract" must precede "retract cargo scoop" → "close cargo scoop".</li>
- * </ol>
- * <p>
- * Context-sensitive verbs (show, open, set, check) are intentionally excluded —
- * the LLM handles those correctly and normalization would introduce false substitutions.
+ * The EnglishInputNormalizerRules class provides synonym substitution rules and noise word patterns
+ * for normalizing user input in English. It serves as a language-specific implementation of the
+ * InputNormalizerProvider interface.
+ *
+ * The primary purpose of this class is to preprocess and normalize English input text by replacing
+ * synonyms with their canonical forms and stripping noise words where applicable. The transformations
+ * are applied using ordered mappings that ensure specific phrases are substituted before shorter phrases
+ * that are substrings of them.
+ *
+ * Methods in this class define specific synonym mappings for various lexical and contextual categories,
+ * such as HUD modes, navigation commands, hyperspace actions, and more. The implementation also allows
+ * for phonetic-based substitutions to correct specific acoustic confusions that other modules cannot resolve.
+ *
+ * Superclasses:
+ * - java.lang.Object
+ * - elite.intel.ai.brain.i18n.InputNormalizerProvider
+ *
+ * Methods:
+ *
+ * buildSynonymMap:
+ * - Builds the ordered synonym map that matches input phrases to their canonical forms. This map is used
+ *   to normalize text inputs by replacing synonyms based on the specified rules.
+ * - Returns a LinkedHashMap of synonyms and their transformations.
+ *
+ * noiseWordPattern:
+ * - Returns a regex pattern for identifying and stripping noise words from normalized input after synonym
+ *   substitutions. Returns null if no noise word removal is required.
+ *
+ * loadHudModes:
+ * - Defines synonym mappings related to HUD mode commands, such as switching between combat and analysis modes.
+ * - Maps phrases to their normalized forms for consistency in command recognition.
+ *
+ * loadNavigation:
+ * - Defines synonym mappings for navigation-related commands such as finding locations, setting routes,
+ *   and cancelling navigation.
+ * - Includes mappings for various verb structures and synonyms.
+ *
+ * loadHyperspace:
+ * - Handles synonym mappings specific to hyperspace-related actions, enabling consistent interpretation of
+ *   commands for transitioning between systems.
+ *
+ * loadLandingAndBubble:
+ * - Provides synonym substitutions for commands related to landing, station interactions, and local operations
+ *   ('bubble' refers to a localized play area in the game).
+ *
+ * loadCombatAndVehicles:
+ * - Maps synonyms for combat-related commands and vehicle operations. Includes substitutions for targeting,
+ *   threat prioritization, and vehicle deployment.
+ *
+ * loadShipSystems:
+ * - Normalizes commands relevant to ship system management, such as power distribution and system activation.
+ *
+ * loadRouteAndShipQueries:
+ * - Covers synonym mappings for route-related queries and ship-related commands directed at navigation or
+ *   utility explanations.
+ *
+ * loadExploration:
+ * - Focuses on exploration-related commands, such as planetary data retrieval, resource searching, and
+ *   general exploratory actions.
+ *
+ * loadCarrierAndTrade:
+ * - Defines mappings for carrier commands and trading-related actions, assisting in economic and fleet
+ *   management scenarios.
+ *
+ * loadGameWorldQueries:
+ * - Normalizes input phrases used to inquire about world state, missions, and environmental interactions.
+ *
+ * loadPhonetics:
+ * - Provides phonetic-based substitution mappings for acoustic confusions that are outside the scope of
+ *   existing correction mechanisms. Designed to handle phonetic output discrepancies from speech-to-text systems.
  */
 public class EnglishInputNormalizerRules implements InputNormalizerProvider {
 
@@ -325,8 +381,9 @@ public class EnglishInputNormalizerRules implements InputNormalizerProvider {
         m.put("close scanner", "exit close panel");
         m.put("close the scanner", "exit close panel");
 
-        // System scan
-        m.put("honk", "scan the system");
+        // System scan — "honk" always maps to the honk action. Any phrase containing "honk" is normalized
+        // to "honk" so it bypasses the LLM and hits the alias directly.
+        m.put("honk the system", "honk");
         m.put("full scan", "scan the system");
         m.put("fss scan", "scan the system");
         m.put("open fss and scan", "scan the system");
@@ -594,7 +651,7 @@ public class EnglishInputNormalizerRules implements InputNormalizerProvider {
         // Key bindings - normalize to interrogative so COMMAND/QUERY classifier routes correctly
         m.put("check key bindings", "what key bindings are missing");
         m.put("missing key bindings", "what key bindings are missing");
-        m.put("unbound keys", "what keys are unbound");
+        m.put("unbound keys", "what key bindings are missing");
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -602,7 +659,7 @@ public class EnglishInputNormalizerRules implements InputNormalizerProvider {
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Acoustic confusions that SttCorrector cannot catch — cases where Parakeet's
+     * Acoustic confusions that SttCorrector cannot catch  cases where Parakeet's
      * phonetic output is structurally unlike the intended word.
      * Do NOT add entries that SttCorrector already handles: vocabulary words of
      * 7+ characters within edit-distance 2 are corrected automatically.

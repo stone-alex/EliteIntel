@@ -1,11 +1,13 @@
-package elite.intel.ai.brain.i18n;
+package elite.intel.ai.brain.i18n.fr;
+
+import elite.intel.ai.brain.i18n.InputNormalizerProvider;
 
 import java.util.LinkedHashMap;
 
 /**
  * French synonym substitution rules for the InputNormalizer.
  * <p>
- * French uses liaison and elision (e.g. "l'", "d'") — plain substring replacement
+ * French uses liaison and elision (e.g. "l'", "d'")  plain substring replacement
  * can match across word boundaries unexpectedly. Keep entries to complete,
  * unambiguous phrases. Prefer adding variants to {@link FrenchAiActionAliases}.
  */

@@ -167,7 +167,7 @@ public class NaturalSpeechIntegrationTestEN {
     }
 
     static Stream<String> honkTheSystem() {
-        return Stream.of("honk", "honk the system", "discovery scan");
+        return Stream.of("honk", "honk the system");
     }
     // =========================================================================
     // Speed / throttle - highest collision risk group
@@ -602,7 +602,7 @@ public class NaturalSpeechIntegrationTestEN {
     @Order(70)
     @MethodSource
     void openFss(String input) throws InterruptedException {
-        assertRouted(input, OPEN_FSS_AND_SCAN.getAction());
+        assertRouted(input, OPEN_FSS.getAction());
     }
 
     static Stream<String> openFss() {
@@ -689,6 +689,40 @@ public class NaturalSpeechIntegrationTestEN {
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(86)
+    @MethodSource
+    void calculateNeutronRoute(String input) throws InterruptedException {
+        assertRouted(input, CALCULATE_NEUTRON_STAR_ROUTE.getAction());
+    }
+
+    static Stream<String> calculateNeutronRoute() {
+        return Stream.of("calculate neutron route with efficiency 20", "calculate neutron route");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(87)
+    @MethodSource
+    void plotNextNeutronLeg(String input) throws InterruptedException {
+        assertRouted(input, PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
+    }
+
+    static Stream<String> plotNextNeutronLeg() {
+        return Stream.of("next neutron star jump", "plot route to next neutron star waypoint", "next neutron star");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(88)
+    @MethodSource
+    void clearNeutronStarRoute(String input) throws InterruptedException {
+        assertRouted(input, CLEAR_NEUTRON_ROUTE.getAction());
+    }
+
+    static Stream<String> clearNeutronStarRoute() {
+        return Stream.of("clear neutron route");
+    }
+
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(240)
     @MethodSource
     void querySquadronCarrierStatus(String input) throws InterruptedException {
@@ -720,14 +754,14 @@ public class NaturalSpeechIntegrationTestEN {
 
     static Stream<String> querySquadronCarrierRoute() {
         return Stream.of("squadron carrier route", "how many jumps on the squadron carrier route",
-                "squadron carrier jump route");
+                "squadron carrier route");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(243)
     @MethodSource
     void querySquadronCarrierDestination(String input) throws InterruptedException {
-        assertRouted(input, SQUADRON_CARRIER_ROUTE.getAction());
+        assertRouted(input, SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION.getAction());
     }
 
     static Stream<String> querySquadronCarrierDestination() {

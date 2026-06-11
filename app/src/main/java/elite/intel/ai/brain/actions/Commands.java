@@ -58,7 +58,7 @@ public enum Commands {
     MINING_ON_OFF                                       ("toggle_mining_announcements", null, MiningOnOffHandler.class),
     ROUTE_ON_OFF                                        ("toggle_route_announcements", null, RouteAnnouncementsOnOffHandler.class),
     TOGGLE_ALL_ANNOUNCEMENTS                            ("toggle_all_announcements", null, ToggleAllAnnouncementsHandler.class),
-    HONK_THE_SYSTEM                                     ("honk_the_system", null, HonkTheSystemHandler.class),
+    HONK_THE_SYSTEM                                     ("onk_the_system", null, HonkTheSystemHandler.class),
 
     INCREASE_SPEED_BY                                   ("increase_speed", BINDING_INCREASE_SPEED.getGameBinding(),  SpeedPlusControlHandler.class),
     DECREASE_SPEED_BY                                   ("decrease_speed", BINDING_DECREASE_SPEED.getGameBinding(),  SpeedMinusControlHandler.class),
@@ -94,7 +94,10 @@ public enum Commands {
     NAVIGATE_TO_SQUADRON_CARRIER                        ("navigate_to_squadron_carrier", null,  NavigateToMySquadronCarrier.class),
     SET_OPTIMAL_SPEED                                   ("set_optimal_speed", null,  SetOptimalSpeedHandler.class),
     TAKE_ME_HOME                                        ("navigate_to_home_system", null,  NavigateToHomeHandler.class),
-    OPEN_FSS_AND_SCAN                                   ("open_fss_scan_system", null,  DisplayFssAndScanHandler.class),
+    OPEN_FSS                                            ("open_fss_scan_system", null,  DisplayFssAndScanHandler.class),
+    CALCULATE_NEUTRON_STAR_ROUTE                        ("calculate_neutron_star_route", null,  CalculateNeutronStarRouteHandler.class),
+    PLOT_ROUTE_TO_NEXT_NEUTRON_STAR                     ("plot_route_next_neutron_star_waypoint", null,PlotRouteToNextNeutronStarHandler.class),
+    CLEAR_NEUTRON_ROUTE                                ("clear_neutron_route", null, ClearNeutronRouteHandler.class),
 
     GET_HEADING_TO_LZ                                   ("navigate_to_landing_zone", null,  NavigateToLandingZone.class),
     DEPLOY_SRV                                          ("deploy_vehicle_srv", null,  DeploySrvHandler.class),

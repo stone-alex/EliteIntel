@@ -88,6 +88,9 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
             map.put("jäger zurück zum schiff, fighter andocken, jäger zurückrufen", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("jäger feuer frei, fighter feuer frei, nach eigenem ermessen angreifen", FIGHTER_OPEN_ORDERS.getAction());
             map.put("wähle feuergruppe {key:X}, feuergruppe {key:X}, wechsle zu feuergruppe {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
+            map.put("berechnen sie die neutronensternroute {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
+            map.put("nächster neutronensternsprung, route zum nächsten neutronenstern-Wegpunkt zeichnen, nächster Neutronenstern", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
+            map.put("Neutronensternroute löschen / löschen", CLEAR_NEUTRON_ROUTE.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {
@@ -151,7 +154,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
 
         // squadron carrier
         map.put("squadron carrier route, squadron carrier navigation, squadron carrier sprungroute, wie viele sprünge auf der squadron carrier route, verbleibende squadron carrier sprünge", SQUADRON_CARRIER_ROUTE_ANALYSIS.getAction());
-        map.put("wohin fliegt der squadron carrier, wohin ist der squadron carrier unterwegs, squadron carrier ziel, endziel des squadron carriers", SQUADRON_CARRIER_ROUTE.getAction());
+        map.put("wohin fliegt der squadron carrier, wohin ist der squadron carrier unterwegs, squadron carrier ziel, endziel des squadron carriers", SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION.getAction());
         map.put("squadron carrier tritium, squadron carrier treibstoff, squadron tritium vorrat, squadron carrier treibstoffstand, squadron carrier tritium status", SQUADRON_CARRIER_TRITIUM_SUPPLY.getAction());
         map.put("squadron carrier status, squadron carrier finanzen, squadron carrier balance, squadron carrier übersicht, squadron carrier kontostand, wie lange kann der squadron carrier betrieben werden, squadron carrier treibstoffstatus", SQUADRON_CARRIER_STATUS.getAction());
         map.put("squadron carrier eta, wann kommt der squadron carrier an, wie lange bis squadron carrier ankunft, squadron carrier ankunft, squadron carrier ankunftszeit", SQUADRON_CARRIER_ETA.getAction());
@@ -214,7 +217,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
         map.put("mining site finden, mining ort finden, hotspot finden, wo abbauen, asteroidenfeld finden {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("tritium mining site finden, tritium feld finden, tritium hotspot finden {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         map.put("zum nächsten bio sample navigieren, zur nächsten probe, zum nächsten organismus, codex eintrag, zum codex eintrag navigieren", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("system scannen, fss öffnen, vollständiger scan, honk, discovery scan, full spectrum scan, systemscan", OPEN_FSS_AND_SCAN.getAction());
+        map.put("system scannen, fss öffnen, vollständiger scan, honk, discovery scan, full spectrum scan, systemscan", OPEN_FSS.getAction());
         map.put("nächste vista genomics finden, vista genomics finden, genomics finden", FIND_VISTA_GENOMICS.getAction());
         map.put("codex eintrag löschen, diesen codex löschen, diesen eintrag löschen, diesen organismus löschen", DELETE_CODEX_ENTRY.getAction());
 

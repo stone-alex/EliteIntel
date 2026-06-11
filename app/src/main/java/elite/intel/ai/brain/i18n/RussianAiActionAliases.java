@@ -89,6 +89,9 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
             map.put("истребитель вернись на корабль, истребитель стыковка, отозвать истребитель", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("истребитель свободный огонь, огонь по усмотрению, атаковать по усмотрению, атакуй самостоятельно", FIGHTER_OPEN_ORDERS.getAction());
             map.put("выбери огневую группу {key:X}, огневая группа {key:X}, переключись на огневую группу {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
+            map.put("рассчитать нейтронной маршрут {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
+            map.put("следующий прыжок нейтронной звезды, прокладка маршрута до следующей точки нейтронной звезды, следующая нейтронная звезда", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
+            map.put("очистить/удалить маршрут нейтронной звезды", CLEAR_NEUTRON_ROUTE.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {
@@ -152,7 +155,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
 
         // squadron carrier
         map.put("маршрут авианосца эскадрильи, навигация авианосца эскадрильи, маршрут прыжков авианосца эскадрильи, сколько прыжков на маршруте авианосца эскадрильи, прыжков осталось у авианосца эскадрильи", SQUADRON_CARRIER_ROUTE_ANALYSIS.getAction());
-        map.put("куда летит авианосец эскадрильи, пункт назначения авианосца эскадрильи, конечная точка авианосца эскадрильи, курс авианосца эскадрильи", SQUADRON_CARRIER_ROUTE.getAction());
+        map.put("куда летит авианосец эскадрильи, пункт назначения авианосца эскадрильи, конечная точка авианосца эскадрильи, курс авианосца эскадрильи", SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION.getAction());
         map.put("тритий авианосца эскадрильи, топливо авианосца эскадрильи, запасы трития эскадрильи, уровень топлива авианосца эскадрильи, статус трития авианосца эскадрильи", SQUADRON_CARRIER_TRITIUM_SUPPLY.getAction());
         map.put("статус авианосца эскадрильи, финансы авианосца эскадрильи, баланс авианосца эскадрильи, обзор авианосца эскадрильи, средства авианосца эскадрильи, сколько авианосец эскадрильи может работать, статус топлива авианосца эскадрильи", SQUADRON_CARRIER_STATUS.getAction());
         map.put("eta авианосца эскадрильи, когда прибудет авианосец эскадрильи, сколько до прибытия авианосца эскадрильи, время прибытия авианосца эскадрильи, прибытие авианосца эскадрильи", SQUADRON_CARRIER_ETA.getAction());
@@ -216,7 +219,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
         map.put("найди место добычи, найди точку добычи, горячая точка добычи, хотспот, mining hotspot, где майнить, найди астероидное поле {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("найди место добычи трития, найди тритиевое поле {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         map.put("навигация к следующему биосэмплу, к следующему образцу, к следующей органике, к следующей записи кодекса", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("просканируй систему, открой FSS, полноспектральное сканирование, FSS, скан открытия, полный скан, хонк, скан системы, full spectrum scan", OPEN_FSS_AND_SCAN.getAction());
+        map.put("просканируй систему, открой FSS, полноспектральное сканирование, FSS, скан открытия, полный скан, хонк, скан системы, full spectrum scan", OPEN_FSS.getAction());
         map.put("найди ближайшую vista genomics, найди геномику", FIND_VISTA_GENOMICS.getAction());
         map.put("удали запись кодекса, удали этот кодекс, удали эту запись, удали эту органику", DELETE_CODEX_ENTRY.getAction());
 

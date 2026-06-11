@@ -38,7 +38,7 @@ public enum Queries {
 
     SQUADRON_CARRIER_ROUTE_ANALYSIS     ("query_squadron_carrier_route",                      AnalyzeSquadronCarrierRouteHandler.class),
     SQUADRON_CARRIER_TRITIUM_SUPPLY     ("query_squadron_carrier_fuel",                       AnalyzeSquadronCarrierFuelSupplyHandler.class),
-    SQUADRON_CARRIER_ROUTE              ("query_squadron_carrier_route",                      AnalyzeSquadronCarrierFinalDestinationHandler.class),
+    SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION ("query_squadron_carrier_final_destination",                      AnalyzeSquadronCarrierFinalDestinationHandler.class),
     SQUADRON_CARRIER_STATUS             ("query_squadron_carrier_status_fuel_credit_balance", AnalyzeSquadronCarrierDataHandler.class),
     SQUADRON_CARRIER_ETA                ("query_squadron_carrier_eta",                        AnalyzeSquadronCarrierETAHandler.class),
 

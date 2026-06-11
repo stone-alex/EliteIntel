@@ -85,6 +85,9 @@ public class FrenchAiActionAliases implements AiActionAliasProvider {
             map.put("chasseur rentre au vaisseau, chasseur dock, rappelle le chasseur, retour chasseur, chasseur reviens au vaisseau", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
             map.put("chasseur feu à volonté, chasseur feu a volonte, feu à volonté, feu a volonte, attaque à volonté, attaque a volonte, fire at will", FIGHTER_OPEN_ORDERS.getAction());
             map.put("sélectionne le groupe de tir {key:X}, selectionne le groupe de tir {key:X}, groupe de tir {key:X}, bascule vers le groupe de tir {key:X}, basculez vers le groupe de tir {key:X}", SELECT_FIRE_GROUP_BY_NATO.getAction());
+            map.put("calculer la route des étoiles à neutrons {efficiency:X}", CALCULATE_NEUTRON_STAR_ROUTE.getAction());
+            map.put("prochain saut d'étoile à neutrons, tracer l'itinéraire vers le prochain point de cheminement de l'étoile à neutrons, prochaine étoile à neutrons", PLOT_ROUTE_TO_NEXT_NEUTRON_STAR.getAction());
+            map.put("effacer/supprimer la route des étoiles à neutrons", CLEAR_NEUTRON_ROUTE.getAction());
         }
 
         if (status.isInMainShip() && !status.isDocked() || isDryRun) {
@@ -145,7 +148,7 @@ public class FrenchAiActionAliases implements AiActionAliasProvider {
 
         // squadron carrier
         map.put("route escadron carrier, navigation escadron carrier, route de saut escadron carrier, combien de sauts sur la route escadron carrier, sauts restants escadron carrier", SQUADRON_CARRIER_ROUTE_ANALYSIS.getAction());
-        map.put("où va l'escadron carrier, ou va l'escadron carrier, cap escadron carrier, destination finale escadron carrier, destination escadron carrier", SQUADRON_CARRIER_ROUTE.getAction());
+        map.put("où va l'escadron carrier, ou va l'escadron carrier, cap escadron carrier, destination finale escadron carrier, destination escadron carrier", SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION.getAction());
         map.put("tritium escadron carrier, carburant escadron carrier, réserve tritium escadron, reserve tritium escadron, niveau tritium escadron carrier, statut tritium escadron carrier", SQUADRON_CARRIER_TRITIUM_SUPPLY.getAction());
         map.put("statut escadron carrier, finances escadron carrier, solde escadron carrier, aperçu escadron carrier, apercu escadron carrier, fonds escadron carrier, combien de temps peut fonctionner l'escadron carrier, statut carburant escadron carrier", SQUADRON_CARRIER_STATUS.getAction());
         map.put("ETA escadron carrier, eta escadron carrier, quand arrive l'escadron carrier, combien de temps avant l'escadron carrier, arrivée escadron carrier, arrivee escadron carrier, heure d'arrivée escadron carrier, heure d'arrivee escadron carrier", SQUADRON_CARRIER_ETA.getAction());
@@ -208,7 +211,7 @@ public class FrenchAiActionAliases implements AiActionAliasProvider {
         map.put("trouve site de minage, trouve lieu de minage, trouve hotspot de minage, où miner, ou miner, trouve champ d'astéroïdes, trouve champ d'asteroides {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("trouve site de minage tritium, trouve champ de tritium, trouve hotspot tritium, où miner du tritium, ou miner du tritium {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         map.put("navigue vers prochain échantillon bio, navigue vers prochain echantillon bio, va au prochain échantillon, va au prochain echantillon, prochain organique, entrée codex, entree codex, navigue vers entrée codex, navigue vers entree codex, navigue codex", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("scanne le système, scanne le systeme, ouvre FSS, ouvre fss, scan complet, honk, discovery scan, scanner de découverte, scanner de decouverte, full spectrum scan, analyse complète du système, analyse complete du systeme", OPEN_FSS_AND_SCAN.getAction());
+        map.put("scanne le système, scanne le systeme, ouvre FSS, ouvre fss, scan complet, honk, discovery scan, scanner de découverte, scanner de decouverte, full spectrum scan, analyse complète du système, analyse complete du systeme", OPEN_FSS.getAction());
         map.put("trouve vista genomics le plus proche, trouve genomics, vista genomics, trouve Vista Genomics", FIND_VISTA_GENOMICS.getAction());
         map.put("supprime entrée codex, supprime entree codex, supprime cette entrée codex, supprime cette entree codex, supprime cet organique", DELETE_CODEX_ENTRY.getAction());
 

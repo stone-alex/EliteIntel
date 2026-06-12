@@ -49,7 +49,7 @@ class CustomCommandStepPickerItemTest {
     @Test
     void builtInCommandItemsDoNotExposeCustomCommandEntries() {
         CommandCatalog catalog = new CommandCatalog();
-
+        //just for test
         assertFalse(catalog.entries().stream().anyMatch(entry -> entry.isCustomCommand()));
         assertEquals(catalog.entries().size(), CustomCommandStepPickerItem.builtInCommandItems().size());
     }

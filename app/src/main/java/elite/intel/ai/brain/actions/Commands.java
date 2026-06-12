@@ -18,6 +18,7 @@ public enum Commands {
     FIND_RAW_MATERIAL_TRADER                            ("find_raw_material_trader", null, FindRawMaterialTraderHandler.class),
     FIND_ENCODED_MATERIAL_TRADER                        ("find_encoded_material_trader", null, FindEncodedMaterialTraderHandler.class),
     FIND_MANUFACTURED_MATERIAL_TRADER                   ("find_manufactured_material_trader", null, FindManufacturedMaterialTraderHandler.class),
+    FIND_INTERSTELLAR_FACTOR                            ("find_interstellar_factor", null, PlotRouteToInterstellarFactorsHandler.class),
 
     FIND_HUNTING_GROUNDS                                ("find_hunting_grounds", null,  LocatePirateHuntingGrounds.class),
     RECON_TARGET_SYSTEM                                 ("recon_hunting_ground", null,  ReconPirateMissionTargetSystemHandler.class),

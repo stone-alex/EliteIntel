@@ -245,6 +245,12 @@ public class EnglishPromptRules implements PromptLanguageRules {
         sb.append("- require very high probability match for action");
         sb.append(CLEAR_ALL_ACTIVE_MISSIONS.getAction());
         sb.append("\n");
+
+        sb.append("- Interstellar factors is where we pay our tickets or bounties applied to us");
+        sb.append(" always use this action for interstellar factor command ");
+        sb.append(FIND_INTERSTELLAR_FACTOR.getAction());
+        sb.append("\n");
+
         return sb.toString();
     }
 }

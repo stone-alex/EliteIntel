@@ -142,6 +142,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("find guardian tech broker, guardian technology broker {key:X}", FIND_GUARDIAN_TECHNOLOGY_BROKER.getAction());
         map.put("find commodity, find nearest commodity, buy commodity, where to buy, find market{key:X, max_distance:Y, state:true/false}", FIND_COMMODITY.getAction());
         map.put("find nearest fleet carrier, nearest carrier", FIND_NEAREST_FLEET_CARRIER.getAction());
+        map.put("find nearest interstellar factor, find where I can payoff my bounty ", FIND_INTERSTELLAR_FACTOR.getAction());
 
         // fleet carrier  bare "carrier" without "squadron" always means fleet/my carrier
         map.put("set carrier fuel reserve, carrier tritium reserve {key:X}", SET_CARRIER_FUEL_RESERVE.getAction());

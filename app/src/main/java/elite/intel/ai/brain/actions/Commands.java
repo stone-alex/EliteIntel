@@ -18,6 +18,7 @@ public enum Commands {
     FIND_RAW_MATERIAL_TRADER                            ("find_raw_material_trader", null, FindRawMaterialTraderHandler.class),
     FIND_ENCODED_MATERIAL_TRADER                        ("find_encoded_material_trader", null, FindEncodedMaterialTraderHandler.class),
     FIND_MANUFACTURED_MATERIAL_TRADER                   ("find_manufactured_material_trader", null, FindManufacturedMaterialTraderHandler.class),
+    FIND_INTERSTELLAR_FACTOR                            ("find_interstellar_factor", null, PlotRouteToInterstellarFactorsHandler.class),
 
     FIND_HUNTING_GROUNDS                                ("find_hunting_grounds", null,  LocatePirateHuntingGrounds.class),
     RECON_TARGET_SYSTEM                                 ("recon_hunting_ground", null,  ReconPirateMissionTargetSystemHandler.class),
@@ -30,6 +31,7 @@ public enum Commands {
     NAVIGATE_TO_PIRATE_MISSION_PROVIDER                 ("navigate_to_pirate_mission_provider", null,  NavigateToToKnownPirateMassacreMissionProvider.class),
     NAVIGATE_TO_NEXT_TRADE_STOP                         ("navigate_to_trade_stop", null,  NavigateToNextTradeStopHandler.class),
     NAVIGATE_TO_ADDRESS_FROM_MEMORY                     ("navigate_from_memory", null, PasteFromMemoryHandler.class),
+    CLEAR_ALL_ACTIVE_MISSIONS                           ("clear_active_missions", null,  ClearActiveMissionHandler.class),
 
     MONETIZE_ROUTE                                      ("monetize_route", null,  MonetizeRouteHandler.class),
 

@@ -176,6 +176,7 @@ public class FrenchAiActionAliases implements AiActionAliasProvider {
         map.put("efface les rappels, supprime les rappels, clear reminders", CLEAR_REMINDERS.getAction());
         map.put("définis rappel {key:X}, definis rappel {key:X}, crée rappel {key:X}, cree rappel {key:X}, rappel {key:X}", SET_REMINDER.getAction());
         map.put("rappelle-moi dans {minutes:X} minutes {key:Y}, rappelle moi dans {minutes:X} minutes {key:Y}, minuterie {minutes:X} minutes {key:Y}, rappel minuté {minutes:X} minutes {key:Y}", SET_TIMED_REMINDER.getAction());
+        map.put("effacer les missions actives, effacer toutes les missions actives", CLEAR_ALL_ACTIVE_MISSIONS.getAction());
 
         // UI panels
         map.put("active, activer, active ça, active ca", ACTIVATE.getAction());
@@ -215,6 +216,7 @@ public class FrenchAiActionAliases implements AiActionAliasProvider {
         map.put("scanne le système, scanne le systeme, ouvre FSS, ouvre fss, scan complet, honk, discovery scan, scanner de découverte, scanner de decouverte, full spectrum scan, analyse complète du système, analyse complete du systeme", OPEN_FSS.getAction());
         map.put("trouve vista genomics le plus proche, trouve genomics, vista genomics, trouve Vista Genomics", FIND_VISTA_GENOMICS.getAction());
         map.put("supprime entrée codex, supprime entree codex, supprime cette entrée codex, supprime cette entree codex, supprime cet organique", DELETE_CODEX_ENTRY.getAction());
+        map.put("Trouve/cherche moi le interstellar factor le plus proche, trouve/cherche où je peux payer mes amandes ", FIND_INTERSTELLAR_FACTOR.getAction());
 
         map.put("vérifie raccourcis, verifie raccourcis, vérifie les touches, verifie les touches, touches manquantes, raccourcis manquants, affectations manquantes, bindings manquants, key bindings, missing bindings", KEY_BINDINGS_ANALYSIS.getAction());
         map.put("signaux bio traités dans le système, signaux bio traites dans le systeme, organiques scannés dans le système, organiques scannes dans le systeme, combien d'échantillons bio dans le système, combien d'echantillons bio dans le systeme, signaux biologiques dans le système, signaux biologiques dans le systeme, quelles planètes ont des signaux bio, quelles planetes ont des signaux bio, quelles planètes restent à scanner, quelles planetes restent a scanner, progression bio système, progression bio systeme", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());

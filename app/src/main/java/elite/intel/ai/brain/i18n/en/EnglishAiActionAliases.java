@@ -45,7 +45,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("cancel navigation, abort navigation, stop navigation", NAVIGATION_OFF.getAction());
         map.put("set home system, set current system as home, mark home system", SET_HOME_SYSTEM.getAction());
         map.put("take me home, go home, navigate home, return home, plot route home, head home, take us home", TAKE_ME_HOME.getAction());
-        map.put("reset head look, reset head look to default, reset head look to neutral", RESET_HEAD_LOOK.getAction());
+        map.put("reset, reset head look, reset head look to default, reset head look to neutral", RESET_HEAD_LOOK.getAction());
         if (status.isInMainShip() || isDryRun) {
             // navigation
             map.put("select fds destination, target destination, set destination, select target destination", TARGET_DESTINATION.getAction());
@@ -211,6 +211,7 @@ public class EnglishAiActionAliases implements AiActionAliasProvider {
         map.put("recon hunting ground, navigate to target system, navigate to hunting ground", RECON_TARGET_SYSTEM.getAction());
         map.put("ignore hunting ground", IGNORE_HUNTING_GROUND.getAction());
         map.put("confirm hunting ground, confirm target star system", CONFIRM_HUNTING_GROUND.getAction());
+        map.put("clear active missions, clear all active missions", CLEAR_ALL_ACTIVE_MISSIONS.getAction());
 
         // science / mining / biology
         map.put("add mining target {key:X}", ADD_MINING_TARGET.getAction());

@@ -30,6 +30,7 @@ public enum Commands {
     NAVIGATE_TO_PIRATE_MISSION_PROVIDER                 ("navigate_to_pirate_mission_provider", null,  NavigateToToKnownPirateMassacreMissionProvider.class),
     NAVIGATE_TO_NEXT_TRADE_STOP                         ("navigate_to_trade_stop", null,  NavigateToNextTradeStopHandler.class),
     NAVIGATE_TO_ADDRESS_FROM_MEMORY                     ("navigate_from_memory", null, PasteFromMemoryHandler.class),
+    CLEAR_ALL_ACTIVE_MISSIONS                           ("clear_active_missions", null,  ClearActiveMissionHandler.class),
 
     MONETIZE_ROUTE                                      ("monetize_route", null,  MonetizeRouteHandler.class),
 

@@ -241,6 +241,10 @@ public class EnglishPromptRules implements PromptLanguageRules {
         sb.append("- HARD RULE: if the word 'honk' appears anywhere in the input, the ONLY valid action is '");
         sb.append(HONK_THE_SYSTEM.getAction());
         sb.append("'. No other action is permitted when 'honk' is present.\n");
+
+        sb.append("- require very high probability match for action");
+        sb.append(CLEAR_ALL_ACTIVE_MISSIONS.getAction());
+        sb.append("\n");
         return sb.toString();
     }
 }

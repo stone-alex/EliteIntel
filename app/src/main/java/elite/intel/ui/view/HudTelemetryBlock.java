@@ -18,7 +18,7 @@ public class HudTelemetryBlock extends JPanel {
     public static final String PLACEHOLDER = "—";
 
     /** Side length used for metric icons passed to this block. */
-    public static final int ICON_SIZE = 32;
+    public static final int ICON_SIZE = AppTheme.HUD_ICON_SMALL;
 
     private final JLabel valueLabel;
 
@@ -49,7 +49,7 @@ public class HudTelemetryBlock extends JPanel {
         keyLabel.setAlignmentX(LEFT_ALIGNMENT);
 
         valueLabel = new JLabel(PLACEHOLDER);
-        valueLabel.setForeground(AppTheme.HUD_AI_RESPONSE_TEXT);
+        valueLabel.setForeground(AppTheme.HUD_DISABLED);
         valueLabel.setFont(valueLabel.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_SM));
         valueLabel.setAlignmentX(LEFT_ALIGNMENT);
 
@@ -67,10 +67,10 @@ public class HudTelemetryBlock extends JPanel {
     public void setValue(String value) {
         boolean placeholder = (value == null || value.isBlank());
         valueLabel.setText(placeholder ? PLACEHOLDER : value);
-        valueLabel.setForeground(placeholder ? AppTheme.HUD_DISABLED : AppTheme.HUD_AI_RESPONSE_TEXT);
+        valueLabel.setForeground(placeholder ? AppTheme.HUD_DISABLED : AppTheme.FG);
     }
 
-    /** Returns a JLabel wrapping the given icon, vertically centered. */
+    /** Wraps a pre-tinted native-size icon in a vertically centered JLabel. */
     private static JComponent buildIconMarker(ImageIcon icon) {
         JLabel label = new JLabel(icon);
         label.setOpaque(false);
@@ -102,7 +102,7 @@ public class HudTelemetryBlock extends JPanel {
                     int h = 5;
                     int[] xp = {cx, cx + h, cx, cx - h};
                     int[] yp = {cy - h, cy, cy + h, cy};
-                    g2.setColor(AppTheme.HUD_CYAN);
+                    g2.setColor(AppTheme.FG_MUTED);
                     g2.fillPolygon(xp, yp, 4);
                 } finally {
                     g2.dispose();

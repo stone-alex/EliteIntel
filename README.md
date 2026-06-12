@@ -4,7 +4,8 @@
 
 ### ⚙️ [INSTALL](https://github.com/stone-alex/EliteIntel/wiki/Installation-and-Configuration) | 🎓 [**WIKI**](https://github.com/stone-alex/eliteintel/wiki) | 💻[TECH STUFF](https://github.com/stone-alex/EliteIntel/blob/master/TECHNICAL.md)
 
---- 
+---
+
 
 Can be ran 100% off-line or with various cloud services
 

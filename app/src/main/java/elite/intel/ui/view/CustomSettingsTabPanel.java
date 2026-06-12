@@ -107,7 +107,8 @@ public class CustomSettingsTabPanel extends JPanel {
                 new LanguageOption(getText("language.russian"), Language.RU),
                 new LanguageOption(getText("language.ukrainian"), Language.UK),
                 new LanguageOption(getText("language.german"), Language.DE),
-                new LanguageOption(getText("language.french"), Language.FR)
+                new LanguageOption(getText("language.french"), Language.FR),
+                new LanguageOption(getText("language.french"), Language.ES)
         });
         styleComboBox(combo);
         selectLanguage(combo, selected);

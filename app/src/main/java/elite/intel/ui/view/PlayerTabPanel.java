@@ -13,8 +13,6 @@ import elite.intel.db.managers.ShipManager;
 import elite.intel.db.managers.ShipSettingsManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.shiploadout.LoadoutConverter;
-import elite.intel.i18n.Language;
-import elite.intel.gameapi.journal.events.dto.shiploadout.LoadoutConverter;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
@@ -35,9 +33,9 @@ import java.util.EventObject;
 import java.util.List;
 import java.util.Locale;
 
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 import static elite.intel.ui.view.AppTheme.*;
-import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 public class PlayerTabPanel extends JPanel {
 
@@ -224,11 +222,11 @@ public class PlayerTabPanel extends JPanel {
         FleetTableModel(PlayerSession playerSession) {
             this.playerSession = playerSession;
             columnNames = new String[]{
-                getText("player.fleet.ship"),
-                getText("player.fleet.voice"),
-                getText("player.fleet.personality"),
-                getText("player.fleet.cadence"),
-                ""
+                    getText("player.fleet.ship"),
+                    getText("player.fleet.voice"),
+                    getText("player.fleet.personality"),
+                    getText("player.fleet.cadence"),
+                    ""
             };
         }
 
@@ -326,8 +324,8 @@ public class PlayerTabPanel extends JPanel {
             // Fully qualify to avoid shadowing by the inherited JLabel.getText() no-arg method.
             Object display = (i18nPrefix != null && value != null)
                     ? elite.intel.ui.i18n.MultiLingualTextProvider
-                            .getText(i18nPrefix + ((String) value).toLowerCase(Locale.ROOT))
-                            .toUpperCase(Locale.ROOT)
+                    .getText(i18nPrefix + ((String) value).toLowerCase(Locale.ROOT))
+                    .toUpperCase(Locale.ROOT)
                     : value;
             super.getTableCellRendererComponent(table, display, isSelected, hasFocus, row, col);
             // Restore vpad from super, widen right side to reserve space for ▼.
@@ -439,24 +437,16 @@ public class PlayerTabPanel extends JPanel {
             });
         }
 
-    private String enumDisplayKey(String prefix, String value) {
-        return prefix + "." + value.toLowerCase(Locale.ROOT);
-    }
-
-    private JComboBox<LanguageOption> makeLanguageCombo(Language selected) {
-        JComboBox<LanguageOption> combo = new JComboBox<>(new LanguageOption[]{
-                new LanguageOption(getText("language.english"), Language.EN),
-                new LanguageOption(getText("language.russian"), Language.RU),
-                new LanguageOption(getText("language.ukrainian"), Language.UK),
-                new LanguageOption(getText("language.german"), Language.DE),
-                new LanguageOption(getText("language.french"), Language.FR),
-                new LanguageOption(getText("language.spanish"), Language.ES),
-        });
-        combo.setBackground(BG_PANEL);
-        combo.setForeground(FG);
-        selectLanguage(combo, selected);
-        return combo;
-    }
+        private ImageIcon gearIcon(boolean selected) {
+            if (selected) {
+                if (gearDark == null)
+                    gearDark = AppTheme.tintIcon(gearBase, HUD_ICON_TABLE, HUD_ICON_TABLE, AppTheme.SEL_FG);
+                return gearDark;
+            }
+            if (gearOrange == null)
+                gearOrange = AppTheme.tintIcon(gearBase, HUD_ICON_TABLE, HUD_ICON_TABLE, AppTheme.HUD_ORANGE_SOFT);
+            return gearOrange;
+        }
 
         @Override public Object getCellEditorValue() { return currentShip; }
 

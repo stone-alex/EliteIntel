@@ -358,7 +358,7 @@ public class NaturalSpeechIntegrationTestEN {
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
-    @Order(33)
+    @Order(38)
     @MethodSource
     void clearActiveMissions(String input) throws InterruptedException {
         assertRouted(input, CLEAR_ALL_ACTIVE_MISSIONS.getAction());

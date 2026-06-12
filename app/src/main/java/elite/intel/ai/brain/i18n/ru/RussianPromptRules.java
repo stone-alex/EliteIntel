@@ -4,6 +4,7 @@ import elite.intel.ai.brain.actions.Commands;
 import elite.intel.ai.brain.actions.Queries;
 import elite.intel.ai.brain.i18n.PromptLanguageRules;
 
+import static elite.intel.ai.brain.actions.Commands.CLEAR_ALL_ACTIVE_MISSIONS;
 import static elite.intel.ai.brain.actions.Commands.INTERRUPT_TTS;
 import static elite.intel.ai.brain.actions.Queries.*;
 
@@ -68,6 +69,9 @@ public class RussianPromptRules implements PromptLanguageRules {
         sb.append(SQUADRON_CARRIER_ROUTE_FINAL_DESTINATION.getAction());
         sb.append("\n");
 
+        sb.append("- require very high probability match for action →");
+        sb.append(CLEAR_ALL_ACTIVE_MISSIONS.getAction());
+        sb.append("\n");
         return sb.toString();
     }
 }

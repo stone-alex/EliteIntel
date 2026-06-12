@@ -202,6 +202,7 @@ public class SpanishAiActionAliases implements AiActionAliasProvider {
         map.put("reconocer zona de caza, navegar al sistema objetivo, navegar a la zona de caza", RECON_TARGET_SYSTEM.getAction());
         map.put("ignorar zona de caza", IGNORE_HUNTING_GROUND.getAction());
         map.put("confirmar zona de caza, confirmar sistema estelar objetivo", CONFIRM_HUNTING_GROUND.getAction());
+        map.put("borrar misiones activas, borrar todas las misiones activas", CLEAR_ALL_ACTIVE_MISSIONS.getAction());
 
         // science / mining / biology
         map.put("agregar objetivo de minería {key:X}", ADD_MINING_TARGET.getAction());

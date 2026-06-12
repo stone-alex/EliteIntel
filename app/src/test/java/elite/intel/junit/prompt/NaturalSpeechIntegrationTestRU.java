@@ -331,6 +331,18 @@ public class NaturalSpeechIntegrationTestRU {
         return Stream.of("цель назначения", "выбрать пункт назначения");
     }
 
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(38)
+    @MethodSource
+    void clearActiveMissions(String input) throws InterruptedException {
+        assertRouted(input, CLEAR_ALL_ACTIVE_MISSIONS.getAction());
+    }
+
+    static Stream<String> clearActiveMissions() {
+        return Stream.of("удали все задания", "удалить все задания");
+    }
+
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(39)
     @MethodSource

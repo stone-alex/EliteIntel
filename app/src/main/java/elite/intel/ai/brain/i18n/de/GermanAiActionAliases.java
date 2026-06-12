@@ -208,6 +208,7 @@ public class GermanAiActionAliases implements AiActionAliasProvider {
         map.put("jagdgebiet erkunden, zum zielsystem navigieren, zum jagdgebiet navigieren", RECON_TARGET_SYSTEM.getAction());
         map.put("jagdgebiet ignorieren, hunting ground ignorieren", IGNORE_HUNTING_GROUND.getAction());
         map.put("jagdgebiet bestätigen, zielsystem bestätigen", CONFIRM_HUNTING_GROUND.getAction());
+        map.put("Aktive Missionen löschen, alle aktiven Missionen löschen", CLEAR_ALL_ACTIVE_MISSIONS.getAction());
 
         // science / mining / biology
         map.put("mining ziel hinzufügen {key:X}, abbauziel hinzufügen {key:X}", ADD_MINING_TARGET.getAction());

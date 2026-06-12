@@ -2,6 +2,8 @@ package elite.intel.ai.brain.i18n.uk;
 
 import elite.intel.ai.brain.i18n.PromptLanguageRules;
 
+import static elite.intel.ai.brain.actions.Commands.CLEAR_ALL_ACTIVE_MISSIONS;
+
 public class UkrainianPromptRules implements PromptLanguageRules {
 
     @Override
@@ -22,5 +24,15 @@ public class UkrainianPromptRules implements PromptLanguageRules {
     @Override
     public String queryPhraseExamples() {
         return "де / що / скільки / чи є / який / яка / які / на якій станції / в якій системі";
+    }
+
+    @Override
+    public String disambiguationHints() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("- require very high probability match for action → ");
+        sb.append(CLEAR_ALL_ACTIVE_MISSIONS.getAction());
+        sb.append("\n");
+        return sb.toString();
     }
 }

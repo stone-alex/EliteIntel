@@ -919,18 +919,7 @@ public class NaturalSpeechIntegrationTestFR {
 
     static Stream<String> queryCarrierStatus() {
         return Stream.of("statut carrier", "combien de temps peut fonctionner le carrier",
-                "portée de saut carrier", "statut carburant carrier");
-    }
-
-    @ParameterizedTest(name = "[{index}] \"{0}\"")
-    @Order(212)
-    @MethodSource
-    void queryCarrierFuel(String input) throws InterruptedException {
-        assertRouted(input, FLEET_CARRIER_TRITIUM_SUPPLY.getAction());
-    }
-
-    static Stream<String> queryCarrierFuel() {
-        return Stream.of("tritium carrier", "carburant carrier", "combien de tritium", "réserve tritium");
+                "portée de saut carrier", "statut carburant carrier", "tritium carrier", "carburant carrier", "combien de tritium", "réserve tritium");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

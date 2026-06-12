@@ -87,7 +87,7 @@ public class KokoroTTS implements MouthInterface {
     // -- Lifecycle -------------------------------------------------------------
 
     @Override
-    public void start() {
+    public synchronized void start() {
         if (running) return;
         log.info("KokoroTTS.start() called from thread: {}", Thread.currentThread().getName());
         try {
@@ -97,11 +97,13 @@ public class KokoroTTS implements MouthInterface {
             return;
         }
 
-        try {
-            tts = buildOfflineTts();
-        } catch (Exception e) {
-            log.error("KokoroTTS: engine init failed", e);
-            return;
+        if (tts == null) {
+            try {
+                tts = buildOfflineTts();
+            } catch (Exception e) {
+                log.error("KokoroTTS: engine init failed", e);
+                return;
+            }
         }
 
         running = true;
@@ -123,38 +125,56 @@ public class KokoroTTS implements MouthInterface {
     }
 
     @Override
-    public void stop() {
-        EventBusManager.unregister(this);
+    public synchronized void stop() {
+        // Set false first so @Subscribe handlers gate out immediately via the `if (!running)` checks.
         running = false;
+        try {
+            EventBusManager.unregister(this);
+        } catch (IllegalArgumentException ignored) {
+            // Not registered (e.g. start() failed before reaching register, or stop() called twice).
+        }
         synthesisQueue.clear();
         playbackQueue.clear();
         interruptRequested.set(true);
 
+        // Stop the audio line immediately so any blocking drain() in the playback thread unblocks.
+        if (persistentLine != null && persistentLine.isOpen()) {
+            try {
+                persistentLine.stop();
+                persistentLine.flush();
+            } catch (Exception ignored) {
+            }
+        }
+
         if (synthesisThread != null) {
             synthesisThread.interrupt();
             try {
-                synthesisThread.join(3000); // wait for in-flight generate() to finish
+                // No timeout: generate() is a native call that cannot be interrupted via Thread.interrupt().
+                // The next start() must not create a new synthesis thread until this one exits.
+                synthesisThread.join();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+            } finally {
+                synthesisThread = null;
             }
-            synthesisThread = null;
         }
         if (playbackThread != null) {
             playbackThread.interrupt();
             try {
-                playbackThread.join(2000);
+                playbackThread.join(5000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+            } finally {
+                playbackThread = null;
             }
-            playbackThread = null;
         }
 
         closePersistentLine();
 
-        if (tts != null) {
-            tts.release(); // safe - synthesis thread is guaranteed dead
-            tts = null;
-        }
+        // tts is intentionally NOT released here. tts.release() crashes in the
+        // KokoroMultiLangLexicon destructor (SIGSEGV) due to shared native state with ONNX Runtime.
+        // KokoroTTS is a singleton — there is exactly one OfflineTts per process lifetime.
+        // Native memory is reclaimed when the process exits.
     }
 
     // -- MouthInterface --------------------------------------------------------

@@ -83,6 +83,7 @@ public class KokoroTTS implements MouthInterface {
     private Thread synthesisThread;
     private Thread playbackThread;
     private OfflineTts tts;
+    private Language lastBuiltLanguage;
 
     private KokoroTTS() {
     }
@@ -99,7 +100,7 @@ public class KokoroTTS implements MouthInterface {
     // -- Lifecycle -------------------------------------------------------------
 
     @Override
-    public void start() {
+    public synchronized void start() {
         if (running) return;
         log.info("KokoroTTS.start() called from thread: {}", Thread.currentThread().getName());
         try {
@@ -109,18 +110,29 @@ public class KokoroTTS implements MouthInterface {
             return;
         }
 
-        try {
-            tts = buildOfflineTts();
-        } catch (Exception e) {
-            log.error("KokoroTTS: engine init failed", e);
-            return;
+        Language currentLanguage = SystemSession.getInstance().getLanguage();
+        if (tts == null || lastBuiltLanguage != currentLanguage) {
+            if (tts != null) {
+                try {
+                    tts.release();
+                } catch (Exception e) {
+                    log.warn("KokoroTTS: tts.release on language switch failed", e);
+                }
+                tts = null;
+            }
+            try {
+                tts = buildOfflineTts();
+                lastBuiltLanguage = currentLanguage;
+            } catch (Exception e) {
+                log.error("KokoroTTS: engine init failed", e);
+                return;
+            }
         }
 
         running = true;
         synthesisQueue.clear();
         playbackQueue.clear();
         interruptRequested.set(false); // ← reset after stop() left it true
-        EventBusManager.register(this);
 
         synthesisThread = new Thread(this::processSynthesisQueue, "KokoroTTS-Synthesis");
         synthesisThread.setDaemon(true);
@@ -130,43 +142,60 @@ public class KokoroTTS implements MouthInterface {
         playbackThread.setDaemon(true);
         playbackThread.start();
 
+        EventBusManager.register(this);
         log.info("KokoroTTS started - voice: {} sid={}", KokoroVoices.GEORGE.getDisplayName(), DEFAULT_SID);
         EventBusManager.publish(new AiVoxResponseEvent(StringUtls.greeting(PlayerSession.getInstance().getConfiguredPlayerName())));
     }
 
     @Override
-    public void stop() {
-        if (running) EventBusManager.unregister(this);
+    public synchronized void stop() {
         running = false;
+        try {
+            EventBusManager.unregister(this);
+        } catch (IllegalArgumentException ignored) {
+            log.warn("Kokoro is not registered on event bus, ignore");
+        }
         synthesisQueue.clear();
         playbackQueue.clear();
         interruptRequested.set(true);
 
+        if (persistentLine != null && persistentLine.isOpen()) {
+            try {
+                persistentLine.stop();
+                persistentLine.flush();
+            } catch (Exception ignored) {
+            }
+        }
+
         if (synthesisThread != null) {
             synthesisThread.interrupt();
             try {
-                synthesisThread.join(3000); // wait for in-flight generate() to finish
+                synthesisThread.join();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+            } finally {
+                synthesisThread = null;
             }
-            synthesisThread = null;
         }
         if (playbackThread != null) {
             playbackThread.interrupt();
             try {
-                playbackThread.join(2000);
+                playbackThread.join(5000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+            } finally {
+                playbackThread = null;
             }
-            playbackThread = null;
         }
 
         closePersistentLine();
 
-        if (tts != null) {
-            tts.release(); // safe - synthesis thread is guaranteed dead
-            tts = null;
-        }
+        // NOTE:
+        // tts is intentionally NOT released here. tts.release() crashes in the
+        // KokoroMultiLangLexicon destructor (SIGSEGV) due to shared native state with ONNX Runtime.
+        // KokoroTTS is a singleton there is exactly one OfflineTts per process lifetime.
+        // Native memory is reclaimed when the process exits.
+        // Language changes force a rebuild in start(), which releases the old instance at a safe point.
     }
 
     // -- MouthInterface --------------------------------------------------------

@@ -37,7 +37,7 @@ public class StatusBadge extends JLabel {
         this.state = state == null ? State.INFO : state;
         setOpaque(false);
         setForeground(this.state.color);
-        setFont(getFont().deriveFont(Font.BOLD, 11f));
+        setFont(getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_BADGE_ROLE));
         setBorder(new EmptyBorder(2, 10, 2, 10));
         setMinimumSize(new Dimension(68, AppTheme.HUD_BADGE_HEIGHT));
         updatePreferredSize();

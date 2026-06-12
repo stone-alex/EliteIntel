@@ -64,6 +64,9 @@ public class HudSection extends HudPanel {
         // HudSection owns the titled-card frame; HudPanel only supplies the dark rounded base fill.
         super(new BorderLayout(0, 0), AppTheme.ACCENT, Variant.FLAT);
         sectionVariant = variant == null ? Variant.FRAMED : variant;
+        if (sectionVariant == Variant.FLAT) {
+            setPaintBackgroundFill(false);
+        }
         setBorder(sectionVariant == Variant.FLAT
                 ? AppTheme.hudFlatBorder()
                 : BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -144,6 +147,20 @@ public class HudSection extends HudPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (sectionVariant == Variant.FLAT) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            try {
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                int w = getWidth();
+                Component header = getComponentCount() > 0 ? getComponent(0) : null;
+                if (header != null) {
+                    Rectangle bounds = header.getBounds();
+                    g2.setColor(AppTheme.HUD_ORANGE_SOFT);
+                    g2.drawLine(1, bounds.y + bounds.height,
+                                Math.max(1, w - 2), bounds.y + bounds.height);
+                }
+            } finally {
+                g2.dispose();
+            }
             return;
         }
 

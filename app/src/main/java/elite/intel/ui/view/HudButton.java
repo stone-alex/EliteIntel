@@ -27,7 +27,7 @@ public class HudButton extends JButton {
         setContentAreaFilled(false);
         setFocusPainted(false);
         setForeground(primary ? AppTheme.BUTTON_FG : AppTheme.ACCENT);
-        setFont(getFont().deriveFont(Font.BOLD, 12f));
+        setFont(getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_BUTTON));
         setBorder(BorderFactory.createEmptyBorder(4, 14, 4, 14));
         setPreferredSize(new Dimension(Math.max(90, getPreferredSize().width), AppTheme.HUD_BUTTON_HEIGHT));
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

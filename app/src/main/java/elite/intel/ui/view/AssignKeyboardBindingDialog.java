@@ -415,7 +415,7 @@ public class AssignKeyboardBindingDialog extends JDialog {
                     label.setForeground(FG_MUTED);
                 }
             }
-            label.setBackground(isSelected ? HUD_CYAN : HUD_PANEL_BG_ALT);
+            label.setBackground(isSelected ? ACCENT : HUD_TABLE_ROW);
             if (!isSelected && !(value instanceof KeyOption option && option.placeholder())) {
                 label.setForeground(FG);
             }
@@ -436,7 +436,7 @@ public class AssignKeyboardBindingDialog extends JDialog {
             if (value instanceof ModifierOption option) {
                 label.setText(option.label());
             }
-            label.setBackground(isSelected ? HUD_CYAN : HUD_PANEL_BG_ALT);
+            label.setBackground(isSelected ? ACCENT : HUD_TABLE_ROW);
             label.setForeground(isSelected ? SEL_FG : FG);
             return label;
         }

@@ -22,7 +22,7 @@ public class HudBanner extends HudPanel {
         ));
         JLabel label = new JLabel(text == null ? "" : text);
         label.setForeground(colorFor(state));
-        label.setFont(label.getFont().deriveFont(Font.BOLD, 11f));
+        label.setFont(label.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_BANNER));
         label.putClientProperty("eliteIntel.hud.lockedForeground", Boolean.TRUE);
         add(label, BorderLayout.CENTER);
     }

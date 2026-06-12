@@ -20,7 +20,6 @@ class BindingsGroupTableFactory {
     static final int TABLE_ROW_HEIGHT = AppTheme.HUD_TABLE_ROW_HEIGHT_COMPACT;
     static final String HOVER_ROW_PROPERTY = "elite.intel.bindings.hoverRow";
     private static final Border TABLE_SECTION_BORDER = BorderFactory.createEmptyBorder(1, 0, 0, 0);
-    private static final Border TABLE_HEADER_BORDER = BorderFactory.createMatteBorder(0, 0, 1, 0, HUD_ORANGE_SOFT);
 
     private final BindingsSelectionController selectionController;
     private final BiConsumer<String, BindingSlotType> slotClickHandler;
@@ -174,14 +173,8 @@ class BindingsGroupTableFactory {
     private void styleGroupTable(JTable table) {
         table.setFillsViewportHeight(false);
         HudTable.styleCompact(table);
-        table.setBackground(AppTheme.HUD_BG);
         table.setRowHeight(TABLE_ROW_HEIGHT);
         table.setAutoCreateRowSorter(false);
-        table.setShowGrid(false);
-        table.setShowVerticalLines(false);
-        table.setShowHorizontalLines(false);
-        table.setIntercellSpacing(new Dimension(0, 2));
-        table.getTableHeader().setBorder(TABLE_HEADER_BORDER);
         table.getTableHeader().setBackground(AppTheme.HUD_BG);
         table.getTableHeader().setDefaultRenderer(new GroupTableHeaderRenderer());
         table.setDefaultRenderer(Object.class, new BindingSlotCellRenderer());
@@ -223,9 +216,7 @@ class BindingsGroupTableFactory {
     }
 
     private static class GroupTableHeaderRenderer extends HudTable.HeaderRenderer {
-        private static final Border HEADER_CELL_BORDER = BorderFactory.createCompoundBorder(
-                TABLE_HEADER_BORDER,
-                new EmptyBorder(4, 8, 7, 8));
+        private static final Border HEADER_CELL_BORDER = new EmptyBorder(4, 8, 7, 8);
 
         private GroupTableHeaderRenderer() {
             super(3);

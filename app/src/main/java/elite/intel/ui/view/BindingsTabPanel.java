@@ -423,7 +423,7 @@ public class BindingsTabPanel extends JPanel {
         gbc.insets = new Insets(2, 0, 6, 7);
         JLabel label = new JLabel(text);
         label.setForeground(FG_MUTED);
-        label.setFont(label.getFont().deriveFont(Font.PLAIN, 11f));
+        label.setFont(label.getFont().deriveFont(Font.PLAIN, HUD_FONT_XS));
         label.setPreferredSize(new Dimension(width, HEADER_ROW_HEIGHT));
         panel.add(label, gbc);
     }
@@ -476,7 +476,7 @@ public class BindingsTabPanel extends JPanel {
     private JTextField readOnlyField() {
         JTextField field = makeTextField();
         field.setEditable(false);
-        field.setFont(field.getFont().deriveFont(Font.PLAIN, 12f));
+        field.setFont(field.getFont().deriveFont(Font.PLAIN, HUD_FONT_FIELD_VALUE));
         field.setPreferredSize(new Dimension(0, HEADER_ROW_HEIGHT));
         return field;
     }
@@ -515,7 +515,7 @@ public class BindingsTabPanel extends JPanel {
         button.setBorder(BorderFactory.createEmptyBorder());
         button.setForeground(FG_MUTED);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        button.setFont(button.getFont().deriveFont(Font.PLAIN, button.getFont().getSize2D() + 2f));
+        button.setFont(button.getFont().deriveFont(Font.PLAIN, AppTheme.HUD_FONT_ICON_BUTTON));
         Dimension size = new Dimension(HEADER_ROW_HEIGHT, HEADER_ROW_HEIGHT);
         button.setPreferredSize(size);
         button.setMinimumSize(size);
@@ -558,7 +558,7 @@ public class BindingsTabPanel extends JPanel {
         button.setForeground(FG_MUTED);
         button.setBackground(HUD_PANEL_BG);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        button.setFont(button.getFont().deriveFont(Font.PLAIN, button.getFont().getSize2D() + 2f));
+        button.setFont(button.getFont().deriveFont(Font.PLAIN, AppTheme.HUD_FONT_ICON_BUTTON));
         Dimension size = new Dimension(HEADER_ROW_HEIGHT, HEADER_ROW_HEIGHT);
         button.setPreferredSize(size);
         button.setMinimumSize(size);
@@ -573,7 +573,7 @@ public class BindingsTabPanel extends JPanel {
 
         JLabel message = new JLabel("\u26A0  " + getText("bindings.keyboardOnlyHint"), SwingConstants.CENTER);
         message.setForeground(HUD_WARN);
-        message.setFont(message.getFont().deriveFont(Font.BOLD, 11f));
+        message.setFont(message.getFont().deriveFont(Font.BOLD, HUD_FONT_XS));
         message.putClientProperty("eliteIntel.hud.lockedForeground", Boolean.TRUE);
 
         GridBagConstraints gbc = new GridBagConstraints();

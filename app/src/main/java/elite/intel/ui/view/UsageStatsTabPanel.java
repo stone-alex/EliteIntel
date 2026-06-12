@@ -82,7 +82,7 @@ public class UsageStatsTabPanel extends JPanel {
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
 
         providerLabel = new JLabel(getText("stats.llm.na"));
-        providerLabel.setFont(providerLabel.getFont().deriveFont(Font.BOLD, 16f));
+        providerLabel.setFont(providerLabel.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_STAT_LG));
         providerLabel.setForeground(AppTheme.FG);
 
         sessionTimeLabel = new JLabel(getText("stats.sessionTime.initial"));
@@ -252,7 +252,7 @@ public class UsageStatsTabPanel extends JPanel {
                 int maxVal = 1;
                 for (int i = 0; i < tokenBars; i++) maxVal = Math.max(maxVal, values[i]);
 
-                Font font = g2.getFont().deriveFont(18f);
+                Font font = g2.getFont().deriveFont(AppTheme.HUD_FONT_LG);
                 g2.setFont(font);
                 FontMetrics fm = g2.getFontMetrics(font);
                 int baseline = barH / 2 + fm.getAscent() / 2 - 1;

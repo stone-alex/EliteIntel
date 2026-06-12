@@ -3,7 +3,6 @@ package elite.intel.ui.view;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -52,11 +51,11 @@ public class HudTabbedPane extends JTabbedPane {
         tp.setTabLayoutPolicy(mainNavigation ? JTabbedPane.WRAP_TAB_LAYOUT : JTabbedPane.SCROLL_TAB_LAYOUT);
 
         if (mainNavigation) {
-            tp.setFont(tp.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_LG));
+            tp.setFont(tp.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_TAB_MAIN));
         } else if (level == Level.COMPACT) {
-            tp.setFont(tp.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_SECTION));
+            tp.setFont(tp.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_TAB_SECTION));
         } else if (level == Level.SECTION) {
-            tp.setFont(tp.getFont().deriveFont(Font.PLAIN, AppTheme.HUD_FONT_SECTION));
+            tp.setFont(tp.getFont().deriveFont(Font.PLAIN, AppTheme.HUD_FONT_TAB_SECTION));
         }
 
         tp.setUI(new HudTabbedPaneUi(flatContent, compact, mainNavigation));
@@ -160,22 +159,9 @@ public class HudTabbedPane extends JTabbedPane {
         private Icon cachedTint(ImageIcon original, int w, int h, int slot, Color color) {
             Icon[] slots = tintCache.computeIfAbsent(original, k -> new Icon[3]);
             if (slots[slot] == null) {
-                slots[slot] = new ImageIcon(tintGlyph(original.getImage(), w, h, color));
+                slots[slot] = AppTheme.tintIcon(original, w, h, color);
             }
             return slots[slot];
-        }
-
-        private static Image tintGlyph(Image src, int w, int h, Color color) {
-            BufferedImage buf = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2 = buf.createGraphics();
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            g2.drawImage(src, 0, 0, w, h, null);
-            g2.setComposite(AlphaComposite.SrcIn);
-            g2.setColor(color);
-            g2.fillRect(0, 0, w, h);
-            g2.dispose();
-            return buf;
         }
 
         @Override

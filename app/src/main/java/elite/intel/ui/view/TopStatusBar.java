@@ -74,7 +74,7 @@ public class TopStatusBar extends HudPanel {
 
         JLabel nameLabel = new JLabel(name);
         nameLabel.setForeground(AppTheme.FG);
-        nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD, 13f));
+        nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_APP_TITLE));
         nameLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
         row.add(nameLabel);
 
@@ -82,7 +82,7 @@ public class TopStatusBar extends HudPanel {
 
         JLabel verLabel = new JLabel(ver);
         verLabel.setForeground(AppTheme.FG_MUTED);
-        verLabel.setFont(verLabel.getFont().deriveFont(Font.PLAIN, AppTheme.HUD_FONT_XS));
+        verLabel.setFont(verLabel.getFont().deriveFont(Font.PLAIN, AppTheme.HUD_FONT_READOUT_KEY));
         verLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
         row.add(verLabel);
 
@@ -144,7 +144,7 @@ public class TopStatusBar extends HudPanel {
     private static JLabel keyLabel(String text) {
         JLabel l = new JLabel(text == null ? "" : text.toUpperCase(Locale.ROOT));
         l.setForeground(AppTheme.FG_MUTED);
-        l.setFont(l.getFont().deriveFont(Font.PLAIN, AppTheme.HUD_FONT_XS));
+        l.setFont(l.getFont().deriveFont(Font.PLAIN, AppTheme.HUD_FONT_READOUT_KEY));
         l.setAlignmentY(Component.CENTER_ALIGNMENT);
         return l;
     }
@@ -152,7 +152,7 @@ public class TopStatusBar extends HudPanel {
     private static JLabel valueLabel(String text) {
         JLabel l = new JLabel(text == null ? "—" : text.toUpperCase(Locale.ROOT));
         l.setForeground(AppTheme.FG);
-        l.setFont(l.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_SM));
+        l.setFont(l.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_COMMANDER_NAME));
         l.setAlignmentY(Component.CENTER_ALIGNMENT);
         return l;
     }

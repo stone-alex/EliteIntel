@@ -47,10 +47,10 @@ public class CommandCatalogTablePanel extends JPanel {
         tableModel = new ReadOnlyTableModel(columnNames(), 0);
         table = new JTable(tableModel);
         styleTable(table);
+        installRowHover(table);
         table.addMouseListener(new CommandDetailsMouseListener());
 
-        JScrollPane scrollPane = HudTable.scrollPane(table);
-        scrollPane.setBorder(AppTheme.hudConnectedScrollPaneBorder());
+        JScrollPane scrollPane = HudTable.dataPlaneScrollPane(table);
 
         add(searchPanel(), BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
@@ -141,6 +141,7 @@ public class CommandCatalogTablePanel extends JPanel {
 
     private void styleTable(JTable table) {
         HudTable.style(table);
+        table.setBackground(AppTheme.HUD_BG);   // зазор intercellSpacing(0,2) рисуется фоном окна, без «линий» (§2)
         table.setRowHeight(44);
         table.setAutoCreateRowSorter(true);
         table.setDefaultRenderer(Object.class, new CellRenderer());
@@ -148,6 +149,56 @@ public class CommandCatalogTablePanel extends JPanel {
 
         table.getColumnModel().getColumn(0).setPreferredWidth(220);
         table.getColumnModel().getColumn(1).setPreferredWidth(160);
+    }
+
+    private void installRowHover(JTable table) {
+        table.putClientProperty(HudTable.HOVER_ROW_PROPERTY, -1);
+        table.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent event) {
+                setHoveredRow(table, rowUnderPoint(table, event.getPoint()));
+            }
+        });
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent event) {
+                setHoveredRow(table, -1);
+            }
+        });
+    }
+
+    private int rowUnderPoint(JTable table, Point point) {
+        int row = table.rowAtPoint(point);
+        if (row >= 0) {
+            return row;
+        }
+        Point up = new Point(point.x, point.y - 2);
+        row = table.rowAtPoint(up);
+        if (row >= 0) {
+            return row;
+        }
+        Point down = new Point(point.x, point.y + 2);
+        return table.rowAtPoint(down);
+    }
+
+    private void setHoveredRow(JTable table, int row) {
+        Object current = table.getClientProperty(HudTable.HOVER_ROW_PROPERTY);
+        int currentRow = current instanceof Integer value ? value : -1;
+        if (currentRow == row) {
+            return;
+        }
+        table.putClientProperty(HudTable.HOVER_ROW_PROPERTY, row);
+        repaintTableRow(table, currentRow);
+        repaintTableRow(table, row);
+    }
+
+    private void repaintTableRow(JTable table, int row) {
+        if (row < 0 || row >= table.getRowCount()) {
+            return;
+        }
+        Rectangle rect = table.getCellRect(row, 0, true);
+        rect.width = table.getWidth();
+        table.repaint(rect);
     }
 
     private static final class ReadOnlyTableModel extends DefaultTableModel {

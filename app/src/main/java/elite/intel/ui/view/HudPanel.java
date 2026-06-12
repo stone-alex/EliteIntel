@@ -18,6 +18,7 @@ public class HudPanel extends JPanel {
 
     private final Color accentColor;
     private final Variant variant;
+    private boolean paintBackgroundFill = true;
 
     /**
      * Creates a HUD panel with the standard accent colour.
@@ -53,6 +54,11 @@ public class HudPanel extends JPanel {
         setBorder(this.variant == Variant.FLAT ? AppTheme.hudFlatBorder() : AppTheme.hudBorder());
     }
 
+    /** Allows subclasses to suppress the dark panel fill (e.g. transparent FLAT sections). */
+    protected void setPaintBackgroundFill(boolean value) {
+        this.paintBackgroundFill = value;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
@@ -60,9 +66,11 @@ public class HudPanel extends JPanel {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             int w = getWidth();
             int h = getHeight();
-            g2.setColor(AppTheme.HUD_PANEL_BG);
-            g2.fillRoundRect(0, 0, Math.max(0, w - 1), Math.max(0, h - 1),
-                    AppTheme.HUD_PANEL_ARC, AppTheme.HUD_PANEL_ARC);
+            if (paintBackgroundFill) {
+                g2.setColor(AppTheme.HUD_PANEL_BG);
+                g2.fillRoundRect(0, 0, Math.max(0, w - 1), Math.max(0, h - 1),
+                        AppTheme.HUD_PANEL_ARC, AppTheme.HUD_PANEL_ARC);
+            }
 
             if (variant == Variant.FLAT) {
                 return;

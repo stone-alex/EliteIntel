@@ -7,6 +7,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 /**
  * Shared colors, component factories, and layout helpers for the dark UI theme.
@@ -16,6 +17,14 @@ public class AppTheme {
      *  {@link #applyDarkPalette} from overriding its foreground colour. */
     public static final String HUD_LOCKED_FOREGROUND = "eliteIntel.hud.lockedForeground";
     static final String HUD_TABLE_STYLE_LOCKED = "eliteIntel.hud.tableStyleLocked";
+    /**
+     * Opt-out client property for JScrollPane: when TRUE, applyDarkPalette does
+     * NOT restyle this scroll pane (keeps its own viewport bg / border). Use for
+     * data-plane table scrolls that must keep the warm HUD_BG viewport instead of
+     * the cold HUD_PANEL_BG that styleScrollPane applies. Mirrors
+     * HUD_TABLE_STYLE_LOCKED for tables (ED_HUD_REFERENCE §8.6).
+     */
+    public static final String HUD_SCROLL_STYLE_LOCKED = "eliteIntel.hud.scrollStyleLocked";
     public static final String HUD_CARD_BORDER_COLOR = "eliteIntel.hud.cardBorderColor";
 
     public static final Color BG = new Color(0x151519);
@@ -88,17 +97,36 @@ public class AppTheme {
     public static final int HUD_ICON_MAIN = 42;
     public static final int HUD_ICON_NAV = 24;
     public static final int HUD_ICON_SMALL = 28;
+    public static final int HUD_ICON_TABLE = 18;
     public static final int HUD_FORM_ROW_HEIGHT_COMPACT = 22;
-    public static final float HUD_FONT_XS      = 11f;
-    public static final float HUD_FONT_SM      = 12f;
-    public static final float HUD_FONT_MD      = 14f;
-    public static final float HUD_FONT_LG      = 16f;
-    /** @deprecated Use {@link #HUD_FONT_SM}. */
-    @Deprecated public static final float HUD_FONT_SECTION = HUD_FONT_SM;
-    /** @deprecated Use {@link #HUD_FONT_MD}. */
-    @Deprecated public static final float HUD_FONT_LABEL   = 13f;
-    /** @deprecated Use {@link #HUD_FONT_XS}. */
-    @Deprecated public static final float HUD_FONT_BADGE   = HUD_FONT_XS;
+    public static final float HUD_FONT_BASE = 12f;
+    public static final float HUD_FONT_XS   = HUD_FONT_BASE - 1f;  // 11
+    public static final float HUD_FONT_SM   = HUD_FONT_BASE;       // 12
+    public static final float HUD_FONT_MD   = HUD_FONT_BASE + 2f;  // 14
+    public static final float HUD_FONT_LG   = HUD_FONT_BASE + 4f;  // 16
+
+    /**
+     * Semantic font roles. Reference roles in code, not steps or literals.
+     * To change a specific element's size — update the role here; to shift all UI globally — change {@link #HUD_FONT_BASE}.
+     */
+    public static final float HUD_FONT_TABLE_ROW      = HUD_FONT_MD;   // 14
+    public static final float HUD_FONT_TABLE_HEADER   = HUD_FONT_SM;   // 12
+    public static final float HUD_FONT_FIELD_VALUE    = HUD_FONT_SM;   // 12
+    public static final float HUD_FONT_READOUT_KEY    = HUD_FONT_XS;   // 11
+    public static final float HUD_FONT_READOUT_VALUE  = HUD_FONT_SM;   // 12
+    public static final float HUD_FONT_SECTION_TITLE  = HUD_FONT_SM;   // 12
+    public static final float HUD_FONT_TAB_MAIN       = HUD_FONT_LG;   // 16
+    public static final float HUD_FONT_TAB_SECTION    = HUD_FONT_SM;   // 12
+    public static final float HUD_FONT_BUTTON         = HUD_FONT_SM;   // 12
+    public static final float HUD_FONT_CHECKBOX       = HUD_FONT_SM;   // 12f — форм-контрол чекбокса (§4.1)
+    public static final float HUD_FONT_ICON_BUTTON    = HUD_FONT_LG;  // 16f — символ-кнопки (ⓘ и т.п.) в боксе 24×24
+    public static final float HUD_FONT_BADGE_ROLE     = HUD_FONT_XS;   // 11
+    public static final float HUD_FONT_COMMANDER_NAME = HUD_FONT_MD;   // 14
+    public static final float HUD_FONT_APP_TITLE      = HUD_FONT_LG;   // 16 — app title in top bar
+    public static final float HUD_FONT_BANNER         = HUD_FONT_XS;   // 11 — banner message text
+    // Out-of-scale display sizes:
+    public static final float HUD_FONT_CLOCK          = 26f;
+    public static final float HUD_FONT_STAT_LG        = 16f;
 
     // -- Button factories ------------------------------------------------------
 
@@ -225,10 +253,7 @@ public class AppTheme {
      * Creates a subtle frame for dense table/data-plane surfaces.
      */
     public static Border hudDataPlaneBorder() {
-        return BorderFactory.createCompoundBorder(
-                new LineBorder(HUD_BORDER_DIM, HUD_BORDER_THICKNESS, false),
-                new EmptyBorder(1, 1, 1, 1)
-        );
+        return BorderFactory.createEmptyBorder(1, 1, 1, 1);
     }
 
     /**
@@ -256,7 +281,7 @@ public class AppTheme {
     public static JLabel hudSectionLabel(String text) {
         JLabel label = new JLabel(text);
         label.setForeground(ACCENT);
-        label.setFont(label.getFont().deriveFont(Font.BOLD, HUD_FONT_SECTION));
+        label.setFont(label.getFont().deriveFont(Font.BOLD, HUD_FONT_SECTION_TITLE));
         label.putClientProperty(HUD_LOCKED_FOREGROUND, Boolean.TRUE);
         return label;
     }
@@ -268,7 +293,7 @@ public class AppTheme {
     public static JLabel hudGroupLabel(String text) {
         JLabel label = new JLabel(text);
         label.setForeground(FG);
-        label.setFont(label.getFont().deriveFont(Font.BOLD, HUD_FONT_SECTION));
+        label.setFont(label.getFont().deriveFont(Font.BOLD, HUD_FONT_SECTION_TITLE));
         label.putClientProperty(HUD_LOCKED_FOREGROUND, Boolean.TRUE);
         return label;
     }
@@ -278,7 +303,7 @@ public class AppTheme {
      */
     public static Border hudFieldBorder() {
         return BorderFactory.createCompoundBorder(
-                new LineBorder(HUD_BORDER, HUD_BORDER_THICKNESS, false),
+                new LineBorder(HUD_ORANGE_SOFT, HUD_BORDER_THICKNESS, false),
                 new EmptyBorder(5, 8, 5, 8)
         );
     }
@@ -312,12 +337,13 @@ public class AppTheme {
             styleMetadataField(tc);
             return;
         }
-        tc.setBackground(HUD_PANEL_BG_ALT);
+        tc.setBackground(HUD_TABLE_ROW);
         tc.setForeground(FG);
-        tc.setCaretColor(HUD_CYAN);
-        tc.setSelectionColor(HUD_CYAN);
+        tc.setCaretColor(ACCENT);
+        tc.setSelectionColor(ACCENT);
         tc.setSelectedTextColor(SEL_FG);
         tc.setBorder(hudFieldBorder());
+        tc.setFont(tc.getFont().deriveFont(HUD_FONT_FIELD_VALUE));
     }
 
     /**
@@ -346,16 +372,20 @@ public class AppTheme {
         tc.setSelectionColor(HUD_CYAN);
         tc.setSelectedTextColor(SEL_FG);
         tc.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+        tc.setFont(tc.getFont().deriveFont(HUD_FONT_FIELD_VALUE));
     }
 
     /**
      * Applies the standard HUD treatment to combo boxes without replacing the model or renderer.
+     * Installs {@link HudComboBoxUI} for the flat ▼ arrow and warm field background.
      */
     public static void styleComboBox(JComboBox<?> comboBox) {
-        comboBox.setBackground(HUD_PANEL_BG_ALT);
+        comboBox.setUI(new HudComboBoxUI());
+        comboBox.setBackground(HUD_TABLE_ROW);
         comboBox.setForeground(FG);
         comboBox.setBorder(hudFieldBorder());
         comboBox.setFocusable(true);
+        comboBox.setFont(comboBox.getFont().deriveFont(HUD_FONT_FIELD_VALUE));
     }
 
     /**
@@ -373,7 +403,7 @@ public class AppTheme {
     public static void styleScrollPane(JScrollPane scrollPane) {
         scrollPane.setBackground(HUD_BG);
         scrollPane.getViewport().setBackground(HUD_PANEL_BG);
-        scrollPane.setBorder(new LineBorder(HUD_BORDER_DIM, HUD_BORDER_THICKNESS, true));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         styleScrollBar(scrollPane.getVerticalScrollBar());
         styleScrollBar(scrollPane.getHorizontalScrollBar());
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -467,6 +497,59 @@ public class AppTheme {
         );
     }
 
+    /**
+     * Tints a monochrome glyph icon to the given colour using {@link AlphaComposite#SRC_IN},
+     * preserving per-pixel alpha. Only correct for single-colour masks on a transparent background.
+     *
+     * @param src   source icon (any size)
+     * @param w     output width in pixels
+     * @param h     output height in pixels
+     * @param color replacement colour
+     * @return new {@link ImageIcon} backed by a {@link BufferedImage}
+     */
+    public static ImageIcon tintIcon(ImageIcon src, int w, int h, Color color) {
+        BufferedImage buf = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = buf.createGraphics();
+        try {
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.drawImage(src.getImage(), 0, 0, w, h, null);
+            g2.setComposite(AlphaComposite.SrcIn);
+            g2.setColor(color);
+            g2.fillRect(0, 0, w, h);
+        } finally {
+            g2.dispose();
+        }
+        return new ImageIcon(buf);
+    }
+
+    /**
+     * Draws the flat ▼ triangle used by HUD combo boxes, centred within (x, y, w, h).
+     * Shared between {@link HudComboBoxUI} arrow button and table cell renderers.
+     *
+     * @param g2    graphics context (not disposed by this method)
+     * @param x     left edge of the available area
+     * @param y     top edge of the available area
+     * @param w     width of the available area
+     * @param h     height of the available area
+     * @param color fill colour for the triangle
+     */
+    public static void paintHudArrowDown(Graphics2D g2, int x, int y, int w, int h, Color color) {
+        Object oldAA = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        // Local geometry — not a colour/font/height token.
+        int aw = 8;
+        int ah = 5;
+        int ax = x + (w - aw) / 2;
+        int ay = y + (h - ah) / 2;
+        g2.setColor(color);
+        g2.fillPolygon(
+                new int[]{ax, ax + aw, ax + aw / 2},
+                new int[]{ay, ay,      ay + ah},
+                3);
+        if (oldAA != null) g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
+    }
+
     // -- Tabbed pane -----------------------------------------------------------
 
     /** @deprecated Use {@link #makeStandardTabs()} or {@code new HudTabbedPane(HudTabbedPane.Level.STANDARD)}. */
@@ -519,9 +602,13 @@ public class AppTheme {
         if (c == null) return;
         boolean lockForeground = c instanceof JComponent jc
                 && Boolean.TRUE.equals(jc.getClientProperty(HUD_LOCKED_FOREGROUND));
+        boolean lockScroll = c instanceof JComponent jcs
+                && Boolean.TRUE.equals(jcs.getClientProperty(HUD_SCROLL_STYLE_LOCKED));
 
         if (c instanceof TopStatusBar || c instanceof HudPanel || c instanceof StatusBadge) {
             // HUD primitives own their painting and state colours.
+        } else if (c instanceof JScrollPane && lockScroll) {
+            // data-plane scroll owns its viewport bg/border — leave it untouched
         } else if (c instanceof JPanel || c instanceof JTabbedPane || c instanceof JScrollPane) {
             c.setBackground(HUD_CONTENT_BACKGROUND);
             if (!lockForeground) c.setForeground(FG);
@@ -548,7 +635,7 @@ public class AppTheme {
             styleButton(b);
         }
 
-        if (c instanceof JCheckBox cb) {
+        if (c instanceof JCheckBox cb && !(cb instanceof HudCheckBox)) {
             styleCheckBox(cb);
         }
 
@@ -571,7 +658,7 @@ public class AppTheme {
             tp.setOpaque(true);
         }
 
-        if (c instanceof JScrollPane sp) {
+        if (c instanceof JScrollPane sp && !lockScroll) {
             styleScrollPane(sp);
         }
 
@@ -610,8 +697,10 @@ public class AppTheme {
         gbc.gridx = 0;
         gbc.weightx = 0;
         gbc.fill = GridBagConstraints.NONE;
-        JLabel label = new JLabel(text);
-        label.setPreferredSize(new Dimension(220, 42));
+        JLabel label = new JLabel(text.toUpperCase());
+        label.setForeground(FG_MUTED);
+        label.setFont(label.getFont().deriveFont(HUD_FONT_SM));
+        label.setPreferredSize(new Dimension(220, HUD_TABLE_ROW_HEIGHT_COMPACT));
         panel.add(label, gbc);
     }
 
@@ -620,6 +709,7 @@ public class AppTheme {
         gbc.weightx = weightX;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         JLabel comp = new JLabel(text);
+        comp.setFont(comp.getFont().deriveFont(HUD_FONT_SM));
         comp.setPreferredSize(new Dimension(0, comp.getPreferredSize().height));
         panel.add(comp, gbc);
     }

@@ -14,6 +14,7 @@ public class SettingsTabPanel extends JPanel {
     private final LocalLlmSettingsPanel localLlmPanel = new LocalLlmSettingsPanel();
     private final AudioSettingsPanel audioPanel = new AudioSettingsPanel();
     private final CloudServicesSettingsPanel cloudPanel = new CloudServicesSettingsPanel();
+    private final CustomSettingsTabPanel customPanel = new CustomSettingsTabPanel();
 
     private HudUpdateButton updateAppButton;
 
@@ -39,6 +40,8 @@ public class SettingsTabPanel extends JPanel {
         tabs.addTab(getText("settings.tab.localLlm"), scaledIcon("/images/local-llm.png"), localLlmPanel);
         tabs.addTab(getText("settings.tab.audio"), scaledIcon("/images/audio.png"), audioPanel);
         tabs.addTab(getText("settings.tab.cloudServices"), scaledIcon("/images/cloud.png"), cloudPanel);
+        // TODO: replace controller.png with a dedicated custom-settings icon
+        tabs.addTab(getText("settings.tab.custom"), scaledIcon("/images/controller.png"), customPanel);
 
         updateAppButton = new HudUpdateButton();
 
@@ -55,6 +58,7 @@ public class SettingsTabPanel extends JPanel {
         localLlmPanel.initData();
         audioPanel.initData();
         cloudPanel.initData();
+        customPanel.initData();
     }
 
     private ImageIcon scaledIcon(String resource) {

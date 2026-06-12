@@ -31,9 +31,10 @@ public class HudComboBox<E> extends JComboBox<E> {
                 boolean cellHasFocus
         ) {
             JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            label.setBackground(isSelected ? AppTheme.HUD_CYAN : AppTheme.HUD_PANEL_BG_ALT);
+            label.setBackground(isSelected ? AppTheme.ACCENT : AppTheme.HUD_TABLE_ROW);
             label.setForeground(isSelected ? AppTheme.SEL_FG : AppTheme.FG);
             label.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+            label.setFont(label.getFont().deriveFont(AppTheme.HUD_FONT_FIELD_VALUE));
             return label;
         }
     }

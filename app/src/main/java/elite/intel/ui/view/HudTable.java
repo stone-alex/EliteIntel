@@ -20,7 +20,8 @@ public final class HudTable {
      * @param table table to style
      */
     public static void style(JTable table) {
-        style(table, AppTheme.HUD_TABLE_ROW_HEIGHT, AppTheme.HUD_TABLE_HEADER_HEIGHT, 13f, 5, 4);
+        style(table, AppTheme.HUD_TABLE_ROW_HEIGHT, AppTheme.HUD_TABLE_HEADER_HEIGHT,
+                AppTheme.HUD_FONT_TABLE_ROW, AppTheme.HUD_FONT_TABLE_HEADER, 5, 4);
     }
 
     /**
@@ -29,7 +30,8 @@ public final class HudTable {
      * @param table table to style
      */
     public static void styleCompact(JTable table) {
-        style(table, AppTheme.HUD_TABLE_ROW_HEIGHT_COMPACT, AppTheme.HUD_TABLE_HEADER_HEIGHT_COMPACT, 12f, 3, 2);
+        style(table, AppTheme.HUD_TABLE_ROW_HEIGHT_COMPACT, AppTheme.HUD_TABLE_HEADER_HEIGHT_COMPACT,
+                AppTheme.HUD_FONT_SM, AppTheme.HUD_FONT_SM - 1f, 3, 2);
     }
 
     private static void style(
@@ -37,29 +39,32 @@ public final class HudTable {
             int rowHeight,
             int headerHeight,
             float fontSize,
+            float headerFontSize,
             int headerVerticalPadding,
             int cellVerticalPadding
     ) {
         table.setFillsViewportHeight(true);
         table.setRowHeight(rowHeight);
         table.setFont(table.getFont().deriveFont(Font.PLAIN, fontSize));
-        table.setBackground(AppTheme.HUD_TABLE_BG);
+        table.setBackground(AppTheme.HUD_BG);   // table body = window colour; darker than HUD_TABLE_ROW tile → gap reads as dark slot (§2)
         table.setForeground(AppTheme.FG);
-        table.setGridColor(AppTheme.HUD_BORDER_DIM);
+        table.setGridColor(AppTheme.HUD_BG);
         table.setSelectionBackground(AppTheme.ACCENT);
         table.setSelectionForeground(AppTheme.SEL_FG);
+        table.setShowGrid(false);
         table.setShowVerticalLines(false);
-        table.setShowHorizontalLines(true);
-        table.setIntercellSpacing(new Dimension(0, 1));
+        table.setShowHorizontalLines(false);
+        table.setIntercellSpacing(new Dimension(3, 3));
         table.setDefaultRenderer(Object.class, new CellRenderer(cellVerticalPadding));
 
         JTableHeader header = table.getTableHeader();
         header.setBackground(AppTheme.HUD_BG);
         header.setForeground(AppTheme.FG);
-        header.setFont(header.getFont().deriveFont(Font.BOLD, Math.max(10f, fontSize - 1f)));
+        header.setFont(header.getFont().deriveFont(Font.BOLD, headerFontSize));
         header.setReorderingAllowed(false);
         header.setPreferredSize(new Dimension(header.getPreferredSize().width, headerHeight));
         header.setDefaultRenderer(new HeaderRenderer(headerVerticalPadding));
+        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, AppTheme.HUD_ORANGE_SOFT));
         // Belt-and-suspenders: FlatLaf also reads the client property per-component.
         header.putClientProperty("FlatLaf.style", String.format(
                 "hoverBackground: #%06X; hoverForeground: #%06X; pressedBackground: #%06X; pressedForeground: #%06X",
@@ -76,7 +81,24 @@ public final class HudTable {
      */
     public static JScrollPane scrollPane(JTable table) {
         JScrollPane scrollPane = new HudScrollPane(table);
-        scrollPane.getViewport().setBackground(AppTheme.HUD_TABLE_BG);
+        scrollPane.getViewport().setBackground(AppTheme.HUD_BG);
+        return scrollPane;
+    }
+
+    /**
+     * Scroll pane for a HUD data table: warm HUD_BG viewport (matches the row
+     * gap colour, no cold cant around/below rows) and a data-plane frame.
+     * Marked HUD_SCROLL_STYLE_LOCKED so applyDarkPalette will not reset it to the
+     * cold HUD_PANEL_BG viewport. Use this for table panels instead of
+     * scrollPane(JTable) + manual restore-after-palette (ED_HUD_REFERENCE §8.6).
+     *
+     * @param table table to wrap
+     */
+    public static JScrollPane dataPlaneScrollPane(JTable table) {
+        JScrollPane scrollPane = new HudScrollPane(table);          // ctor runs styleScrollPane (cold)
+        scrollPane.getViewport().setBackground(AppTheme.HUD_BG);    // override to warm
+        scrollPane.setBorder(AppTheme.hudDataPlaneBorder());
+        scrollPane.putClientProperty(AppTheme.HUD_SCROLL_STYLE_LOCKED, Boolean.TRUE);
         return scrollPane;
     }
 
@@ -115,6 +137,14 @@ public final class HudTable {
     }
 
     /**
+     * Optional client property on a JTable: Integer index of the row currently
+     * under the mouse, or -1 / absent for none. When present, the default
+     * CellRenderer paints that row with HUD_TABLE_ROW_HOVER. Panels that want
+     * row hover install a MouseMotionListener that maintains this property.
+     */
+    public static final String HOVER_ROW_PROPERTY = "elite.intel.hud.table.hoverRow";
+
+    /**
      * Standard alternating-row HUD table cell renderer.
      */
     public static class CellRenderer extends DefaultTableCellRenderer {
@@ -129,6 +159,11 @@ public final class HudTable {
             setOpaque(true);
         }
 
+        /** Returns the vertical cell padding used in the border, available to subclasses. */
+        protected int getVerticalPadding() {
+            return verticalPadding;
+        }
+
         @Override
         public Component getTableCellRendererComponent(
                 JTable table,
@@ -139,8 +174,13 @@ public final class HudTable {
                 int column
         ) {
             JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            if (!isSelected) {
-                label.setBackground(row % 2 == 0 ? AppTheme.HUD_TABLE_BG : AppTheme.HUD_ROW_ALT);
+            if (isSelected) {
+                label.setBackground(AppTheme.ACCENT);
+                label.setForeground(AppTheme.SEL_FG);
+            } else {
+                Object hoveredObj = table.getClientProperty(HOVER_ROW_PROPERTY);
+                boolean hovered = hoveredObj instanceof Integer h && h == row;
+                label.setBackground(hovered ? AppTheme.HUD_TABLE_ROW_HOVER : AppTheme.HUD_TABLE_ROW);
                 label.setForeground(AppTheme.ACCENT);
             }
             label.setBorder(new EmptyBorder(verticalPadding, 8, verticalPadding, 8));

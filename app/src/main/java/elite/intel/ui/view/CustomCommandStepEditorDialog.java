@@ -428,7 +428,7 @@ final class CustomCommandStepEditorDialog extends JDialog {
             ) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 setText(value == null ? "" : value.toString());
-                setBackground(isSelected ? AppTheme.HUD_CYAN : AppTheme.HUD_PANEL_BG_ALT);
+                setBackground(isSelected ? AppTheme.ACCENT : AppTheme.HUD_TABLE_ROW);
                 setForeground(isSelected ? AppTheme.SEL_FG : AppTheme.FG);
                 setBorder(new EmptyBorder(5, 10, 5, 10));
                 return this;
@@ -655,7 +655,7 @@ final class CustomCommandStepEditorDialog extends JDialog {
         button.setForeground(AppTheme.FG_MUTED);
         button.setBackground(AppTheme.BG);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        button.setFont(button.getFont().deriveFont(Font.PLAIN, button.getFont().getSize2D() + 2f));
+        button.setFont(button.getFont().deriveFont(Font.PLAIN, AppTheme.HUD_FONT_ICON_BUTTON));
         Dimension size = new Dimension(28, 28);
         button.setPreferredSize(size);
         button.setMinimumSize(size);

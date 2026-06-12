@@ -35,11 +35,11 @@ public class HudStatusReadout extends JPanel {
 
         JLabel labelComp = new JLabel(label == null ? "" : label.toUpperCase());
         labelComp.setForeground(FG_MUTED);
-        labelComp.setFont(labelComp.getFont().deriveFont(Font.PLAIN, HUD_FONT_XS));
+        labelComp.setFont(labelComp.getFont().deriveFont(Font.PLAIN, HUD_FONT_READOUT_KEY));
 
         valueComp = new JLabel(value == null ? "" : value.toUpperCase(), SwingConstants.RIGHT);
         valueComp.setForeground(currentStateColor);
-        valueComp.setFont(valueComp.getFont().deriveFont(Font.BOLD, HUD_FONT_SM));
+        valueComp.setFont(valueComp.getFont().deriveFont(Font.BOLD, HUD_FONT_READOUT_VALUE));
         // Prevent applyDarkPalette from overriding the state-driven foreground colour.
         valueComp.putClientProperty(AppTheme.HUD_LOCKED_FOREGROUND, Boolean.TRUE);
 

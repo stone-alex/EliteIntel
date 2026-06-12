@@ -45,12 +45,12 @@ public class HudTelemetryBlock extends JPanel {
 
         JLabel keyLabel = new JLabel(label == null ? "" : label.toUpperCase());
         keyLabel.setForeground(AppTheme.HUD_DISABLED);
-        keyLabel.setFont(keyLabel.getFont().deriveFont(Font.PLAIN, AppTheme.HUD_FONT_XS));
+        keyLabel.setFont(keyLabel.getFont().deriveFont(Font.PLAIN, AppTheme.HUD_FONT_READOUT_KEY));
         keyLabel.setAlignmentX(LEFT_ALIGNMENT);
 
         valueLabel = new JLabel(PLACEHOLDER);
         valueLabel.setForeground(AppTheme.HUD_DISABLED);
-        valueLabel.setFont(valueLabel.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_SM));
+        valueLabel.setFont(valueLabel.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_READOUT_VALUE));
         valueLabel.setAlignmentX(LEFT_ALIGNMENT);
 
         JPanel textStack = new JPanel();

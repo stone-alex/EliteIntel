@@ -2,6 +2,8 @@ package elite.intel.ai.brain.i18n.fr;
 
 import elite.intel.ai.brain.i18n.PromptLanguageRules;
 
+import static elite.intel.ai.brain.actions.Commands.CLEAR_ALL_ACTIVE_MISSIONS;
+
 public class FrenchPromptRules implements PromptLanguageRules {
 
     @Override
@@ -24,9 +26,14 @@ public class FrenchPromptRules implements PromptLanguageRules {
         return "où / quoi / combien / y a-t-il / quel / quelle / quelle station / quel système";
     }
 
+
     @Override
     public String disambiguationHints() {
-        // TODO: if LLM constantly confuses term A with term B add a disambiguation rule here.
-        return PromptLanguageRules.super.disambiguationHints();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("- require very high probability match for action → ");
+        sb.append(CLEAR_ALL_ACTIVE_MISSIONS.getAction());
+        sb.append("\n");
+        return sb.toString();
     }
 }

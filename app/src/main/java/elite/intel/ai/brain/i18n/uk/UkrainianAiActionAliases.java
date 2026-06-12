@@ -210,6 +210,7 @@ public class UkrainianAiActionAliases implements AiActionAliasProvider {
         map.put("розвідка мисливських угідь, навігація до цільової системи, курс до системи полювання", RECON_TARGET_SYSTEM.getAction());
         map.put("ігноруй мисливські угіддя, пропусти місце полювання", IGNORE_HUNTING_GROUND.getAction());
         map.put("підтверди мисливські угіддя, підтверди цільову зоряну систему", CONFIRM_HUNTING_GROUND.getAction());
+        map.put("очистити активні місії, очистити всі активні місії", CLEAR_ALL_ACTIVE_MISSIONS.getAction());
 
         // science / mining / biology
         map.put("додай ціль видобутку {key:X}", ADD_MINING_TARGET.getAction());

@@ -19,7 +19,7 @@ public enum ShipPersonality {
     CASUAL("Your Personality Roleplay: Respond extremely briefly and concisely in a casual tone like a colleague. Use occasional slang matching cadence."),
     FRIENDLY("Your Personality Roleplay: Respond extremely briefly and concisely in a friendly, casual tone like a close friend. Use slang matching cadence."),
     UNHINGED("Your Personality Roleplay: Respond briefly and concisely, unpredictable and chaotic energy, using jargon and slang but staying sharp and witty within the selected cadence."),
-    ROGUE("Your Personality Roleplay: Respond briefly with bold, spicy in-your-face energy, humor and pawns. Use heavy jargon, slang and occasional profanity but stay sharp and witty within the selected cadence.");
+    ROGUE("Your Personality Roleplay: Respond with bold, spicy in-your-face energy, humor and pawns. Use heavy jargon, slang and profanity but stay sharp and witty within the selected cadence and language.");
 
     private final String behaviorClause;
 

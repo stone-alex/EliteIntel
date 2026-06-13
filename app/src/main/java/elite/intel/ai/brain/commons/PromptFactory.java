@@ -192,6 +192,7 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String generateAnalysisPrompt() {
         StringBuilder sb = new StringBuilder();
+        sb.append(responseLanguageRule());
         youAre(sb);
         if (!systemSession.useLocalQueryLlm()) {
             sb.append(getSessionValues());
@@ -200,7 +201,6 @@ public class PromptFactory implements AiPromptFactory {
             sb.append(appendLocalBehavior());
         }
         sb.append("Respond with JSON only. Set \"text_to_speech_response\" to your answer.\n\n");
-        sb.append(responseLanguageRule());
         sb.append(ttsResponseRules());
         sb.append("""
                 - Spell out numerals (e.g., twenty-three, not 23).
@@ -214,6 +214,7 @@ public class PromptFactory implements AiPromptFactory {
         if (!systemSession.useLocalQueryLlm()) {
             appendCadenceAndPersonality(sb);
         }
+        sb.append(closingLanguageReinforcement());
         return sb.toString();
     }
 
@@ -286,6 +287,7 @@ public class PromptFactory implements AiPromptFactory {
         if (!systemSession.useLocalQueryLlm()) {
             appendCadenceAndPersonality(sb);
         }
+        sb.append(closingLanguageReinforcement());
         return sb.toString();
     }
 
@@ -336,7 +338,16 @@ public class PromptFactory implements AiPromptFactory {
 
     private String responseLanguageRule() {
         Language language = AiResponseLanguagePolicy.resolveEffectiveAiResponseLanguage(systemSession);
-        return "Always return text_to_speech_response in " + languageDisplayName(language) + " language .\n";
+        String name = languageDisplayName(language);
+        return "MANDATORY LANGUAGE RULE: text_to_speech_response MUST be written in " + name + " ONLY. " +
+                "Responding in any other language is a critical failure that violates the user's settings. " +
+                "This rule overrides all other instructions.\n";
+    }
+
+    private String closingLanguageReinforcement() {
+        Language language = AiResponseLanguagePolicy.resolveEffectiveAiResponseLanguage(systemSession);
+        String name = languageDisplayName(language);
+        return "FINAL RULE: Your text_to_speech_response MUST be in " + name + ". No exceptions.\n";
     }
 
     private static String languageDisplayName(Language language) {

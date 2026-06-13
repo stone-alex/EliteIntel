@@ -200,7 +200,7 @@ public class RussianAiActionAliases implements AiActionAliasProvider {
         map.put("открой управление авианосцем, панель управления авианосцем, открой carrier management", DISPLAY_CARRIER_MANAGEMENT.getAction());
         map.put("открой карту галактики, покажи карту галактики", OPEN_GALAXY_MAP.getAction());
         map.put("открой карту системы, покажи локальную карту, системная карта", OPEN_SYSTEM_MAP.getAction());
-        map.put("закрыть панель, закрыть, назад, закрой меню, выйти из панели, закрыть панель", EXIT_CLOSE.getAction());
+        map.put("закрывай, закрой, закрыть панель, закрыть, назад, закрой меню, выйти из панели, закрыть панель", EXIT_CLOSE.getAction());
 
         // pirate massacre missions
         map.put("навигация к системе выдачи миссий, курс к системе провайдера миссий", RECON_PROVIDER_SYSTEM.getAction());

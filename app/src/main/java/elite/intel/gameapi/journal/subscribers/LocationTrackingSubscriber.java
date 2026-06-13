@@ -138,7 +138,7 @@ public class LocationTrackingSubscriber {
         double speed = navigator.getSpeed();
 
         if (!hasAnnouncedOrbital) {
-            vocalize(localizedEvent("event.nav.orbital") + " " + localizedDistance(distanceToTarget) + bearingLabel(navigator.bearingToTarget()), 0, 0, true);
+            vocalize(localizedEvent("event.nav.orbital") + " " + NavigationUtils.formatDistance(distanceToTarget) + bearingLabel(navigator.bearingToTarget()), 0, 0, true);
             hasAnnouncedOrbital = true;
         }
 
@@ -203,13 +203,13 @@ public class LocationTrackingSubscriber {
 
         // Suppress descent guidance at supercruise speeds - still decelerating into orbit.
         if (speed > 50_000) {
-            vocalize(localizedDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
+            vocalize(NavigationUtils.formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
             return;
         }
 
         // Inside commit distance: on final approach.
         if (projectedDistance <= commitDist) {
-            vocalize(localizedEvent("event.nav.final") + " " + localizedDistance(distanceToTarget) + bearingLabel(bearingToTarget), 0, 0, false);
+            vocalize(localizedEvent("event.nav.final") + " " + NavigationUtils.formatDistance(distanceToTarget) + bearingLabel(bearingToTarget), 0, 0, false);
             return;
         }
 
@@ -221,9 +221,9 @@ public class LocationTrackingSubscriber {
         if (altitude < 100_000 && distanceToTarget > commitDist * 3) {
             if (levelFlight) {
                 levelOffCued = false; // pilot levelled off - reset so we can warn again if they descend
-                vocalize(headingCorrection + localizedDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
+                vocalize(headingCorrection + NavigationUtils.formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
             } else if (!levelOffCued) {
-                vocalize(localizedEvent("event.nav.levelOff") + " " + localizedDistance(distanceToTarget) + bearingLabel(bearingToTarget), 0, 0, true);
+                vocalize(localizedEvent("event.nav.levelOff") + " " + NavigationUtils.formatDistance(distanceToTarget) + bearingLabel(bearingToTarget), 0, 0, true);
                 levelOffCued = true;
             }
             // If levelOffCued && !levelFlight: already told them once - stay silent
@@ -238,25 +238,25 @@ public class LocationTrackingSubscriber {
                 double scaleFactor = planetRadius / (planetRadius + altitude);
                 int geoAngle = (int) Math.round(Math.toDegrees(Math.atan((altitude / distanceToTarget) * scaleFactor)));
                 boolean urgent = commitAngle > 20.0 || speed > 15_000;
-                vocalize(localizedEvent("event.nav.pitchMinus", geoAngle) + " " + headingCorrection + localizedDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, urgent);
+                vocalize(localizedEvent("event.nav.pitchMinus", geoAngle) + " " + headingCorrection + NavigationUtils.formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, urgent);
             } else if (commitAngle >= 5.0 && commitAngle <= 45.0) {
                 // Comfortable descent window - cue the pilot with the required angle.
                 boolean urgent = commitAngle > 20.0 || speed > 15_000;
-                vocalize(localizedEvent("event.nav.pitchMinus", (int) Math.round(commitAngle)) + " " + headingCorrection + localizedDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, !beginDescentCued || urgent);
+                vocalize(localizedEvent("event.nav.pitchMinus", (int) Math.round(commitAngle)) + " " + headingCorrection + NavigationUtils.formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, !beginDescentCued || urgent);
                 beginDescentCued = true;
             } else if (commitAngle > 45.0 && altitude < 400_000) {
                 // Too steep from here - orbit for a better pass.
-                vocalize(localizedEvent("event.nav.circleForApproach") + " " + headingCorrection + localizedDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
+                vocalize(localizedEvent("event.nav.circleForApproach") + " " + headingCorrection + NavigationUtils.formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
                 beginDescentCued = false;
             } else {
                 // Too far or still entering orbit - distance + any heading nudge.
                 beginDescentCued = false;
-                vocalize(headingCorrection + localizedDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
+                vocalize(headingCorrection + NavigationUtils.formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
             }
         } else {
             // Actively descending - confirm actual angle so pilot can compare with HUD.
             beginDescentCued = false;
-            vocalize(localizedEvent("event.nav.pitchMinus", (int) Math.round(actualDescentAngle)) + " " + headingCorrection + localizedDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
+            vocalize(localizedEvent("event.nav.pitchMinus", (int) Math.round(actualDescentAngle)) + " " + headingCorrection + NavigationUtils.formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
         }
     }
 
@@ -280,9 +280,9 @@ public class LocationTrackingSubscriber {
 
         if (climbing) {
             // Pitching up risks cancelling glide - warn immediately.
-            vocalize(localizedEvent("event.nav.maintainDescent") + " " + localizedDistance(distanceToTarget) + bearingLabel(navigator.bearingToTarget()), 0, 0, true);
+            vocalize(localizedEvent("event.nav.maintainDescent") + " " + NavigationUtils.formatDistance(distanceToTarget) + bearingLabel(navigator.bearingToTarget()), 0, 0, true);
         } else {
-            vocalize(localizedDistance(distanceToTarget) + bearingLabel(navigator.bearingToTarget()), 0, 0, false);
+            vocalize(NavigationUtils.formatDistance(distanceToTarget) + bearingLabel(navigator.bearingToTarget()), 0, 0, false);
         }
         lastDistance = distanceToTarget;
     }
@@ -290,17 +290,6 @@ public class LocationTrackingSubscriber {
     private String bearingLabel(double bearing) {
         if (bearing <= 0) return "";
         return localizedEvent("event.nav.bearing", (int) bearing);
-    }
-
-    private String localizedDistance(double meters) {
-        double km = meters / 1000;
-        if (meters >= 10000) {
-            return localizedEvent("event.nav.km", (int) km);
-        } else if (meters >= 1000) {
-            return localizedEvent("event.nav.km", String.format("%.1f", km));
-        } else {
-            return localizedEvent("event.nav.meters", (int) meters);
-        }
     }
 
     /**
@@ -436,7 +425,7 @@ public class LocationTrackingSubscriber {
         if (isAboveAnnouncementThreshold(highPriority)) {
             StringBuilder sb = new StringBuilder();
             if (text != null) sb.append(text);
-            if (distance > 0) sb.append(localizedDistance(distance));
+            if (distance > 0) sb.append(NavigationUtils.formatDistance(distance));
             if (bearing > 0) sb.append(localizedEvent("event.nav.bearing", (int) bearing));
             log.info(sb.toString());
             EventBusManager.publish(new NavigationVocalisationEvent(sb.toString()));

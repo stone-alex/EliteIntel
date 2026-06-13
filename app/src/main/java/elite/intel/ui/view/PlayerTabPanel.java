@@ -150,7 +150,7 @@ public class PlayerTabPanel extends JPanel {
         HudTable.style(fleetTable);
         fleetTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        fleetTable.getColumnModel().getColumn(0).setCellRenderer(new HudTable.ValueCellRenderer(AppTheme.FG, SwingConstants.LEFT));
+        fleetTable.getColumnModel().getColumn(0).setCellRenderer(new HudTable.ValueCellRenderer());
         fleetTable.getColumnModel().getColumn(1).setCellRenderer(new ComboColumnRenderer(null));
         fleetTable.getColumnModel().getColumn(2).setCellRenderer(new ComboColumnRenderer("ship.personality."));
         fleetTable.getColumnModel().getColumn(3).setCellRenderer(new ComboColumnRenderer("ship.cadence."));

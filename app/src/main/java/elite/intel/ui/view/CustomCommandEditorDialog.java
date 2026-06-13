@@ -153,7 +153,7 @@ final class CustomCommandEditorDialog extends JDialog {
         paramsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         HudTable.style(paramsTable);
         paramsTable.getColumnModel().getColumn(0)
-                .setCellRenderer(new HudTable.ValueCellRenderer(AppTheme.FG, SwingConstants.LEFT));
+                .setCellRenderer(new HudTable.ValueCellRenderer());
         for (int i = 1; i <= 4; i++) {
             paramsTable.getColumnModel().getColumn(i)
                     .setCellRenderer(new HudTable.ValueCellRenderer());

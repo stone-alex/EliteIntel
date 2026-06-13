@@ -760,6 +760,31 @@ public class AppTheme {
         if (oldAA != null) g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
     }
 
+    /**
+     * Paints the HUD checkbox marker: a 2-px double-outline square box, with a centred
+     * filled inner square when {@code filled} is true. Geometry matches the legacy inline
+     * drawing in {@link HudCheckBox}. Caller is responsible for antialiasing hints.
+     *
+     * @param g2          graphics context (not disposed by this method)
+     * @param x           left edge of the marker box
+     * @param y           top edge of the marker box
+     * @param size        outer marker size in px (e.g. {@code HUD_TABLE_ROW_HEIGHT_COMPACT - 2*HUD_PADDING_SMALL})
+     * @param markerColor colour of outline and inner fill
+     * @param filled      draw the inner filled square (ON state) when true
+     */
+    public static void paintHudCheckMarker(Graphics2D g2, int x, int y, int size,
+                                           Color markerColor, boolean filled) {
+        g2.setColor(markerColor);
+        g2.drawRect(x,     y,     size - 1, size - 1);
+        g2.drawRect(x + 1, y + 1, size - 3, size - 3);
+        if (filled) {
+            int innerSize = size / 2;
+            int innerX = x + (size - innerSize) / 2;
+            int innerY = y + (size - innerSize) / 2;
+            g2.fillRect(innerX, innerY, innerSize, innerSize);
+        }
+    }
+
     // -- Tabbed pane -----------------------------------------------------------
 
     /** @deprecated Use {@link #makeStandardTabs()} or {@code new HudTabbedPane(HudTabbedPane.Level.STANDARD)}. */

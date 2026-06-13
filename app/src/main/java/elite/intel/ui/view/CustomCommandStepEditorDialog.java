@@ -35,23 +35,23 @@ final class CustomCommandStepEditorDialog extends JDialog {
     private static final int PICKER_FIELD_HEIGHT = 42;
 
     private final JComboBox<CustomCommandStep.Type> typeCombo = buildTypeCombo();
-    private final JLabel valueLabel = new JLabel();
-    private final JTextField valueField = new JTextField(32);
-    private final JLabel commandLabel = new JLabel(getText("actions.customCommands.editor.step.commandId"));
+    private final JLabel valueLabel   = AppTheme.hudReadoutLabel("");
+    private final HudTextField valueField = new HudTextField();
+    private final JLabel commandLabel = AppTheme.hudReadoutLabel(getText("actions.customCommands.editor.step.commandId"));
     private final List<CustomCommandStepPickerItem> commandItems = new ArrayList<>(CustomCommandStepPickerItem.builtInCommandItems());
     private final JComboBox<CustomCommandStepPickerItem> commandCombo = picker(commandItems);
-    private final JLabel bindingLabel = new JLabel(getText("actions.customCommands.editor.step.bindingId"));
+    private final JLabel bindingLabel = AppTheme.hudReadoutLabel(getText("actions.customCommands.editor.step.bindingId"));
     private final List<CustomCommandStepPickerItem> bindingItems = new ArrayList<>(CustomCommandStepPickerItem.bindingItems());
     private final JComboBox<CustomCommandStepPickerItem> bindingCombo = picker(bindingItems);
-    private final JLabel rawKeyLabel = new JLabel(getText("actions.customCommands.editor.step.rawKey"));
+    private final JLabel rawKeyLabel  = AppTheme.hudReadoutLabel(getText("actions.customCommands.editor.step.rawKey"));
     private final List<CustomCommandStepPickerItem> rawKeyItems = buildRawKeyPickerItems();
     private final JComboBox<CustomCommandStepPickerItem> rawKeyCombo = picker(rawKeyItems);
-    private final JLabel rawModLabel = new JLabel(getText("actions.customCommands.editor.step.rawKeyModifier"));
+    private final JLabel rawModLabel  = AppTheme.hudReadoutLabel(getText("actions.customCommands.editor.step.rawKeyModifier"));
     private final JComboBox<RawModOption> rawModCombo = buildRawModCombo();
-    private final JLabel durationLabel = new JLabel(getText("actions.customCommands.editor.step.durationMs"));
+    private final JLabel durationLabel = AppTheme.hudReadoutLabel(getText("actions.customCommands.editor.step.durationMs"));
     private final JSpinner durationSpinner = new JSpinner(new SpinnerNumberModel(250, 0, Integer.MAX_VALUE, 50));
-    private final JLabel stepParamsLabel = new JLabel(getText("actions.customCommands.editor.step.params"));
-    private final JButton stepParamsInfoButton = new JButton("\u24D8");
+    private final JLabel stepParamsLabel = AppTheme.hudReadoutLabel(getText("actions.customCommands.editor.step.params"));
+    private final JButton stepParamsInfoButton = new JButton("ⓘ");
     private final DefaultTableModel stepParamsModel = new DefaultTableModel(
             new String[]{getText("actions.customCommands.editor.step.params.column.key"),
                          getText("actions.customCommands.editor.step.params.column.value")}, 0) {
@@ -170,9 +170,7 @@ final class CustomCommandStepEditorDialog extends JDialog {
         addRow(panel, gbc, rawModLabel, rawModCombo);
         addRow(panel, gbc, durationLabel, durationSpinner);
         AppTheme.applyDarkPalette(panel);
-        AppTheme.styleTextComponent(valueField);
-        AppTheme.styleComboBox(typeCombo);
-        AppTheme.styleComboBox(rawModCombo);
+        // HudTextField and HudComboBox self-style; no explicit styleTextComponent/styleComboBox needed.
         stylePicker(commandCombo);
         stylePicker(bindingCombo);
         stylePicker(rawKeyCombo);
@@ -181,14 +179,14 @@ final class CustomCommandStepEditorDialog extends JDialog {
     }
 
     private void addRow(JPanel panel, GridBagConstraints gbc, String label, JComponent field) {
-        addRow(panel, gbc, new JLabel(label), field);
+        addRow(panel, gbc, AppTheme.hudReadoutLabel(label), field);
     }
 
     private void addRow(JPanel panel, GridBagConstraints gbc, JLabel label, JComponent field) {
         gbc.gridx = 0;
         gbc.weightx = 0;
         gbc.fill = GridBagConstraints.NONE;
-        label.setForeground(AppTheme.FG_MUTED);
+        // Foreground already set by hudReadoutLabel; fixed-width column for label alignment.
         label.setPreferredSize(new Dimension(160, 28));
         panel.add(label, gbc);
 
@@ -227,7 +225,8 @@ final class CustomCommandStepEditorDialog extends JDialog {
         durationLabel.setVisible(hasDuration);
         durationSpinner.setVisible(hasDuration);
 
-        valueLabel.setText(getText("actions.customCommands.editor.step.text"));
+        // hudReadoutLabel caps only at construction time; setText must uppercase explicitly.
+        valueLabel.setText(getText("actions.customCommands.editor.step.text").toUpperCase());
         packPreservingWidth();
     }
 
@@ -404,7 +403,7 @@ final class CustomCommandStepEditorDialog extends JDialog {
     }
 
     private static JComboBox<CustomCommandStepPickerItem> picker(List<CustomCommandStepPickerItem> items) {
-        JComboBox<CustomCommandStepPickerItem> combo = new JComboBox<>(new DefaultComboBoxModel<>(items.toArray(CustomCommandStepPickerItem[]::new)));
+        JComboBox<CustomCommandStepPickerItem> combo = new HudComboBox<>(items.toArray(CustomCommandStepPickerItem[]::new));
         combo.setEditable(true);
         combo.setPreferredSize(new Dimension(PICKER_FIELD_WIDTH, PICKER_FIELD_HEIGHT));
         combo.setMinimumSize(new Dimension(PICKER_FIELD_WIDTH, PICKER_FIELD_HEIGHT));
@@ -552,7 +551,7 @@ final class CustomCommandStepEditorDialog extends JDialog {
     }
 
     private static JComboBox<CustomCommandStep.Type> buildTypeCombo() {
-        JComboBox<CustomCommandStep.Type> combo = new JComboBox<>(CustomCommandStep.Type.values());
+        JComboBox<CustomCommandStep.Type> combo = new HudComboBox<>(CustomCommandStep.Type.values());
         combo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -590,9 +589,8 @@ final class CustomCommandStepEditorDialog extends JDialog {
         items.add(new RawModOption("", getText("actions.customCommands.editor.step.noModifier")));
         BindingModifier.supportedKeyboardModifiers().forEach(bm ->
                 items.add(new RawModOption(bm.key().toUpperCase(), bm.key())));
-        JComboBox<RawModOption> combo = new JComboBox<>(items.toArray(RawModOption[]::new));
-        AppTheme.styleComboBox(combo);
-        return combo;
+        // HudComboBox constructor calls styleComboBox internally.
+        return new HudComboBox<>(items.toArray(RawModOption[]::new));
     }
 
     /** Selects the modifier combo item matching the stored key name (case-insensitive), or "(none)" if absent. */
@@ -613,7 +611,7 @@ final class CustomCommandStepEditorDialog extends JDialog {
 
         JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         header.setOpaque(false);
-        stepParamsLabel.setForeground(AppTheme.FG_MUTED);
+        // stepParamsLabel foreground already set by hudReadoutLabel.
         header.add(stepParamsLabel);
         stepParamsInfoButton.addActionListener(event -> showStepParamsInfo());
         header.add(stepParamsInfoButton);

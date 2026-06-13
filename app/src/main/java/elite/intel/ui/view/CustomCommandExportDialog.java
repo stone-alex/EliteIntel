@@ -6,7 +6,6 @@ import elite.intel.ai.brain.actions.customcommand.CustomCommandExportImportServi
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -17,7 +16,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 import static elite.intel.ui.i18n.MultiLingualTextProvider.getText;
 
@@ -85,9 +83,20 @@ final class CustomCommandExportDialog extends JDialog {
         table.getColumnModel().getColumn(ExportTableModel.COL_NAME).setPreferredWidth(260);
         table.getColumnModel().getColumn(ExportTableModel.COL_ACTION_KEY).setPreferredWidth(360);
 
-        // Column header is a clickable checkbox that toggles all rows
+        // Checkbox column: HUD renderer and single-click editor, no native LAF checkbox
         table.getColumnModel().getColumn(ExportTableModel.COL_SELECTED)
-            .setHeaderRenderer(new CheckBoxHeaderRenderer(tableModel::areAllSelected));
+                .setCellRenderer(new HudBooleanCellRenderer());
+        table.getColumnModel().getColumn(ExportTableModel.COL_SELECTED)
+                .setCellEditor(new HudBooleanCellEditor());
+        table.getColumnModel().getColumn(ExportTableModel.COL_SELECTED)
+                .setHeaderRenderer(new HudCheckBoxHeaderRenderer(tableModel::areAllSelected));
+
+        // Name and action-key columns: caps + ACCENT colour
+        var nameRenderer = new HudTable.ValueCellRenderer();
+        table.getColumnModel().getColumn(ExportTableModel.COL_NAME).setCellRenderer(nameRenderer);
+        table.getColumnModel().getColumn(ExportTableModel.COL_ACTION_KEY).setCellRenderer(nameRenderer);
+
+        // Header checkbox click toggles all rows
         table.getTableHeader().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -142,42 +151,6 @@ final class CustomCommandExportDialog extends JDialog {
 
     // -------------------------------------------------------------------------
 
-    /**
-     * Renders a checkbox whose state reflects whether all rows are selected.
-     * The checkbox is non-opaque inside a JPanel wrapper that carries the LAF border,
-     * so column separator lines remain visible regardless of Look and Feel.
-     */
-    private static final class CheckBoxHeaderRenderer implements TableCellRenderer {
-        private final JCheckBox checkBox = new JCheckBox();
-        private final JPanel wrapper = new JPanel(new GridBagLayout());
-        private final BooleanSupplier allSelectedQuery;
-
-        CheckBoxHeaderRenderer(BooleanSupplier allSelectedQuery) {
-            this.allSelectedQuery = allSelectedQuery;
-            checkBox.setOpaque(false);
-            wrapper.setOpaque(true);
-            wrapper.setBackground(AppTheme.HUD_PANEL_BG_ALT);
-            wrapper.add(checkBox);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(
-                JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            checkBox.setSelected(allSelectedQuery.getAsBoolean());
-            // Copy border and background from the default header renderer to get
-            // the same LAF-drawn separator lines as the other header columns.
-            Component defaultComp = table.getTableHeader().getDefaultRenderer()
-                .getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            if (defaultComp instanceof JComponent jc) {
-                wrapper.setBorder(jc.getBorder());
-                wrapper.setBackground(jc.getBackground());
-            }
-            return wrapper;
-        }
-    }
-
-    // -------------------------------------------------------------------------
-
     private static final class ExportTableModel extends AbstractTableModel {
         static final int COL_SELECTED = 0;
         static final int COL_NAME = 1;
@@ -214,7 +187,9 @@ final class CustomCommandExportDialog extends JDialog {
         @Override public int getColumnCount() { return 3; }
         @Override public Class<?> getColumnClass(int col) { return col == COL_SELECTED ? Boolean.class : String.class; }
         @Override public boolean isCellEditable(int row, int col) { return col == COL_SELECTED; }
-        @Override public String getColumnName(int col) {
+
+        @Override
+        public String getColumnName(int col) {
             return switch (col) {
                 case COL_NAME       -> getText("actions.customCommands.column.name");
                 case COL_ACTION_KEY -> getText("actions.customCommands.editor.actionKey");

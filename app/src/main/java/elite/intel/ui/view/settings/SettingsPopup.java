@@ -65,7 +65,7 @@ public class SettingsPopup extends JDialog {
         wrapper.add(header, BorderLayout.NORTH);
         wrapper.add(scroll, BorderLayout.CENTER);
 
-        JButton cancel = makeButtonSubtle(getText("button.cancel"));
+        JButton cancel = makeButtonSubtle(getText("button.back"));
         cancel.addActionListener(e -> dispose());
         JPanel footer = transparentPanel(new FlowLayout(FlowLayout.RIGHT, HUD_GAP, HUD_GAP));
         int gap = HUD_GAP;

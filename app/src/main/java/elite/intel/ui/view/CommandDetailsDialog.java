@@ -367,7 +367,7 @@ public final class CommandDetailsDialog extends JDialog {
             rightButtons.add(delete);
         }
 
-        JButton close = AppTheme.makeButtonSubtle(getText("actions.commands.details.close"));
+        JButton close = AppTheme.makeButtonSubtle(getText("button.back"));
         close.addActionListener(event -> dispose());
         rightButtons.add(close);
         panel.add(rightButtons, BorderLayout.EAST);

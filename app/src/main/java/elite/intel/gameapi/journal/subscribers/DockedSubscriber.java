@@ -5,6 +5,7 @@ import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.DockedEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -68,7 +69,7 @@ public class DockedSubscriber {
                 StringBuilder sb = new StringBuilder();
                 List<String> stationServices = event.getStationServices();
                 if (stationServices != null && !stationServices.isEmpty()) {
-                    sb.append("Services: ");
+                    sb.append(localizedEvent("event.docked.services")).append(": ");
                     for (String service : stationServices) {
                         sb.append(service);
                         sb.append(", ");
@@ -78,15 +79,20 @@ public class DockedSubscriber {
 
                 DockedEvent.LandingPads landingPads = event.getLandingPads();
                 if (landingPads != null) {
-                    sb.append(" Landing Pads:");
-                    sb.append(" Large: ").append(landingPads.getLarge()).append(", ");
-                    sb.append(" Medium: ").append(landingPads.getMedium()).append(", ");
-                    sb.append(" Small: ").append(landingPads.getSmall()).append(".");
+                    sb.append(" ").append(localizedEvent("event.docked.landingPads")).append(":");
+                    sb.append(" ").append(localizedEvent("event.docked.padLarge")).append(": ").append(landingPads.getLarge()).append(", ");
+                    sb.append(" ").append(localizedEvent("event.docked.padMedium")).append(": ").append(landingPads.getMedium()).append(", ");
+                    sb.append(" ").append(localizedEvent("event.docked.padSmall")).append(": ").append(landingPads.getSmall()).append(".");
                 }
 
                 String availableData = LocalServicesData.setLocalServicesData(event.getMarketID());
                 if (!availableData.isEmpty()) {
+                    sb.append(" ").append(availableData);
                     EventBusManager.publish(new MissionCriticalAnnouncementEvent(localizedEvent("event.docked.marketData")));
+                }
+
+                if (!sb.isEmpty()) {
+                    EventBusManager.publish(new SensorDataEvent(sb.toString(), "Announce the docking information including available services and landing pad configuration."));
                 }
                 locationManager.save(location);
             }); // end virtual thread

@@ -23,7 +23,7 @@ public class RemoveMiningTargetHandler implements CommandHandler {
             return;
         }
         String target = capitalizeWords(
-                FuzzySearch.fuzzyCommodityMatch(
+                FuzzySearch.fuzzyMaterialNameSearch(
                         key.getAsString(), 3
                 )
         );

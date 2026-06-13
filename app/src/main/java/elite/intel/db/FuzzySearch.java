@@ -5,8 +5,6 @@ import elite.intel.db.dao.MaterialNameDao;
 import elite.intel.db.dao.MaterialsDao;
 import elite.intel.db.dao.SubSystemDao;
 import elite.intel.db.util.Database;
-import elite.intel.i18n.Language;
-import elite.intel.session.SystemSession;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -43,64 +41,20 @@ public class FuzzySearch {
 
 
     public static String fuzzyCommodityMatch(String input, int similarity) {
-        Language lang = SystemSession.getInstance().getLanguage();
-        if (lang == Language.EN) {
-            return fuzzyMatch(input, similarity, CommodityDao.class, CommodityDao::getAllNamesLowerCase, CommodityDao::getOriginalCase);
-        }
-        String col = commodityColumn(lang);
-        return fuzzyMatch(input, similarity, CommodityDao.class,
-                dao -> dao.getAllLocalizedNamesLowerCase(col),
-                (dao, name) -> dao.getEnglishByLocalizedName(col, name));
+        return fuzzyMatch(input, similarity, CommodityDao.class, CommodityDao::getAllNamesLowerCase, CommodityDao::getOriginalCase);
     }
 
     public static String fuzzyMaterialNameSearch(String input, int similarity) {
-        Language lang = SystemSession.getInstance().getLanguage();
-        if (lang == Language.EN) {
-            return fuzzyMatch(input, similarity, MaterialNameDao.class, MaterialNameDao::getAllNamesLowerCase, MaterialNameDao::getOriginalCase);
-        }
-        String col = materialNameColumn(lang);
-        return fuzzyMatch(input, similarity, MaterialNameDao.class,
-                dao -> dao.getAllLocalizedNamesLowerCase(col),
-                (dao, name) -> dao.getEnglishByLocalizedName(col, name));
+        return fuzzyMatch(input, similarity, MaterialNameDao.class, MaterialNameDao::getAllNamesLowerCase, MaterialNameDao::getOriginalCase);
     }
 
+
     public static String fuzzyInventorySearch(String input, int similarity) {
-        Language lang = SystemSession.getInstance().getLanguage();
-        if (lang == Language.EN) {
-            return fuzzyMatch(input, similarity, MaterialsDao.class, MaterialsDao::getAllNamesLowerCase, MaterialsDao::getOriginalCase);
-        }
-        // Inventory materialNames are always English (from journal).
-        // JOIN with material_names lets us match localized input and return the English canonical name.
-        String col = materialNameColumn(lang);
-        return fuzzyMatch(input, similarity, MaterialsDao.class,
-                dao -> dao.getAllLocalizedNamesLowerCase(col),
-                (dao, name) -> dao.getEnglishByLocalizedName(col, name));
+        return fuzzyMatch(input, similarity, MaterialsDao.class, MaterialsDao::getAllNamesLowerCase, MaterialsDao::getOriginalCase);
     }
 
     public static String fuzzySubSystemSearch(String input, int similarity) {
         return fuzzyMatch(input, similarity, SubSystemDao.class, SubSystemDao::getAllNamesLowerCase, SubSystemDao::getOriginalCase);
-    }
-
-    private static String materialNameColumn(Language lang) {
-        return switch (lang) {
-            case DE -> "name_de";
-            case FR -> "name_fr";
-            case ES -> "name_es";
-            case RU -> "name_ru";
-            case UK -> "name_uk";
-            default -> "name";
-        };
-    }
-
-    private static String commodityColumn(Language lang) {
-        return switch (lang) {
-            case DE -> "commodity_de";
-            case FR -> "commodity_fr";
-            case ES -> "commodity_es";
-            case RU -> "commodity_ru";
-            case UK -> "commodity_uk";
-            default -> "commodity";
-        };
     }
 
 

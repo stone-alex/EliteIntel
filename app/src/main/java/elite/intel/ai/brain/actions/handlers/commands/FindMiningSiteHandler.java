@@ -39,7 +39,7 @@ public class FindMiningSiteHandler implements CommandHandler {
 
         String material =
                 capitalizeWords(
-                        FuzzySearch.fuzzyCommodityMatch(
+                        FuzzySearch.fuzzyMaterialNameSearch(
                                 mat.getAsString(), 8
                         )
                 );

@@ -4,7 +4,6 @@ import elite.intel.ai.brain.actions.customcommand.CustomCommandDefinition;
 import elite.intel.ai.brain.actions.customcommand.CustomCommandExportImportService;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -36,6 +35,7 @@ final class CustomCommandExportDialog extends JDialog {
             getText("actions.customCommands.export.title"),
             ModalityType.APPLICATION_MODAL
         );
+        setUndecorated(true);
         this.tableModel = new ExportTableModel(commands);
         buildUi();
         pack();
@@ -49,16 +49,27 @@ final class CustomCommandExportDialog extends JDialog {
     }
 
     private void buildUi() {
-        JPanel root = AppTheme.transparentPanel(new BorderLayout(AppTheme.HUD_GAP, AppTheme.HUD_GAP));
-        root.setOpaque(true);
-        root.setBorder(new EmptyBorder(12, 12, 12, 12));
-        root.setBackground(AppTheme.HUD_BG);
-        HudSection exportSection = new HudSection(getText("actions.customCommands.export.section.selection"), new BorderLayout());
+        HudSection exportSection = HudSection.flat(
+                getText("actions.customCommands.export.section.selection"), new BorderLayout());
         exportSection.body().add(buildScrollPane(), BorderLayout.CENTER);
-        root.add(exportSection, BorderLayout.CENTER);
-        root.add(buildBottomBar(), BorderLayout.SOUTH);
-        setContentPane(root);
-        getContentPane().setBackground(AppTheme.HUD_BG);
+
+        JButton export = AppTheme.makeButton(getText("actions.customCommands.export.button"));
+        export.addActionListener(e -> doExport());
+        JButton back = AppTheme.makeButtonSubtle(getText("button.back"));
+        back.addActionListener(e -> dispose());
+
+        HudModalSpec spec = HudModalSpec.builder()
+                .title(getText("actions.customCommands.export.title"))
+                .onClose(this::dispose)
+                .body(exportSection)
+                .scrollBody(false)            // scroll already inside the table
+                .primary(export)              // right side
+                .dismiss(back)                // left side
+                .build();
+
+        setContentPane(AppTheme.hudModalScaffold(spec));
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        getRootPane().setDefaultButton(export);
     }
 
     private JScrollPane buildScrollPane() {
@@ -88,18 +99,6 @@ final class CustomCommandExportDialog extends JDialog {
         });
 
         return HudTable.scrollPane(table);
-    }
-
-    private JPanel buildBottomBar() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
-        panel.setOpaque(false);
-        JButton cancel = AppTheme.makeButtonSubtle(getText("button.cancel"));
-        cancel.addActionListener(e -> dispose());
-        JButton export = AppTheme.makeButton(getText("actions.customCommands.export.button"));
-        export.addActionListener(e -> doExport());
-        panel.add(cancel);
-        panel.add(export);
-        return panel;
     }
 
     private void doExport() {

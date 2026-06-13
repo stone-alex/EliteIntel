@@ -1,6 +1,7 @@
 package elite.intel.ui.view;
 
 import javax.swing.*;
+import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -85,6 +86,8 @@ public class AppTheme {
     public static final Color HUD_SYSTEM_LOG_TIMESTAMP = new Color(0x4A6270);
 
     public static final int HUD_GAP = 8;
+    /** Unified side inset for body and footer of all modals (see HudModalScaffold). */
+    public static final int HUD_DIALOG_BODY_INSET = HUD_GAP * 2; // =16
     public static final int SHELL_GAP = 10;
     public static final int SCREEN_TOP_GAP = 12;
     public static final int HUD_PADDING = 10;
@@ -310,6 +313,24 @@ public class AppTheme {
     }
 
     /**
+     * Canonical modal footer border (§7.2): warm {@link #HUD_ORANGE_FILL_HOVER} rule of
+     * {@link #HUD_BORDER_THICKNESS} with {@link #HUD_GAP} side insets (not full-width) and
+     * {@link #HUD_GAP} padding on all sides. Apply to the button panel of a modal footer.
+     */
+    public static Border hudModalFooterBorder() {
+        final int gap = HUD_GAP;
+        final int th  = HUD_BORDER_THICKNESS;
+        return new AbstractBorder() {
+            @Override public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
+                g.setColor(HUD_ORANGE_FILL_HOVER);
+                g.fillRect(x, y, w, th);            // full-width rule, zero side inset
+            }
+            @Override public Insets getBorderInsets(Component c) { return new Insets(th + gap, 0, gap, 0); }
+            @Override public Insets getBorderInsets(Component c, Insets i) { i.set(th + gap, 0, gap, 0); return i; }
+        };
+    }
+
+    /**
      * Creates a compact label for HUD section titles without changing the global UI font.
      */
     public static JLabel hudSectionLabel(String text) {
@@ -426,6 +447,14 @@ public class AppTheme {
      */
     public static JScrollPane hudScrollPane(Component view) {
         return new HudScrollPane(view);
+    }
+
+    /**
+     * Builds and returns the wrapper JPanel for an undecorated modal dialog using the HUD canon (§7.2).
+     * Call {@code dialog.setContentPane(AppTheme.hudModalScaffold(spec))} after constructing the dialog.
+     */
+    public static JPanel hudModalScaffold(HudModalSpec spec) {
+        return HudModalScaffold.build(spec);
     }
 
     /**

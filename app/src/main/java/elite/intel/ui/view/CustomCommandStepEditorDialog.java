@@ -79,6 +79,7 @@ final class CustomCommandStepEditorDialog extends JDialog {
             Consumer<List<CustomCommandParameterSpec>> missingCustomCommandParamsConsumer
     ) {
         super(SwingUtilities.getWindowAncestor(parent), getText("actions.customCommands.editor.step.title"), ModalityType.APPLICATION_MODAL);
+        setUndecorated(true);
         this.customCommandParameterNames = customCommandParameterNames(customCommandParameters);
         this.missingCustomCommandParamsConsumer = missingCustomCommandParamsConsumer == null ? missingParams -> {} : missingCustomCommandParamsConsumer;
         populate(step);
@@ -117,19 +118,30 @@ final class CustomCommandStepEditorDialog extends JDialog {
     }
 
     private void buildUi() {
-        JPanel content = AppTheme.transparentPanel(new BorderLayout(0, AppTheme.HUD_GAP));
-        content.setOpaque(true);
-        content.setBackground(AppTheme.HUD_BG);
-        content.setBorder(new EmptyBorder(16, 18, 12, 18));
-        HudSection formSection = new HudSection(getText("actions.customCommands.editor.step.section.definition"), new BorderLayout());
+        HudSection formSection = HudSection.flat(
+                getText("actions.customCommands.editor.step.section.definition"), new BorderLayout());
         formSection.body().add(form(), BorderLayout.CENTER);
-        content.add(formSection, BorderLayout.CENTER);
-        content.add(buttons(), BorderLayout.SOUTH);
-        setContentPane(content);
+
+        JButton save = AppTheme.makeButton(getText("button.save"));
+        save.addActionListener(event -> save());
+        JButton back = AppTheme.makeButtonSubtle(getText("button.back"));
+        back.addActionListener(event -> dispose());
+
+        HudModalSpec spec = HudModalSpec.builder()
+                .title(getText("actions.customCommands.editor.step.title"))
+                .onClose(this::dispose)
+                .body(formSection)
+                .scrollBody(false)            // form body is not scrolled (params table has its own scroll)
+                .primary(save)                // right side
+                .dismiss(back)                // left side
+                .build();
+
+        setContentPane(AppTheme.hudModalScaffold(spec));
 
         typeCombo.addActionListener(event -> updateFieldsForType());
         commandCombo.addActionListener(event -> updateFieldsForSelectedCommand());
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        getRootPane().setDefaultButton(save);
         pack();
         setMinimumSize(new Dimension(DIALOG_MIN_WIDTH, 260));
         setSize(Math.max(getWidth(), DIALOG_MIN_WIDTH), getHeight());
@@ -188,20 +200,6 @@ final class CustomCommandStepEditorDialog extends JDialog {
         panel.add(field, gbc);
         gbc.gridy++;
         gbc.anchor = GridBagConstraints.CENTER;
-    }
-
-    private JPanel buttons() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setOpaque(false);
-        JButton save = AppTheme.makeButton(getText("button.save"));
-        save.addActionListener(event -> save());
-        panel.add(save, BorderLayout.WEST);
-
-        JButton cancel = AppTheme.makeButtonSubtle(getText("button.cancel"));
-        cancel.addActionListener(event -> dispose());
-        panel.add(cancel, BorderLayout.EAST);
-        getRootPane().setDefaultButton(save);
-        return panel;
     }
 
     private void updateFieldsForType() {

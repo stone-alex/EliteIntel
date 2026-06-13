@@ -6,7 +6,6 @@ import elite.intel.ai.hands.KeyBindingsParser;
 import elite.intel.ai.hands.KeyboardKeyAvailabilityService;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.nio.file.Path;
 import java.util.List;
@@ -48,6 +47,7 @@ public class AssignKeyboardBindingDialog extends JDialog {
             KeyboardKeyAvailabilityService availabilityService
     ) {
         super(SwingUtilities.getWindowAncestor(parent), getText("bindings.assign.dialogTitle"), ModalityType.APPLICATION_MODAL);
+        setUndecorated(true);
         this.bindingsFile = bindingsFile;
         this.bindingId = bindingId;
         this.slotType = slotType;
@@ -72,7 +72,6 @@ public class AssignKeyboardBindingDialog extends JDialog {
 
     private void buildUi() {
         JPanel content = transparentPanel(new GridBagLayout());
-        content.setBorder(new EmptyBorder(10, 14, 8, 14));
         GridBagConstraints gbc = baseGbc();
         gbc.insets = new Insets(3, 6, 3, 6);
 
@@ -118,29 +117,33 @@ public class AssignKeyboardBindingDialog extends JDialog {
         noFreeKeysLabel.setForeground(FG_MUTED);
         content.add(noFreeKeysLabel, gbc);
 
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        buttons.setOpaque(false);
-        buttons.setBorder(new EmptyBorder(0, 20, 10, 20));
-        JButton cancelButton = makeButtonSubtle(getText("button.cancel"));
-        cancelButton.addActionListener(e -> dispose());
-        saveButton.addActionListener(e -> saveSelection());
+        nextRow(gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         alreadyInUseLabel.setForeground(HUD_DANGER);
         alreadyInUseLabel.setFont(alreadyInUseLabel.getFont().deriveFont(Font.BOLD));
         alreadyInUseLabel.setVisible(false);
-        buttons.add(alreadyInUseLabel);
-        buttons.add(cancelButton);
-        buttons.add(saveButton);
+        content.add(alreadyInUseLabel, gbc);
 
-        HudSection bindingSection = new HudSection(getText("bindings.assign.section.assignment"), new BorderLayout());
+        HudSection bindingSection = HudSection.flat(
+                getText("bindings.assign.section.assignment"), new BorderLayout());
         bindingSection.body().add(content, BorderLayout.CENTER);
 
-        JPanel wrapper = transparentPanel(new BorderLayout(0, HUD_GAP));
-        wrapper.setOpaque(true);
-        wrapper.setBackground(HUD_BG);
-        wrapper.setBorder(new EmptyBorder(HUD_PADDING, HUD_PADDING, HUD_PADDING, HUD_PADDING));
-        wrapper.add(bindingSection, BorderLayout.CENTER);
-        wrapper.add(buttons, BorderLayout.SOUTH);
-        setContentPane(wrapper);
+        JButton cancelButton = makeButtonSubtle(getText("button.back"));
+        cancelButton.addActionListener(e -> dispose());
+        saveButton.addActionListener(e -> saveSelection());
+
+        HudModalSpec spec = HudModalSpec.builder()
+                .title(getText("bindings.assign.dialogTitle"))
+                .onClose(this::dispose)
+                .body(bindingSection)
+                .scrollBody(false)
+                .primary(saveButton)          // right side
+                .dismiss(cancelButton)        // left side
+                .build();
+
+        setContentPane(AppTheme.hudModalScaffold(spec));
 
         getRootPane().setDefaultButton(saveButton);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

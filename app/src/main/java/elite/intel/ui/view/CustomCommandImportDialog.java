@@ -45,6 +45,7 @@ final class CustomCommandImportDialog extends JDialog {
             getText("actions.customCommands.import.title"),
             ModalityType.APPLICATION_MODAL
         );
+        setUndecorated(true);
         this.tableModel = new ImportTableModel(candidates);
         buildUi(candidates);
         pack();
@@ -101,16 +102,27 @@ final class CustomCommandImportDialog extends JDialog {
     }
 
     private void buildUi(List<CustomCommandExportImportService.ImportCandidate> candidates) {
-        JPanel root = AppTheme.transparentPanel(new BorderLayout(AppTheme.HUD_GAP, AppTheme.HUD_GAP));
-        root.setOpaque(true);
-        root.setBorder(new EmptyBorder(12, 12, 12, 12));
-        root.setBackground(AppTheme.HUD_BG);
-        HudSection importSection = new HudSection(getText("actions.customCommands.import.section.review"), new BorderLayout());
+        HudSection importSection = HudSection.flat(
+                getText("actions.customCommands.import.section.review"), new BorderLayout());
         importSection.body().add(buildScrollPane(candidates), BorderLayout.CENTER);
-        root.add(importSection, BorderLayout.CENTER);
-        root.add(buildBottomBar(), BorderLayout.SOUTH);
-        setContentPane(root);
-        getContentPane().setBackground(AppTheme.HUD_BG);
+
+        JButton importBtn = AppTheme.makeButton(getText("actions.customCommands.import.button"));
+        importBtn.addActionListener(e -> doImport());
+        JButton back = AppTheme.makeButtonSubtle(getText("button.back"));
+        back.addActionListener(e -> dispose());
+
+        HudModalSpec spec = HudModalSpec.builder()
+                .title(getText("actions.customCommands.import.title"))
+                .onClose(this::dispose)
+                .body(importSection)
+                .scrollBody(false)            // scroll already inside the table, body is not scrolled
+                .primary(importBtn)           // right side
+                .dismiss(back)                // left side
+                .build();
+
+        setContentPane(AppTheme.hudModalScaffold(spec));
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        getRootPane().setDefaultButton(importBtn);
     }
 
     private JScrollPane buildScrollPane(List<CustomCommandExportImportService.ImportCandidate> candidates) {
@@ -142,18 +154,6 @@ final class CustomCommandImportDialog extends JDialog {
         });
 
         return HudTable.scrollPane(table);
-    }
-
-    private JPanel buildBottomBar() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
-        panel.setOpaque(false);
-        JButton cancel = AppTheme.makeButtonSubtle(getText("button.cancel"));
-        cancel.addActionListener(e -> dispose());
-        JButton importBtn = AppTheme.makeButton(getText("actions.customCommands.import.button"));
-        importBtn.addActionListener(e -> doImport());
-        panel.add(cancel);
-        panel.add(importBtn);
-        return panel;
     }
 
     private void doImport() {

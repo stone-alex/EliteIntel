@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static elite.intel.util.StringUtls.localizedEvent;
 import static elite.intel.util.StringUtls.localizedEventPlural;
 
 @SuppressWarnings("unused")
@@ -40,7 +41,7 @@ public class MissionsEventSubscriber {
 
                 if (offset.isEmpty()) return;
                 offset.forEach(missionManager::remove);
-                EventBusManager.publish(new AppLogEvent("Info: Removed " + offset.size() + " old mission data from DB."));
+                EventBusManager.publish(new AppLogEvent(localizedEvent("event.missions.removedOld", offset.size())));
             }
         });
     }

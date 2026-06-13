@@ -36,7 +36,7 @@ public class CarrierJumpCompleteSubscriber {
             playerSession.setLastKnownCarrierLocation(starSystem);
 
             if (starPos.length == 3 && starPos[0] == 0.0 && starPos[1] == 0.0 && starPos[2] == 0 && !"sol".equalsIgnoreCase(starSystem)) {
-                EventBusManager.publish(new AppLogEvent("WARNING: Carrier Jump complete, but star position is reported 0.0.0"));
+                EventBusManager.publish(new AppLogEvent(localizedEvent("event.carrier.jumpCompleteStarWarning")));
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent(localizedEvent("event.carrier.jumpCompleteNoStar")));
             }
 

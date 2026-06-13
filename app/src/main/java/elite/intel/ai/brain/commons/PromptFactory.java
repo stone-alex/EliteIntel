@@ -336,7 +336,7 @@ public class PromptFactory implements AiPromptFactory {
 
     private String responseLanguageRule() {
         Language language = AiResponseLanguagePolicy.resolveEffectiveAiResponseLanguage(systemSession);
-        return "Write text_to_speech_response in " + languageDisplayName(language) + ".\n";
+        return "Always return text_to_speech_response in " + languageDisplayName(language) + " language .\n";
     }
 
     private static String languageDisplayName(Language language) {

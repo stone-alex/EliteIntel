@@ -859,7 +859,7 @@ public class AppTheme {
     // -- Modal scrim -----------------------------------------------------------
 
     /**
-     * Shows a {@link HUD_SCRIM} veil on the owner's glass pane for the duration of a modal dialog.
+     * Shows a {@link #HUD_SCRIM} veil on the owner's glass pane for the duration of a modal dialog.
      * {@code showModal} must call {@code setVisible(true)} on an {@code APPLICATION_MODAL} dialog,
      * which blocks until the dialog is closed. The scrim is guaranteed to be removed in a
      * {@code finally} block even if {@code showModal} throws.

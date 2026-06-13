@@ -136,12 +136,18 @@ public class FuzzySearch {
             return Database.withDao(daoClass, dao -> originalCaseProvider.apply(dao, finalBestPrefix));
         }
 
+        ///NOTE
         // Pass 2: Levenshtein fallback for typos/near-matches.
-        // Scale the threshold with input length so multi-word STT substitutions
-        // (e.g. "commodities" heard instead of "composites", distance≈5) get enough
-        // budget without loosening the threshold for short words where false positives
-        // are more likely (short inputs keep the caller-supplied minimum).
-        int effectiveSimilarity = Math.max(similarity, lowerInput.length() / 3);
+        // Threshold is fully dynamic so it scales correctly for both short single words
+        // ("бор" = 3 chars -> tight budget) and long multi-word names
+        // ("Специальные микропрограммы..." = 47 chars -> generous budget).
+        // Lower bound: max(caller's similarity, len/3) – ensures long names get enough room.
+        // Upper bound: max(2, len/2) – prevents short words from accepting unrelated matches
+        // e.g. "хрома"(5) gets cap=2, so dist=4 to "бор" is rejected.
+        int effectiveSimilarity = Math.min(
+                Math.max(similarity, lowerInput.length() / 3),
+                Math.max(2, lowerInput.length() / 2)
+        );
         String bestLower = null;
         int bestDist = Integer.MAX_VALUE;
         for (String c : candidates) {

@@ -32,7 +32,7 @@ public class AnalyseMaterialsHandler extends BaseQueryAnalyzer implements QueryH
      */
     private String extractQueryFromInput(String input) {
         if (input == null || input.isBlank()) return null;
-        for (String token : input.toLowerCase().replaceAll("[^a-z\\s]", "").split("\\s+")) {
+        for (String token : input.toLowerCase().replaceAll("[^\\p{L}\\s]", "").split("\\s+")) {
             if (token.length() < 3 || SKIP_TOKENS.contains(token)) continue;
             if (FuzzySearch.fuzzyInventorySearch(token, 8) != null
                     || FuzzySearch.fuzzyCommodityMatch(token, 3) != null) {

@@ -143,6 +143,7 @@ public class PromptFactory implements AiPromptFactory {
                 • Use ONLY the exact key names shown in the action template. No template → empty {}
                 • Use digits not spelled-out numbers: {"key": "123000"} not "one hundred thousand"
                 • {state:true/false} param: on/enable/activate/open/deploy → true, off/disable/deactivate/close/retract → false. ALWAYS include state when the template shows it.
+                • LANGUAGE: Extract word-type params (material names, commodity names, system names, target names, etc.) VERBATIM in the language the user spoke. NEVER translate to English. "сколько у нас хрома" → {"key": "хрома"}. "combien de chrome avons-nous" → {"key": "chrome"}. The key must be exactly what the user said.
                 • Examples:
                   - "target drive"             → {"action": "target_subsystem", "params": {"key": "drive"}}
                   - "find mining location for low temperature diamonds" → {"action": "find_mining_site", "params": {"key": "low temperature diamonds"}}

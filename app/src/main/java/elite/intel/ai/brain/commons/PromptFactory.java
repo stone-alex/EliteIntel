@@ -54,11 +54,11 @@ public class PromptFactory implements AiPromptFactory {
         sb.append("""
                 You are a strict command parser. Your only job: return exactly one JSON action from the lists below.
                 Map user input to actions with ≥95% confidence. Else fall back to fall back to ignore_nonsensical_input or query_general_conversation which ever is available.
-
+                
                 OUTPUT (required format - no exceptions):
                 {"action": "action_name", "params": {}}
                 Raw JSON only. No text, no markdown, no explanation before or after.
-
+                
                 CLASSIFICATION:
                 """);
         sb.append("   - User input is in ").append(lang.languageName()).append(". Interpret the user's intent semantically.\n");
@@ -83,7 +83,7 @@ public class PromptFactory implements AiPromptFactory {
             sb.append("""
                     - STRICT MODE: ONLY output an action when the input is a direct, unambiguous, high-confidence match. DO NOT pick the "closest" - that is wrong. If you have ANY doubt whatsoever, return ignore_nonsensical_input. Partial matches, guesses, and interpretations are failures.
                     - ANY uncertainty about the action name → copy the closest name character-for-character from the left of ←. Never construct or shorten a name.
-
+                    
                     HANDLE NONSENSICAL INPUT
                     - If the input has no game action, no ship command, and no question about game data - it must be ignored. Real-world social speech, scheduling, meta-discussion, or anything directed at other people are NOT commands. Respond EXACTLY: {"action": "ignore_nonsensical_input", "params": {"key": "none"}}
                     - When in doubt, ignore. Do NOT attempt to match uncertain input to the nearest action.
@@ -211,9 +211,7 @@ public class PromptFactory implements AiPromptFactory {
                 - User may utilize NATO alphabet for letters/digits. Example: planet alpha 2 bravo means planet a2b
                 """);
 
-        if (!systemSession.useLocalQueryLlm()) {
-            appendCadenceAndPersonality(sb);
-        }
+        appendCadenceAndPersonality(sb);
         sb.append(closingLanguageReinforcement());
         return sb.toString();
     }
@@ -284,9 +282,7 @@ public class PromptFactory implements AiPromptFactory {
                 Respond with ONLY the JSON object.
                 """);
 
-        if (!systemSession.useLocalQueryLlm()) {
-            appendCadenceAndPersonality(sb);
-        }
+        appendCadenceAndPersonality(sb);
         sb.append(closingLanguageReinforcement());
         return sb.toString();
     }

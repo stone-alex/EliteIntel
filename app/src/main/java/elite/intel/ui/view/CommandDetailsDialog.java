@@ -148,22 +148,7 @@ public final class CommandDetailsDialog extends JDialog {
     }
 
     private JPanel header() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setOpaque(false);
-
-        JLabel name = new JLabel(entry.name().toUpperCase());
-        name.setForeground(AppTheme.HUD_CYAN);
-        name.setFont(name.getFont().deriveFont(Font.BOLD, AppTheme.HUD_FONT_APP_TITLE));
-
-        JLabel id = new JLabel(entry.id());
-        id.setForeground(AppTheme.FG_MUTED);
-        id.setFont(id.getFont().deriveFont(AppTheme.HUD_FONT_READOUT_KEY));
-        id.setBorder(new EmptyBorder(4, 0, 0, 0));
-
-        panel.add(name);
-        panel.add(id);
-        return panel;
+        return AppTheme.commandTitleBlock(entry.name(), entry.id());
     }
 
     private JPanel details() {
@@ -201,10 +186,7 @@ public final class CommandDetailsDialog extends JDialog {
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        JLabel valueLabel = new JLabel(value);
-        valueLabel.setForeground(valueColor);
-        valueLabel.setFont(valueLabel.getFont().deriveFont(AppTheme.HUD_FONT_READOUT_VALUE));
-        panel.add(valueLabel, gbc);
+        panel.add(AppTheme.hudReadoutValue(value, valueColor), gbc);
         gbc.gridy++;
     }
 

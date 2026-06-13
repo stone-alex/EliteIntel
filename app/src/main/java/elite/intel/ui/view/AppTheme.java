@@ -344,6 +344,45 @@ public class AppTheme {
         return lbl;
     }
 
+    /**
+     * Creates a plain value label for readout rows at {@link #HUD_FONT_READOUT_VALUE} size.
+     * Pair with {@link #hudReadoutLabel} for the key column. No border or background is set.
+     *
+     * @param value initial text
+     * @param color foreground colour — e.g. {@link #HUD_CYAN} for command names, {@link #FG} for plain values
+     */
+    public static JLabel hudReadoutValue(String value, Color color) {
+        JLabel l = new JLabel(value);
+        l.setForeground(color);
+        l.setFont(l.getFont().deriveFont(HUD_FONT_READOUT_VALUE));
+        l.putClientProperty(HUD_LOCKED_FOREGROUND, Boolean.TRUE);
+        return l;
+    }
+
+    /**
+     * Creates the standard HUD command title block: name in bold cyan at app-title size
+     * with the command id beneath in a muted readout-key font.
+     * Use above a details section in undecorated command dialogs.
+     *
+     * @param name command display name; converted to upper case
+     * @param id   command action key; rendered as-is
+     */
+    public static JPanel commandTitleBlock(String name, String id) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setOpaque(false);
+        JLabel nameLabel = new JLabel(name.toUpperCase());
+        nameLabel.setForeground(HUD_CYAN);
+        nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD, HUD_FONT_APP_TITLE));
+        JLabel idLabel = new JLabel(id);
+        idLabel.setForeground(FG_MUTED);
+        idLabel.setFont(idLabel.getFont().deriveFont(HUD_FONT_READOUT_KEY));
+        idLabel.setBorder(new EmptyBorder(4, 0, 0, 0));
+        panel.add(nameLabel);
+        panel.add(idLabel);
+        return panel;
+    }
+
     /** Vertical inset inside the HUD field border (top and bottom padding). */
     private static final int HUD_FIELD_INSET_V = 5;
     /** Horizontal inset inside the HUD field border (left and right padding). */

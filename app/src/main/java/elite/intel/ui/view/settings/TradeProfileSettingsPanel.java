@@ -154,7 +154,9 @@ public class TradeProfileSettingsPanel {
     /** Returns a Runnable that opens {@link CommandDetailsDialog} for the given command, parented to {@code parentRef}. */
     private static Runnable commandInfo(Component parentRef, String commandKey) {
         return () -> new CommandCatalog().findById(commandKey).ifPresent(entry ->
-                new CommandDetailsDialog(parentRef, entry).setVisible(true));
+                runWithModalScrim(
+                        SwingUtilities.getWindowAncestor(parentRef),
+                        () -> new CommandDetailsDialog(parentRef, entry).setVisible(true)));
     }
 
     private static void commitField(JTextField field, Supplier<Integer> getter, Consumer<Integer> setter) {

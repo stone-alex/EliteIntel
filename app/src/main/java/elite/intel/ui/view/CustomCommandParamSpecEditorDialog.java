@@ -19,7 +19,7 @@ final class CustomCommandParamSpecEditorDialog extends JDialog {
     private static final String[] TYPES = {"string", "number", "boolean"};
 
     private final JTextField nameField = new JTextField(28);
-    private final JComboBox<String> typeCombo = new JComboBox<>(TYPES);
+    private final HudComboBox<String> typeCombo = new HudComboBox<>(TYPES);
     private final JCheckBox requiredCheck = new JCheckBox();
     private final JTextField descriptionField = new JTextField(28);
     private final JTextField examplesField = new JTextField(28);
@@ -91,7 +91,7 @@ final class CustomCommandParamSpecEditorDialog extends JDialog {
 
         AppTheme.applyDarkPalette(panel);
         AppTheme.styleTextComponent(nameField);
-        AppTheme.styleComboBox(typeCombo);
+
         AppTheme.styleCheckBox(requiredCheck);
         AppTheme.styleTextComponent(descriptionField);
         AppTheme.styleTextComponent(examplesField);

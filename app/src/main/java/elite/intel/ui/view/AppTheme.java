@@ -26,6 +26,14 @@ public class AppTheme {
      * HUD_TABLE_STYLE_LOCKED for tables (ED_HUD_REFERENCE §8.6).
      */
     public static final String HUD_SCROLL_STYLE_LOCKED = "eliteIntel.hud.scrollStyleLocked";
+    /**
+     * Marks a combo box editor text field as fully styled by its factory (e.g. {@link HudComboBox#picker}).
+     * {@link #applyDarkPalette} / {@link #styleTextComponent} must skip components carrying this flag;
+     * otherwise they overwrite the editor's tight {@link javax.swing.border.EmptyBorder} with
+     * {@link #hudFieldBorder()} (a {@link javax.swing.border.LineBorder}), whose right edge appears
+     * as a visible vertical line inside the field next to the arrow button.
+     */
+    public static final String HUD_COMBO_EDITOR_LOCKED = "eliteIntel.hud.comboEditorLocked";
     public static final String HUD_CARD_BORDER_COLOR = "eliteIntel.hud.cardBorderColor";
 
     public static final Color BG = new Color(0x151519);
@@ -94,6 +102,10 @@ public class AppTheme {
     public static final int HUD_PADDING_SMALL = 6;
     /** Width of the HUD_BG separator stripe used between info-zone and content (checkbox, text field). */
     public static final int HUD_SEP_W = 3;
+    /** Vertical inset for HUD combo box dropdown list cells (list-level padding, not field border). */
+    public static final int HUD_COMBO_ITEM_INSET_V = 4;
+    /** Horizontal inset for HUD combo box dropdown list cells (list-level padding, not field border). */
+    public static final int HUD_COMBO_ITEM_INSET_H = 8;
     public static final int SUBTAB_CONTENT_GAP = HUD_GAP;
     public static final int HUD_BORDER_THICKNESS = 1;
     /** Thickness for high-visibility accent borders — modal dialogs and similar prominent frames. */
@@ -102,6 +114,10 @@ public class AppTheme {
     public static final int HUD_TOP_BAR_HEIGHT = 44;
     public static final int HUD_BADGE_HEIGHT = 20;
     public static final int HUD_FIELD_HEIGHT = 34;
+    /** Preferred width for searchable editable picker combo boxes. */
+    public static final int HUD_PICKER_FIELD_WIDTH  = 500;
+    /** Preferred height for searchable editable picker combo boxes. */
+    public static final int HUD_PICKER_FIELD_HEIGHT = 42;
     public static final int HUD_BUTTON_HEIGHT = 34;
     public static final int HUD_BUTTON_HEIGHT_COMPACT = 28;
     public static final int HUD_DIALOG_HEADER_HEIGHT = 44;
@@ -470,6 +486,10 @@ public class AppTheme {
             styleMetadataField(tc);
             return;
         }
+        if (tc instanceof JComponent jce
+                && Boolean.TRUE.equals(jce.getClientProperty(HUD_COMBO_EDITOR_LOCKED))) {
+            return;   // combo editor is fully styled by picker(); palette must not re-border it
+        }
         tc.setBackground(HUD_TABLE_ROW);
         tc.setForeground(FG);
         tc.setCaretColor(ACCENT);
@@ -513,7 +533,13 @@ public class AppTheme {
      * Installs {@link HudComboBoxUI} for the flat ▼ arrow and warm field background.
      */
     public static void styleComboBox(JComboBox<?> comboBox) {
-        comboBox.setUI(new HudComboBoxUI());
+        // setUI() unconditionally recreates the editor (uninstall/installComponents),
+        // orphaning any DocumentListener on an editable combo's editor. Only install the
+        // HUD UI when it is not already present, so repeat calls (e.g. applyDarkPalette
+        // re-walking an already-styled picker) are no-ops for the editor.
+        if (!(comboBox.getUI() instanceof HudComboBoxUI)) {
+            comboBox.setUI(new HudComboBoxUI());
+        }
         comboBox.setBackground(HUD_TABLE_ROW);
         comboBox.setForeground(FG);
         comboBox.setBorder(hudFieldBorder());

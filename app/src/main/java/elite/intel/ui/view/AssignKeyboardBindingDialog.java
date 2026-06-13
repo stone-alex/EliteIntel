@@ -30,8 +30,8 @@ public class AssignKeyboardBindingDialog extends JDialog {
     private final String originalKey;
     private final BindingModifier originalModifier;
     private final boolean alreadyCleared;
-    private final JComboBox<KeyOption> keyCombo;
-    private final JComboBox<ModifierOption> modifierCombo;
+    private final HudComboBox<KeyOption> keyCombo;
+    private final HudComboBox<ModifierOption> modifierCombo;
     private final JButton saveButton;
     private final JLabel noFreeKeysLabel;
     private final JLabel alreadyInUseLabel;
@@ -56,8 +56,8 @@ public class AssignKeyboardBindingDialog extends JDialog {
         this.originalKey = currentKeyboardKey(currentSlot);
         this.originalModifier = currentSupportedModifier(currentSlot);
         this.alreadyCleared = isClearedSlot(currentSlot);
-        this.keyCombo = new JComboBox<>();
-        this.modifierCombo = new JComboBox<>();
+        this.keyCombo = new HudComboBox<>(new DefaultComboBoxModel<KeyOption>(), KeyOption::label, KeyOption::placeholder);
+        this.modifierCombo = new HudComboBox<>(new DefaultComboBoxModel<ModifierOption>(), ModifierOption::label);
         this.saveButton = makeButton(getText("button.save"));
         this.noFreeKeysLabel = new JLabel(getText("bindings.assign.noFreeKeys"));
         this.alreadyInUseLabel = new JLabel(getText("bindings.assign.alreadyInUse"));
@@ -88,8 +88,6 @@ public class AssignKeyboardBindingDialog extends JDialog {
 
         nextRow(gbc);
         addLabel(content, getText("bindings.assign.newKey"), gbc);
-        styleCombo(keyCombo);
-        keyCombo.setRenderer(new KeyOptionRenderer());
         keyCombo.addActionListener(e -> {
             if (!refreshingOptions) {
                 resetModifierWhenClearing();
@@ -100,8 +98,6 @@ public class AssignKeyboardBindingDialog extends JDialog {
 
         nextRow(gbc);
         addLabel(content, getText("bindings.assign.modifier"), gbc);
-        styleCombo(modifierCombo);
-        modifierCombo.setRenderer(new ModifierOptionRenderer());
         modifierCombo.addActionListener(e -> {
             if (!refreshingOptions) {
                 KeyOption selectedKey = (KeyOption) keyCombo.getSelectedItem();
@@ -357,10 +353,6 @@ public class AssignKeyboardBindingDialog extends JDialog {
                 : getText("bindings.column.secondary");
     }
 
-    private void styleCombo(JComboBox<?> combo) {
-        styleComboBox(combo);
-    }
-
     private String formatKeyToken(String token) {
         if (token.startsWith("Key_") && token.length() > "Key_".length()) {
             return getText("bindings.assign.keyDisplay", slotFormatter.formatBindingToken(token), token);
@@ -402,46 +394,4 @@ public class AssignKeyboardBindingDialog extends JDialog {
         }
     }
 
-    private static class KeyOptionRenderer extends DefaultListCellRenderer {
-        @Override
-        public Component getListCellRendererComponent(
-                JList<?> list,
-                Object value,
-                int index,
-                boolean isSelected,
-                boolean cellHasFocus
-        ) {
-            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            if (value instanceof KeyOption option) {
-                label.setText(option.label());
-                if (option.placeholder() && !isSelected) {
-                    label.setForeground(FG_MUTED);
-                }
-            }
-            label.setBackground(isSelected ? ACCENT : HUD_TABLE_ROW);
-            if (!isSelected && !(value instanceof KeyOption option && option.placeholder())) {
-                label.setForeground(FG);
-            }
-            return label;
-        }
-    }
-
-    private static class ModifierOptionRenderer extends DefaultListCellRenderer {
-        @Override
-        public Component getListCellRendererComponent(
-                JList<?> list,
-                Object value,
-                int index,
-                boolean isSelected,
-                boolean cellHasFocus
-        ) {
-            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            if (value instanceof ModifierOption option) {
-                label.setText(option.label());
-            }
-            label.setBackground(isSelected ? ACCENT : HUD_TABLE_ROW);
-            label.setForeground(isSelected ? SEL_FG : FG);
-            return label;
-        }
-    }
 }

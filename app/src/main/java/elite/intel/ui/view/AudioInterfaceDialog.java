@@ -25,8 +25,8 @@ public class AudioInterfaceDialog extends JDialog {
         String savedInput = session.getAudioInputDevice();
         String savedOutput = session.getAudioOutputDevice();
 
-        JComboBox<String> inputCombo = buildCombo(AudioDeviceEnumerator.getInputDevices(), savedInput);
-        JComboBox<String> outputCombo = buildCombo(AudioDeviceEnumerator.getOutputDevices(), savedOutput);
+        HudComboBox<String> inputCombo = buildCombo(AudioDeviceEnumerator.getInputDevices(), savedInput);
+        HudComboBox<String> outputCombo = buildCombo(AudioDeviceEnumerator.getOutputDevices(), savedOutput);
 
         JPanel form = transparentPanel(new GridBagLayout());
 
@@ -110,14 +110,13 @@ public class AudioInterfaceDialog extends JDialog {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
-    private static JComboBox<String> buildCombo(List<Mixer.Info> devices, String savedName) {
+    private static HudComboBox<String> buildCombo(List<Mixer.Info> devices, String savedName) {
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         model.addElement(SYSTEM_DEFAULT_LABEL);
         for (Mixer.Info info : devices) {
             model.addElement(info.getName());
         }
-        JComboBox<String> combo = new JComboBox<>(model);
-        styleComboBox(combo);
+        HudComboBox<String> combo = new HudComboBox<>(model);
         if (savedName != null && !savedName.isBlank()) {
             combo.setSelectedItem(savedName);
         }

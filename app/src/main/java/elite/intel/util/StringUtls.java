@@ -1,6 +1,7 @@
 package elite.intel.util;
 
 import elite.intel.ai.brain.commons.AiResponseLanguagePolicy;
+import elite.intel.ai.brain.i18n.LlmTextProvider;
 import elite.intel.i18n.Language;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -107,6 +108,10 @@ public class StringUtls {
 
     public static String localizedSpeech(String key, Object... args) {
         return MultiLingualTextProvider.getText(effectiveTtsLanguage(), key, args);
+    }
+
+    public static String localizedLlm(String key, Object... args) {
+        return LlmTextProvider.getText(effectiveTtsLanguage(), key, args);
     }
 
     public static String localizedSpeechLanguageName(Language language) {

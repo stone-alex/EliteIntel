@@ -9,6 +9,8 @@ import elite.intel.gameapi.journal.events.TouchdownEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
+import static elite.intel.util.StringUtls.localizedEvent;
+
 @SuppressWarnings("unused")
 public class TouchdownEventSubscriber {
 
@@ -59,7 +61,7 @@ public class TouchdownEventSubscriber {
             if (pointOfInterest != null && !pointOfInterest.isEmpty()) {
                 EventBusManager.publish(new SensorDataEvent(sb.toString(), "Confirm touchdown. State the point of interest we have landed at."));
             } else {
-                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Touchdown!"));
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent(localizedEvent("event.touchdown")));
             }
             playerSession.setShipAutoDeparted(false);
         });

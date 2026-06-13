@@ -24,7 +24,7 @@ public class AddMiningTargetHandler implements CommandHandler {
             return;
         }
         String target = capitalizeWords(
-                        FuzzySearch.fuzzyMaterialNameSearch(
+                FuzzySearch.fuzzyCommodityMatch(
                                 key.getAsString(), 3
                         )
                 );

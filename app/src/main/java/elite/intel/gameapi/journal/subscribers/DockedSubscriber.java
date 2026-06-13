@@ -15,6 +15,7 @@ import java.util.Locale;
 
 import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.FLEET_CARRIER;
 import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.STATION;
+import static elite.intel.util.StringUtls.localizedEvent;
 
 public class DockedSubscriber {
 
@@ -85,7 +86,7 @@ public class DockedSubscriber {
 
                 String availableData = LocalServicesData.setLocalServicesData(event.getMarketID());
                 if (!availableData.isEmpty()) {
-                    EventBusManager.publish(new MissionCriticalAnnouncementEvent("Market data available."));
+                    EventBusManager.publish(new MissionCriticalAnnouncementEvent(localizedEvent("event.docked.marketData")));
                 }
                 locationManager.save(location);
             }); // end virtual thread

@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static elite.intel.util.StringUtls.localizedEventPlural;
+
 @SuppressWarnings("unused")
 public class MissionsEventSubscriber {
 
@@ -23,7 +25,7 @@ public class MissionsEventSubscriber {
     public void onMissionsEventSubscriber(MissionsEvent event) {
         Thread.ofVirtual().start(() -> {
             if (!event.getActive().isEmpty()) {
-                EventBusManager.register(new MissionCriticalAnnouncementEvent(" We have %s outstanding missions".formatted(event.getActive().size())));
+                EventBusManager.register(new MissionCriticalAnnouncementEvent(localizedEventPlural(event.getActive().size(), "event.missions.outstanding")));
             }
             if (!event.getComplete().isEmpty() || !event.getFailed().isEmpty()) {
                 // Removes old and completed missions from the database.
